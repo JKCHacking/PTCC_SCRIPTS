@@ -43,24 +43,29 @@ class AdaptiveLabelApproach2:
         filter_data = ["ACAD_TABLE"]
 
         selection_set = self.__get_selection_set(filter_types, filter_data)
-        table_object = selection_set.Item(0)  # since there is only 1 expected table.
 
-        total_rows = table_object.Rows
-        total_columns = table_object.Columns
+        if selection_set.Count:
+            table_object = selection_set.Item(0)  # since there is only 1 expected table.
 
-        code_column_index = self.__get_column_index(total_columns, "Code", table_object)
-        length_column_index = self.__get_column_index(total_columns, "Length", table_object)
+            total_rows = table_object.Rows
+            total_columns = table_object.Columns
 
-        found_flag = False
+            code_column_index = self.__get_column_index(total_columns, "Code", table_object)
+            length_column_index = self.__get_column_index(total_columns, "Length", table_object)
 
-        for irow in range(0, total_rows):
-            cell_content = table_object.GetCellValue(irow, code_column_index)
-            if str(cell_content) == parameter_name:
-                table_object.SetCellValue(irow, length_column_index, new_length)
-                found_flag = True
+            found_flag = False
 
-        if not found_flag:
-            print("Parameter Name {} not found!".format(parameter_name))
+            for irow in range(0, total_rows):
+                cell_content = table_object.GetCellValue(irow, code_column_index)
+                if str(cell_content) == parameter_name:
+                    table_object.SetCellValue(irow, length_column_index, new_length)
+                    found_flag = True
+
+            if not found_flag:
+                print("Parameter Name {} not found!".format(parameter_name))
+        else:
+            print("No Tables found!")
+            return None
 
         selection_set.Delete
 
@@ -89,9 +94,10 @@ class AdaptiveLabelApproach2:
 
 
 if __name__ == "__main__":
+    adaptive_label_object = AdaptiveLabelApproach2()
+
     parameter_name = input("Select a parametric constraint: ")
     new_length = input("Enter new length: ")
 
-    adaptive_label_object = AdaptiveLabelApproach2()
     adaptive_label_object.start_automate(parameter_name, new_length)
 
