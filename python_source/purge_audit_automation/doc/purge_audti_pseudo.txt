@@ -1,0 +1,16 @@
+from the current directory of the python script:
+go to each entry:
+    check if its a directory:
+        if its a directory go inside.
+    inside directory:
+        in every file, check if .dwg extension:
+            open file
+            do purge
+            do Audit
+            save all changes
+            close document
+            create a copy of the file with .cpy extension
+
+        create a directory for all cleansed files outside the current directory
+            (directory name: <current_directory_name>_cleansed)
+        copy all .cpy extension to the new directory created.
