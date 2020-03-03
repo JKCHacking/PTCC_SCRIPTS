@@ -34,6 +34,8 @@ class PurgeAuditScript:
     def begin_automation(self):
         self.err_num = 0
         self.__traverse_in_directory()
+        self.clean_up_files()
+        self.logger.warn("There are {} Error Files found!".format(self.err_num))
 
     def __traverse_in_directory(self):
         for dir_path, dir_names, file_names in os.walk(self.input_directory):
@@ -53,8 +55,6 @@ class PurgeAuditScript:
         else:
             self.copy_file_with_extension(drawing_full_path, has_error=True)
             self.err_num = self.err_num + 1
-        self.clean_up_files()
-        self.logger.warn("There are {} Error Files found!".format(self.err_num))
 
     def __open_file(self, drawing_full_path):
         self.logger.info("Opening File: {}".format(drawing_full_path))
