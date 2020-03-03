@@ -2,7 +2,7 @@
 
 import unittest
 import os
-from purge_audti_script import PurgeAuditScript
+from purge_audit_script import PurgeAuditScript
 
 
 class PurgeAuditTest(unittest.TestCase):
@@ -25,6 +25,14 @@ class PurgeAuditTest(unittest.TestCase):
         purge_audit_script.begin_automation()
 
         self.assertEqual(True, True)
+
+    def test_copy_file(self):
+        script_path = r'd:\stuff\morestuff\furtherdown\src'
+        drawing_path = r'd:\stuff\morestuff\furtherdown\input\DWG\01_GENERAL ASSEMBLY\file.dwg'
+
+        purge_audit_script = PurgeAuditScript(script_path)
+        purge_audit_script.copy_file_with_extension(drawing_path)
+
 
 if __name__ == "__main__":
     unittest.main()
