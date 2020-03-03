@@ -33,6 +33,14 @@ class PurgeAuditTest(unittest.TestCase):
         purge_audit_script = PurgeAuditScript(script_path)
         purge_audit_script.copy_file_with_extension(drawing_path)
 
+    def test_paperspace_zoom_extent(self):
+        current_path = os.path.dirname(os.path.realpath(__file__))
+        drawing_path = "C:\Python37\PersonalProgramStuffs\PTCC_SCRIPTS\python_source\purge_audit_automation\input\CS-0001.dwg"
+        purge_audit_script = PurgeAuditScript(current_path)
+        document = purge_audit_script.open_file(drawing_path)
+        purge_audit_script.__set_paper_layout_zoom_extent(document)
+
+
 
 if __name__ == "__main__":
     unittest.main()

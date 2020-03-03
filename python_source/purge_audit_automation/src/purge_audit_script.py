@@ -59,13 +59,14 @@ class PurgeAuditScript:
         if document is not None:
             self.__purge_document(document, file_name)
             self.__audit_document(document, file_name)
+            self.__set_paper_layout_zoom_extent(document)
             self.__save_document(document, file_name)
             self.copy_file_with_extension(drawing_full_path)
         else:
             self.copy_file_with_extension(drawing_full_path, has_error=True)
             self.err_num = self.err_num + 1
 
-    def __open_file(self, drawing_full_path):
+    def open_file(self, drawing_full_path):
         self.logger.info("Opening File: {}".format(drawing_full_path))
         document = None
         if os.path.exists(drawing_full_path):
@@ -88,6 +89,18 @@ class PurgeAuditScript:
         if document:
             document.AuditInfo(True)
         self.logger.info("Auditing Drawing Done...")
+
+    def __set_paper_layout_zoom_extent(self, document):
+        self.logger.info("Setting to Paper Space with zoom extent..")
+        # enum:
+        # acModelSpace = 1
+        # acPaperSpace = 2
+        document.ActiveSpace = 1
+        # layout_count = document.Layouts.Count
+        for layout in document.Layouts:
+            document.ActiveLayout = layout
+            self.bricscad_application.ZoomExtents()
+        document.ActiveLayout = document.Layouts[0]
 
     def __save_document(self, document, file_name):
         self.logger.info("Saving changes to Drawing: {}".format(file_name))
