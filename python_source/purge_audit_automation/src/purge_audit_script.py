@@ -121,7 +121,7 @@ class PurgeAuditScript:
             for directory in path_list:
                 if directory != "":
                     compiled_directory = os.path.join(compiled_directory, directory)
-                    os.mkdir(compiled_directory)
+                    os.makedirs(compiled_directory, exist_ok=True)
 
         except FileExistsError:
             self.logger.warn("Directory already exists.")
