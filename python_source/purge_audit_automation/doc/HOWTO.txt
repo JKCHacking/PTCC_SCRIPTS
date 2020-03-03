@@ -10,3 +10,4 @@ How to use PURGE and AUDIT Automation Script:
 NOTE: 
 	* Please empty "output" folder first before running the batch file.
 	* You CANNOT use BricsCAD Application while the script is running.
+	* You must do this exercise HOURS BEFORE submission.
