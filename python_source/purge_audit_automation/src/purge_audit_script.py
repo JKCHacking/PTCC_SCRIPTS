@@ -1,5 +1,11 @@
 #!usr/bin/env python
 
+#################################
+# Author: Joshnee Kim B. Cunanan
+# Created: 02 Feb 2020
+# Version: 1.0
+#################################
+
 from comtypes import client
 from comtypes import COMError
 from shutil import copyfile
