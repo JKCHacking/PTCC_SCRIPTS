@@ -44,11 +44,14 @@ class PurgeAuditScript:
         self.logger.warning("There are {} Error Files found!".format(self.err_num))
 
     def __traverse_in_directory(self):
-        for dir_path, dir_names, file_names in os.walk(self.input_directory):
-            for file_name in file_names:
-                file_full_path = os.path.join(dir_path, file_name)
-                if file_full_path.endswith(DRAWING_EXTENSION):
-                    self.make_changes_to_drawing(file_full_path)
+        if len(os.listdir(self.input_directory)) == 0:
+            self.logger.warning("Input Folder is empty...")
+        else:
+            for dir_path, dir_names, file_names in os.walk(self.input_directory):
+                for file_name in file_names:
+                    file_full_path = os.path.join(dir_path, file_name)
+                    if file_full_path.endswith(DRAWING_EXTENSION):
+                        self.make_changes_to_drawing(file_full_path)
 
     def make_changes_to_drawing(self, drawing_full_path):
         file_name = os.path.basename(drawing_full_path)
