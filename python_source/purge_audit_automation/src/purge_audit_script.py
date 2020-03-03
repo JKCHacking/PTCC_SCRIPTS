@@ -35,7 +35,7 @@ class PurgeAuditScript:
         self.err_num = 0
         self.__traverse_in_directory()
         self.clean_up_files()
-        self.logger.warn("There are {} Error Files found!".format(self.err_num))
+        self.logger.warning("There are {} Error Files found!".format(self.err_num))
 
     def __traverse_in_directory(self):
         for dir_path, dir_names, file_names in os.walk(self.input_directory):
@@ -103,7 +103,7 @@ class PurgeAuditScript:
             try:
                 copyfile(drawing_full_path, file_path_to_output)
             except FileExistsError:
-                self.logger.warn("File {} already exists!".format(os.path.basename(drawing_full_path)))
+                self.logger.warning("File {} already exists!".format(os.path.basename(drawing_full_path)))
         elif has_error:
             file_path_to_output = os.path.join(self.error_directory, file_name)
 
@@ -115,7 +115,7 @@ class PurgeAuditScript:
             try:
                 copyfile(drawing_full_path, file_path_to_output)
             except FileExistsError:
-                self.logger.warn("File {} already exists!".format(file_name))
+                self.logger.warning("File {} already exists!".format(file_name))
 
     def create_file_hierarchy(self, path_list):
         self.logger.info("Creating file hierarchy with path list: {}".format(path_list))
@@ -128,7 +128,7 @@ class PurgeAuditScript:
                     os.makedirs(compiled_directory, exist_ok=True)
 
         except FileExistsError:
-            self.logger.warn("Directory already exists.")
+            self.logger.warning("Directory already exists.")
         self.logger.info("Creating file hierarchy done.")
 
     def clean_up_files(self):
