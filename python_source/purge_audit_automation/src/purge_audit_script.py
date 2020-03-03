@@ -102,6 +102,12 @@ class PurgeAuditScript:
                 self.logger.warn("File {} already exists!".format(os.path.basename(drawing_full_path)))
         elif has_error:
             file_path_to_output = os.path.join(self.error_directory, file_name)
+
+            try:
+                os.mkdir(self.error_directory)
+            except FileExistsError:
+                self.logger.info("Error directory already exists")
+
             try:
                 copyfile(drawing_full_path, file_path_to_output)
             except FileExistsError:
@@ -109,13 +115,13 @@ class PurgeAuditScript:
 
     def create_file_hierarchy(self, path_list):
         self.logger.info("Creating file hierarchy with path list: {}".format(path_list))
+        compiled_directory = self.output_directory
         try:
             # create folders
             for directory in path_list:
                 if directory != "":
-                    directory_str = os.path.join(self.output_directory, directory)
-                    file_heirarchy_directory = os.path.join(self.output_directory, directory_str)
-                    os.makedirs(file_heirarchy_directory)
+                    compiled_directory = os.path.join(compiled_directory, directory)
+                    os.mkdir(compiled_directory)
 
         except FileExistsError:
             self.logger.warn("Directory already exists.")
