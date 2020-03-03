@@ -10,6 +10,7 @@ BRICSCAD_APP_NAME = "BricscadApp.AcadApplication"
 DRAWING_EXTENSION = ".dwg"
 BAK_FILES = ".bak"
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+logger = Logger()
 
 
 class PurgeAuditScript:
@@ -27,10 +28,11 @@ class PurgeAuditScript:
         self.input_directory = os.path.join(self.root_directory, "input")
         self.output_directory = os.path.join(self.root_directory, "output")
         self.error_directory = os.path.join(self.output_directory, "error")
-        logger = Logger()
         self.logger = logger.get_logger()
+        self.err_num = 0
 
     def begin_automation(self):
+        self.err_num = 0
         self.__traverse_in_directory()
 
     def __traverse_in_directory(self):
@@ -50,7 +52,9 @@ class PurgeAuditScript:
             self.copy_file_with_extension(drawing_full_path)
         else:
             self.copy_file_with_extension(drawing_full_path, has_error=True)
+            self.err_num = self.err_num + 1
         self.clean_up_files()
+        self.logger.warn("There are {} Error Files found!".format(self.err_num))
 
     def __open_file(self, drawing_full_path):
         self.logger.info("Opening File: {}".format(drawing_full_path))
@@ -128,11 +132,13 @@ class PurgeAuditScript:
         self.logger.info("Creating file hierarchy done.")
 
     def clean_up_files(self):
+        self.logger.info("Cleaning up files...")
         for dir_path, dir_names, file_names in os.walk(self.input_directory):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(BAK_FILES):
                     os.remove(os.path.join(dir_path, file_name))
+        self.logger.info("Cleaning up files done..")
 
 
 if __name__ == "__main__":
