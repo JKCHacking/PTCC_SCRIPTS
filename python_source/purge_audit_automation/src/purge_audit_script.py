@@ -42,6 +42,7 @@ class PurgeAuditScript:
         self.__traverse_in_directory()
         self.clean_up_files()
         self.logger.warning("There are {} Error Files found!".format(self.err_num))
+        self.bricscad_application.Visible = False
 
     def __traverse_in_directory(self):
         if len(os.listdir(self.input_directory)) == 0:
