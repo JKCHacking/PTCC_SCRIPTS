@@ -14,8 +14,9 @@ import os
 
 # This still works since Bricscad is also an Autocad Application.
 # This will make the script universal for both application.
-# BRICSCAD_APP_NAME = "BricscadApp.AcadApplication"
+BRICSCAD_APP_NAME = "BricscadApp.AcadApplication"
 AUTOCAD_APP_NAME = "AutoCAD.Application"
+APP_NAME = BRICSCAD_APP_NAME
 DRAWING_EXTENSION = ".dwg"
 BAK_FILES = ".bak"
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -26,13 +27,13 @@ class PurgeAuditScript:
     def __init__(self, directory):
         self.logger = logger.get_logger()
         try:
-            self.cad_application = client.GetActiveObject(AUTOCAD_APP_NAME, dynamic=True)
-            self.cad_application.Visible = True
+            self.cad_application = client.GetActiveObject(APP_NAME, dynamic=True)
+            # self.cad_application.Visible = True
         except(OSError, COMError):
-            self.logger.info(f"{AUTOCAD_APP_NAME} is not Running...")
-            self.logger.info(f"Opening {AUTOCAD_APP_NAME}...")
-            self.cad_application = client.CreateObject(AUTOCAD_APP_NAME, dynamic=True)
-            self.cad_application.Visible = True
+            self.logger.info(f"{APP_NAME} is not Running...")
+            self.logger.info(f"Opening {APP_NAME}...")
+            self.cad_application = client.CreateObject(APP_NAME, dynamic=True)
+            # self.cad_application.Visible = True
 
         self.script_directory = directory
         self.root_directory = os.path.dirname(self.script_directory)
@@ -101,10 +102,13 @@ class PurgeAuditScript:
         # acModelSpace = 1
         # acPaperSpace = 2
         document.ActiveSpace = 1
-        # layout_count = document.Layouts.Count
         for layout in document.Layouts:
             document.ActiveLayout = layout
             self.cad_application.ZoomExtents()
+            # command_str = "._ZOOM\nextents\n"
+            # document.SendCommand(command_str)
+            document.SetVariable("TREEDEPTH",
+                                 document.GetVariable("TREEDEPTH"))
         document.ActiveLayout = document.Layouts[0]
 
     def __save_document(self, document, file_name):

@@ -7,6 +7,8 @@ Requirements:
 	    ** to install:
 	        1. open command prompt
 	        2. type pip install --proxy proxy.ptcc.design:8080 comtypes
+4. Operating System must be Windows.
+5. BricsCAD or AutoCAD must be installed.
 
 How to use PURGE and AUDIT Automation Script:
 1. Put the desired Drawing Folder to automate inside "input" folder.
