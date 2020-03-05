@@ -12,7 +12,10 @@ from shutil import copyfile
 from logger import Logger
 import os
 
-BRICSCAD_APP_NAME = "BricscadApp.AcadApplication"
+# This still works since Bricscad is also an Autocad Application.
+# This will make the script universal for both application.
+# BRICSCAD_APP_NAME = "BricscadApp.AcadApplication"
+AUTOCAD_APP_NAME = "AutoCAD.Application"
 DRAWING_EXTENSION = ".dwg"
 BAK_FILES = ".bak"
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -23,13 +26,13 @@ class PurgeAuditScript:
     def __init__(self, directory):
         self.logger = logger.get_logger()
         try:
-            self.bricscad_application = client.GetActiveObject(BRICSCAD_APP_NAME, dynamic=True)
-            self.bricscad_application.Visible = True
+            self.cad_application = client.GetActiveObject(AUTOCAD_APP_NAME, dynamic=True)
+            self.cad_application.Visible = True
         except(OSError, COMError):
-            self.logger.info("Bricscad is not Running...")
-            self.logger.info("Opening Bricscad...")
-            self.bricscad_application = client.CreateObject(BRICSCAD_APP_NAME, dynamic=True)
-            self.bricscad_application.Visible = True
+            self.logger.info(f"{AUTOCAD_APP_NAME} is not Running...")
+            self.logger.info(f"Opening {AUTOCAD_APP_NAME}...")
+            self.cad_application = client.CreateObject(AUTOCAD_APP_NAME, dynamic=True)
+            self.cad_application.Visible = True
 
         self.script_directory = directory
         self.root_directory = os.path.dirname(self.script_directory)
@@ -43,7 +46,7 @@ class PurgeAuditScript:
         self.__traverse_in_directory()
         self.clean_up_files()
         self.logger.warning("There are {} Error Files found!".format(self.err_num))
-        self.bricscad_application.Visible = False
+        self.cad_application.Visible = False
 
     def __traverse_in_directory(self):
         if len(os.listdir(self.input_directory)) == 0:
@@ -73,8 +76,8 @@ class PurgeAuditScript:
         document = None
         if os.path.exists(drawing_full_path):
             try:
-                self.bricscad_application.Documents.Open(drawing_full_path)
-                document = self.bricscad_application.ActiveDocument
+                self.cad_application.Documents.Open(drawing_full_path)
+                document = self.cad_application.ActiveDocument
             except COMError:
                 self.logger.error("[ERROR]Invalid Drawing File!: {}".format(drawing_full_path))
         return document
@@ -101,7 +104,7 @@ class PurgeAuditScript:
         # layout_count = document.Layouts.Count
         for layout in document.Layouts:
             document.ActiveLayout = layout
-            self.bricscad_application.ZoomExtents()
+            self.cad_application.ZoomExtents()
         document.ActiveLayout = document.Layouts[0]
 
     def __save_document(self, document, file_name):
@@ -109,7 +112,7 @@ class PurgeAuditScript:
         if not document.Saved:
             self.logger.info("There are unsaved changes in the Drawing")
             document.Save()
-            self.bricscad_application.Documents.Close()
+            self.cad_application.Documents.Close()
         self.logger.info("Saving done and Closed...")
 
     def copy_file_with_extension(self, drawing_full_path, has_error=False):
