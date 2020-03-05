@@ -66,7 +66,7 @@ class PurgeAuditTest(unittest.TestCase):
 
     @staticmethod
     def __run_script():
-        call([PYTHON_EXE, SCRIPT_PATH])
+        call(["python", SCRIPT_PATH])
 
     def test_1_file(self):
         print("==================test_1_file START============================")

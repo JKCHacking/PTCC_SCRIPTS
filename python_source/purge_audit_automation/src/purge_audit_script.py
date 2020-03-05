@@ -24,6 +24,7 @@ class PurgeAuditScript:
         self.logger = logger.get_logger()
         try:
             self.bricscad_application = client.GetActiveObject(BRICSCAD_APP_NAME, dynamic=True)
+            self.bricscad_application.Visible = True
         except(OSError, COMError):
             self.logger.info("Bricscad is not Running...")
             self.logger.info("Opening Bricscad...")
