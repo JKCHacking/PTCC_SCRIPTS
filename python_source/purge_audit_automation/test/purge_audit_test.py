@@ -7,7 +7,6 @@ from shutil import copyfile
 from shutil import copytree
 from shutil import rmtree
 from subprocess import call
-from purge_audit_script import PurgeAuditScript
 
 PYTHON_EXE = sys.executable
 APPLICATION_FILE_NAME = "purge_audit_script.py"
@@ -35,7 +34,8 @@ class PurgeAuditTest(unittest.TestCase):
         print(f"Inserting {file_name} to input...")
         # copies specific content (directory or file) from test_data folder to input folder.
         source_path = os.path.join(self.test_data_directory, file_name)
-        dest_path = INPUT_DIRECTORY
+        dest_path = os.path.join(INPUT_DIRECTORY, file_name)
+
         if os.path.exists(source_path):
             if os.path.isdir(source_path):
                 try:
