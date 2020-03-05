@@ -21,6 +21,7 @@ logger = Logger()
 
 class PurgeAuditScript:
     def __init__(self, directory):
+        self.logger = logger.get_logger()
         try:
             self.bricscad_application = client.GetActiveObject(BRICSCAD_APP_NAME, dynamic=True)
         except(OSError, COMError):
@@ -34,7 +35,6 @@ class PurgeAuditScript:
         self.input_directory = os.path.join(self.root_directory, "input")
         self.output_directory = os.path.join(self.root_directory, "output")
         self.error_directory = os.path.join(self.output_directory, "error")
-        self.logger = logger.get_logger()
         self.err_num = 0
 
     def begin_automation(self):
