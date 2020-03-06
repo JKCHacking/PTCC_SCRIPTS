@@ -48,7 +48,7 @@ class PurgeAuditScript:
     def begin_automation(self):
         self.__traverse_in_directory()
         self.clean_up_files()
-        self.logger.warning("There are {} Error Files found!".format(self.cant_open))
+        self.logger.warning("There are {} Error Files found!".format(len(self.cant_open)))
         self.create_summary_log()
         self.cad_application.Visible = False
 
@@ -70,13 +70,15 @@ class PurgeAuditScript:
             self.__purge_document(document, file_name)
             self.__audit_document(document, file_name)
             has_wrong_tab = self.__apply_standards(document, file_name)
-            self.__save_document(document, file_name)
-            self.copy_file(drawing_full_path, has_error=has_wrong_tab)
             if has_wrong_tab:
                 self.wrong_tab_name.append(drawing_full_path)
+
+            self.__save_document(document, file_name)
+            self.copy_file(drawing_full_path, has_error=has_wrong_tab)
+
         else:
-            self.copy_file(drawing_full_path, has_error=True)
             self.cant_open.append(drawing_full_path)
+            self.copy_file(drawing_full_path, has_error=True)
 
     def __open_file(self, drawing_full_path):
         self.logger.info("Opening File: {}".format(drawing_full_path))
@@ -110,7 +112,11 @@ class PurgeAuditScript:
         document.ActiveSpace = 1
         file_name = file_name.split(".")[0]
         file_name_list = file_name.split("-")
-        post_fix_count = file_name_list.pop()
+        post_fix_count = "0000"
+
+        if file_name_list[len(file_name_list) - 1].isdigit():
+            post_fix_count = file_name_list.pop()
+
         post_fix_count_int = int(post_fix_count)
         has_wrong_tab = False
 
@@ -121,9 +127,11 @@ class PurgeAuditScript:
             # document.SendCommand(command_str)
             document.SetVariable("TREEDEPTH",
                                  document.GetVariable("TREEDEPTH"))
+
             post_fix_count_str = str(post_fix_count_int).zfill(4)
+            post_fix_count_str = "" if int(post_fix_count_str) == 0 else post_fix_count_str
             prefix_file_name = "-".join(file_name_list)
-            expected_layout_name = f"{prefix_file_name}-{post_fix_count_str}"
+            expected_layout_name = "-".join([prefix_file_name, post_fix_count_str])
 
             if layout.Name != "Model":
                 if layout.Name != expected_layout_name:
@@ -169,15 +177,10 @@ class PurgeAuditScript:
             else:
                 file_path_to_output = os.path.join(other, file_name)
 
-            try:
-                os.mkdir(self.error_directory)
-                os.mkdir(other)
-                if self.wrong_tab_name:
-                    os.mkdir(wrong_tab_name_dir)
-                if self.cant_open:
-                    os.mkdir(cant_open_dir)
-            except FileExistsError:
-                self.logger.info("Error directory already exists")
+            os.makedirs(self.error_directory, exist_ok=True)
+            os.makedirs(other, exist_ok=True)
+            os.makedirs(wrong_tab_name_dir, exist_ok=True)
+            os.makedirs(cant_open_dir, exist_ok=True)
 
             try:
                 copyfile(drawing_full_path, file_path_to_output)
