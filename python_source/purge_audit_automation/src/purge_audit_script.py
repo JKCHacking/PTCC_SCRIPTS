@@ -119,11 +119,9 @@ class PurgeAuditScript:
         has_wrong_tab = False
 
         layouts = document.Layouts
-        layout_num = layouts.Count
 
-        correct_layout_dict = {}
-
-        for layout in layouts:
+        layout_dict = self._put_in_dict(layouts)
+        for tab_order, layout in sorted(layout_dict.items()):
             current_layout_name = layout.Name
 
             document.ActiveLayout = layout
@@ -142,28 +140,20 @@ class PurgeAuditScript:
                 if current_layout_name != expected_layout_name:
                     has_wrong_tab = True
                     if fix:
-                        correct_layout_dict[current_layout_name] = expected_layout_name
+                        layout.Name = expected_layout_name
                 post_fix_count_int = post_fix_count_int + 1
-
-        error_count = 0
-        if fix:
-            while error_count < (layout_num - 1):
-                for layout in layouts:
-                    if layout.Name != "Model":
-                        current_l_name = layout.Name
-                        try:
-                            layout.Name = correct_layout_dict[current_l_name]
-                        except KeyError:
-                            self.logger.warning("Layout List changed!")
-                            error_count = error_count + 1
-
-        for i in range(0, layout_num):
-            layout = layouts[i]
-            if layout.Name != "Model":
-                document.ActiveLayout = layout
-                break
-
+        document.ActiveLayout = layout_dict[1]
         return has_wrong_tab
+
+    @staticmethod
+    def _put_in_dict(layouts):
+        layout_dict = {}
+
+        for layout in layouts:
+            key = layout.TabOrder
+            layout_dict[key] = layout
+
+        return layout_dict
 
     def _save_document(self, document, file_name):
         self.logger.info("Saving changes to Drawing: {}".format(file_name))
