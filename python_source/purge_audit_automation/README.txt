@@ -18,7 +18,7 @@ How to use PURGE and AUDIT Automation Script:
 	(it will be displayed at the end of the log if there are any.)
 4. The final result will be placed inside "output" folder.
 
-How to use Automated Fixing (Fixinator) of Layout Names:
+How to use Automated Fixing (Fixinator):
 1. Make sure output->error folder has contents (especially output->error->wrong_tab_name)
 2. Double-click "run_fixinator.bat"
 3. Wait for the script to check for issues. It will prompt if you want to fix errors if found.
