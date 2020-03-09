@@ -50,7 +50,6 @@ class PurgeAuditScript:
         self.clean_up_files(self.input_directory)
         self.logger.warning("There are {} Error Files found!".format(len(self.cant_open) + len(self.wrong_tab_name)))
         self.create_summary_log()
-        self.cad_application.Visible = False
 
     def _traverse_in_directory(self, directory):
         if len(os.listdir(directory)) == 0:
@@ -233,6 +232,7 @@ class PurgeAuditScript:
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(BAK_FILES):
                     os.remove(os.path.join(dir_path, file_name))
+        self.cad_application.Visible = False
         self.logger.info("Cleaning up files done..")
 
     def create_summary_log(self):
