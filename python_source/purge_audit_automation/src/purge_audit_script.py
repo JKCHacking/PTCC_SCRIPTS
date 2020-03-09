@@ -232,7 +232,6 @@ class PurgeAuditScript:
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(BAK_FILES):
                     os.remove(os.path.join(dir_path, file_name))
-        self.cad_application.Visible = False
         self.logger.info("Cleaning up files done..")
 
     def create_summary_log(self):

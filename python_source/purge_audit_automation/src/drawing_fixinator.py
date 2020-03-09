@@ -42,6 +42,8 @@ class DrawingFixinator(PurgeAuditScript):
                                           icon="warning")
         if response == 'yes':
             self.__fix_wrong_tab_name()
+        elif response == 'no':
+            self.cad_application.Visible = False
 
     def scan_for_issue(self):
         self.logger.info("Scanning for issues...")
@@ -78,6 +80,7 @@ class DrawingFixinator(PurgeAuditScript):
 
         self.clean_up_files(wrong_tab_name_dir_fix)
         messagebox.showinfo("Fix Issues", "Fixing done!")
+        self.cad_application.Visible = False
 
 
 if __name__ == "__main__":
