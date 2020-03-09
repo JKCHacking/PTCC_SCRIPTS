@@ -108,11 +108,11 @@ class PurgeAuditScript:
 
         file_name = file_name.split(".")[0]
         file_name_list = file_name.split("-")
-        document_counter_len = file_name_list[len(file_name_list) - 1]  # gets the last element in the list.
-        counter_digit_num = len(document_counter_len)
+        document_counter = file_name_list[len(file_name_list) - 1]  # gets the last element in the list.
+        counter_digit_num = len(document_counter)
         post_fix_count = "0000"
 
-        if document_counter_len.isdigit():
+        if document_counter.isdigit():
             post_fix_count = file_name_list.pop()
 
         post_fix_count_int = int(post_fix_count)
