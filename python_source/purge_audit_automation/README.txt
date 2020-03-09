@@ -18,7 +18,16 @@ How to use PURGE and AUDIT Automation Script:
 	(it will be displayed at the end of the log if there are any.)
 4. The final result will be placed inside "output" folder.
 
-NOTE: 
+How to use Automated Fixing (Fixinator) of Layout Names:
+1. Make sure output->error folder has contents (especially output->error->wrong_tab_name)
+2. Double-click "run_fixinator.bat"
+3. Wait for the script to check for issues. It will prompt if you want to fix errors if found.
+4. Press Yes
+5. It will display a prompt that the script has finished fixing issues.
+6. Output will display in output->fix folder.
+	
+NOTE:   
+	* Automated Fixer (Fixinator) only supports fixing of layout names to conventions.
 	* Please empty "output" folder first before running the batch file.
 	* If you want to use BricsCAD, just open a new instance application of BricsCAD.
 	* You must do this exercise HOURS BEFORE submission.
