@@ -56,6 +56,7 @@ class DrawingFixinator(PurgeAuditScript):
                 self.create_prompt()
         else:
             messagebox.showinfo("Fix Issues", "No Errors Found!")
+            self.cad_application.Visible = False
 
     def __fix_cant_open(self):
         pass
