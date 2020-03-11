@@ -70,4 +70,9 @@
   (princ)
 )
 
-(c:test2)
+(defun c:test5 (/ ss )
+	(setq ss (ssget "X" '((0 . "MULTILEADER"))))
+  	(print ss)
+)
+
+(c:test5)

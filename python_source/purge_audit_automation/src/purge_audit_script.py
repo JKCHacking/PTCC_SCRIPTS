@@ -16,7 +16,7 @@ import os
 # This will make the script universal for both application.
 BRICSCAD_APP_NAME = "BricscadApp.AcadApplication"
 AUTOCAD_APP_NAME = "AutoCAD.Application"
-APP_NAME = BRICSCAD_APP_NAME  # switch to other app CAD here.
+APP_NAME = AUTOCAD_APP_NAME  # switch to other app CAD here.
 
 DRAWING_EXTENSION = ".dwg"
 BAK_FILES = ".bak"
