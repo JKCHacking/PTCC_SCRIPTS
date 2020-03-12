@@ -69,7 +69,7 @@ class PayPayGenerator:
         insertion_pt = array.array("d", [1.60, 6.95, 0])
         total_row = ((num_variation - 1) * 2) + 2
         total_col = 3
-        tbl_obj = ps_obj_collection.AddTable(insertion_pt, total_row, total_col, 0.005, 2.5)
+        tbl_obj = ps_obj_collection.AddTable(insertion_pt, total_row, total_col, 0.0025, 2.5)
         tbl_obj.DeleteRows(0, 1)
 
         tbl_obj.SetCellValue(0, 0, "PART NO.")
@@ -84,6 +84,10 @@ class PayPayGenerator:
 
         rows = tbl_obj.Rows
         for irow in range(1, rows):
+            tbl_obj.SetCellTextHeight(irow, 0, 0.10)
+            tbl_obj.SetCellTextHeight(irow, 1, 0.10)
+            tbl_obj.SetCellTextHeight(irow, 2, 0.10)
+
             tbl_obj.SetCellValue(irow, 0, f"AB{str(num_variation).zfill(2)}-{str(irow).zfill(2)}")
             if irow % 2 != 0:
                 # right
@@ -97,6 +101,7 @@ class PayPayGenerator:
                 l_brack_ang = round(l_brack_ang + tile_angle_inc, 2)
                 tbl_obj.SetCellValue(irow, 1, f"{str(l_brack_len)}")
                 tbl_obj.SetCellValue(irow, 2, f"{str(l_brack_ang)}\xb0")
+            tbl_obj.SetRowHeight(irow, 0.10)
 
     def create_layout(self, doc_obj):
         layouts = doc_obj.Layouts
@@ -125,13 +130,12 @@ class PayPayGenerator:
             self.cad_application.Documents.Close()
         self.logger.info("Saving done and Closed...")
 
-    def delete_last_layout(self, document):
+    def delete_layouts(self, document):
         layouts = document.Layouts
         layout_dict = self._put_in_dict(layouts)
-        layout_dict[len(layout_dict)-1].Delete()
-
-        ps_layout = layout_dict[1]
-        ps_layout.Name = self.file_name.split(".")[0]
+        layout_dict[1].Delete()
+        layout_dict[2].Delete()
+        document.ActiveLayout = layout_dict[1]
 
     @staticmethod
     def _put_in_dict(layouts):
@@ -146,7 +150,7 @@ class PayPayGenerator:
     def begin_automation(self):
         doc_obj = self.create_doc()
         self.create_layout(doc_obj)
-        # self.delete_last_layout(doc_obj)
+        self.delete_layouts(doc_obj)
         self.save_document(doc_obj, self.file_name)
 
 
