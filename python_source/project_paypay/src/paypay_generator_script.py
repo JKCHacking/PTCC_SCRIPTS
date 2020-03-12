@@ -10,10 +10,11 @@ from comtypes import COMError
 from logger import Logger
 import array
 import os
+import csv
 
 MAX_OPENING = 354.0
 TOP_TO_PIVOTAL = 92.0
-FIR_BRACK_DIST = 169.9
+FIR_BRACK_DIST = 169.6
 
 R_BRACK_ORIG_ANG = 90.0
 R_BRACK_ORIG_LEN = 50.0
@@ -28,12 +29,11 @@ logger = Logger()
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 PROJ_ROOT = os.path.dirname(SCRIPT_DIR)
 OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
+INPUT_DIR = os.path.join(PROJ_ROOT, "input")
 
 
 class PayPayGenerator:
-    def __init__(self, tile_length, num_var, file_name):
-        self.tile_length = tile_length
-        self.num_var = num_var
+    def __init__(self, file_name):
         self.file_name = file_name
         self.logger = logger.get_logger()
 
@@ -46,35 +46,37 @@ class PayPayGenerator:
             self.cad_application = client.CreateObject(APP_NAME, dynamic=True)
             self.cad_application.Visible = True
 
-    def calculate_increments(self):
+    @staticmethod
+    def calculate_increments(tile_len, num_variation):
         opposite = MAX_OPENING - TOP_TO_PIVOTAL
-        hypotenuse = self.tile_length
+        hypotenuse = tile_len
         adjacent = round(sqrt((hypotenuse ** 2) - (opposite ** 2)), 1)
 
         angle = round(degrees(acos((adjacent**2 + hypotenuse**2 - opposite**2)/(2.0 * adjacent * hypotenuse))), 2)
-        tile_ang_inc = round(angle / (self.num_var - 1), 2)
+        tile_ang_inc = round(angle / (num_variation - 1), 2)
         tan_tile_ang_inc = tan(radians(tile_ang_inc))
 
         r_pivot_dist = FIR_BRACK_DIST
         r_brack_len_inc = round(tan_tile_ang_inc * r_pivot_dist, 1)
 
-        l_pivot_dist = self.tile_length - FIR_BRACK_DIST
+        l_pivot_dist = tile_len - FIR_BRACK_DIST
         l_brack_len_inc = round(tan_tile_ang_inc * l_pivot_dist, 1)
 
         return tile_ang_inc, r_brack_len_inc, l_brack_len_inc
 
-    def create_table(self, ps_obj_collection):
+    def create_table(self, doc, tile_len, num_variation):
+        ps_obj_collection = doc.PaperSpace
         insertion_pt = array.array("d", [1.60, 6.95, 0])
-        total_row = ((self.num_var - 1) * 2) + 2
+        total_row = ((num_variation - 1) * 2) + 2
         total_col = 3
-        tbl_obj = ps_obj_collection.AddTable(insertion_pt, total_row, total_col, 0.025, 2.5)
+        tbl_obj = ps_obj_collection.AddTable(insertion_pt, total_row, total_col, 0.005, 2.5)
         tbl_obj.DeleteRows(0, 1)
 
         tbl_obj.SetCellValue(0, 0, "PART NO.")
         tbl_obj.SetCellValue(0, 1, "LENGTH")
         tbl_obj.SetCellValue(0, 2, "ANGLE")
 
-        tile_angle_inc, r_brack_len_inc, l_brack_len_inc = self.calculate_increments()
+        tile_angle_inc, r_brack_len_inc, l_brack_len_inc = self.calculate_increments(tile_len, num_variation)
         r_brack_len = R_BRACK_ORIG_LEN
         r_brack_ang = R_BRACK_ORIG_ANG
         l_brack_len = L_BRACK_ORIG_LEN
@@ -82,7 +84,7 @@ class PayPayGenerator:
 
         rows = tbl_obj.Rows
         for irow in range(1, rows):
-            tbl_obj.SetCellValue(irow, 0, f"AB{str(self.num_var).zfill(2)}-{str(irow).zfill(2)}")
+            tbl_obj.SetCellValue(irow, 0, f"AB{str(num_variation).zfill(2)}-{str(irow).zfill(2)}")
             if irow % 2 != 0:
                 # right
                 r_brack_len = round(r_brack_len + r_brack_len_inc, 1)
@@ -95,6 +97,20 @@ class PayPayGenerator:
                 l_brack_ang = round(l_brack_ang + tile_angle_inc, 2)
                 tbl_obj.SetCellValue(irow, 1, f"{str(l_brack_len)}")
                 tbl_obj.SetCellValue(irow, 2, f"{str(l_brack_ang)}\xb0")
+
+    def create_layout(self, doc_obj):
+        layouts = doc_obj.Layouts
+        in_data = os.path.join(INPUT_DIR, "tile_variations.csv")
+        with open(in_data, 'r') as in_file:
+            reader = csv.reader(in_file)
+            next(in_file)
+            for entry in reader:
+                num = entry[0]
+                tile_len = int(entry[1])
+                num_variation = int(entry[2])
+                layout = layouts.Add(f"{num}-{str(tile_len)}-{str(num_variation)}")
+                doc_obj.ActiveLayout = layout
+                self.create_table(doc_obj, tile_len, num_variation)
 
     def create_doc(self):
         new_doc = self.cad_application.Documents.Add()
@@ -129,16 +145,12 @@ class PayPayGenerator:
 
     def begin_automation(self):
         doc_obj = self.create_doc()
-        ps_obj_collection = doc_obj.PaperSpace
-        self.create_table(ps_obj_collection)
-        self.delete_last_layout(doc_obj)
+        self.create_layout(doc_obj)
+        # self.delete_last_layout(doc_obj)
         self.save_document(doc_obj, self.file_name)
 
 
 if __name__ == "__main__":
-    tile_len = 1423.0
-    num_variation = 9
-    file_name = "1808-933.dwg"
-
-    pp_gen = PayPayGenerator(tile_len, num_variation, file_name)
+    file_name = "1808-933_many.dwg"
+    pp_gen = PayPayGenerator(file_name)
     pp_gen.begin_automation()
