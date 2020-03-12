@@ -4,28 +4,141 @@ from math import tan
 from math import degrees
 from math import sqrt
 from math import acos
+from math import radians
+from comtypes import client
+from comtypes import COMError
+from logger import Logger
+import array
+import os
 
 MAX_OPENING = 354.0
 TOP_TO_PIVOTAL = 92.0
+FIR_BRACK_DIST = 169.9
+
+R_BRACK_ORIG_ANG = 90.0
+R_BRACK_ORIG_LEN = 50.0
+L_BRACK_ORIG_ANG = 90.0
+L_BRACK_ORIG_LEN = 50.0
+
+BRICSCAD_APP_NAME = "BricscadApp.AcadApplication"
+AUTOCAD_APP_NAME = "AutoCAD.Application"
+APP_NAME = BRICSCAD_APP_NAME  # switch to other app CAD here.
+
+logger = Logger()
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+PROJ_ROOT = os.path.dirname(SCRIPT_DIR)
+OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
 
 
 class PayPayGenerator:
-    def __init__(self, tile_length):
+    def __init__(self, tile_length, num_var, file_name):
         self.tile_length = tile_length
-        pass
+        self.num_var = num_var
+        self.file_name = file_name
+        self.logger = logger.get_logger()
 
-    def calculate_divided_angle(self):
+        try:
+            self.cad_application = client.GetActiveObject(APP_NAME, dynamic=True)
+            self.cad_application.Visible = True
+        except(OSError, COMError):
+            self.logger.info(f"{APP_NAME} is not Running...")
+            self.logger.info(f"Opening {APP_NAME}...")
+            self.cad_application = client.CreateObject(APP_NAME, dynamic=True)
+            self.cad_application.Visible = True
+
+    def calculate_increments(self):
         opposite = MAX_OPENING - TOP_TO_PIVOTAL
         hypotenuse = self.tile_length
         adjacent = round(sqrt((hypotenuse ** 2) - (opposite ** 2)), 1)
 
         angle = round(degrees(acos((adjacent**2 + hypotenuse**2 - opposite**2)/(2.0 * adjacent * hypotenuse))), 2)
-        divided_angle = round(angle / 8.00, 2)
+        tile_ang_inc = round(angle / (self.num_var - 1), 2)
+        tan_tile_ang_inc = tan(radians(tile_ang_inc))
 
-        return divided_angle
+        r_pivot_dist = FIR_BRACK_DIST
+        r_brack_len_inc = round(tan_tile_ang_inc * r_pivot_dist, 1)
+
+        l_pivot_dist = self.tile_length - FIR_BRACK_DIST
+        l_brack_len_inc = round(tan_tile_ang_inc * l_pivot_dist, 1)
+
+        return tile_ang_inc, r_brack_len_inc, l_brack_len_inc
+
+    def create_table(self, ps_obj_collection):
+        insertion_pt = array.array("d", [1.60, 6.95, 0])
+        total_row = ((self.num_var - 1) * 2) + 2
+        total_col = 3
+        tbl_obj = ps_obj_collection.AddTable(insertion_pt, total_row, total_col, 0.025, 2.5)
+        tbl_obj.DeleteRows(0, 1)
+
+        tbl_obj.SetCellValue(0, 0, "PART NO.")
+        tbl_obj.SetCellValue(0, 1, "LENGTH")
+        tbl_obj.SetCellValue(0, 2, "ANGLE")
+
+        tile_angle_inc, r_brack_len_inc, l_brack_len_inc = self.calculate_increments()
+        r_brack_len = R_BRACK_ORIG_LEN
+        r_brack_ang = R_BRACK_ORIG_ANG
+        l_brack_len = L_BRACK_ORIG_LEN
+        l_brack_ang = L_BRACK_ORIG_ANG
+
+        rows = tbl_obj.Rows
+        for irow in range(1, rows):
+            tbl_obj.SetCellValue(irow, 0, f"AB{str(self.num_var).zfill(2)}-{str(irow).zfill(2)}")
+            if irow % 2 != 0:
+                # right
+                r_brack_len = round(r_brack_len + r_brack_len_inc, 1)
+                r_brack_ang = round(r_brack_ang - tile_angle_inc, 2)
+                tbl_obj.SetCellValue(irow, 1, f"{str(r_brack_len)}")
+                tbl_obj.SetCellValue(irow, 2, f"{str(r_brack_ang)}\xb0")
+            else:
+                # left
+                l_brack_len = round(l_brack_len + l_brack_len_inc, 1)
+                l_brack_ang = round(l_brack_ang + tile_angle_inc, 2)
+                tbl_obj.SetCellValue(irow, 1, f"{str(l_brack_len)}")
+                tbl_obj.SetCellValue(irow, 2, f"{str(l_brack_ang)}\xb0")
+
+    def create_doc(self):
+        new_doc = self.cad_application.Documents.Add()
+        return new_doc
+
+    def save_document(self, document, file_name):
+        self.logger.info("Saving changes to Drawing: {}".format(file_name))
+        full_path_save = os.path.join(OUTPUT_DIR, file_name)
+        if not document.Saved:
+            self.logger.info("There are unsaved changes in the Drawing")
+            document.SaveAs(full_path_save)
+            self.cad_application.Documents.Close()
+        self.logger.info("Saving done and Closed...")
+
+    def delete_last_layout(self, document):
+        layouts = document.Layouts
+        layout_dict = self._put_in_dict(layouts)
+        layout_dict[len(layout_dict)-1].Delete()
+
+        ps_layout = layout_dict[1]
+        ps_layout.Name = self.file_name.split(".")[0]
+
+    @staticmethod
+    def _put_in_dict(layouts):
+        layout_dict = {}
+
+        for layout in layouts:
+            key = layout.TabOrder
+            layout_dict[key] = layout
+
+        return layout_dict
+
+    def begin_automation(self):
+        doc_obj = self.create_doc()
+        ps_obj_collection = doc_obj.PaperSpace
+        self.create_table(ps_obj_collection)
+        self.delete_last_layout(doc_obj)
+        self.save_document(doc_obj, self.file_name)
 
 
 if __name__ == "__main__":
     tile_len = 1423.0
-    pp_gen = PayPayGenerator(tile_len)
-    div_angle = pp_gen.calculate_divided_angle()
+    num_variation = 9
+    file_name = "1808-933.dwg"
+
+    pp_gen = PayPayGenerator(tile_len, num_variation, file_name)
+    pp_gen.begin_automation()
