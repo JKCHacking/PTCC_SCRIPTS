@@ -135,7 +135,7 @@ class PayPayGenerator:
         layout_dict = self._put_in_dict(layouts)
         layout_dict[1].Delete()
         layout_dict[2].Delete()
-        document.ActiveLayout = layout_dict[1]
+        document.ActiveLayout = layout_dict[3]
 
     @staticmethod
     def _put_in_dict(layouts):
