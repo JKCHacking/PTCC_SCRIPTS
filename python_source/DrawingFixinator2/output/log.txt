@@ -1,4 +1,0 @@
-=============SUMMARY===============
-Total Number of Drawings: 265
-Total Drawings with Errors: 2
-Scripts used: ["<class 'purge_audit.PurgeAudit'>", "<class 'fix_layout_name.FixLayoutNameScript'>"]
