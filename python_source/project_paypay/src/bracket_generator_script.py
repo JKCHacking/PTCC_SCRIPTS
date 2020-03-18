@@ -32,7 +32,7 @@ OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
 INPUT_DIR = os.path.join(PROJ_ROOT, "input")
 
 
-class PayPayGenerator:
+class BracketGenerator:
     def __init__(self, file_name):
         self.file_name = file_name
         self.logger = logger.get_logger()
@@ -46,8 +46,8 @@ class PayPayGenerator:
             self.cad_application = client.CreateObject(APP_NAME, dynamic=True)
             self.cad_application.Visible = True
 
-    @staticmethod
-    def calculate_increments(tile_len, num_variation):
+    def calculate_increments(self, tile_len, num_variation):
+        self.logger.info(f"Calculating data for tile length: {tile_len} with {num_variation} variations")
         opposite = MAX_OPENING - TOP_TO_PIVOTAL
         hypotenuse = tile_len
         adjacent = round(sqrt((hypotenuse ** 2) - (opposite ** 2)), 1)
@@ -65,6 +65,7 @@ class PayPayGenerator:
         return tile_ang_inc, r_brack_len_inc, l_brack_len_inc
 
     def create_table(self, doc, tile_len, num_variation):
+        self.logger.info("Creating table...")
         ps_obj_collection = doc.PaperSpace
         insertion_pt = array.array("d", [1.60, 6.95, 0])
         total_row = ((num_variation - 1) * 2) + 2
@@ -104,6 +105,7 @@ class PayPayGenerator:
             tbl_obj.SetRowHeight(irow, 0.10)
 
     def create_layout(self, doc_obj):
+        self.logger.info("Creating layout...")
         layouts = doc_obj.Layouts
         in_data = os.path.join(INPUT_DIR, "tile_variations.csv")
         with open(in_data, 'r') as in_file:
@@ -118,10 +120,12 @@ class PayPayGenerator:
                 self.create_table(doc_obj, tile_len, num_variation)
 
     def create_doc(self):
+        self.logger.info("Creating document from scratch...")
         new_doc = self.cad_application.Documents.Add()
         return new_doc
 
     def save_document(self, document, file_name):
+        self.logger.info(f"Saving document {file_name}")
         self.logger.info("Saving changes to Drawing: {}".format(file_name))
         full_path_save = os.path.join(OUTPUT_DIR, file_name)
         if not document.Saved:
@@ -131,6 +135,7 @@ class PayPayGenerator:
         self.logger.info("Saving done and Closed...")
 
     def delete_layouts(self, document):
+        self.logger.info("Deleting some other layouts")
         layouts = document.Layouts
         layout_dict = self._put_in_dict(layouts)
         layout_dict[1].Delete()
@@ -148,13 +153,15 @@ class PayPayGenerator:
         return layout_dict
 
     def begin_automation(self):
+        self.logger.info("Starting script...")
         doc_obj = self.create_doc()
         self.create_layout(doc_obj)
         self.delete_layouts(doc_obj)
         self.save_document(doc_obj, self.file_name)
+        self.logger.info("Script done executing...")
 
 
 if __name__ == "__main__":
     file_name = "1808-933_many.dwg"
-    pp_gen = PayPayGenerator(file_name)
+    pp_gen = BracketGenerator(file_name)
     pp_gen.begin_automation()
