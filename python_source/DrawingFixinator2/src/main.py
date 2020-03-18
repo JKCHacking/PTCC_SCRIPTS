@@ -5,8 +5,10 @@ from shutil import copyfile, SameFileError
 from comtypes import client
 from comtypes import COMError
 from purge_audit import PurgeAudit
-from fix_layout_name import FixLayoutNameScript
+from layout_name_fixer import LayoutNameFixer
+from layout_name_scanner import LayoutNameScanner
 from distutils.dir_util import copy_tree
+from tkinter import messagebox, Tk
 import os
 
 APP_NAME = Constants.BRICSCAD_APP_NAME   # switch to other app CAD here.
@@ -16,21 +18,24 @@ logger = Logger()
 class Main:
     def __init__(self):
         self.logger = logger.get_logger()
+        root = Tk()
+        root.withdraw()
         try:
             self.cad_application = client.GetActiveObject(APP_NAME, dynamic=True)
-            self.cad_application.Visible = True
+            self.cad_application.Visible = False
         except(OSError, COMError):
             self.logger.info(f"{APP_NAME} is not Running...")
             self.logger.info(f"Opening {APP_NAME}...")
             self.cad_application = client.CreateObject(APP_NAME, dynamic=True)
-            self.cad_application.Visible = True
+            self.cad_application.Visible = False
         self.script_objects = []
         self.setup()
 
-    @staticmethod
-    def setup():
+    def setup(self):
+        self.logger.info("Setting up directories...")
         os.makedirs(Constants.OUTPUT_DIRECTORY, exist_ok=True)
         os.makedirs(Constants.ERROR_DIRECTORY, exist_ok=True)
+        os.makedirs(Constants.WRONG_TEMPLATE_NAME, exist_ok=True)
 
     @staticmethod
     def _put_in_dict(layouts):
@@ -43,6 +48,7 @@ class Main:
         return layout_dict
 
     def copy_error_file(self, file_path):
+        self.logger.info(f"Copying {os.path.basename(file_path)} to error directory...")
         src = file_path
         dest = os.path.join(Constants.ERROR_DIRECTORY, os.path.basename(file_path))
 
@@ -55,11 +61,13 @@ class Main:
             self.logger.warn(e)
 
     def start(self, script_objects):
+        self.logger.info(f"Scripts to run: {script_objects}")
         self.script_objects = script_objects
         self.copy_input_to_output()
         error_files, total_files = self.traverse_in_directory(script_objects)
         self.clean_up_files()
         self.create_summary_log(error_files, total_files)
+        messagebox.showinfo("Script", "Done")
         self.cad_application.Visible = False
 
     def clean_up_files(self):
@@ -89,7 +97,8 @@ class Main:
                 for file_name in file_names:
                     file_full_path = os.path.join(dir_path, file_name)
                     if file_full_path.endswith(Constants.DRAWING_EXTENSION) \
-                            and dir_path != Constants.ERROR_DIRECTORY:
+                            and dir_path != Constants.ERROR_DIRECTORY\
+                            and dir_path != Constants.WRONG_TEMPLATE_NAME:
                         document = self.open_file(file_full_path)
                         total_files = total_files + 1
                         if document:
@@ -99,7 +108,24 @@ class Main:
                         else:
                             self.copy_error_file(file_full_path)
                             error_files.append(file_full_path)
+
+            for script_object in script_objects:
+                if isinstance(script_object, LayoutNameScanner):
+                    if len(os.listdir(Constants.WRONG_TEMPLATE_NAME)) > 0:
+                        issues = True
+                    else:
+                        issues = False
+                    self.__create_prompt(issues)
         return error_files, total_files
+
+    @staticmethod
+    def __create_prompt(issues):
+        if issues:
+            message = "There are drawing with inconsistent layout names"
+            messagebox.showinfo("Fix Issues", message, icon="warning")
+        else:
+            message = "No issues found."
+            messagebox.showinfo("Fix Issues", message, icon="warning")
 
     def open_file(self, drawing_full_path):
         self.logger.info("Opening File: {}".format(drawing_full_path))
@@ -118,10 +144,11 @@ class Main:
             self.logger.info("There are unsaved changes in the Drawing")
             self.__zoom_extends_first_layout(document)
             document.Save()
-            self.cad_application.Documents.Close()
+        self.cad_application.Documents.Close()
         self.logger.info("Saving done and Closed...")
 
     def __zoom_extends_first_layout(self, document):
+        self.logger.info("Applying zoom extents...")
         layouts = document.Layouts
         layout_dict = self._put_in_dict(layouts)
         for tab_order, layout in sorted(layout_dict.items()):
@@ -134,6 +161,7 @@ class Main:
         document.ActiveLayout = layout_dict[1]
 
     def create_summary_log(self, error_files, total_files):
+        self.logger.info("Creating summary logs...")
         log_file_path = os.path.join(Constants.OUTPUT_DIRECTORY, "log.txt")
         log_file = open(log_file_path, "w")
         total_errors_found = len(error_files)
@@ -149,7 +177,8 @@ class Main:
 if __name__ == "__main__":
     print("1. Purge and Audit = pa")
     print("2. Fix Layout Names = fln")
-    correct_commands = ["pa", "fln"]
+    print("3. Scan Layout Names = sln")
+    correct_commands = ["pa", "fln", "sln"]
     script_name = input("Select scripts to apply to the drawings: ")
     script_name_list = script_name.split(",")
 
@@ -161,8 +190,11 @@ if __name__ == "__main__":
                 purge_audit = PurgeAudit()
                 script_object_list.append(purge_audit)
             if input_script_command == "fln":
-                fix_layout_name = FixLayoutNameScript()
+                fix_layout_name = LayoutNameFixer()
                 script_object_list.append(fix_layout_name)
+            if input_script_command == "sln":
+                layout_name_scanner = LayoutNameScanner()
+                script_object_list.append(layout_name_scanner)
         else:
             print("Something is wrong with your input, please check again...")
             script_object_list.clear()

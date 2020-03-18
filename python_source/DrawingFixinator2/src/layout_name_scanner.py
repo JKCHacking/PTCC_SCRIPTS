@@ -1,17 +1,25 @@
 #!usr/bin/env python
 
-from drawing_script import DrawingScript
 from logger import Logger
+from drawing_script import DrawingScript
+from constants import Constants
+import os
 
 
-class FixLayoutNameScript(DrawingScript):
+class LayoutNameScanner(DrawingScript):
     def __init__(self):
         self.logger = Logger().get_logger()
 
     def begin_automation(self, document, file_name):
-        self.__fix_layout_name(document, file_name)
+        self.logger.info(f"Starting scipt: LayoutNameScanner")
+        self.__scan_layout_name(document, file_name)
 
-    def __fix_layout_name(self, document, file_name):
+    def __scan_layout_name(self, document, file_name):
+        self.logger.info("Fixing Layout Names....")
+        self._traverse_layout_document(document, file_name)
+
+    def _traverse_layout_document(self, document, file_name):
+        self.logger.info(f"Traversing {file_name} document layouts...")
         file_name = file_name.split(".")[0]
         file_name_list = file_name.split("-")
         document_counter = file_name_list[len(file_name_list) - 1]  # gets the last element in the list.
@@ -35,8 +43,14 @@ class FixLayoutNameScript(DrawingScript):
 
             if current_layout_name != "Model":
                 if current_layout_name != expected_layout_name:
-                    layout.Name = expected_layout_name
+                    self.__save_as(document, file_name)
+                    break
                 post_fix_count_int = post_fix_count_int + 1
+
+    @staticmethod
+    def __save_as(document, file_name):
+        document_full_path = os.path.join(Constants.WRONG_TEMPLATE_NAME, file_name)
+        document.SaveAs(document_full_path)
 
     @staticmethod
     def _put_in_dict(layouts):

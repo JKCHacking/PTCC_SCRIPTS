@@ -15,10 +15,12 @@ class PurgeAudit(DrawingScript):
         self.logger = Logger().get_logger()
 
     def begin_automation(self, document, file_name):
+        self.logger.info(f"Starting scipt: PurgeAudit")
         self.__purge_document(document, file_name)
         self.__audit_document(document, file_name)
 
     def __purge_document(self, document, file_name):
+        self.logger.info(f"Purging document: {file_name}")
         if document:
             for i in range(0, 5):
                 self.logger.info("[ATTEMPT{}]Purging Drawing: {}...".format(i+1, file_name))
@@ -26,6 +28,7 @@ class PurgeAudit(DrawingScript):
         self.logger.info("Purging Drawing Done...")
 
     def __audit_document(self, document, file_name):
+        self.logger.info(f"Auditing document: {file_name}")
         self.logger.info("Auditing Drawing: {}...".format(file_name))
         if document:
             document.AuditInfo(True)
