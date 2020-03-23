@@ -54,13 +54,15 @@ class BracketGenerator:
         ps_obj_collection = doc.PaperSpace
         insertion_pt = array.array("d", [332.8507, 284.8947, 0.0000])
         total_row = ((num_variation - 1) * 2) + 2
-        total_col = 3
-        tbl_obj = ps_obj_collection.AddTable(insertion_pt, total_row, total_col, 0.0025, 2.5)
+        total_col = 5
+        tbl_obj = ps_obj_collection.AddTable(insertion_pt, total_row, total_col, 1, 10)
         tbl_obj.DeleteRows(0, 1)
 
         tbl_obj.SetCellValue(0, 0, "PART NO.")
         tbl_obj.SetCellValue(0, 1, "LENGTH")
         tbl_obj.SetCellValue(0, 2, "ANGLE")
+        tbl_obj.SetCellValue(0, 3, "DIM A")
+        tbl_obj.SetCellValue(0, 4, "QUANTITY")
 
         tile_angle_inc, r_brack_len_inc, l_brack_len_inc = self.calculate_increments(tile_len, num_variation)
         r_brack_len = Constants.R_BRACK_ORIG_LEN
@@ -69,37 +71,69 @@ class BracketGenerator:
         l_brack_ang = Constants.L_BRACK_ORIG_ANG
 
         rows = tbl_obj.Rows
-        for irow in range(1, rows):
-            tbl_obj.SetCellTextHeight(irow, 0, 0.10)
-            tbl_obj.SetCellTextHeight(irow, 1, 0.10)
-            tbl_obj.SetCellTextHeight(irow, 2, 0.10)
+        cols = tbl_obj.Columns
 
-            tbl_obj.SetCellValue(irow, 0, f"AB{str(num_variation).zfill(2)}-{str(irow).zfill(2)}")
-            if irow % 2 != 0:
+        for row in range(1, rows):
+            tbl_obj.SetCellValue(row, 0, f"AB{str(num_variation).zfill(2)}-{str(row).zfill(2)}")
+            if row % 2 != 0:
                 # right
                 r_brack_len = round(r_brack_len + r_brack_len_inc, 1)
                 r_brack_ang = round(r_brack_ang - tile_angle_inc, 2)
-                tbl_obj.SetCellValue(irow, 1, f"{str(r_brack_len)}")
-                tbl_obj.SetCellValue(irow, 2, f"{str(r_brack_ang)}\xb0")
+                tbl_obj.SetCellValue(row, 1, f"{str(r_brack_len)}")
+                tbl_obj.SetCellValue(row, 2, f"{str(r_brack_ang)}\xb0")
             else:
                 # left
                 l_brack_len = round(l_brack_len + l_brack_len_inc, 1)
                 l_brack_ang = round(l_brack_ang + tile_angle_inc, 2)
-                tbl_obj.SetCellValue(irow, 1, f"{str(l_brack_len)}")
-                tbl_obj.SetCellValue(irow, 2, f"{str(l_brack_ang)}\xb0")
-            tbl_obj.SetRowHeight(irow, 0.10)
+                tbl_obj.SetCellValue(row, 1, f"{str(l_brack_len)}")
+                tbl_obj.SetCellValue(row, 2, f"{str(l_brack_ang)}\xb0")
+
+        color_red = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_gray = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_black = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_gray.SetRGB(128, 128, 128)
+        color_red.SetRGB(255, 0, 0)
+        color_black.SetRGB(0, 0, 0)
+        tbl_obj.SetContentColor(1, color_black)
+
+        for row in range(0, rows):
+            for col in range(0, cols):
+                if row == 0:
+                    tbl_obj.SetCellGridColor(row, col, Constants.UPPER_EDGE, color_red)
+                    tbl_obj.SetCellGridColor(row, col, Constants.RIGHT_EDGE, color_red)
+                    tbl_obj.SetCellGridColor(row, col, Constants.LEFT_EDGE, color_red)
+                    tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_red)
+
+                tbl_obj.SetCellGridColor(row, col, Constants.LEFT_EDGE, color_red)
+                tbl_obj.SetCellGridColor(row, col, Constants.RIGHT_EDGE, color_red)
+                tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_gray)
+
+                if row == rows - 1:
+                    tbl_obj.SetCellGridColor(row, col, Constants.LEFT_EDGE, color_red)
+                    tbl_obj.SetCellGridColor(row, col, Constants.RIGHT_EDGE, color_red)
+                    tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_red)
+
+                tbl_obj.SetCellTextHeight(row, col, 1.5)
+                tbl_obj.SetCellTextHeight(row, col, 1.5)
+                tbl_obj.SetCellTextHeight(row, col, 1.5)
+                tbl_obj.SetCellTextHeight(row, col, 1.5)
+                tbl_obj.SetCellTextHeight(row, col, 1.5)
+                tbl_obj.SetColumnWidth(col, 17)
+                tbl_obj.SetRowHeight(row, 5)
 
     def create_layout(self, doc_obj, file_name, tile_len, num_variation):
         self.logger.info("Creating layout...")
         layouts = doc_obj.Layouts
-        layout = layouts.Add(file_name)
-        doc_obj.ActiveLayout = layout
+        layout_dict = self._put_in_dict(layouts)
+        first_ps_layout = layout_dict[1]
+        doc_obj.ActiveLayout = first_ps_layout
+        first_ps_layout.Name = file_name
         self.create_table(doc_obj, tile_len, num_variation)
 
     def create_model_doc(self):
         self.logger.info("Creating Initial Document...")
         src = os.path.join(Constants.INPUT_DIR, self.file_name)
-        dst = os.path.join(Constants.INPUT_DIR, "document_model.dwg")
+        dst = os.path.join(Constants.OUTPUT_DIR, "document_model.dwg")
         try:
             copyfile(src, dst)
         except FileExistsError as e:
@@ -110,7 +144,6 @@ class BracketGenerator:
         document = self.cad_application.ActiveDocument
 
         for ps_obj in document.PaperSpace:
-            self.logger.info(ps_obj.ObjectName)
             if ps_obj.ObjectName == "AcDbMText" and\
                     ps_obj.TrueColor.Red == 255 and\
                     ps_obj.TrueColor.Green == 255 and\
@@ -129,11 +162,11 @@ class BracketGenerator:
                     ps_obj.Layer == "0":
                 ps_obj.Delete()
 
-            self.save_document(document)
+        self.save_document(document, "document_model.dwg")
 
     def copy_file(self, file_name):
-        src = os.path.join(Constants.INPUT_DIR, "document_model.dwg")
-        dst = os.path.join(Constants.OUTPUT_DIR, file_name)
+        src = os.path.join(Constants.OUTPUT_DIR, "document_model.dwg")
+        dst = os.path.join(Constants.OUTPUT_DIR, file_name+".dwg")
 
         try:
             copyfile(src, dst)
@@ -147,7 +180,7 @@ class BracketGenerator:
         new_doc = self.cad_application.ActiveDocument
         return new_doc
 
-    def save_document(self, document):
+    def save_document(self, document, file_name):
         self.logger.info(f"Saving document {file_name}")
         if not document.Saved:
             self.logger.info("There are unsaved changes in the Drawing")
@@ -167,13 +200,13 @@ class BracketGenerator:
             # command_str = "._ZOOM\nextents\n"
             # document.SendCommand(command_str)
 
-    def delete_layouts(self, document):
-        self.logger.info("Deleting some other layouts")
-        layouts = document.Layouts
-        layout_dict = self._put_in_dict(layouts)
-        layout_dict[1].Delete()
-        layout_dict[2].Delete()
-        document.ActiveLayout = layout_dict[3]
+    def clean_up_files(self):
+        self.logger.info("Cleaning up files...")
+        for dir_path, dir_names, file_names in os.walk(Constants.OUTPUT_DIR):
+            for file_name in file_names:
+                file_full_path = os.path.join(dir_path, file_name)
+                if file_full_path.endswith(Constants.BAK_FILES):
+                    os.remove(os.path.join(dir_path, file_name))
 
     @staticmethod
     def _put_in_dict(layouts):
@@ -188,7 +221,7 @@ class BracketGenerator:
     def begin_automation(self):
         self.logger.info("Starting script...")
         self.create_model_doc()
-        in_data = os.path.join(Constants.INPUT_DIR, "tile_variations.csv")
+        in_data = os.path.join(Constants.INPUT_DIR, "tile_variations_test.csv")
         with open(in_data, 'r') as in_file:
             reader = csv.reader(in_file)
             next(in_file)
@@ -203,8 +236,8 @@ class BracketGenerator:
                                    file_name,
                                    tile_len,
                                    num_variation)
-                self.save_document(doc_obj)
-                self.delete_layouts(doc_obj)
+                self.save_document(doc_obj, file_name+".dwg")
+        self.clean_up_files()
         self.logger.info("Script done executing...")
 
 

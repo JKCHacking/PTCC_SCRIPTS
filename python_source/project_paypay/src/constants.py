@@ -19,3 +19,10 @@ class Constants:
     PROJ_ROOT = os.path.dirname(SCRIPT_DIR)
     OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
     INPUT_DIR = os.path.join(PROJ_ROOT, "input")
+
+    BAK_FILES = ".bak"
+
+    UPPER_EDGE = 1
+    LOWER_EDGE = 4
+    RIGHT_EDGE = 2
+    LEFT_EDGE = 8
