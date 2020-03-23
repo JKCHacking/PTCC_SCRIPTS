@@ -26,3 +26,4 @@ class Constants:
     LOWER_EDGE = 4
     RIGHT_EDGE = 2
     LEFT_EDGE = 8
+    UPPER_RIGHT_LOWER_EDGE = 7

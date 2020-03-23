@@ -99,19 +99,17 @@ class BracketGenerator:
         for row in range(0, rows):
             for col in range(0, cols):
                 if row == 0:
-                    tbl_obj.SetCellGridColor(row, col, Constants.UPPER_EDGE, color_red)
-                    tbl_obj.SetCellGridColor(row, col, Constants.RIGHT_EDGE, color_red)
                     tbl_obj.SetCellGridColor(row, col, Constants.LEFT_EDGE, color_red)
-                    tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_red)
-
-                tbl_obj.SetCellGridColor(row, col, Constants.LEFT_EDGE, color_red)
-                tbl_obj.SetCellGridColor(row, col, Constants.RIGHT_EDGE, color_red)
-                tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_gray)
-
-                if row == rows - 1:
+                    tbl_obj.SetCellGridColor(row, col, Constants.UPPER_RIGHT_LOWER_EDGE, color_red)
+                else:
                     tbl_obj.SetCellGridColor(row, col, Constants.LEFT_EDGE, color_red)
                     tbl_obj.SetCellGridColor(row, col, Constants.RIGHT_EDGE, color_red)
-                    tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_red)
+                    tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_gray)
+
+                    if row == rows - 1:
+                        tbl_obj.SetCellGridColor(row, col, Constants.LEFT_EDGE, color_red)
+                        tbl_obj.SetCellGridColor(row, col, Constants.RIGHT_EDGE, color_red)
+                        tbl_obj.SetCellGridColor(row, col, Constants.LOWER_EDGE, color_red)
 
                 tbl_obj.SetCellTextHeight(row, col, 1.5)
                 tbl_obj.SetCellTextHeight(row, col, 1.5)
