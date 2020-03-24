@@ -219,7 +219,7 @@ class BracketGenerator:
     def begin_automation(self):
         self.logger.info("Starting script...")
         self.create_model_doc()
-        in_data = os.path.join(Constants.INPUT_DIR, "tile_variations_test.csv")
+        in_data = os.path.join(Constants.INPUT_DIR, "tile_variations.csv")
         with open(in_data, 'r') as in_file:
             reader = csv.reader(in_file)
             next(in_file)
