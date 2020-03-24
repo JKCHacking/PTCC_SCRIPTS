@@ -24,12 +24,12 @@ class BracketGenerator:
 
         try:
             self.cad_application = client.GetActiveObject(Constants.APP_NAME, dynamic=True)
-            self.cad_application.Visible = True
+            self.cad_application.Visible = False
         except(OSError, COMError):
             self.logger.info(f"{Constants.APP_NAME} is not Running...")
             self.logger.info(f"Opening {Constants.APP_NAME}...")
             self.cad_application = client.CreateObject(Constants.APP_NAME, dynamic=True)
-            self.cad_application.Visible = True
+            self.cad_application.Visible = False
 
     def calculate_increments(self, tile_len, num_variation):
         self.logger.info(f"Calculating data for tile length: {tile_len} with {num_variation} variations")
