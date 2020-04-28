@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/python_source/purge_audit_automation/test" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_source/project_paypay/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_source/DrawingFixinator2/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/python_source/project_tower/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
