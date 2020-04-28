@@ -79,7 +79,8 @@ class TowerMeasurer:
                         pass
                     cold_bent = self.get_cold_bent(new_doc)
                     length, width = self.get_length_width(new_doc)
-                    data_list.append({"Handle": obj.Handle, "Length": length, "Width": width, "ColdBent": cold_bent})
+                    handle = f"'{obj.Handle}'"
+                    data_list.append({"Handle": handle, "Length": length, "Width": width, "ColdBent": cold_bent})
                     self.logger.info(f"Cold Bent: {cold_bent}")
                     self.delete_all_objects(new_doc)
                     panel_count = panel_count + 1
@@ -139,7 +140,7 @@ class TowerMeasurer:
 if __name__ == "__main__":
     tm_object = TowerMeasurer()
     # open drawing
-    drw_fname = "input.dwg"
+    drw_fname = "test.dwg"
     drw_path = os.path.join(Constants.INPUT_DIR, drw_fname)
     document = tm_object.open_file(drw_path)
     tm_object.write_csv(document)
