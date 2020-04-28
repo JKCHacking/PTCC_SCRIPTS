@@ -101,6 +101,8 @@ class TowerMeasurer:
                 self.logger.error(IOError.strerror)
 
             self.save_document(document)
+            self.copy_file()
+            self.clean_up_files()
 
     def set_object_color(self, obj, cold_bent):
         color_red = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
@@ -188,6 +190,14 @@ class TowerMeasurer:
             copyfile(src, dst)
         except FileExistsError as e:
             self.logger.error(e)
+
+    def clean_up_files(self):
+        self.logger.info("Cleaning up files...")
+        for dir_path, dir_names, file_names in os.walk(Constants.OUTPUT_DIR):
+            for file_name in file_names:
+                file_full_path = os.path.join(dir_path, file_name)
+                if file_full_path.endswith(Constants.BAK_FILES):
+                    os.remove(os.path.join(dir_path, file_name))
 
 
 if __name__ == "__main__":
