@@ -46,6 +46,24 @@ class TowerMeasurer:
 
         return cold_bent
 
+    def get_length_width(self, document):
+        panel_vertices = self.get_spline_vertices(document)
+        pt1 = array.array('d', panel_vertices[0:3])
+        pt2 = array.array('d', panel_vertices[3:6])
+        pt3 = array.array('d', panel_vertices[6:9])
+        pt4 = array.array('d', panel_vertices[9:12])
+
+        length1 = self.get_distance_between_points(pt1, pt4)
+        length2 = self.get_distance_between_points(pt3, pt2)
+
+        width1 = self.get_distance_between_points(pt1, pt2)
+        width2 = self.get_distance_between_points(pt3, pt4)
+
+        length = length1 if length1 <= length2 else length2
+        width = width1 if width1 >= width2 else width2
+
+        return length, width
+
     def write_csv(self, document):
         new_doc = self.cad_application.Documents.Add()
         output_csv = "cold_bent_panels.csv"
@@ -60,7 +78,8 @@ class TowerMeasurer:
                     except COMError:
                         pass
                     cold_bent = self.get_cold_bent(new_doc)
-                    data_list.append({"Handle": obj.Handle, "ColdBent": cold_bent})
+                    length, width = self.get_length_width(new_doc)
+                    data_list.append({"Handle": obj.Handle, "Length": length, "Width": width, "ColdBent": cold_bent})
                     self.logger.info(f"Cold Bent: {cold_bent}")
                     self.delete_all_objects(new_doc)
                     panel_count = panel_count + 1
@@ -69,7 +88,7 @@ class TowerMeasurer:
             try:
                 self.logger.info("Writing to CSV File...")
                 with open(os.path.join(Constants.OUTPUT_DIR, output_csv), mode='w') as csvfile:
-                    field_names = ['Handle', 'ColdBent']
+                    field_names = ['Handle', 'Length', 'Width', 'ColdBent']
                     csv_writer = csv.DictWriter(csvfile, fieldnames=field_names)
                     csv_writer.writeheader()
                     for data in data_list:
