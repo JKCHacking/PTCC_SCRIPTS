@@ -4,6 +4,7 @@ from comtypes import client
 from comtypes import COMError
 from constants import Constants
 from logger import Logger
+from shutil import copyfile
 import array
 import math
 import csv
@@ -99,6 +100,8 @@ class TowerMeasurer:
             except IOError:
                 self.logger.error(IOError.strerror)
 
+            self.save_document(document)
+
     def set_object_color(self, obj, cold_bent):
         color_red = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
         color_orange = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
@@ -168,6 +171,23 @@ class TowerMeasurer:
         for index, vertices in enumerate(panel_vertices):
             panel_vertices[index] = round(vertices, 4)
         return panel_vertices
+
+    def save_document(self, document):
+        self.logger.info(f"Saving document input.dwg")
+        if not document.Saved:
+            self.logger.info("There are unsaved changes in the Drawing")
+            document.Save()
+            self.cad_application.Documents.Close()
+        self.logger.info("Saving done and Closed...")
+
+    def copy_file(self):
+        src = os.path.join(Constants.INPUT_DIR, "input.dwg")
+        dst = os.path.join(Constants.OUTPUT_DIR, "output.dwg")
+
+        try:
+            copyfile(src, dst)
+        except FileExistsError as e:
+            self.logger.error(e)
 
 
 if __name__ == "__main__":
