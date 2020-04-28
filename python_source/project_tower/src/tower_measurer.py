@@ -81,6 +81,7 @@ class TowerMeasurer:
                     length, width = self.get_length_width(new_doc)
                     handle = f'"{obj.Handle}"'
                     data_list.append({"Handle": handle, "Length": length, "Width": width, "ColdBent": cold_bent})
+                    self.set_object_color(obj, cold_bent)
                     self.logger.info(f"Cold Bent: {cold_bent}")
                     self.delete_all_objects(new_doc)
                     panel_count = panel_count + 1
@@ -97,6 +98,38 @@ class TowerMeasurer:
                 csvfile.close()
             except IOError:
                 self.logger.error(IOError.strerror)
+
+    def set_object_color(self, obj, cold_bent):
+        color_red = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_orange = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_yellow = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_yellow_green = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_green = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_blue = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color_violet = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+
+        color_red.SetRGB(255, 0, 0)
+        color_orange.SetRGB(255, 165, 0)
+        color_yellow.SetRGB(255, 255, 0)
+        color_yellow_green.SetRGB(60, 80, 20)
+        color_green.SetRGB(0, 128, 0)
+        color_blue.SetRGB(0, 0, 255)
+        color_violet.SetRGB(238, 130, 238)
+
+        if 60 <= cold_bent < 70:
+            obj.TrueColor = color_red
+        elif 50 <= cold_bent < 60:
+            obj.TrueColor = color_orange
+        elif 40 <= cold_bent < 50:
+            obj.TrueColor = color_yellow
+        elif 30 <= cold_bent < 40:
+            obj.TrueColor = color_yellow_green
+        elif 20 <= cold_bent < 30:
+            obj.TrueColor = color_green
+        elif 10 <= cold_bent < 20:
+            obj.TrueColor = color_blue
+        elif 0 <= cold_bent < 10:
+            obj.TrueColor = color_violet
 
     @staticmethod
     def get_distance_between_points(pt1, pt2):
