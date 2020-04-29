@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/python_source/project_paypay/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_source/DrawingFixinator2/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_source/project_tower/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/python_source/DrawingPDFParser/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
