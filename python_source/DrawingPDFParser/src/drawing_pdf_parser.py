@@ -11,21 +11,16 @@ import os
 
 
 class DrawingPDFParser:
-    def __init__(self, pdf_path):
-        self.fp = open(pdf_path, 'rb')
-        self.page_pair_list = [
-            {"link_name": "6.04", "page": 15},
-            {"link_name": "5.01", "page": 5}
-        ]
+    def __init__(self):
         self.box_length = 50
         self.box_width = 50
 
-    def get_locations(self):
+    def get_locations(self, fp, page_names):
         rsrcmgr = PDFResourceManager()
         laparams = LAParams()
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
-        pages = PDFPage.get_pages(self.fp)
+        pages = PDFPage.get_pages(fp)
 
         current_page_number = 0
         link_coor_list = []
@@ -37,64 +32,66 @@ class DrawingPDFParser:
             for lobj in layout:
                 if isinstance(lobj, LTTextBox):
                     text = lobj.get_text().replace("\n", "_")
-                    for link in self.page_pair_list:
-                        link_name = link["link_name"]
-                        if link_name in text:
-                            x, y = lobj.bbox[0], lobj.bbox[3]
-                            link_dict = self.create_link_dict(link_name, x, y, current_page_number)
+                    for page_name in page_names:
+                        if page_name in text:
+                            x0, y0_orig, x1, y1_orig = lobj.bbox
+                            x0 = page.mediabox[3] - x0
+                            x1 = page.mediabox[3] - x1
+                            rect_coord = [y0_orig, x0, y1_orig, x1]
+                            link_dict = self.create_link_dict(page_name, rect_coord, current_page_number)
                             link_coor_list.append(link_dict)
-                            print('At %r is text: %s' % ((x, y), text))
+                            print('At %r is text: %s' % (rect_coord, text))
             current_page_number = current_page_number + 1
         return link_coor_list
 
     @staticmethod
-    def create_link_dict(link_name, x, y, curr_page):
+    def create_link_dict(link_name, rect_coord, curr_page):
         link_dict = {
-            "link": {
-                "link_name": link_name,
-                "x_coor": x,
-                "y_coor": y,
-                "curr_page": curr_page
-            }
+            "link_name": link_name,
+            "rect_coord": rect_coord,
+            "curr_page": curr_page
         }
         return link_dict
 
-    def add_link(self):
+    def add_link(self, out_writer, link_list, dest_page, page_name):
         print("add_link start....")
-        output_path = os.path.join(Constants.OUTPUT_DIR, 'output.pdf')
-        in_reader = PdfFileReader(self.fp, strict=False)
-        out_writer = PdfFileWriter()
-        link_list = self.get_locations()
-
-        page_num = in_reader.getNumPages()
-        for i in range(page_num):
-            page = in_reader.getPage(i)
-            out_writer.addPage(page)
-
         for link in link_list:
-            for page_pair in self.page_pair_list:
-                if page_pair['link_name'] == link['link']['link_name']:
-                    x = link['link']['x_coor']
-                    y = link['link']['y_coor']
-                    rect = self.create_rect(x, y)
-                    out_writer.addLink(link['link']['curr_page'], page_pair['page'], rect=rect,
-                                       border="dott")
+            if page_name == link['link_name']:
+                rect = link['rect_coord']
+                out_writer.addLink(link['curr_page'], dest_page, rect=rect,
+                                   border=[16, 16, 1])
+        return out_writer
 
-        with open(output_path, 'wb') as out_file:
-            out_writer.write(out_file)
-
-    def create_rect(self, x, y):
-        # upper_left = (x - self.box_length/2, y + self.box_width/2)
-        # lower_right = (x + self.box_length / 2, y - self.box_width / 2)
-
-        lower_left = (x - self.box_length/2, y - self.box_width/2)
-        upper_right = (x + self.box_length/2, y + self.box_width/2)
-        # rect = RectangleObject([upper_left[0], upper_left[1], lower_right[0], lower_right[1]])
-        rect = [lower_left[0], lower_left[1], upper_right[0], upper_right[1]]
-        return rect
+    def add_bookmark(self, out_writer, page_number, parent, page_name):
+        out_writer.addBookmark(page_name, page_number, parent)
+        return out_writer
 
 
 if __name__ == "__main__":
     pdf_path = os.path.join(Constants.INPUT_DIR, 'input.pdf')
-    dpp = DrawingPDFParser(pdf_path)
-    dpp.add_link()
+    output_path = os.path.join(Constants.OUTPUT_DIR, 'output.pdf')
+    fp = open(pdf_path, 'rb')
+    page_names = ["0.00", "0.01", "0.02", "0.03", "3.01",
+                  "5.01", "5.02", "5.03", "5.04", "5.05",
+                  "5.06", "5.07", "6.01", "6.02", "6.03",
+                  "6.04", "6.05", "6.06", "6.07", "6.08",
+                  "6.09", "6.10"]
+
+    in_reader = PdfFileReader(fp, strict=False)
+    out_writer = PdfFileWriter()
+    page_num = in_reader.getNumPages()
+
+    dpp = DrawingPDFParser()
+    link_list = dpp.get_locations(fp, page_names)
+
+    for i in range(page_num):
+        page = in_reader.getPage(i)
+        out_writer.addPage(page)
+
+    parent = out_writer.addBookmark("Sheets and Views", 0)
+    for i, page_name in zip(range(page_num), page_names):
+        out_writer = dpp.add_link(out_writer, link_list, i, page_name)
+        out_writer = dpp.add_bookmark(out_writer, i, parent, page_name)
+
+    with open(output_path, 'wb') as out_file:
+        out_writer.write(out_file)
