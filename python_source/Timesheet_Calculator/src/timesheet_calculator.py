@@ -194,12 +194,14 @@ class TimesheetCalculator:
             ws = self.workbook.create_sheet(f'{employee.employeeName}_summary')
             ws['A1'] = employee.employeeName
             ws['A2'] = 'MANHOUR ANALYSIS OF RENDERED DUTIES'
-            ws['A3'] = f'PERIOD COVERED {fr_day.date()}-{to_day.date()}'
+            ws['A3'] = f'PERIOD COVERED {fr_day.strftime(Constants.DATE_FORMAT)} to ' +\
+                       f'{to_day.strftime(Constants.DATE_FORMAT)}'
             ws.append([' '])
 
             sunday_cluster_list = self.get_sunday_clusters(fr_day, to_day)
             for week in sunday_cluster_list:
-                ws.append([f'WEEK COVERED: {week[0].date()} - {week[len(week)-1].date()}'])
+                ws.append([f'WEEK COVERED: {week[0].strftime(Constants.DATE_FORMAT)} to ' +
+                           f'{week[len(week)-1].strftime(Constants.DATE_FORMAT)}'])
                 self.insert_table_headers(ws)
                 for day in week:
                     total_hours = 0
@@ -226,7 +228,8 @@ class TimesheetCalculator:
                     joined_time_in_out = '\n'.join(time_in_out_list_sorted)
                     total_minutes = total_hours * 60
                     credited_min = 480 if total_minutes >= 480 else total_minutes
-                    ws.append([day.date(), Constants.DAY_LIST[day.weekday()], joined_time_in_out,
+                    day_str = day.strftime(Constants.DATE_FORMAT)
+                    ws.append([day_str, Constants.DAY_LIST[day.weekday()], joined_time_in_out,
                                total_minutes, credited_min, total_minutes - credited_min])
                 ws.append([' '])
 
@@ -258,6 +261,9 @@ class TimesheetCalculator:
 
     def display_all_employess(self):
         print(self.all_employee_list)
+
+    def is_holiday(self, date_str):
+        pass
 
 
 if __name__ == '__main__':
