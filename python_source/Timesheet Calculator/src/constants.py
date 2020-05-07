@@ -11,8 +11,12 @@ class Constants:
     PROJ_ROOT = os.path.dirname(SCRIPT_DIR)
     OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
     INPUT_DIR = os.path.join(PROJ_ROOT, "input")
+    TEST_DIR = os.path.join(PROJ_ROOT, 'test')
 
     BAK_FILES = ".bak"
 
-    TIME_FORMAT = '%I:%M %p'
+    TIME_12_FORMAT = '%I:%M %p'
+    TIME_24_FORMAT = '%H:%M:%S'
+
     DATE_FORMAT = '%d-%B-%Y'
+    DAY_LIST = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']

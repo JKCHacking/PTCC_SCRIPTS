@@ -2,6 +2,8 @@
 from constants import Constants
 from collections import namedtuple
 from logger import Logger
+from openpyxl import Workbook
+from openpyxl.worksheet.table import Table, TableStyleInfo
 import csv
 import os
 import datetime
@@ -12,6 +14,7 @@ class TimesheetCalculator:
     def __init__(self):
         self.logger = Logger().get_logger()
         self.all_employee_list = []
+        self.workbook = Workbook()
 
     def calculate_time(self, log_date, time_in, time_out):
         time_in = self.convert_12_hours(time_in)
@@ -48,7 +51,8 @@ class TimesheetCalculator:
         total_hours -= constraint_counter
         return total_hours
 
-    def is_within_time(self, time_in, time_out, fr_time, to_time):
+    @staticmethod
+    def is_within_time(time_in, time_out, fr_time, to_time):
         is_inside = False
         if time_in < fr_time and time_out > to_time:
             is_inside = True
@@ -61,19 +65,29 @@ class TimesheetCalculator:
 
         return is_inside
 
-    def convert_12_hours(self, time_string):
+    @staticmethod
+    def convert_12_hours(time_string):
         time_obj = dateutil.parser.parse(time_string)
-        time_obj = time_obj.strftime(Constants.TIME_FORMAT)
-        time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_FORMAT)
+        time_obj = time_obj.strftime(Constants.TIME_12_FORMAT)
+        time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_12_FORMAT)
         return time_obj
 
-    def convert_date(self, date_string):
+    @staticmethod
+    def convert_24_hours(time_string):
+        time_obj = dateutil.parser.parse(time_string)
+        time_obj = time_obj.strftime(Constants.TIME_24_FORMAT)
+        time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_24_FORMAT)
+        return time_obj
+
+    @staticmethod
+    def convert_date(date_string):
         date_obj = dateutil.parser.parse(date_string)
         date_obj = date_obj.strftime(Constants.DATE_FORMAT)
         date_obj = datetime.datetime.strptime(date_obj, Constants.DATE_FORMAT)
         return date_obj
 
-    def convert_to_hours(self, raw_time):
+    @staticmethod
+    def convert_to_hours(raw_time):
         (h, m, s) = str(raw_time).split(':')
         time_hours = int(h) + int(m) / 60 + int(s) / 3600
         return time_hours
@@ -109,9 +123,6 @@ class TimesheetCalculator:
         else:
             self.all_employee_list.append(employee_obj)
 
-    def display_all_employess(self):
-        print(self.all_employee_list)
-
     def generate_between_days(self, fr_day, to_day):
         fr_day = self.convert_date(fr_day)
         to_day = self.convert_date(to_day)
@@ -138,21 +149,105 @@ class TimesheetCalculator:
                 emp_list.append(emp_obj)
 
         date_today = datetime.datetime.today().strftime(Constants.DATE_FORMAT)
-        output_path = os.path.join(Constants.OUTPUT_DIR, f'result_{fr_day.date()}_{to_day.date()}.csv')
-        with open(output_path, 'w', newline='', encoding='utf-8') as output_csv:
-            output_csv.write(f'PTCC TIME SHEET FOR WEEK ({fr_day.date()} to {to_day.date()})\n')
-            output_csv.write(f'{date_today}\n\n')
+        ws = self.workbook.active
+        ws.title = "Summary"
+        ws["A1"] = f'PTCC TIME SHEET FOR WEEK ({fr_day.date()} to {to_day.date()})'
+        ws["A2"] = f'{date_today}'
 
-            field_names = ['NAME', 'PROJECT', 'TIME_SPEND']
-            csv_writer = csv.DictWriter(output_csv, fieldnames=field_names)
-            csv_writer.writeheader()
-            for data in emp_list:
-                csv_writer.writerow(data)
+        data_len = len(emp_list)
+        offset = 3
+        header = 1
+        ws.cell(row=4, column=1, value='NAME')
+        ws.cell(row=4, column=2, value='PROJECT')
+        ws.cell(row=4, column=3, value='TIME SPEND')
+
+        for row in range(data_len):
+            ws.cell(row=row+offset+header+1, column=1, value=emp_list[row]['NAME'])
+            ws.cell(row=row+offset+header+1, column=2, value=emp_list[row]['PROJECT'])
+            ws.cell(row=row+offset+header+1, column=3, value=emp_list[row]['TIME_SPEND'])
+
+        tabl = Table(displayName='employee_summary', ref=f'A4:C{data_len+offset+header}')
+        style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                               showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+        tabl.tableStyleInfo = style
+        ws.add_table(tabl)
+        ws.append([' '])
+        ws.append(['APPROVED by (SUPERVISOR)'])
+        ws.append([' '])
+        ws.append(['_________________________'])
+        ws.append(['ADAM LEE'])
+        ws.append([' '])
+        ws.append([' '])
+        ws.append(['NOTED BY:'])
+        ws.append([' '])
+        ws.append(['_________________________'])
+        ws.append(['SUSAN BENJAMIN'])
+
+        output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')
+        self.workbook.save(output_path)
 
     def generate_manhour_analysis(self, fr_day, to_day):
         fr_day = self.convert_date(fr_day)
         to_day = self.convert_date(to_day)
 
+        for employee in self.all_employee_list:
+            ws = self.workbook.create_sheet(f'{employee.employeeName}_summary')
+            ws['A1'] = employee.employeeName
+            ws['A2'] = 'MANHOUR ANALYSIS OF RENDERED DUTIES'
+            ws['A3'] = f'PERIOD COVERED {fr_day.date()}-{to_day.date()}'
+            ws.append([' '])
+
+            sunday_cluster_list = self.get_sunday_clusters(fr_day, to_day)
+            for week in sunday_cluster_list:
+                ws.append([f'WEEK COVERED: {week[0].date()} - {week[len(week)-1].date()}'])
+                self.insert_table_headers(ws)
+                for day in week:
+                    total_hours = 0
+                    time_in_out_list = []
+                    for work in employee.work:
+                        work_date = self.convert_date(work.date)
+                        if day == work_date:
+                            time_in_temp = self.convert_24_hours(work.timeIn)
+                            time_out_temp = self.convert_24_hours(work.timeOut)
+                            time_in_out_list.append(f'{time_in_temp.time()}-{time_out_temp.time()}')
+                            total_hours += work.totalHours
+
+                    time_in_out_list.sort()
+                    joined_time_in_out = '\n'.join(time_in_out_list)
+                    total_minutes = total_hours * 60
+                    credited_min = 480 if total_minutes >= 480 else total_minutes
+                    ws.append([day.date(), Constants.DAY_LIST[day.weekday()], joined_time_in_out,
+                               total_minutes, credited_min, total_minutes - credited_min])
+                ws.append([' '])
+
+        output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')
+        self.workbook.save(output_path)
+
+    @staticmethod
+    def insert_table_headers(ws):
+        ws.append(['Date', 'Day', 'Time-in Time-out', 'Rendered MINS for the Day',
+                   'Credited Regular Log[480 = 1 day]', 'Minutes in excess of 480; Sat/Sun Duties'])
+    @staticmethod
+    def get_sunday_clusters(fr_day, to_day):
+        start = fr_day
+        end = to_day
+        sunday_cluster_list = []
+
+        while start <= end:
+            sunday_list = []
+            while start.weekday() != 6:
+                sunday_list.append(start)
+                start += datetime.timedelta(days=1)
+                if start == end:
+                    break
+            sunday_list.append(start)
+            sunday_cluster_list.append(sunday_list)
+            start += datetime.timedelta(days=1)
+
+        return sunday_cluster_list
+
+    def display_all_employess(self):
+        print(self.all_employee_list)
 
 
 if __name__ == '__main__':
@@ -175,3 +270,4 @@ if __name__ == '__main__':
     to_date = input('Input the to date <DD-MM-YYYY>: ')
 
     ts_calc.generate_between_days(fr_date, to_date)
+    ts_calc.generate_manhour_analysis(fr_date, to_date)
