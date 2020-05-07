@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/python_source/purge_audit_automation/test" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_source/Timesheet Calculator/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_source/Timesheet Calculator/test" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/python_source/Timesheet_Calculator/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/python_source/Timesheet_Calculator/test" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/python_source/DrawingFixinator2/src" />
       <excludeFolder url="file://$MODULE_DIR$/python_source/DrawingPDFParser/src" />
       <excludeFolder url="file://$MODULE_DIR$/python_source/project_paypay/src" />

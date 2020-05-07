@@ -204,6 +204,7 @@ class TimesheetCalculator:
                 for day in week:
                     total_hours = 0
                     time_in_out_list = []
+                    time_in_out_list_sorted = []
                     for work in employee.work:
                         work_date = self.convert_date(work.date)
                         if day == work_date:
@@ -213,7 +214,16 @@ class TimesheetCalculator:
                             total_hours += work.totalHours
 
                     time_in_out_list.sort()
-                    joined_time_in_out = '\n'.join(time_in_out_list)
+
+                    for time_in_out in time_in_out_list:
+                        time_split = time_in_out.split('-')
+                        time_in_obj = self.convert_12_hours(time_split[0])
+                        time_out_obj = self.convert_12_hours(time_split[1])
+                        time_in_12_str = time_in_obj.strftime(Constants.TIME_12_FORMAT)
+                        time_out_12_str = time_out_obj.strftime(Constants.TIME_12_FORMAT)
+                        time_in_out_list_sorted.append(f'{time_in_12_str}-{time_out_12_str}')
+
+                    joined_time_in_out = '\n'.join(time_in_out_list_sorted)
                     total_minutes = total_hours * 60
                     credited_min = 480 if total_minutes >= 480 else total_minutes
                     ws.append([day.date(), Constants.DAY_LIST[day.weekday()], joined_time_in_out,
