@@ -131,7 +131,7 @@ class TimesheetCalculator:
         fr_day = self.convert_date(fr_day)
         to_day = self.convert_date(to_day)
 
-        if fr_day is None or to_day is None:
+        if fr_day is None or to_day is None or fr_day > to_day:
             return None
 
         emp_list = []

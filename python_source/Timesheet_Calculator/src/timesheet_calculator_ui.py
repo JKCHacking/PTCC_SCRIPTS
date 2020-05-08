@@ -105,6 +105,7 @@ class TimesheetCalculatorUI:
 
             if ret1 is None or ret2 is None:
                 self.logger.error('You inputted an invalid date')
+                messagebox.showinfo('Error', 'You inputted an invalid date')
             elif ret1 == 1 and ret2 == 1:
                 messagebox.showinfo('Generation Complete', 'Check result in "Output" folder')
 
