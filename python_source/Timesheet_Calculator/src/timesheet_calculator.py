@@ -4,6 +4,7 @@ from collections import namedtuple
 from logger import Logger
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
+from tkinter import *
 import csv
 import os
 import datetime
@@ -226,11 +227,18 @@ class TimesheetCalculator:
                         time_in_out_list_sorted.append(f'{time_in_12_str}-{time_out_12_str}')
 
                     joined_time_in_out = '\n'.join(time_in_out_list_sorted)
-                    total_minutes = total_hours * 60
-                    credited_min = 480 if total_minutes >= 480 else total_minutes
                     day_str = day.strftime(Constants.DATE_FORMAT)
+                    total_minutes = total_hours * 60
+                    if self.is_holiday(day_str):
+                        day_str = f'{day_str}-HOLIDAY'
+                        credited_min = 0
+                        excess = total_minutes
+                    else:
+                        credited_min = 480 if total_minutes >= 480 else total_minutes
+                        excess = total_minutes - credited_min
+
                     ws.append([day_str, Constants.DAY_LIST[day.weekday()], joined_time_in_out,
-                               total_minutes, credited_min, total_minutes - credited_min])
+                               total_minutes, credited_min, excess])
                 ws.append([' '])
 
         output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')
@@ -263,7 +271,13 @@ class TimesheetCalculator:
         print(self.all_employee_list)
 
     def is_holiday(self, date_str):
-        pass
+        is_holi = False
+        date_obj = self.convert_date(date_str)
+        date_str = date_obj.strftime('%B %d, %Y')
+        if date_str in Constants.HOLIDAY_LIST:
+            is_holi = True
+
+        return is_holi
 
 
 if __name__ == '__main__':
@@ -281,6 +295,9 @@ if __name__ == '__main__':
         logger.error(e.strerror)
         logger.error('File not found!')
     logger.info('Importing Datasheet done..')
+
+    window = Tk()
+
 
     fr_date = input('Input the from date <DD-MM-YYYY>: ')
     to_date = input('Input the to date <DD-MM-YYYY>: ')
