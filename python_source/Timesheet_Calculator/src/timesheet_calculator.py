@@ -4,8 +4,6 @@ from collections import namedtuple
 from logger import Logger
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
-from tkinter import *
-import csv
 import os
 import datetime
 import dateutil.parser
@@ -82,9 +80,14 @@ class TimesheetCalculator:
 
     @staticmethod
     def convert_date(date_string):
-        date_obj = dateutil.parser.parse(date_string)
-        date_obj = date_obj.strftime(Constants.DATE_FORMAT)
-        date_obj = datetime.datetime.strptime(date_obj, Constants.DATE_FORMAT)
+        date_obj = None
+        try:
+            date_obj = dateutil.parser.parse(date_string)
+            date_obj = date_obj.strftime(Constants.DATE_FORMAT)
+            date_obj = datetime.datetime.strptime(date_obj, Constants.DATE_FORMAT)
+        except (TypeError, ValueError):
+            print("You have input an Invalid date")
+
         return date_obj
 
     @staticmethod
@@ -127,6 +130,10 @@ class TimesheetCalculator:
     def generate_between_days(self, fr_day, to_day):
         fr_day = self.convert_date(fr_day)
         to_day = self.convert_date(to_day)
+
+        if fr_day is None or to_day is None:
+            return None
+
         emp_list = []
 
         for employee in self.all_employee_list:
@@ -186,10 +193,14 @@ class TimesheetCalculator:
 
         output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')
         self.workbook.save(output_path)
+        return 1
 
     def generate_manhour_analysis(self, fr_day, to_day):
         fr_day = self.convert_date(fr_day)
         to_day = self.convert_date(to_day)
+
+        if fr_day is None or to_day is None:
+            return None
 
         for employee in self.all_employee_list:
             ws = self.workbook.create_sheet(f'{employee.employeeName}_summary')
@@ -243,6 +254,7 @@ class TimesheetCalculator:
 
         output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')
         self.workbook.save(output_path)
+        return 1
 
     @staticmethod
     def insert_table_headers(ws):
@@ -278,29 +290,3 @@ class TimesheetCalculator:
             is_holi = True
 
         return is_holi
-
-
-if __name__ == '__main__':
-    logger = Logger().get_logger()
-    input_csv_path = os.path.join(Constants.INPUT_DIR, 'timesheet.csv')
-    ts_calc = TimesheetCalculator()
-
-    logger.info('Importing Datasheet...')
-    try:
-        with open(input_csv_path, newline='') as timesheet_csv:
-            reader = csv.DictReader(timesheet_csv)
-            for row in reader:
-                ts_calc.add_to_list(row)
-    except FileNotFoundError as e:
-        logger.error(e.strerror)
-        logger.error('File not found!')
-    logger.info('Importing Datasheet done..')
-
-    window = Tk()
-
-
-    fr_date = input('Input the from date <DD-MM-YYYY>: ')
-    to_date = input('Input the to date <DD-MM-YYYY>: ')
-
-    ts_calc.generate_between_days(fr_date, to_date)
-    ts_calc.generate_manhour_analysis(fr_date, to_date)
