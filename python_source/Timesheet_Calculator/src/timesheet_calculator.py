@@ -97,35 +97,41 @@ class TimesheetCalculator:
         return time_hours
 
     def add_to_list(self, timesheet_entry):
+        ret = 1
         found_flag = False
         Work = namedtuple('Work', ['projectName', 'taskName', 'date', 'timeIn', 'timeOut', 'totalHours'])
         Employee = namedtuple('Employee', ['employeeName', 'work'])
 
         # employee_name,date,project,task,time_in,time_out
-        employee_name = timesheet_entry['employee_name'].strip()
-        date = timesheet_entry['date'].strip()
-        project = timesheet_entry['project'].strip()
-        task = timesheet_entry['task'].strip()
-        time_in = timesheet_entry['time_in'].strip()
-        time_out = timesheet_entry['time_out'].strip()
+        try:
+            employee_name = timesheet_entry['employee_name'].strip()
+            date = timesheet_entry['date'].strip()
+            project = timesheet_entry['project'].strip()
+            task = timesheet_entry['task'].strip()
+            time_in = timesheet_entry['time_in'].strip()
+            time_out = timesheet_entry['time_out'].strip()
 
-        total_hours = self.calculate_time(date, time_in, time_out)
-        work_obj = Work(projectName=project, taskName=task, date=date,
-                        timeIn=time_in, timeOut=time_out, totalHours=total_hours)
+            total_hours = self.calculate_time(date, time_in, time_out)
+            work_obj = Work(projectName=project, taskName=task, date=date,
+                            timeIn=time_in, timeOut=time_out, totalHours=total_hours)
 
-        work_list = [work_obj]
-        employee_obj = Employee(employeeName=employee_name, work=work_list)
+            work_list = [work_obj]
+            employee_obj = Employee(employeeName=employee_name, work=work_list)
 
-        if self.all_employee_list:
-            for employee in self.all_employee_list:
-                if employee.employeeName == employee_name:
-                    employee.work.append(work_obj)
-                    found_flag = True
-                    break
-            if not found_flag:
+            if self.all_employee_list:
+                for employee in self.all_employee_list:
+                    if employee.employeeName == employee_name:
+                        employee.work.append(work_obj)
+                        found_flag = True
+                        break
+                if not found_flag:
+                    self.all_employee_list.append(employee_obj)
+            else:
                 self.all_employee_list.append(employee_obj)
-        else:
-            self.all_employee_list.append(employee_obj)
+        except KeyError:
+            ret = -1
+
+        return ret
 
     def generate_between_days(self, fr_day, to_day):
         fr_day = self.convert_date(fr_day)
