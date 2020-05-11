@@ -107,18 +107,18 @@ class TestTimesheetCalculator(unittest.TestCase):
     def test_calculate_time_weekday(self):
         ts_calc = TimesheetCalculator()
         weekday = 'May 4,2020'
-        fr_time = '1:00 AM'
-        to_time = '8:00 PM'
-        total_hours = ts_calc.calculate_time(weekday, fr_time, to_time)
+        time_in = '1:00 AM'
+        time_out = '8:00 PM'
+        total_hours = ts_calc.calculate_time(weekday, time_in, time_out)
 
         self.assertEqual(17, total_hours)
 
     def test_calculate_time_weekend(self):
         ts_calc = TimesheetCalculator()
         weekend = '5-9-2020'
-        fr_time = '1:00 AM'
-        to_time = '8:00 PM'
-        total_hours = ts_calc.calculate_time(weekend, fr_time, to_time)
+        time_in = '1:00 AM'
+        time_out = '8:00 PM'
+        total_hours = ts_calc.calculate_time(weekend, time_in, time_out)
 
         self.assertEqual(16, total_hours)
 
@@ -126,11 +126,90 @@ class TestTimesheetCalculator(unittest.TestCase):
         ts_calc = TimesheetCalculator()
         weekend = '5/9/2020'
         weekday = 'May 4,2020'
-        fr_time = '9:00 PM'
-        to_time = '12:00 AM'
+        time_in = '9:00 PM'
+        time_out = '12:00 AM'
 
-        total_hours = ts_calc.calculate_time(weekend, fr_time, to_time)
+        total_hours = ts_calc.calculate_time(weekend, time_in, time_out)
         self.assertEqual(3, total_hours)
 
-        total_hours = ts_calc.calculate_time(weekday, fr_time, to_time)
+        total_hours = ts_calc.calculate_time(weekday, time_in, time_out)
         self.assertEqual(3, total_hours)
+
+    def test_calculate_time_midnight_weekday(self):
+        ts_calc = TimesheetCalculator()
+        weekday = 'May 4, 2020'
+        time_in = '12:00 AM'
+        time_out = '8:00 PM'
+
+        total_hours = ts_calc.calculate_time(weekday, time_in, time_out)
+        self.assertEqual(17, total_hours)
+
+    def test_calculate_time_midnight_weekend(self):
+        ts_calc = TimesheetCalculator()
+        weekend = 'May 9, 2020'
+        time_in = '12:00 AM'
+        time_out = '8:00 PM'
+
+        total_hours = ts_calc.calculate_time(weekend, time_in, time_out)
+        self.assertEqual(16, total_hours)
+
+    def test_calculate_time_shortcut_time(self):
+        ts_calc = TimesheetCalculator()
+        weekday = 'May 4, 2020'
+        time_in = '12 AM'
+        time_out = '8PM'
+
+        total_hours = ts_calc.calculate_time(weekday, time_in, time_out)
+        self.assertEqual(17, total_hours)
+
+    def test_add_to_list_invalid_time(self):
+        ts_calc = TimesheetCalculator()
+        time_sheet_entry = {
+            'employee_name': 'emp001',
+            'date': 'April 4, 2020',
+            'project': 'project001',
+            'task': 'task001',
+            'time_in': 'invalid time',
+            'time_out': 'invalid time'
+        }
+
+        self.assertEqual(-1, ts_calc.add_to_list(time_sheet_entry))
+
+    def test_add_to_list_invalid_date(self):
+        ts_calc = TimesheetCalculator()
+        time_sheet_entry = {
+            'employee_name': 'emp001',
+            'date': 'Invalid date',
+            'project': 'project001',
+            'task': 'task001',
+            'time_in': '12:00 AM',
+            'time_out': '1:00 PM'
+        }
+
+        self.assertEqual(-1, ts_calc.add_to_list(time_sheet_entry))
+
+    def test_add_to_list_reverse_log_time(self):
+        ts_calc = TimesheetCalculator()
+        time_sheet_entry = {
+            'employee_name': 'emp001',
+            'date': 'April 4, 2020',
+            'project': 'project001',
+            'task': 'task001',
+            'time_in': '9:00 PM',
+            'time_out': '8:00 PM'
+        }
+
+        self.assertEqual(-1, ts_calc.add_to_list(time_sheet_entry))
+
+    def test_add_to_list_reverse_midnight_out(self):
+        ts_calc = TimesheetCalculator()
+        time_sheet_entry = {
+            'employee_name': 'emp001',
+            'date': 'April 4, 2020',
+            'project': 'project001',
+            'task': 'task001',
+            'time_in': '9:00 PM',
+            'time_out': '12:00 AM'
+        }
+
+        self.assertEqual(1, ts_calc.add_to_list(time_sheet_entry))

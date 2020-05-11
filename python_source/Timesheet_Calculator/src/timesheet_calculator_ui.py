@@ -90,7 +90,7 @@ class TimesheetCalculatorUI:
                     for row in reader:
                         ret = self.ts_calc.add_to_list(row)
                         if ret == -1:
-                            messagebox.showinfo("Error", 'You inputted wrong csv file!')
+                            messagebox.showinfo("Error", 'Something is wrong with your csv input!')
                             self.logger.info('Importing Datasheet failed..')
                             break
             except FileNotFoundError as e:

@@ -65,7 +65,19 @@ class TimesheetCalculator:
             time_in = timesheet_entry['time_in'].strip()
             time_out = timesheet_entry['time_out'].strip()
 
+            time_in_obj = self.convert_12_hours(time_in)
+            time_out_obj = self.convert_12_hours(time_out)
+            date_obj = self.convert_date(date)
+
+            if time_out_obj == self.convert_12_hours('12:00 AM'):
+                time_out_obj += datetime.timedelta(days=1)
+
+            if time_in_obj is None or time_out_obj is None or date_obj is None or \
+                    time_out_obj < time_in_obj:
+                return -1
+
             total_hours = self.calculate_time(date, time_in, time_out)
+
             work_obj = Work(projectName=project, taskName=task, date=date,
                             timeIn=time_in, timeOut=time_out, totalHours=total_hours)
 
@@ -115,16 +127,26 @@ class TimesheetCalculator:
 
     @staticmethod
     def convert_12_hours(time_string):
-        time_obj = dateutil.parser.parse(time_string)
-        time_obj = time_obj.strftime(Constants.TIME_12_FORMAT)
-        time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_12_FORMAT)
+        time_obj = None
+        try:
+            time_obj = dateutil.parser.parse(time_string)
+            time_obj = time_obj.strftime(Constants.TIME_12_FORMAT)
+            time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_12_FORMAT)
+        except (TypeError, ValueError):
+            print("You have input an Invalid time")
+
         return time_obj
 
     @staticmethod
     def convert_24_hours(time_string):
-        time_obj = dateutil.parser.parse(time_string)
-        time_obj = time_obj.strftime(Constants.TIME_24_FORMAT)
-        time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_24_FORMAT)
+        time_obj = None
+        try:
+            time_obj = dateutil.parser.parse(time_string)
+            time_obj = time_obj.strftime(Constants.TIME_24_FORMAT)
+            time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_24_FORMAT)
+        except(ValueError, TypeError):
+            print("You have input an Invalid time")
+
         return time_obj
 
     @staticmethod
@@ -180,8 +202,8 @@ class TimesheetCalculator:
                     dims_col[cell.column_letter] = max((dims_col.get(cell.column_letter, 0), len(str(cell.value))))
                     cell_value = cell.value
                     newline_count = str(cell_value).count('\n')
-                    max_value = max((dims_row.get(i+1, 0), newline_count))
-                    dims_row[i+1] = max_value*2
+                    max_value = max((dims_row.get(i + 1, 0), newline_count))
+                    dims_row[i + 1] = max_value * 2
 
         for col, value in dims_col.items():
             worksheet.column_dimensions[col].width = value
@@ -233,11 +255,11 @@ class TimesheetCalculator:
         ws.cell(row=4, column=3, value='TIME SPEND')
 
         for row in range(data_len):
-            ws.cell(row=row+offset+header+1, column=1, value=emp_list[row]['NAME'])
-            ws.cell(row=row+offset+header+1, column=2, value=emp_list[row]['PROJECT'])
-            ws.cell(row=row+offset+header+1, column=3, value=emp_list[row]['TIME_SPEND'])
+            ws.cell(row=row + offset + header + 1, column=1, value=emp_list[row]['NAME'])
+            ws.cell(row=row + offset + header + 1, column=2, value=emp_list[row]['PROJECT'])
+            ws.cell(row=row + offset + header + 1, column=3, value=emp_list[row]['TIME_SPEND'])
 
-        tabl = Table(displayName='employee_summary', ref=f'A4:C{data_len+offset+header}')
+        tabl = Table(displayName='employee_summary', ref=f'A4:C{data_len + offset + header}')
         style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                                showLastColumn=False, showRowStripes=True, showColumnStripes=True)
         tabl.tableStyleInfo = style
@@ -270,14 +292,14 @@ class TimesheetCalculator:
             ws = self.workbook.create_sheet(f'{employee.employeeName}_summary')
             ws['A1'] = employee.employeeName
             ws['A2'] = 'MANHOUR ANALYSIS OF RENDERED DUTIES'
-            ws['A3'] = f'PERIOD COVERED {fr_day.strftime(Constants.DATE_FORMAT)} to ' +\
+            ws['A3'] = f'PERIOD COVERED {fr_day.strftime(Constants.DATE_FORMAT)} to ' + \
                        f'{to_day.strftime(Constants.DATE_FORMAT)}'
             ws.append([' '])
 
             sunday_cluster_list = self.get_sunday_clusters(fr_day, to_day)
             for week in sunday_cluster_list:
                 ws.append([f'WEEK COVERED: {week[0].strftime(Constants.DATE_FORMAT)} to ' +
-                           f'{week[len(week)-1].strftime(Constants.DATE_FORMAT)}'])
+                           f'{week[len(week) - 1].strftime(Constants.DATE_FORMAT)}'])
                 self.insert_table_headers(ws)
                 for day in week:
                     total_hours = 0
