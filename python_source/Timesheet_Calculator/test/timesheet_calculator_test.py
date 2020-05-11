@@ -4,8 +4,8 @@ import unittest
 import os
 import csv
 from openpyxl import Workbook
-from timesheet_calculator import TimesheetCalculator
-from constants import Constants
+from src.timesheet_calculator import TimesheetCalculator
+from src.constants import Constants
 
 
 class TestTimesheetCalculator(unittest.TestCase):
