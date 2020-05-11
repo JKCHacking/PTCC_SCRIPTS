@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from constants import Constants
+from src.constants import Constants
+from src.logger import Logger
 from collections import namedtuple
-from logger import Logger
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
 import os

@@ -3,9 +3,9 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
-from timesheet_calculator import TimesheetCalculator
-from logger import Logger
-from constants import Constants
+from src.timesheet_calculator import TimesheetCalculator
+from src.logger import Logger
+from src.constants import Constants
 from shutil import copyfile
 import csv
 import os
@@ -112,8 +112,3 @@ class TimesheetCalculatorUI:
                 messagebox.showinfo('Error', 'You inputted an invalid date')
             elif ret1 == 1 and ret2 == 1:
                 messagebox.showinfo('Generation Complete', 'Check result in "Output" folder')
-
-
-if __name__ == '__main__':
-    ts_calc_ui = TimesheetCalculatorUI()
-    ts_calc_ui.construct_ui()
