@@ -169,6 +169,27 @@ class TimesheetCalculator:
 
         return sunday_cluster_list
 
+    @staticmethod
+    def adjust_cell_height_width(worksheet):
+        dims_col = {}
+        dims_row = {}
+
+        for i, row in enumerate(worksheet.rows):
+            for cell in row:
+                if cell.value:
+                    dims_col[cell.column_letter] = max((dims_col.get(cell.column_letter, 0), len(str(cell.value))))
+                    cell_value = cell.value
+                    newline_count = str(cell_value).count('\n')
+                    max_value = max((dims_row.get(i+1, 0), newline_count))
+                    dims_row[i+1] = max_value*2
+
+        for col, value in dims_col.items():
+            worksheet.column_dimensions[col].width = value
+
+        for row, value in dims_row.items():
+            if value != 0:
+                worksheet.row_dimensions[row].height = value
+
     def generate_between_days(self, fr_day, to_day):
         fr_day = self.convert_date(fr_day)
         to_day = self.convert_date(to_day)
@@ -233,6 +254,7 @@ class TimesheetCalculator:
         ws.append(['_________________________'])
         ws.append(['SUSAN BENJAMIN'])
 
+        self.adjust_cell_height_width(ws)
         output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')
         self.workbook.save(output_path)
         return 1
@@ -292,6 +314,7 @@ class TimesheetCalculator:
 
                     ws.append([day_str, Constants.DAY_LIST[day.weekday()], joined_time_in_out,
                                total_minutes, credited_min, excess])
+                self.adjust_cell_height_width(ws)
                 ws.append([' '])
 
         output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')

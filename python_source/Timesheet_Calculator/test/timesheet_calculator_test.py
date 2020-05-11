@@ -3,6 +3,7 @@
 import unittest
 import os
 import csv
+from openpyxl import Workbook
 from timesheet_calculator import TimesheetCalculator
 from constants import Constants
 
@@ -78,6 +79,30 @@ class TestTimesheetCalculator(unittest.TestCase):
         ts_calc = TimesheetCalculator()
         day_str = 'January 2, 2020'
         self.assertEqual(ts_calc.is_holiday(day_str), False)
+
+    def test_adjust_cell_width(self):
+        ts_calc = TimesheetCalculator()
+        test_workbook = Workbook()
+        worksheet = test_workbook.active
+
+        row = ['1', '1\n2\n', '1\n2\n1\n']
+        worksheet.append(row)
+        row = ['123']
+        worksheet.append(row)
+        row = ['1234']
+        worksheet.append(row)
+        row = ['1\n', '1\n1\n1\n', '1\n2\n']
+        worksheet.append(row)
+        row = [1, 1.5, 2]
+        worksheet.append(row)
+
+        ts_calc.adjust_cell_height_width(worksheet)
+
+        self.assertEqual(4, worksheet.column_dimensions['A'].width)
+        self.assertEqual(8, worksheet.row_dimensions[1].height)
+        self.assertEqual(12, worksheet.row_dimensions[4].height)
+        self.assertEqual(None, worksheet.row_dimensions[5].height)
+        self.assertEqual(None, worksheet.row_dimensions[2].height)
 
 
 if __name__ == '__main__':
