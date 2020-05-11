@@ -104,6 +104,33 @@ class TestTimesheetCalculator(unittest.TestCase):
         self.assertEqual(None, worksheet.row_dimensions[5].height)
         self.assertEqual(None, worksheet.row_dimensions[2].height)
 
+    def test_calculate_time_weekday(self):
+        ts_calc = TimesheetCalculator()
+        weekday = 'May 4,2020'
+        fr_time = '1:00 AM'
+        to_time = '8:00 PM'
+        total_hours = ts_calc.calculate_time(weekday, fr_time, to_time)
 
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(17, total_hours)
+
+    def test_calculate_time_weekend(self):
+        ts_calc = TimesheetCalculator()
+        weekend = '5-9-2020'
+        fr_time = '1:00 AM'
+        to_time = '8:00 PM'
+        total_hours = ts_calc.calculate_time(weekend, fr_time, to_time)
+
+        self.assertEqual(16, total_hours)
+
+    def test_calculate_time_midnight(self):
+        ts_calc = TimesheetCalculator()
+        weekend = '5/9/2020'
+        weekday = 'May 4,2020'
+        fr_time = '9:00 PM'
+        to_time = '12:00 AM'
+
+        total_hours = ts_calc.calculate_time(weekend, fr_time, to_time)
+        self.assertEqual(3, total_hours)
+
+        total_hours = ts_calc.calculate_time(weekday, fr_time, to_time)
+        self.assertEqual(3, total_hours)
