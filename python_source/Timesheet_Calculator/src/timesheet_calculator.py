@@ -50,6 +50,55 @@ class TimesheetCalculator:
         total_hours -= constraint_counter
         return total_hours
 
+    def add_to_list(self, timesheet_entry):
+        ret = 1
+        found_flag = False
+        Work = namedtuple('Work', ['projectName', 'taskName', 'date', 'timeIn', 'timeOut', 'totalHours'])
+        Employee = namedtuple('Employee', ['employeeName', 'work'])
+
+        # employee_name,date,project,task,time_in,time_out
+        try:
+            employee_name = timesheet_entry['employee_name'].strip()
+            date = timesheet_entry['date'].strip()
+            project = timesheet_entry['project'].strip()
+            task = timesheet_entry['task'].strip()
+            time_in = timesheet_entry['time_in'].strip()
+            time_out = timesheet_entry['time_out'].strip()
+
+            total_hours = self.calculate_time(date, time_in, time_out)
+            work_obj = Work(projectName=project, taskName=task, date=date,
+                            timeIn=time_in, timeOut=time_out, totalHours=total_hours)
+
+            work_list = [work_obj]
+            employee_obj = Employee(employeeName=employee_name, work=work_list)
+
+            if self.all_employee_list:
+                for employee in self.all_employee_list:
+                    if employee.employeeName == employee_name:
+                        employee.work.append(work_obj)
+                        found_flag = True
+                        break
+                if not found_flag:
+                    self.all_employee_list.append(employee_obj)
+            else:
+                self.all_employee_list.append(employee_obj)
+        except KeyError:
+            ret = -1
+
+        return ret
+
+    def display_all_employess(self):
+        print(self.all_employee_list)
+
+    def is_holiday(self, date_str):
+        is_holi = False
+        date_obj = self.convert_date(date_str)
+        date_str = date_obj.strftime('%B %d, %Y')
+        if date_str in Constants.HOLIDAY_LIST:
+            is_holi = True
+
+        return is_holi
+
     @staticmethod
     def is_within_time(time_in, time_out, fr_time, to_time):
         is_inside = False
@@ -96,42 +145,29 @@ class TimesheetCalculator:
         time_hours = int(h) + int(m) / 60 + int(s) / 3600
         return time_hours
 
-    def add_to_list(self, timesheet_entry):
-        ret = 1
-        found_flag = False
-        Work = namedtuple('Work', ['projectName', 'taskName', 'date', 'timeIn', 'timeOut', 'totalHours'])
-        Employee = namedtuple('Employee', ['employeeName', 'work'])
+    @staticmethod
+    def insert_table_headers(ws):
+        ws.append(['Date', 'Day', 'Time-in Time-out', 'Rendered MINS for the Day',
+                   'Credited Regular Log[480 = 1 day]', 'Minutes in excess of 480; Sat/Sun Duties'])
 
-        # employee_name,date,project,task,time_in,time_out
-        try:
-            employee_name = timesheet_entry['employee_name'].strip()
-            date = timesheet_entry['date'].strip()
-            project = timesheet_entry['project'].strip()
-            task = timesheet_entry['task'].strip()
-            time_in = timesheet_entry['time_in'].strip()
-            time_out = timesheet_entry['time_out'].strip()
+    @staticmethod
+    def get_sunday_clusters(fr_day, to_day):
+        start = fr_day
+        end = to_day
+        sunday_cluster_list = []
 
-            total_hours = self.calculate_time(date, time_in, time_out)
-            work_obj = Work(projectName=project, taskName=task, date=date,
-                            timeIn=time_in, timeOut=time_out, totalHours=total_hours)
+        while start <= end:
+            sunday_list = []
+            while start.weekday() != 6:
+                sunday_list.append(start)
+                start += datetime.timedelta(days=1)
+                if start == end:
+                    break
+            sunday_list.append(start)
+            sunday_cluster_list.append(sunday_list)
+            start += datetime.timedelta(days=1)
 
-            work_list = [work_obj]
-            employee_obj = Employee(employeeName=employee_name, work=work_list)
-
-            if self.all_employee_list:
-                for employee in self.all_employee_list:
-                    if employee.employeeName == employee_name:
-                        employee.work.append(work_obj)
-                        found_flag = True
-                        break
-                if not found_flag:
-                    self.all_employee_list.append(employee_obj)
-            else:
-                self.all_employee_list.append(employee_obj)
-        except KeyError:
-            ret = -1
-
-        return ret
+        return sunday_cluster_list
 
     def generate_between_days(self, fr_day, to_day):
         fr_day = self.convert_date(fr_day)
@@ -261,38 +297,3 @@ class TimesheetCalculator:
         output_path = os.path.join(Constants.OUTPUT_DIR, f'employee_timesheet_{fr_day.date()}_{to_day.date()}.xlsx')
         self.workbook.save(output_path)
         return 1
-
-    @staticmethod
-    def insert_table_headers(ws):
-        ws.append(['Date', 'Day', 'Time-in Time-out', 'Rendered MINS for the Day',
-                   'Credited Regular Log[480 = 1 day]', 'Minutes in excess of 480; Sat/Sun Duties'])
-    @staticmethod
-    def get_sunday_clusters(fr_day, to_day):
-        start = fr_day
-        end = to_day
-        sunday_cluster_list = []
-
-        while start <= end:
-            sunday_list = []
-            while start.weekday() != 6:
-                sunday_list.append(start)
-                start += datetime.timedelta(days=1)
-                if start == end:
-                    break
-            sunday_list.append(start)
-            sunday_cluster_list.append(sunday_list)
-            start += datetime.timedelta(days=1)
-
-        return sunday_cluster_list
-
-    def display_all_employess(self):
-        print(self.all_employee_list)
-
-    def is_holiday(self, date_str):
-        is_holi = False
-        date_obj = self.convert_date(date_str)
-        date_str = date_obj.strftime('%B %d, %Y')
-        if date_str in Constants.HOLIDAY_LIST:
-            is_holi = True
-
-        return is_holi
