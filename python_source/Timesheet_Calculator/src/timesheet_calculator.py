@@ -93,9 +93,9 @@ class TimesheetCalculator:
 
             if time_in_obj is None or time_out_obj is None or date_obj is None:
                 with open(error_file_path, mode=mode) as error_file:
-                    error_file.write(f'Row Number: {row_number} Either Time-in, Time-out, or Date is empty\n')
+                    error_file.write(f'Row Number: {row_number} Something is wrong with Time-in/Time-out/Date\n')
                 return -1
-            if time_out_obj < time_in_obj:
+            elif time_out_obj < time_in_obj:
                 with open(error_file_path, mode=mode) as error_file:
                     error_file.write(f'Row Number: {row_number} Time-in and Time-out passed overnight!\n')
                 return -1
