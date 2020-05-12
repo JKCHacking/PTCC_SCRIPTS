@@ -188,6 +188,19 @@ class TestTimesheetCalculator(unittest.TestCase):
 
         self.assertEqual(-1, ts_calc.add_to_list(time_sheet_entry))
 
+    def test_add_to_list_shortcut_date(self):
+        ts_calc = TimesheetCalculator()
+        time_sheet_entry = {
+            'employee_name': 'emp001',
+            'date': '12-Apr-20',
+            'project': 'project001',
+            'task': 'task001',
+            'time_in': '12:00 AM',
+            'time_out': '1:00 PM'
+        }
+
+        self.assertEqual(1, ts_calc.add_to_list(time_sheet_entry))
+
     def test_add_to_list_reverse_log_time(self):
         ts_calc = TimesheetCalculator()
         time_sheet_entry = {
