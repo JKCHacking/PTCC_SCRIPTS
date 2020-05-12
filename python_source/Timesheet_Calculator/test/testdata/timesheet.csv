@@ -1,16 +1,559 @@
 employee_name,date,task,time_in,time_out,project
-JED ALISON ALIMANZA,04/29/20,CS02 SHOP CALCS R0.1,01:00:00 PM,02:00:00 PM,Apple Dadeland
-JED ALISON ALIMANZA,29-April-2020,CS03 SHOP CALCS R0,02:00:00 PM,07:00:00 PM,Apple Dadeland
-JED ALISON ALIMANZA,04/29/20,CS03 SHOP CALCS R0,08:00:00 PM,12:00 AM,Apple Dadeland
-JED ALISON ALIMANZA,27-April-2020,CS02 THERM CALCS,11:00 AM,1:00 PM,Atlantis Project
-JED ALISON ALIMANZA,04/27/20,CS02 THERM CALCS,02:00:00 PM,08:00:00 PM,Atlantis Project
-JED ALISON ALIMANZA,04/28/20,CS02 THERM CALCS,02:00:00 PM,08:00:00 PM,Atlantis Project
-JED ALISON ALIMANZA,04/29/20,CS02 THERM CALCS,09:00:00 AM,12:00:00 PM,Atlantis Project
-NATHAN CANTOS,04/28/20,F02 Brackets Check,11:00:00 PM,11:30:00 PM,250 SOUTH STREET
-NATHAN CANTOS,04/28/20,EWS-02-Comments Review,10:30:00 PM,11:00:00 PM,45-18 Court Square
-NATHAN CANTOS,04/30/20,EWS-02-Comments Review,02:00:00 PM,04:00:00 PM,45-18 Court Square
-NATHAN CANTOS,04/27/20,QAQC-CS01 CALCS,07:00:00 PM,12:00:00 AM,ATLANTIS BUILDING
-NATHAN CANTOS,04/28/20,QAQC-CS01 CALCS,12:00:00 AM,03:00:00 AM,ATLANTIS BUILDING
-NATHAN CANTOS,28 April 2020,QAQC-CS01 CALCS,02:00:00 PM,04:00:00 PM,ATLANTIS BUILDING
-NATHAN CANTOS,28 April 2020,TAKE-OFF,04:00:00 PM,06:00:00 PM,Fashion Institute of Technology
-NATHAN CANTOS,28 April 2020,TAKE-OFF,09:00:00 PM,10:30:00 PM,Fashion Institute of Technology
+STEPHEN M. DUQUE,05/04/20,REVISION,09:00:00 AM,06:00:00 PM,YKK-Project SGA
+STEPHEN M. DUQUE,05/05/20,REVISION,01:00:00 PM,10:00:00 PM,YKK-Project SGA
+STEPHEN M. DUQUE,05/06/20,REVISION,09:00:00 AM,06:00:00 PM,YKK-Project SGA
+STEPHEN M. DUQUE,05/08/20,3D DRAWINGS,10:00:00 AM,07:00:00 PM,YKK-Project SGA
+NAVAL.SEAN S.,05/04/20,PARTIAL ELEV,09:00:00 AM,06:00:00 PM,WSCC Tower
+NAVAL.SEAN S.,05/05/20,PARTIAL ELEV,09:00:00 AM,06:00:00 PM,WSCC Tower
+NAVAL.SEAN S.,05/06/20,PARTIAL ELEV,09:00:00 AM,06:00:00 PM,WSCC Tower
+Fiel Jayson Rodes,05/04/20,2nd to 4th General Floor Plan,09:00:00 AM,06:00:00 PM,Widus
+Fiel Jayson Rodes,05/05/20,2nd to 4th General Floor Plan,09:00:00 AM,06:00:00 PM,Widus
+Fiel Jayson Rodes,05/06/20,2nd to 4th General Floor Plan,09:00:00 AM,06:00:00 PM,Widus
+Mark Schubert Anthony Cainday,5/4/2020,"
+Coordination 
+- Weekly Status Report",1:00 PM,5:00 PM,"(Project SGA) Giant Tiger, WSCC, Bay Adelaide, LAPV VIP Entrance"
+Mark Schubert Anthony Cainday,5/4/2020,"
+Shop Drawings
+Partial elevation - 306",5:00 PM,6:00 PM,(WSCC) 
+Mark Schubert Anthony Cainday,5/5/2020,"
+Shop Drawings
+Partial elevation - 301 & 302",10:00 AM,6:00 PM,(WSCC) 
+Mark Schubert Anthony Cainday,5/6/2020,"
+Coordination",9:30 AM,10:30 AM,"(WSCC), Project SGA"
+Mark Schubert Anthony Cainday,5/6/2020," 
+Shop Drawings
+Partial elevation - 301 & 309",10:30 AM,6:00 PM,(WSCC) 
+Mark Schubert Anthony Cainday,5/7/2020," 
+Video conference with WWCW",7:00 AM,7:30 AM,(WSCC) 
+Mark Schubert Anthony Cainday,5/7/2020,"
+Shop drawings
+Partial elevation - 309",9:00 AM,5:00 PM,(WSCC) 
+Mark Schubert Anthony Cainday,5/7/2020,"
+Coordination
+Corner profile query",5:00 PM,6:00 PM,(WSCC) 
+Mark Schubert Anthony Cainday,5/8/2020," 
+Shop drawings
+Partial elevation - 309 & 310",10:00 AM,12:00 PM,(WSCC) 
+Mark Schubert Anthony Cainday,5/8/2020,"
+Shop drawings
+Partial elevation - 310",2:00 PM,6:00 PM,(WSCC) 
+NORIE MAE S. ATIENZA,5/5/2020,EWS-05 3D Study,02:30:00PM,05:45:00PM,45-18 Court Square
+NORIE MAE S. ATIENZA,5/6/2020,EWS-05 & EWS-02 3D Study,01:00:00PM,03:00:00PM,45-18 Court Square
+NORIE MAE S. ATIENZA,5/6/2020,EWS-05 & EWS-02 3D Study,03:15:00PM,06:00:00PM,45-18 Court Square
+NORIE MAE S. ATIENZA,5/7/2020,EWS-05 & EWS-02 3D Study,09:00:00AM,11:00:00AM,45-18 Court Square
+NORIE MAE S. ATIENZA,5/7/2020,EWS-05 & EWS-02 3D Study,03:15:00PM,06:00:00PM,45-18 Court Square
+Marites Lisen,5/4/2020,"
+Coordination",09:00:00 AM,12:00:00 PM,
+Marites Lisen,5/4/2020,"
+Coordination",01:00:00 PM,04:30:00 PM,
+Marites Lisen,5/5/2020,"
+Coordination",09:00:00 AM,12:00:00 PM,
+Marites Lisen,5/5/2020,"
+Coordination",02:00:00 PM,05:00:00 PM,
+Marites Lisen,5/6/2020,"
+Coordination",09:00:00 AM,12:00:00 PM,
+Marites Lisen,5/6/2020,"
+Coordination",01:00:00 PM,05:30:00 AM,
+Marites Lisen,5/7/2020,"
+Coordination",09:00:00 AM,12:00:00 PM,
+Marites Lisen,5/7/2020,"
+Coordination",01:00:00 AM,04:00:00 PM,
+Marites Lisen,5/8/2020,"
+Coordination",09:00:00 AM,12:00:00 PM,
+Marites Lisen,5/8/2020,"
+Coordination",01:00:00 PM,04:00:00 AM,
+Marco Patawaran,5/5/2020,ROOF EDGE 3D,09:00:00 AM,01:00:00 PM,Project Tempo
+Marco Patawaran,5/5/2020,ROOF EDGE 3D,02:00:00 PM,05:00:00 PM,Project Tempo
+Marco Patawaran,5/6/2020,ROOF EDGE 3D LAYOUT,10:00:00 AM,02:00:00 PM,Project Tempo
+Marco Patawaran,5/8/2020,3D LOBBY GLAZING REVISION,11:30:00 PM,02:00:00 PM,Project Tempo
+Marco Patawaran,5/8/2020,3D LOBBY GLAZING REVISION,03:30:00 PM,04:00:00 PM,Project Tempo
+Rupert Mabugay,5/4/2020,Education Pavilion mullion and ACP cladding updates,01:00:00 PM,06:00:00 PM,Project Tempo
+Rupert Mabugay,5/5/2020,Education Pavilion mullion and ACP cladding updates,09:00:00 AM,06:00:00 PM,Project Tempo
+Rupert Mabugay,5/6/2020,"coordination with Rodel, Marco",11:00:00 AM,12:00:00 PM,Project Tempo
+Rupert Mabugay,5/6/2020,Education Pavilion mullion and ACP cladding updates,01:00:00 PM,06:00:00 PM,Project Tempo
+Rupert Mabugay,5/7/2020,Restaurant Glazing details,10:00:00 AM,06:00:00 PM,Project Tempo
+Rupert Mabugay,5/8/2020,"Miscellaneous – giving work assignment, pc troubleshootng by I.T.",09:00:00 AM,10:00:00 PM,Project Tempo
+Rupert Mabugay,5/8/2020,Lobby Glazing details,10:00:00 AM,06:00:00 PM,Project Tempo
+JHESLYN MALLARI,5/4/2020,"COORDINATE 
+DWG
+AND UPDATE 
+PALM
+FRONDS",09:00:00 AM,01:30:00 PM,Project Tempo
+JHESLYN MALLARI,5/5/2020,"UPDATE 
+PALM FRONDS
+PROFILE",09:00:00 AM,06:00:00 PM,Project Tempo
+JHESLYN MALLARI,5/6/2020,"UPDATE 
+PALM FRONDS
+PROFILE THEN 
+SUBMITTED 
+SET OF DWG
+FOR REVIEW",09:00:00 AM,02:00:00 PM,Project Tempo
+JHESLYN MALLARI,5/6/2020,"UPDATE RCP, 
+COORDINATE 
+REFERENCES 
+FROM LCP",02:00:00 PM,06:00:00 PM,Project Tempo
+NOLI CLOYD MORTELL,5/4/2020,APPLE THE GROVE COORDINATION/CHECKING WEBEX MEETING REFERENCE REVIEW ,9:00 AM,6:00 PM,WHARF 6 & 7 and APPLE THE GROVE
+NOLI CLOYD MORTELL,5/5/2020,WHARF 6 & 7 PRELIMINARY SHOP DRAWINGS,9:00 AM,9:00 PM,WHARF 6 & 7 and APPLE THE GROVE
+NOLI CLOYD MORTELL,5/6/2020,WHARF 6 & 7 PRELIMINARY SHOP DRAWINGS,9:00 AM,8:00 PM,WHARF 6 & 7 and APPLE THE GROVE
+NOLI CLOYD MORTELL,5/7/2020,WHARF 6 & 7 SHOP DRAWINGS/COORDINATION AND CHECKING,9:00 PM,8:00 PM,WHARF 6 & 7 and APPLE THE GROVE
+NOLI CLOYD MORTELL,5/8/2020,WHARF 6 & 7 SHOP DRAWINGS/COORDINATION AND CHECKING,9:00 PM,9:00 PM,WHARF 6 & 7 and APPLE THE GROVE
+NOLI CLOYD MORTELL,5/9/2020,WHARF 6 & 7 SHOP DRAWINGS/COORDINATION AND CHECKING,9:00 PM,9:00 PM,WHARF 6 & 7 and APPLE THE GROVE
+Bryan Kristoffer Chavez,5/4/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+Bryan Kristoffer Chavez,5/5/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+Bryan Kristoffer Chavez,5/6/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+Bryan Kristoffer Chavez,5/7/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+Bryan Kristoffer Chavez,5/8/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+VAN TANABE,5/4/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+VAN TANABE,5/5/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+VAN TANABE,5/6/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+VAN TANABE,5/7/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+VAN TANABE,5/8/2020,IT Tasks,09:00:00 AM,06:00:00 PM,IT Dept
+"JASME, MHEL MARKIN JO W.",5/7/2020,PE.402,9:00 AM,12:00 PM,WHARF 6 + 7
+"JASME, MHEL MARKIN JO W.",5/7/2020,PE.402,1:00 PM,6:00 PM,WHARF 6 + 7
+"JASME, MHEL MARKIN JO W.",5/8/2020,PE.405,9:00 AM,12:00 PM,WHARF 6 + 7
+"JASME, MHEL MARKIN JO W.",5/8/2020,PE.405,1:00 PM,3:00 PM,WHARF 6 + 7
+"JASME, MHEL MARKIN JO W.",5/8/2020,"GP.201C, GP.201D, GP.201E",3:00 PM,6:00 PM,WHARF 6 + 7
+JHESLYN MALLARI,5/4/2020,DCM,01:30:00 PM,02:00:00 PM,Project Tempo
+"Velasco, Rodel",5/4/2020,Coordination,09:00:00 AM,12:00:00 PM,"One Ayala Avenue
+Hotel/Podium"
+"Velasco, Rodel",5/4/2020,Coordination,01:00:00 PM,01:30:00 PM,Project Tempo
+"Velasco, Rodel",5/4/2020,Coordination,01:30:00 PM,02:00:00 PM,Project Tempo
+"Velasco, Rodel",5/4/2020,Coordination,02:00:00 PM,02:30:00 PM,"One Ayala Avenue
+BPO"
+"Velasco, Rodel",5/4/2020,Coordination,02:30:00 PM,03:00:00 PM,Project Isabel
+"Velasco, Rodel",5/4/2020,Coordination,03:00:00 PM,04:00:00 PM,"One Ayala Avenue
+BPO"
+"Velasco, Rodel",5/4/2020,Coordination,04:00:00 PM,06:00:00 PM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/5/2020,Coordination,09:00:00 AM,11:00:00 AM,Project Tempo
+"Velasco, Rodel",5/5/2020,Coordination,11:00:00 AM,11:30:00 AM,Project Isabel
+"Velasco, Rodel",5/5/2020,Coordination,11:30:00 AM,12:00:00 PM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/5/2020,Coordination,03:00:00 PM,03:30:00 AM,Project Isabel
+"Velasco, Rodel",5/5/2020,Coordination,05:00:00 PM,06:00:00 PM,Project Isabel
+"Velasco, Rodel",5/6/2020,Coordination,09:00:00 AM,10:00:00 AM,"One Ayala Avenue
+BPO"
+"Velasco, Rodel",5/6/2020,Coordination,10:00:00 AM,11:00:00 AM,Project Isabel
+"Velasco, Rodel",5/6/2020,Coordination,11:00:00 PM,12:00:00 PM,Project Isabel
+"Velasco, Rodel",5/6/2020,Coordination,01:00:00 PM,02:30:00 PM,Project Isabel
+"Velasco, Rodel",5/6/2020,Coordination,02:30:00 PM,03:00:00 PM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/6/2020,Coordination,03:00:00 PM,06:00:00 PM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/7/2020,Coordination,09:00:00 AM,10:00:00 AM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/7/2020,Coordination,10:00:00 PM,11:00:00 AM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/7/2020,Coordination,11:00:00 PM,12:00:00 PM,Project Tempo
+"Velasco, Rodel",5/7/2020,Coordination,01:00:00 PM,02:30:00 PM,"One Ayala Avenue
+BPO"
+"Velasco, Rodel",5/7/2020,Coordination,02:30:00 PM,03:00:00 PM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/8/2020,Coordination,09:00:00 AM,09:30:00 AM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/8/2020,Coordination,09:30:00 AM,10:00:00 AM,Project Tempo
+"Velasco, Rodel",5/8/2020,Coordination,10:00:00 AM,10:30:00 AM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/8/2020,Coordination,01:00:00 PM,02:00:00 PM,"One Ayala Avenue
+BPO"
+"Velasco, Rodel",5/8/2020,Coordination,02:00:00 PM,03:00:00 PM,Vertis North
+"Velasco, Rodel",5/8/2020,Coordination,03:00:00 PM,05:00:00 PM,"One Ayala Avenue
+BPO"
+"Velasco, Rodel",5/8/2020,Coordination,05:00:00 PM,05:30:00 PM,"One Ayala Avenue
+Podium"
+"Velasco, Rodel",5/8/2020,Coordination,05:30:00 PM,06:00:00 PM,Vertis North
+"Velasco, Rodel",5/8/2020,Coordination,06:30:00 PM,07:00:00 PM,Project Isabel
+INVINZOR P. PASCUAL,5/7/2020,PROJECT TAKE OFF,09:00:00 AM,05:00:00 PM,BRIDGETOWNE
+INVINZOR P. PASCUAL,5/7/2020,PROJECT TAKE OFF,05:00:00 PM,07:30:00 PM,DAHLIA
+ROGELIO A. MALLILLIN JR.,5/4/2020,INCYTE - Shop Drawing (General Section),9:00 AM,12:00 NOON,Incyte
+ROGELIO A. MALLILLIN JR.,5/4/2020,INCYTE - Shop Drawing (General Section),1:00 PM,4:00 PM,Incyte
+ROGELIO A. MALLILLIN JR.,5/4/2020,INCYTE - Team Meating,4:00 PM,4:40 PM,Incyte
+ROGELIO A. MALLILLIN JR.,5/4/2020,INCYTE - Shop Drawing (General Section NORTH and UPDATES),4:40 PM,6:00 PM,Incyte
+ROGELIO A. MALLILLIN JR.,5/5/2020,INCYTE - Shop Drawing (General Section NORTH and UPDATES),9:00 AM,12:00 NOON,Incyte
+ROGELIO A. MALLILLIN JR.,5/5/2020,INCYTE - Shop Drawing (General Section NORTH and UPDATES),1:00 PM,6:00 PM,Incyte
+ROGELIO A. MALLILLIN JR.,5/6/2020,INCYTE - Shop Drawing (General Section SOUTH and UPDATES),9:00 AM,12:00 NOON,Incyte
+ROGELIO A. MALLILLIN JR.,5/6/2020,INCYTE - Shop Drawing (General Section SOUTH and UPDATES),1:00 PM,6:00 PM,Incyte
+ROGELIO A. MALLILLIN JR.,5/7/2020,INCYTE - Shop Drawing (General Section WEST and EAST),9:00 AM,12:00 NOON,Incyte
+ROGELIO A. MALLILLIN JR.,5/7/2020,INCYTE - Shop Drawing (General Section WEST and EAST),1:00 PM,6:00 PM,Incyte
+ROGELIO A. MALLILLIN JR.,5/7/2020,INCYTE - Shop Drawing (Partial elevation INC 300),9:00 AM,12:00 NOON,Incyte
+ROGELIO A. MALLILLIN JR.,5/7/2020,INCYTE - Shop Drawing (General Section),1:00 PM,6:00 PM,Incyte
+WELLIE REY O. VALDEZ,5/4/2020,CHECKS – ATYPICAL VERTICAL FLYBY FIN,10:00:00 AM,12:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/4/2020,CHECKS – ATYPICAL VERTICAL FLYBY FIN,01:00:00 PM,06:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/5/2020,CHECKS – ATYPICAL VERTICAL FLYBY FIN,08:00:00 PM,12:00:00 AM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/5/2020,CHECKS – ATYPICAL VERTICAL FLYBY FIN,10:00:00 AM,12:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/5/2020,CHECKS – ATYPICAL VERTICAL FLYBY FIN,01:00:00 PM,06:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/6/2020,CHECKS – ATYPICAL VERTICAL FLAT FIN,08:00:00 PM,11:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/6/2020,CHECKS – ATYPICAL VERTICAL FLAT FIN,09:00:00 AM,10:00:00 AM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/6/2020,MEETING,10:00:00 AM,10:30:00 AM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/6/2020,CHECKS – ATYPICAL VERTICAL FLAT FIN,10:30:00 AM,12:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/6/2020,CHECKS – ATYPICAL VERTICAL FLAT FIN,01:00:00 PM,04:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/6/2020,ATYPICAL CHECKS COMPILE,05:30:00 PM,08:00:00 PM,Usdot Volpe
+WELLIE REY O. VALDEZ,5/7/2020,FACTORY MOCK-UP CHECKS (REPORT),09:00:00 AM,12:00:00 PM,LYRIC THEATRE
+WELLIE REY O. VALDEZ,5/7/2020,FACTORY MOCK-UP CHECKS (REPORT),01:00:00 PM,06:00:00 PM,LYRIC THEATRE
+"JAVIER, ARLYN U.",5/7/2020,REVISE PARTIAL ELEVATION – 403,09:00:00 AM,06:00:00 PM,WHARF 6 & 7
+"JAVIER, ARLYN U.",5/9/2020,"CONNECTING TO SERVER,
+DOWNLOADING / COPYING FILES
+UPDATING SHOP DRAWINGS AND DRAWING LIST
+SENDING FILES",01:00:00 PM,06:00:00 PM,WHARF 6 & 7
+Gerlie Nabur,5/4/2020,Various Tasks,09:00:00 AM,09:30:00 AM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,09:37:00 AM,09:37:00 AM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,09:37:00 AM,10:01:00 AM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,10:01:00 AM,10:37:00 AM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,10:37:00 AM,11:27:00 AM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,11:27:00 AM,11:55:00 AM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,11:55:00 AM,12:00:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,12:00:00 PM,01:00:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,01:00:00 PM,02:50:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,02:50:00 PM,02:58:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,02:58:00 PM,03:10:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,03:10:00 PM,04:17:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,04:17:00 PM,04:23:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,04:23:00 PM,05:31:00 PM,Contracts
+Gerlie Nabur,5/4/2020,Various Tasks,05:31:00 PM,06:41:00 PM,Contracts
+Gerlie Nabur,5/5/2020,Various Tasks,09:00:00 AM,09:59:00 AM,Contracts
+Gerlie Nabur,5/5/2020,Various Tasks,09:59:00 AM,12:10:00 PM,Contracts
+Gerlie Nabur,5/5/2020,Various Tasks,12:10:00 PM,01:00:00 PM,Contracts
+Gerlie Nabur,5/5/2020,Various Tasks,01:03:00 PM,01:37:00 PM,Contracts
+Gerlie Nabur,5/5/2020,Various Tasks,01:37:00 PM,02:40:00 PM,Contracts
+Gerlie Nabur,5/5/2020,Various Tasks,02:40:00 PM,03:20:00 PM,Contracts
+Gerlie Nabur,5/5/2020,Various Tasks,03:20:00 PM,06:00:00 PM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,09:00:00 AM,09:30:00 AM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,09:30:00 AM,11:51:00 AM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,11:51:00 AM,12:00:00 PM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,12:00:00 PM,01:00:00 PM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,01:00:00 PM,02:16:00 PM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,02:16:00 PM,05:10:00 PM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,05:10:00 PM,06:00:00 PM,Contracts
+Gerlie Nabur,5/6/2020,Various Tasks,06:47:00 PM,07:33:00 PM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,09:00:00 AM,09:30:00 AM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,09:31:00 AM,09:51:00 AM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,09:51:00 AM,10:26:00 AM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,10:26:00 AM,11:28:00 AM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,11:28:00 AM,11:37:00 AM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,11:37:00 AM,11:44:00 AM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,11:44:00 AM,12:00:00 PM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,12:00:00 PM,01:00:00 PM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,01:00:00 PM,01:34:00 PM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,01:34:00 PM,01:55:00 PM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,01:55:00 PM,03:51:00 PM,Contracts
+Gerlie Nabur,5/7/2020,Various Tasks,03:51:00 PM,06:44:00 PM,Contracts
+Gerlie Nabur,5/8/2020,Various Tasks,09:00:00 AM,09:43:00 AM,Contracts
+Gerlie Nabur,5/8/2020,Various Tasks,09:43:00 AM,10:45:00 AM,Contracts
+Gerlie Nabur,5/8/2020,Various Tasks,10:45:00 AM,12:00:00 PM,Contracts
+Gerlie Nabur,5/8/2020,Various Tasks,12:00:00 PM,01:00:00 PM,Contracts
+Gerlie Nabur,5/8/2020,Various Tasks,01:00:00 PM,03:23:00 PM,Contracts
+Gerlie Nabur,5/8/2020,Various Tasks,03:23:00 PM,06:41:00 PM,Contracts
+"ONG, PATRICK RON B.",5/4/2020,Stack Head Fasteners Exercise (80%),11:00 AM,12:00 PM,PTCC
+"ONG, PATRICK RON B.",5/4/2020,Stack Head Fasteners Exercise (80%),1:00 PM,6:00 PM,PTCC
+"ONG, PATRICK RON B.",5/5/2020,"Stack Head Fasteners Exercise (Submit)
+Welds Exercise (30%)",1:00 PM,9:00 PM,PTCC
+"ONG, PATRICK RON B.",5/6/2020,"
+Welds Exercise (70%)",9:00 AM,12:00 PM,PTCC
+"ONG, PATRICK RON B.",5/6/2020,"
+Welds Exercise (70%)",1:00 PM,3:00 PM,PTCC
+JED ALISON ALIMANZA,5/4/2020,THERM STUDY ,9:00 AM,6:00 PM,45-18 Court Square
+JED ALISON ALIMANZA,5/5/2020,THERM STUDY ,10:00 AM,5:00 PM,45-18 Court Square
+JED ALISON ALIMANZA,5/6/2020,THERM STUDY ,2:00 PM,6:00 PM,45-18 Court Square
+JED ALISON ALIMANZA,5/7/2020,THERM TAKEOFF,1:00 PM,3:00 PM,PTCC
+JED ALISON ALIMANZA,5/8/2020,THERM TAKEOFF,11:30 AM,1:30 PM,PTCC
+Esther Perez,5/4/2020,Various Tasks,9:00 AM,9:34 AM,Contracts
+Esther Perez,5/4/2020,Various Tasks,9:34 AM,10:00 AM,Contracts
+Esther Perez,5/4/2020,Various Tasks,10:16 AM,12:00 PM,Contracts
+Esther Perez,5/4/2020,Various Tasks,1:00 PM,3:33 PM,Contracts
+Esther Perez,5/4/2020,Various Tasks,3:33 PM,4:10 PM,Contracts
+Esther Perez,5/4/2020,Various Tasks,4:10 PM,4:27 PM,Contracts
+Esther Perez,5/4/2020,Various Tasks,4:27 PM,4:45 PM,Contracts
+Esther Perez,5/4/2020,Various Tasks,4:45 PM,6:00 PM,Contracts
+Esther Perez,5/5/2020,Various Tasks,9:00 AM,9:47 AM,Contracts
+Esther Perez,5/5/2020,Various Tasks,9:47 AM,10:00 AM,Contracts
+Esther Perez,5/5/2020,Various Tasks,10:15 AM,12:00 PM,Contracts
+Esther Perez,5/5/2020,Various Tasks,1:00 PM,1:18 PM,Contracts
+Esther Perez,5/5/2020,Various Tasks,1:18 PM,1:36 PM,Contracts
+Esther Perez,5/5/2020,Various Tasks,1:36 PM,6:00 PM,Contracts
+Esther Perez,5/6/2020,Various Tasks,9:00 AM,9:08 AM,Contracts
+Esther Perez,5/6/2020,Various Tasks,9:08 AM,9:30 AM,Contracts
+Esther Perez,5/6/2020,Various Tasks,9:30 AM,10:00 AM,Contracts
+Esther Perez,5/6/2020,Various Tasks,10:15 AM,2:01 PM,Contracts
+Esther Perez,5/6/2020,Various Tasks,2:01 PM,6:05 PM,Contracts
+Esther Perez,5/7/2020,Various Tasks,9:00 AM,9:24 AM,Contracts
+Esther Perez,5/7/2020,Various Tasks,9:24 AM,10:00 AM,Contracts
+Esther Perez,5/7/2020,Various Tasks,10:15 AM,10:50 AM,Contracts
+Esther Perez,5/7/2020,Various Tasks,10:50 AM,12:00 PM,Contracts
+Esther Perez,5/7/2020,Various Tasks,1:00 PM,1:34 PM,Contracts
+Esther Perez,5/7/2020,Various Tasks,1:34 PM,3:57 PM,Contracts
+Esther Perez,5/7/2020,Various Tasks,3:57 PM,5:36 PM,Contracts
+Esther Perez,5/7/2020,Various Tasks,5:36 PM,6:00 PM,Contracts
+Esther Perez,5/8/2020,Various Tasks,9:00 AM,9:33 AM,Contracts
+Esther Perez,5/8/2020,Various Tasks,9:33 AM,11:03 AM,Contracts
+Esther Perez,5/8/2020,Various Tasks,11:03 AM,12:00 PM,Contracts
+Esther Perez,5/8/2020,Various Tasks,1:00 PM,3:00 PM,Contracts
+Esther Perez,5/8/2020,Various Tasks,3:00 PM,4:00 PM,Contracts
+Esther Perez,5/8/2020,Various Tasks,4:00 PM,5:15 PM,Contracts
+Esther Perez,5/8/2020,Various Tasks,5:15 PM,6:00 PM,Contracts
+Glecinio Carolino Jr.,5/4/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),9:05 AM,10:30 AM,INCYTE 1703
+Glecinio Carolino Jr.,5/4/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),10:45 AM,12:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/4/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),1:00 PM,3:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/4/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),3:00 PM,4:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/4/2020,>INCYTE 1703 - Team Meeting,4:00 PM,4:30 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/4/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),4:30 PM,6:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/5/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),9:00 AM,10:30 AM,INCYTE 1703
+Glecinio Carolino Jr.,5/5/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),10:45 AM,12:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/5/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),1:00 PM,3:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/5/2020,>INCYTE 1703 - Shop Drawing - General Elevation (East),3:15 PM,5:30 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/6/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),9:05 AM,10:30 AM,INCYTE 1703
+Glecinio Carolino Jr.,5/6/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),10:45 AM,12:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/6/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),1:00 PM,3:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/6/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),3:15 PM,6:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/7/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),9:00 AM,10:30 AM,INCYTE 1703
+Glecinio Carolino Jr.,5/7/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),10:45 AM,12:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/7/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),1:00 PM,3:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/7/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),3:15 PM,6:15 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/8/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),9:10 AM,10:30 AM,INCYTE 1703
+Glecinio Carolino Jr.,5/8/2020,>INCYTE 1703 - Shop Drawing - General Elevation (West),10:45 AM,12:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/8/2020,>INCYTE 1703 - Shop Drawing - General Elevation (Layout),1:00 PM,3:00 PM,INCYTE 1703
+Glecinio Carolino Jr.,5/8/2020,>INCYTE 1703 - Shop Drawing - General Elevation (Layout),3:15 PM,6:00 PM,INCYTE 1703
+"Hernandez, Charles",05/04/20,PTCC TRAINING,8:00:00 AM,12:00:00 PM,PTCC
+"Hernandez, Charles",05/04/20,PTCC TRAINING,1:00:00 PM,5:00:00 PM,PTCC
+"Hernandez, Charles",05/05/20,PTCC TRAINING,8:00:00 AM,12:00:00 PM,PTCC
+"Hernandez, Charles",05/05/20,PTCC TRAINING,1:00:00 PM,5:00:00 PM,PTCC
+"Hernandez, Charles",05/06/20,PTCC TRAINING,1:00:00 PM,6:00:00 PM,PTCC
+"Hernandez, Charles",05/07/20,PTCC TRAINING,9:00:00 AM,12:00:00 PM,PTCC
+"Hernandez, Charles",05/07/20,PTCC TRAINING,1:00:00 PM,6:00:00 PM,PTCC
+"Hernandez, Charles",05/08/20,PTCC TRAINING,9:00:00 AM,12:00:00 PM,PTCC
+"Hernandez, Charles",05/08/20,PTCC TRAINING,1:00:00 PM,6:00:00 PM,PTCC
+"ESGUERRA, MARIANNE JOYCE DS",5/4/2020,INCYTE- GenPlan- revision,10:00AM,12:00NN,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/4/2020,INCYTE- PartialPlan- revision,1:00PM,4:09PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/4/2020,"CONFERENCE CALL with sir Jec, sir Glen, sir RJ",4:09PM,4:39PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/4/2020,INCYTE- PartialPlan-revision,4:39PM,7:00PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/5/2020,INCYTE- PartialPlan-revision,10:00AM,12:00NN,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/5/2020,INCYTE- PartialPlan-Penthouse,1:00PM,6:00PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/5/2020,INCYTE- GenElev-revision,6:00PM,7:00PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/6/2020,INCYTE- GenElev-revision,10:00AM,12:00NN,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/6/2020,INCYTE- GenElev-revision,1:00PM,7:00PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/7/2020,INCYTE- PartialPlan-revision (dimension),10:00AM,11:16AM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/7/2020,installation of adobe reader and office program assisted by sir Bryan,11:16AM,12:00NN,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/7/2020,INCYTE- PartialPlan-revision (dimension),1:00M,5:00PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/7/2020,INCYTE- GenElev-revision,5:00PM,7:00PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/8/2020,INCYTE- GenElev-revision,10:00AM,12:00NN,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/8/2020,INCYTE- GenElev-revision,1:00PM,5:10PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/8/2020,CONFERENCE CALL with sir Jec,5:10PM,5:23PM,INCYTE 1703
+"ESGUERRA, MARIANNE JOYCE DS",5/8/2020,INCYTE- GenElev-revision,5:23PM,7:00PM,INCYTE 1703
+RENE F. RAMISCAL,5/4/2020,GREENBELT 3 – GREENBELT DRIVE – CONCEPT DRAWINGS,11:00:00 AM,06:00:00 PM,Greenbelt 3
+RENE F. RAMISCAL,5/5/2020,GREENBELT 3 – GREENBELT DRIVE – CONCEPT DRAWINGS,09:00:00 AM,06:00:00 PM,Greenbelt 3
+RENE F. RAMISCAL,5/6/2020,GREENBELT 3 – GREENBELT DRIVE – CONCEPT DRAWINGS,11:00:00 AM,06:00:00 PM,Greenbelt 3
+RENE F. RAMISCAL,5/7/2020,GREENBELT 3 – GREENBELT DRIVE – CONCEPT DRAWINGS,09:00:00 AM,02:00:00 PM,Greenbelt 3
+RENE F. RAMISCAL,5/7/2020,ONE AYALA PROJECT – REVIEW AND CHECKED THE CONTENTS OF FIELD WATER TIGHTNESS REPORT PRESENTED BY PHILCO METAL – TEST NOS.1 and 2,02:00:00 PM,06:00:00 PM,One Ayala Avenue
+RENE F. RAMISCAL,5/8/2020,"ONE AYALA PROJECT – REVIEW AND CHECKED THE CONTENTS OF FIELD WATER TIGHTNESS REPORT PRESENTED BY PHILCO METAL – TEST NOS. 3,4 and 5",09:00:00 AM,06:00:00 PM,One Ayala Avenue
+"Alexandria 
+Yñiguez",5/4/2020,Coordination works. Update of submission schedule,9:00 AM,10:00 AM,Usdot Volpe
+"Alexandria 
+Yñiguez",5/4/2020,"- Coordination works. 
+- Technical meeting with client.
+- Update of project status.",10:00 AM,6:00 PM,Usdot Volpe
+"Alexandria 
+Yñiguez",5/5/2020,Coordination works. ,9:00 AM,12:00 AM,Dadeland
+"Alexandria 
+Yñiguez",5/5/2020,Coordination works. Update of project log.,1:00 PM,5:00 PM,Ilona Rose House
+"Alexandria 
+Yñiguez",5/5/2020,Coordination works. ,5:00 PM,6:00 PM,Usdot Volpe
+"Alexandria 
+Yñiguez",5/6/2020,Coordination works. ,9:00 AM,11:00 AM,Usdot Volpe
+"Alexandria 
+Yñiguez",5/6/2020,Coordination works. ,11:00 AM,1:00 PM,Dadeland
+"Alexandria 
+Yñiguez",5/6/2020,"
+- Coordination works.
+- Submission of structural and thermal calculations sets",1:00 PM,6:00 PM,JSC Mobil
+"Alexandria 
+Yñiguez",5/7/2020,Coordination works. ,9:00 AM,6:00 PM,Dadeland
+"Alexandria 
+Yñiguez",5/7/2020,Coordination works. ,9:00 AM,6:00 PM,Dadeland
+MARC JOSEPH DELA CRUZ,05/04/20,Podium Curtain Wall Along Ayala Avenue R1 Design Review,07:00:00 AM,08:30:00 AM,One Ayala Avenue
+MARC JOSEPH DELA CRUZ,05/04/20,Podium Curtain Wall Along Ayala Avenue R1 Design Review,10:00:00 AM,12:00:00 PM,One Ayala Avenue
+MARC JOSEPH DELA CRUZ,05/04/20,Podium Curtain Wall Along Ayala Avenue R1 Design Review,01:00:00 PM,01:30:00 PM,One Ayala Avenue
+MARC JOSEPH DELA CRUZ,05/05/20,Glass sizing,02:00:00 PM,05:00:00 PM,NYC PUBLIC HEALTH LAB (HBG CORP)
+MARC JOSEPH DELA CRUZ,05/05/20,Mullopt form,05:00:00 PM,07:00:00 PM,NYC PUBLIC HEALTH LAB (HBG CORP)
+MARC JOSEPH DELA CRUZ,05/07/20,Mullion sizing,02:30:00 PM,06:30:00 PM,NYC PUBLIC HEALTH LAB (HBG CORP)
+MARC JOSEPH DELA CRUZ,05/07/20,Mullion sizing,09:00:00 PM,10:30:00 PM,NYC PUBLIC HEALTH LAB (HBG CORP)
+MARC JOSEPH DELA CRUZ,05/08/20,Transom checks,02:30:00 PM,06:00:00 PM,NYC PUBLIC HEALTH LAB (HBG CORP)
+JERICO SESNO,05/04/20,INCYTE – DWG CHECKING,01:00 PM,04:00 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/04/20,INCYTE – CONFERENCE CALL WITH THE TEAM,04:00 PM,04:39 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/04/20,INCYTE – DWG CHECKING,04:39 PM,06:00 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/05/20,INCYTE – RFI DRAFTING,01:00 PM,06:00 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/06/20,INCYTE – DWG CHECKING,09:00 AM,12:00 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/06/20,INCYTE – SYSTEM DETAIL,01:00 PM,06:00 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/07/20,INCYTE – DWG CHECKING,09:00 AM,12:00 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/07/20,INCYTE – SYSTEM DETAIL,01:00 PM,06:00 PM,NBK – INCYTE/250 SOUTH STREET
+JERICO SESNO,05/08/20,INCYTE – RFI DRAFTING,01:00 PM,03:00 PM,NBK – INCYTE/250 SOUTH STREET
+Rupert Mabugay,05/04/20,Review – Podium High Span C.W.  Rev1,09:00:00 AM,12:00:00 PM,One Ayala Avenue
+Rupert Mabugay,05/06/20,Sketch – stone cladding at Al Fresco Balustrade,09:00:00 AM,11:00:00 AM,One Ayala Avenue
+Rupert Mabugay,05/07/20,Sketches – stone cladding at Al Fresco Balustrade,09:00:00 AM,10:00:00 AM,One Ayala Avenue
+"CATRE, IJSSEL HOPE S",5/4/2020,CONFERENCE MEETING,07:12:00 PM,07:18:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/5/2020,"COMPONENT SCHED, SD EDIT &TAGGING",09:00:00 AM,12:00:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/5/2020,SD EDIT & TAGGING,01:00:00 PM,03:44:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/5/2020,COVER PAGE & DRAWING LIST,04:33:00 PM,05:35:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/7/2020,PE.404,09:00:00 AM,12:00:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/7/2020,PE.404,01:00:00 PM,06:35:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/7/2020,GENERAL PLAN UPDATE,07:30:00 PM,08:55:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/8/2020,GP.201,09:30:00 AM,12:30:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",5/8/2020,"GP.201A, GP.201B",01:00:00 PM,02:50:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",05/09/20,CONFERENCE MEETING,11:11:00 AM,11:16:00 AM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",05/09/20,COPYING FILE,11:16:00 AM,11:25:00 AM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",05/09/20,RADIAL BRACKET TAGGING,11:25:00 AM,12:00:00 PM,WHARF 6 & 7
+"CATRE, IJSSEL HOPE S",05/09/20,RADIAL BRACKET TAGGING,01:00:00 PM,07:00:00 PM,WHARF 6 & 7
+Dorylean Cruz,05/04/20,Coordication,09:30 AM,09:45 AM,"GENERAL OFFICE WORKS
+Checking of e-mails."
+Dorylean Cruz,05/04/20,Coordication,09:45 AM,10:00 AM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on technical correspondence thu FB messenger."
+Dorylean Cruz,05/04/20,Coordication,10:00 AM,10:15 AM,"COORDINATION WORKS FOR APPLE THE GROVE
+Assist NCM in meeting presentation"
+Dorylean Cruz,05/04/20,Coordication,10:15 AM,11:00 AM,"GENERAL OFFICE WORKS
+Preparation of progress report for 320 Canal Street."
+Dorylean Cruz,05/04/20,Coordication,01:00 PM,02:00 PM,"GENERAL OFFICE WORKS
+Preparation of progress report for Apple Grove"
+Dorylean Cruz,05/04/20,Coordication,02:00 PM,02:30 PM,"COORDINATION WORKS FOR APPLE THE GROVE
+Assist NCM in meeting presentation.
+Preparation of progress report."
+Dorylean Cruz,05/04/20,Coordication,03:30 PM,05:30 PM,"COORDINATION WORKS FOR POHL PROJECTS (APPLE DADELAND, 320 CANAL STREET, LYRIC, WHARF, & APPLE GROVE)
+- Webex meeting with M.Prinsen and PTCC team
+- Nextcloud meeting with ADL, NCM and AHY"
+Dorylean Cruz,05/04/20,Coordication,06:05 PM,06:15 PM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on technical correspondence thu FB messenger."
+Dorylean Cruz,05/04/20,Coordication,06:15 PM,08:45 PM,"COORDINATION WORKS FOR INCYTE
+Discussion regarding submittal schedule with JEC, GN, ML, and ADL."
+Dorylean Cruz,05/05/20,Coordication,10:00 AM,11:00 AM,"COORDINATION WORKS FOR INCYTE
+- Dissimination of e-mails regarding submittal schedule with JEC, GN, ML, and ADL."
+Dorylean Cruz,05/05/20,Coordication,11:00 AM,02:00 PM,"COORDINATION WORKS FOR 320
+- Preparation of RFI
+- Preparation of meeting minutes
+(No lunch break)"
+Dorylean Cruz,05/05/20,Coordication,02:00 PM,02:15 PM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on meeting minutes."
+Dorylean Cruz,05/05/20,Coordication,02:45 PM,03:00 PM,"COORDINATION WORKS FOR LYRIC
+- Preparation of meeting minutes"
+Dorylean Cruz,05/05/20,Coordication,03:00 PM,03:30 PM,"COORDINATION WORKS FOR WHARF & THE GROVE
+- Preparation of meeting minutes"
+Dorylean Cruz,05/05/20,Coordication,04:15 PM,04:30 PM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on meeting minutes."
+Dorylean Cruz,05/05/20,Coordication,04:30 PM,05:30 PM,"COORDINATION WORKS FOR INCYTE
+- Preparation of RFI."
+Dorylean Cruz,05/05/20,Coordication,05:30 PM,06:00 PM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on submission discussion"
+Dorylean Cruz,05/06/20,Coordication,09:00 AM,09:15 AM,"COORDINATION WORKS FOR WHARF
+- Dissemination of e-mails."
+Dorylean Cruz,05/06/20,Coordication,09:15 AM,10:00 AM,"COORDINATION WORKS FOR LYRIC
+- Dissemination of e-mails.
+- Inter-office e-mail correspondences, messenger discussions, and phone call."
+Dorylean Cruz,05/06/20,Coordication,10:30 AM,11:00 AM,"MISCELLANEOUS WORKS FOR DADELAND
+-Technical discussion with NLO"
+Dorylean Cruz,05/06/20,Coordication,11:00 AM,01:30 PM,"COORDINATION WORKS FOR 320
+- RFIs"
+Dorylean Cruz,05/06/20,Coordication,02:00 PM,02:15 PM,"COORDINATION WORKS FOR 320
+- RFIs
+- Technical emails"
+Dorylean Cruz,05/06/20,Coordication,03:30 PM,04:00 PM,"COORDINATION WORKS FOR LYRIC, VOLPE & 320
+-MS TEAMS meeting with MP and ADL."
+Dorylean Cruz,05/06/20,Coordication,04:00 PM,04:15 PM,"COORDINATION WORKS FOR LYRIC, & VOLPE
+-Nextcloud with ADL and WV."
+Dorylean Cruz,05/06/20,Coordication,04:15 PM,05:15 PM,"COORDINATION WORKS FOR 320
+- RFIs
+- Technical emails"
+Dorylean Cruz,05/06/20,Coordication,05:15 PM,05:30 PM,"COORDINATION WORKS FOR LYRIC
+-Discussion thru e-mails, and messenger regarding required structural report."
+Dorylean Cruz,05/06/20,Coordication,05:30 PM,06:00 PM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on submission discussion"
+Dorylean Cruz,05/06/20,Coordication,06:00 PM,06:15 PM,"COORDINATION WORKS FOR INCYTE
+- Discussion with JS regarding RFI."
+Dorylean Cruz,05/06/20,Coordication,08:15 PM,08:45 PM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on submission discussion"
+Dorylean Cruz,05/07/20,Coordication,09:00 AM,10:00 AM,"COORDINATION WORKS FOR INCYTE
+- Discussion with JS regarding RFIs.
+- Preparation of RFI-005."
+Dorylean Cruz,05/07/20,Coordication,10:00 AM,10:30 AM,"GENERAL OFFICE WORKS
+Preparation of progress report for Lyric Theatre"
+Dorylean Cruz,05/07/20,Coordication,10:30 AM,11:00 AM,"GENERAL OFFICE WORKS
+Preparation of progress report for Wharf."
+Dorylean Cruz,05/07/20,Coordication,11:00 AM,11:30 AM,"GENERAL OFFICE WORKS
+Preparation of progress report for Incyte"
+Dorylean Cruz,05/07/20,Coordication,11:30 AM,01:30 PM,"COORDINATION WORKS FOR INCYTE
+- Discussion with JS regarding RFIs.
+- Preparation of RFI-005 and RFI-006."
+Dorylean Cruz,05/07/20,Coordication,01:30 PM,02:45 PM,"COORDINATION WORKS FOR 320 CANAL ST
+- Discussion with JLF regarding RFI.
+- Preparation of RFI-005 "
+Dorylean Cruz,05/07/20,Coordication,03:15 PM,03:30 PM,"MISCELLANEOUS WORKS FOR VOLPE
+-Assist AHY on technical correspondence."
+Dorylean Cruz,05/07/20,Coordication,03:30 PM,04:30 PM,"MISCELLANEOUS WORKS FOR DADELAND
+-Assist AHY on technical correspondence."
+Dorylean Cruz,05/07/20,Coordication,05:30 PM,07:15 PM,"COORDINATION WORKS FOR 320 CANAL ST
+- Discussion with JLF regarding RFI.
+- Preparation of RFI-005
+-Coordination with IT regarding xfer link."
+Dorylean Cruz,05/07/20,Coordication,07:15 PM,07:30 PM,"MISCELLANEOUS WORKS FOR VOLPE
+-Assist AHY on technical correspondence."
+Dorylean Cruz,05/07/20,Coordication,08:00 PM,08:15 PM,"COORDINATION WORKS FOR LYRIC
+-Discussion thru SMS, and messenger regarding short structural report submission."
+Dorylean Cruz,05/08/20,Coordication,10:00 AM,10:30 AM,"COORDINATION WORKS FOR 320 and INCYTE
+Dissemination of e-mails ."
+Dorylean Cruz,05/08/20,Coordication,10:30 AM,12:00 PM,"COORDINATION WORKS FOR POHL PROJECTS (LYRIC,VOLPE &  WHARF)
+-Preparation of meeting minutes for 06 May MS teams meeting with Pohl."
+Dorylean Cruz,05/08/20,Coordication,01:30 PM,01:45 PM,"COORDINATION WORKS FOR WHARF
+- Discussion with NCF regarding drawing status."
+Dorylean Cruz,05/08/20,Coordication,01:45 PM,02:00 PM,"COORDINATION WORKS FOR POHL PROJECTS (LYRIC,VOLPE &  WHARF)
+-Preparation of meeting minutes for 06 May MS teams meeting with Pohl."
+Dorylean Cruz,05/08/20,Coordication,03:30 PM,04:15 PM,"COORDINATION WORKS FOR WHARF
+- Discussion with ADL and NCF regarding drawing status."
+Dorylean Cruz,05/08/20,Coordication,04:30 PM,06:00 PM,"COORDINATION WORKS FOR INCYTE
+- Discussion with JEC regarding RFI-007
+- Preparation of RFI and attachment."
+Maria Luisa Mabugay,05/08/20,"Roof Panel
+Take-off Study",09:00:00 AM,12:00:00 PM,Apple Dadeland
+Maria Luisa Mabugay,05/08/20,"Roof Panel
+Take-off",01:00:00 PM,06:00:00 PM,Apple Dadeland
+CHITO ANGELO PERALTA,05/08/20,COMMENT SUMMARY,01:00:00 PM,03:00:00 PM,Widus Hotel and Casino
+CHITO ANGELO PERALTA,05/06/20,QAQC PDS FOR ATYPICAL FINS,04:00:00 PM,05:00:00 PM,
+CHITO ANGELO PERALTA,05/04/20,DESIGN CHECKS,10:00:00 AM,10:30:00 AM,PROJECT TEMPO
+CHITO ANGELO PERALTA,05/04/20,DESIGN CHECKS,11:30:00 AM,12:00:00 PM,PROJECT TEMPO
+CHITO ANGELO PERALTA,05/04/20,DESIGN CHECKS,01:30:00 PM,03:00:00 PM,PROJECT TEMPO
+CHITO ANGELO PERALTA,05/05/20,DESIGN CHECKS,08:00:00 AM,11:00:00 AM,PROJECT TEMPO
+CHITO ANGELO PERALTA,05/05/20,DESIGN CHECKS,01:30:00 PM,03:00:00 PM,PROJECT TEMPO
+CHITO ANGELO PERALTA,05/04/20,"WIND ZONING, REVISE MULLOPT",04:00:00 PM,06:00:00 PM,SOLAIRE NORTH
+CHITO ANGELO PERALTA,05/06/20,"CONFERENCE CALL, GLASS SIZING, COACHING",10:30:00 AM,12:00:00 PM,SOLAIRE NORTH
+CHITO ANGELO PERALTA,05/06/20,"GLASS SIZING, COACHING",01:00:00 PM,04:00:00 PM,SOLAIRE NORTH
+CHITO ANGELO PERALTA,05/07/20,COACHING,10:30:00 AM,11:30:00 AM,SOLAIRE NORTH
+CHITO ANGELO PERALTA,05/07/20,QAQC GLASS STUDY,01:00:00 PM,02:00:00 PM,SOLAIRE NORTH
+CHITO ANGELO PERALTA,05/07/20,ALUMINUM WEIGHT COMPARISON,02:00:00 PM,04:00:00 PM,SOLAIRE NORTH
+CHITO ANGELO PERALTA,05/04/20,CATCH UP ON EMAILS; SUBMIT TIME SHEETS,09:00:00 AM,10:00:00 AM,PTCC
+CHITO ANGELO PERALTA,05/04/20,CONFERENCE CALL – SOLARWATER,11:00:00 AM,11:30:00 AM,PTCC
+CHITO ANGELO PERALTA,05/04/20,CONFERENCE CALL; TASK DELEGATION FOR SOLN,03:00:00 PM,04:00:00 PM,PTCC
+CHITO ANGELO PERALTA,05/05/20,"COACHING – PAULYN, WELLIE, MARC",03:00:00 PM,05:00:00 PM,PTCC
+CHITO ANGELO PERALTA,05/05/20,TAKE-OFF – NYC PUBLIC HEALTH LAB,05:00:00 PM,06:00:00 PM,PTCC
+CHITO ANGELO PERALTA,05/06/20,TAKE-OFF – NYC PUBLIC HEALTH LAB,09:00:00 AM,10:00:00 AM,PTCC
+CHITO ANGELO PERALTA,05/06/20,CONFERENCE CALL WITH ADL – PROJECT ISABEL,10:00:00 AM,10:30:00 AM,PTCC
+CHITO ANGELO PERALTA,05/06/20,"COACHING – WELLIE, NATHAN; TRAINING – RON",05:00:00 PM,06:00:00 PM,PTCC
+CHITO ANGELO PERALTA,05/07/20,TAKE-OFF – NYC PUBLIC HEALTH LAB REV 1,09:00:00 AM,10:30:00 AM,PTCC
+CHITO ANGELO PERALTA,05/07/20,TASK DELEGATION – MARC,11:30:00 AM,12:00:00 PM,PTCC
+CHITO ANGELO PERALTA,05/07/20,"COACHING – PAULYN, NATHAN, WELLIE, MARC",04:00:00 PM,05:00:00 PM,PTCC
+CHITO ANGELO PERALTA,05/08/20,TAKE-OFF – BRIDGETOWNE AND DAHLIA PROJECTS,09:00:00 AM,11:00:00 AM,PTCC
+CHITO ANGELO PERALTA,05/08/20,"COACHING – PAULYN, CHARLES",11:00:00 AM,12:00:00 AM,PTCC
+CHITO ANGELO PERALTA,05/07/20,QAQC REPORT,05:00:00 PM,06:00:00 PM,LYRIC THEATRE
+CHITO ANGELO PERALTA,05/04/20,QAQC EWS-01 CALC SET,08:00:00 PM,09:00:00 PM,45-18 COURT SQUARE
+CHITO ANGELO PERALTA,05/05/20,QAQC EWS-01 CALC SET,01:00:00 PM,01:30:00 PM,45-18 COURT SQUARE
+Nathan Cantos,05/04/20,EWS-01 Addendum Calcs,02:00:00 PM,04:30:00 PM,45-18 COURT SQUARE
+Nathan Cantos,05/05/20,EWS-01 Addendum Calcs,11:00:00 AM,12:00:00 PM,45-18 COURT SQUARE
+Nathan Cantos,05/06/20,EWS-3 Comments,02:45:00 PM,03:15:00 PM,45-18 COURT SQUARE
+Nathan Cantos,05/07/20,EWS-02 Addendum Cals,04:00:00 PM,05:00:00 PM,45-18 COURT SQUARE
+Nathan Cantos,05/07/20,EWS-05 Addendum Comments,05:00:00 PM,06:00:00 PM,45-18 COURT SQUARE
+Nathan Cantos,05/07/20,Canopy Comments,06:00:00 PM,07:00:00 PM,45-18 COURT SQUARE
+Nathan Cantos,05/04/20,Preliminary Checks,09:00:00 AM,11:00:00 AM,SOLAIRE NORTH
+Nathan Cantos,05/04/20,Preliminary Checks,07:30:00 PM,11:00:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/05/20,Preliminary Checks,01:00:00 PM,06:00:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/05/20,Preliminary Checks,09:30:00 PM,11:30:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/06/20,Video Conference,11:30:00 AM,12:00:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/06/20,Preliminary Checks,03:15:00 PM,06:45:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/06/20,Preliminary Checks,10:00:00 PM,12:00:00 AM,SOLAIRE NORTH
+Nathan Cantos,05/06/20,Preliminary Checks,12:00:00 AM,01:30:00 AM,SOLAIRE NORTH
+Nathan Cantos,05/07/20,Preliminary Checks,10:00:00 AM,12:00:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/07/20,Preliminary Checks,01:00:00 PM,04:00:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/08/20,Preliminary Checks,11:00:00 AM,12:00:00 PM,SOLAIRE NORTH
+Nathan Cantos,05/08/20,Preliminary Checks,01:00:00 PM,08:00:00 PM,SOLAIRE NORTH

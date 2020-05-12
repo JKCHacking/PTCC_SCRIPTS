@@ -7,6 +7,7 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 import os
 import datetime
 import dateutil.parser
+import re
 
 
 class TimesheetCalculator:
@@ -16,8 +17,6 @@ class TimesheetCalculator:
         self.workbook = Workbook()
 
     def calculate_time(self, log_date, time_in, time_out):
-        time_in = self.convert_12_hours(time_in)
-        time_out = self.convert_12_hours(time_out)
         log_date = self.convert_date(log_date)
 
         noon_time1 = self.convert_12_hours('12:00 PM')
@@ -44,13 +43,12 @@ class TimesheetCalculator:
             if self.is_within_time(time_in, time_out, after_evening1, after_evening2):
                 constraint_counter += self.convert_to_hours(after_evening2 - after_evening1)
 
-        if time_out == self.convert_12_hours('12:00 AM'):
-            time_out += datetime.timedelta(days=1)
         total_hours = self.convert_to_hours(time_out - time_in)
         total_hours -= constraint_counter
         return total_hours
 
-    def add_to_list(self, timesheet_entry):
+    def add_to_list(self, timesheet_entry, row_number):
+        error_file_path = os.path.join(Constants.OUTPUT_DIR, 'error.txt')
         ret = 1
         found_flag = False
         Work = namedtuple('Work', ['projectName', 'taskName', 'date', 'timeIn', 'timeOut', 'totalHours'])
@@ -65,6 +63,22 @@ class TimesheetCalculator:
             time_in = timesheet_entry['time_in'].strip()
             time_out = timesheet_entry['time_out'].strip()
 
+            # Time in
+            if re.search('Noon', time_in, re.IGNORECASE):
+                regex_time_in = re.compile(re.escape('Noon'), re.IGNORECASE)
+                time_in = regex_time_in.sub('PM', time_in)
+            elif re.search('NN', time_in, re.IGNORECASE):
+                regex_time_in = re.compile(re.escape('NN'), re.IGNORECASE)
+                time_in = regex_time_in.sub('PM', time_in)
+
+            # Time out
+            if re.search('Noon', time_out, re.IGNORECASE):
+                regex_time_out = re.compile(re.escape('Noon'), re.IGNORECASE)
+                time_out = regex_time_out.sub('PM', time_out)
+            elif re.search('NN', time_out, re.IGNORECASE):
+                regex_time_out = re.compile(re.escape('NN'), re.IGNORECASE)
+                time_out = regex_time_out.sub('PM', time_out)
+
             time_in_obj = self.convert_12_hours(time_in)
             time_out_obj = self.convert_12_hours(time_out)
             date_obj = self.convert_date(date)
@@ -72,11 +86,21 @@ class TimesheetCalculator:
             if time_out_obj == self.convert_12_hours('12:00 AM'):
                 time_out_obj += datetime.timedelta(days=1)
 
-            if time_in_obj is None or time_out_obj is None or date_obj is None or \
-                    time_out_obj < time_in_obj:
+            if os.path.exists(error_file_path):
+                mode = 'a'
+            else:
+                mode = 'w'
+
+            if time_in_obj is None or time_out_obj is None or date_obj is None:
+                with open(error_file_path, mode=mode) as error_file:
+                    error_file.write(f'Row Number: {row_number} Either Time-in, Time-out, or Date is empty\n')
+                return -1
+            if time_out_obj < time_in_obj:
+                with open(error_file_path, mode=mode) as error_file:
+                    error_file.write(f'Row Number: {row_number} Time-in and Time-out passed overnight!\n')
                 return -1
 
-            total_hours = self.calculate_time(date, time_in, time_out)
+            total_hours = self.calculate_time(date, time_in_obj, time_out_obj)
 
             work_obj = Work(projectName=project, taskName=task, date=date,
                             timeIn=time_in, timeOut=time_out, totalHours=total_hours)
@@ -94,7 +118,8 @@ class TimesheetCalculator:
                     self.all_employee_list.append(employee_obj)
             else:
                 self.all_employee_list.append(employee_obj)
-        except KeyError:
+        except KeyError as ke:
+            self.logger.error(ke)
             ret = -1
 
         return ret
@@ -133,7 +158,7 @@ class TimesheetCalculator:
             time_obj = time_obj.strftime(Constants.TIME_12_FORMAT)
             time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_12_FORMAT)
         except (TypeError, ValueError):
-            print("You have input an Invalid time")
+            print(f"You have input an Invalid time {time_string}")
 
         return time_obj
 
@@ -145,7 +170,7 @@ class TimesheetCalculator:
             time_obj = time_obj.strftime(Constants.TIME_24_FORMAT)
             time_obj = datetime.datetime.strptime(time_obj, Constants.TIME_24_FORMAT)
         except(ValueError, TypeError):
-            print("You have input an Invalid time")
+            print(f"You have input an Invalid time {time_string}")
 
         return time_obj
 
@@ -157,7 +182,7 @@ class TimesheetCalculator:
             date_obj = date_obj.strftime(Constants.DATE_FORMAT)
             date_obj = datetime.datetime.strptime(date_obj, Constants.DATE_FORMAT)
         except (TypeError, ValueError):
-            print("You have input an Invalid date")
+            print(f"You have input an Invalid date {date_string}")
 
         return date_obj
 

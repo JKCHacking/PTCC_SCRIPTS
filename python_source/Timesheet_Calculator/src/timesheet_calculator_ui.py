@@ -74,8 +74,6 @@ class TimesheetCalculatorUI:
 
         file_name = os.path.basename(sel_file_full_path)
         if file_name != '':
-            generate_button['state'] = NORMAL
-            text.set(file_name)
             dst = os.path.join(Constants.INPUT_DIR, file_name)
             try:
                 copyfile(sel_file_full_path, dst)
@@ -84,15 +82,28 @@ class TimesheetCalculatorUI:
 
             input_csv_path = os.path.join(Constants.INPUT_DIR, file_name)
             self.logger.info('Importing Datasheet...')
+            error = 0
+            row_counter = 1
             try:
                 with open(input_csv_path, newline='') as timesheet_csv:
                     reader = csv.DictReader(timesheet_csv)
                     for row in reader:
-                        ret = self.ts_calc.add_to_list(row)
+                        row_counter += 1
+                        ret = self.ts_calc.add_to_list(row, row_counter)
                         if ret == -1:
-                            messagebox.showinfo("Error", 'Something is wrong with your csv input!')
-                            self.logger.info('Importing Datasheet failed..')
-                            break
+                            error = 1
+
+                if error == 1:
+                    messagebox.showinfo("Error",
+                                        'There are errors detected in your csv!\n'
+                                        'check "error.txt" file in OUTPUT Folder!\n'
+                                        'Please fix!')
+                else:
+                    messagebox.showinfo("Success",
+                                        'Timesheet file uploaded successfully!')
+                    generate_button['state'] = NORMAL
+                    text.set(file_name)
+
             except FileNotFoundError as e:
                 self.logger.error(e.strerror)
                 self.logger.error('File not found!')
