@@ -1,5 +1,5 @@
 *.dwg
 *.bak
 *.pyc
-python_source/Timesheet_Calculator/output/*
-python_source/Timesheet_Calculator/input/*
+/python_source/*/input/*
+/python_source/*/output/*
