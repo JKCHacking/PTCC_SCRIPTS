@@ -2,8 +2,8 @@
 import os
 from comtypes import client
 from comtypes import COMError
-from constants import Constants
-from logger import Logger
+from src.constants import Constants
+from src.logger import Logger
 from shutil import copyfile
 import array
 import math
