@@ -4,12 +4,13 @@ import os
 import csv
 
 if __name__ == "__main__":
-    input_path = os.path.join(Constants.INPUT_DIR, 'test_dwg.dwg')
+    input_path = os.path.join(Constants.INPUT_DIR, 'input.dwg')
     output_path = os.path.join(Constants.OUTPUT_DIR, 'output_test.csv')
 
     ds = DrawingScanner()
     document = ds.open_file(input_path)
     ms = ds.get_modelspace(document)
+    ds.rotate_all_objs(document)
     data_dict = ds.search_blocks(ms)
 
     with open(output_path, mode='w', newline='') as csv_file:
