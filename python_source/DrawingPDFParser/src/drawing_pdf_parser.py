@@ -6,7 +6,7 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.converter import PDFPageAggregator
-from constants import Constants
+from src.constants import Constants
 import os
 
 
@@ -71,11 +71,20 @@ if __name__ == "__main__":
     pdf_path = os.path.join(Constants.INPUT_DIR, 'input.pdf')
     output_path = os.path.join(Constants.OUTPUT_DIR, 'output.pdf')
     fp = open(pdf_path, 'rb')
-    page_names = ["0.00", "0.01", "0.02", "0.03", "3.01",
-                  "5.01", "5.02", "5.03", "5.04", "5.05",
-                  "5.06", "5.07", "6.01", "6.02", "6.03",
-                  "6.04", "6.05", "6.06", "6.07", "6.08",
-                  "6.09", "6.10"]
+    page_names = ["000-1", "U100", "U101", 'U102', 'U103', 'U104', 'U105',
+                  'U106', 'U107', '000-2', '279-1', '279-2', '279-3', '279-4',
+                  '279-5', '9002506-1', '9005651-1', 'AL07-1', 'AL19061-1', 'FA19061-1',
+                  'SUN5501-1', 'W751195-1', 'W751195-2', 'W751195-3', 'W751195-4', 'W751195-5',
+                  'W752177-1', 'W752177-2', 'W752177-3', 'W752177-4', 'W752177-5', 'W752301-1',
+                  'W753210-1', 'W753210-2', 'W753210-3', 'W753210-4', 'W753210-5', 'W753210-6A',
+                  'W753210-6B', 'W753210-7', 'W753210-8', 'W753210-9', 'W753210-10', 'W753210-11',
+                  'W753503-1', 'W753503-2', 'W753503-3', 'W753503-4', 'W753503-5', 'W753503-6',
+                  'W753503-7', 'W753503-8', 'W753503-9', 'W753503-10', 'W755126-1A', 'W755405-1',
+                  'W755564-1A', 'W755565-1A', 'W755657-1', 'W756150-1A', 'W756150-1B', 'W756151-1A',
+                  'W756151-1B', 'W756155-1A', 'W756155-1B', 'W756183-1', 'W756188-1A', 'W756188-1B',
+                  'W757302-1', 'W757507-1', '000', '3.01', '5.01', '5.02', '5.03', '5.04', '5.05',
+                  '5.06', '5.07', '6.01', '6.02', '6.03', '6.04', '6.05', '6.06', '6.07', '6.08',
+                  '6.09', '6.10', '6.11']
 
     in_reader = PdfFileReader(fp, strict=False)
     out_writer = PdfFileWriter()

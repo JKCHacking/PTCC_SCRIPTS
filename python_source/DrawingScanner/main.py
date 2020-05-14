@@ -4,8 +4,8 @@ import os
 import csv
 
 if __name__ == "__main__":
-    input_path = os.path.join(Constants.INPUT_DIR, 'input.dwg')
-    output_path = os.path.join(Constants.OUTPUT_DIR, 'output.csv')
+    input_path = os.path.join(Constants.INPUT_DIR, 'test_dwg.dwg')
+    output_path = os.path.join(Constants.OUTPUT_DIR, 'output_test.csv')
 
     ds = DrawingScanner()
     document = ds.open_file(input_path)
@@ -13,9 +13,12 @@ if __name__ == "__main__":
     data_dict = ds.search_blocks(ms)
 
     with open(output_path, mode='w', newline='') as csv_file:
-        field_names = ['Blockname', 'Quantity']
+        field_names = ['Blockname', 'Quantity', 'Length']
         writer = csv.DictWriter(csv_file, field_names)
         writer.writeheader()
 
         for key, value in data_dict.items():
-            writer.writerow({'Blockname': key, 'Quantity': value})
+            value_split = value.split('-')
+            quantity = value_split[0]
+            length = value_split[1]
+            writer.writerow({'Blockname': key, 'Quantity': quantity, 'Length': length})

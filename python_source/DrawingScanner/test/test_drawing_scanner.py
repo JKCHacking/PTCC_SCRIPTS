@@ -25,7 +25,7 @@ class TestDrawingScanner(unittest.TestCase):
         self.assertEqual(expected, sum)
 
     def test_write_csv(self):
-        output_path = os.path.join(Constants.OUTPUT_DIR, 'output.csv')
+        output_path = os.path.join(Constants.OUTPUT_DIR, 'output_test.csv')
         expected_rows = 84
 
         with open(output_path, newline='') as csv_file:
