@@ -85,7 +85,7 @@ class TimesheetCalculatorUI:
             error = 0
             row_counter = 1
             try:
-                with open(input_csv_path, newline='') as timesheet_csv:
+                with open(input_csv_path, newline='', encoding='utf-8', errors='ignore') as timesheet_csv:
                     reader = csv.DictReader(timesheet_csv)
                     for row in reader:
                         row_counter += 1
