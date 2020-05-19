@@ -5,19 +5,39 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
-    {% block content %}
-        {% if latest_employee_list %}
-        <ul>
+{% block content %}
+    <body>
+        <div class="center">
+            <div class="d-flex justify-content-center">
+                <div class="p-2"><h2>EMPLOYEE LIST</h2></div>
+            </div>
+            <div class="card_container">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Employee's name" aria-label="Employee's name" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">SEARCH</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card_container">
+            {% if latest_employee_list %}
             {% for employee in latest_employee_list %}
-                <li>
-                    {{employee.name}}
-                </li>
+
+                    <div class="card">
+                      <div class="card-body">
+                          {{employee.name}} <br>
+                          {{employee.hired_date.date}} <br>
+                          {{employee.employee_status}}
+                      </div>
+                    </div>
+
             {% endfor %}
-        </ul>
-        {% else %}
-            <p>There are no Employees added yet.</p>
-        {% endif %}
-    {% endblock content %}
-</body>
+            {% else %}
+                <p>There are no Employees added yet.</p>
+            {% endif %}
+            </div>
+        </div>
+    </body>
+{% endblock content %}
 </html>
