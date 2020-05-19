@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends 'base.html' %}
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% block content %}
+        {% if latest_employee_list %}
+        <ul>
+            {% for employee in latest_employee_list %}
+                <li>
+                    {{employee.name}}
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>There are no Employees added yet.</p>
+        {% endif %}
+    {% endblock content %}
+</body>
+</html>

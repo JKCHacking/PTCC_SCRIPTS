@@ -1,0 +1,41 @@
++----EMPLOYEE_SCHEMA
+|    +----id
+|    +----name
+|    +----probation_date
+|    +----hired_date
+|    +----sl_start_date
+|    +----regularization_date
+|    +----employee_status
+
+
++----LEAVE_SCHEMA
+|    +----id
+|    +----name(PK)
+|    +----month
+|    +----year
+|    +----value
+|    +----type
+
+
++----TIMESHEET_SCHEMA
+|    +----id
+|    +----name
+|    +----date
+|    +----time-in
+|    +----time-out
+|    +----project
+
+
++----TIMESHEET_OFFENSE_SCHEMA
+|    +----id
+|    +----name
+|    +----date
+
+
++----USED_LEAVE_SCHEMA
+|    +----id
+|    +----name
+|    +----date
+|    +----type
+
+
