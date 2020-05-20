@@ -22,6 +22,8 @@ class DrawingPDFParser:
         interpreter = PDFPageInterpreter(rsrcmgr, device)
         pages = PDFPage.get_pages(fp)
 
+        text_height = self.get_text_height(fp, page_names)
+        print(f'Text Height: {text_height}')
         current_page_number = 0
         link_coor_list = []
         for page in pages:
@@ -43,6 +45,39 @@ class DrawingPDFParser:
                             print('At %r is text: %s' % (rect_coord, text))
             current_page_number = current_page_number + 1
         return link_coor_list
+
+    @staticmethod
+    def get_text_height(fp, page_names):
+        rsrcmgr = PDFResourceManager()
+        laparams = LAParams()
+        device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+        interpreter = PDFPageInterpreter(rsrcmgr, device)
+        pages = PDFPage.get_pages(fp)
+
+        text_height = 0
+        current_page_number = 0
+        for page in pages:
+            print(f"current page: {current_page_number}")
+            interpreter.process_page(page)
+            layout = device.get_result()
+
+            for lobj in layout:
+                if isinstance(lobj, LTTextBox):
+                    text = lobj.get_text().replace("\n", "_")
+                    text_split = text.split("_")
+                    counter = 0
+                    for text in text_split:
+                        text = text.strip()
+                        if text in page_names:
+                            counter += 1
+                    if counter == 1:
+                        bottom, left, top, right = lobj.bbox
+                        text_height = right - left
+                        break
+            if text_height != 0:
+                break
+            current_page_number = current_page_number + 1
+        return text_height
 
     @staticmethod
     def create_link_dict(link_name, rect_coord, curr_page):
@@ -78,7 +113,7 @@ if __name__ == "__main__":
                   'W752177-1', 'W752177-2', 'W752177-3', 'W752177-4', 'W752177-5', 'W752301-1',
                   'W753210-1', 'W753210-2', 'W753210-3', 'W753210-4', 'W753210-5', 'W753210-6A',
                   'W753210-6B', 'W753210-7', 'W753210-8', 'W753210-9', 'W753210-10', 'W753210-11',
-                  'W753503-1', 'W753503-2', 'W753503-3', 'W753503-4', 'W753503-5', 'W753503-6',
+                  'W753503-1', 'W753503-3', 'W753503-4', 'W753503-5', 'W753503-6',
                   'W753503-7', 'W753503-8', 'W753503-9', 'W753503-10', 'W755126-1A', 'W755405-1',
                   'W755564-1A', 'W755565-1A', 'W755657-1', 'W756150-1A', 'W756150-1B', 'W756151-1A',
                   'W756151-1B', 'W756155-1A', 'W756155-1B', 'W756183-1', 'W756188-1A', 'W756188-1B',
