@@ -10,16 +10,15 @@
 
 +----LEAVE_SCHEMA
 |    +----id
-|    +----name(PK)
-|    +----month
-|    +----year
+|    +----name(FK)
+|    +----date
 |    +----value
 |    +----type
 
 
 +----TIMESHEET_SCHEMA
 |    +----id
-|    +----name
+|    +----name(FK)
 |    +----date
 |    +----time-in
 |    +----time-out
@@ -28,13 +27,13 @@
 
 +----TIMESHEET_OFFENSE_SCHEMA
 |    +----id
-|    +----name
+|    +----name(FK)
 |    +----date
 
 
 +----USED_LEAVE_SCHEMA
 |    +----id
-|    +----name
+|    +----name(FK)
 |    +----date
 |    +----type
 

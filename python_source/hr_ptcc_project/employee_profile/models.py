@@ -14,7 +14,7 @@ class Employee(models.Model):
 
 class Leave(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    month = models.CharField(max_length=10)
+    date = models.DateTimeField(default=timezone.now())
     value = models.IntegerField(default=0)
     type = models.CharField(max_length=2)
 
@@ -24,4 +24,3 @@ class Timesheet(models.Model):
     time_in = models.DateTimeField()
     time_out = models.DateTimeField()
     project = models.CharField(max_length=200)
-

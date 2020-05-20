@@ -48,7 +48,7 @@ a[data-toggle="collapse"] {
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: #F8F8F8;
+    background: #E8E8E8;
 }
 
 p {
@@ -117,6 +117,42 @@ ul ul a {
     padding:10px;
     background-color:#F8F8F8;
     margin-bottom:5px;
-    border: 1px solid black;
+    border: 1px solid #D3D3D3;
     border-radius: 5px;
+}
+
+.employee_spec_details{
+    border:1px solid  #000000;
+    border-radius:5px;
+    padding:5px;
+    margin-top:10px;
+    margin-left:10px;
+    background-color:#FFFFFF;
+}
+
+.table{
+    width:100%;
+}
+
+.config_buttons{
+    margin-top:10px;
+}
+.justify-content-between{
+    flex-direction: column;
+}
+
+.config_button_style{
+    width:100px;
+}
+
+.year_dropdown{
+    margin-top:10px;
+}
+
+.flex-column{
+    width:100%;
+}
+
+.leave_summary{
+    margin-left:10px;
 }
