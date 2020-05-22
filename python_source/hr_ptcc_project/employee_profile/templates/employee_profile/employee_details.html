@@ -1,113 +1,183 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% extends 'base.html' %}
-    {% load static %}
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+{% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-    <body>
-        <div class="d-flex flex-column">
-            <div class="p-2">
-                <div class="d-flex flex-row">
-                    <div class="p-2">
-                        <div class="employee_spec_details">
-                            <table>
-                                <tr>
-                                    <th><h6>Employee Name:</h6></th>
-                                    <th><h4><strong>{{employee.name}}</strong></h4></th>
-                                </tr>
-                                <tr>
-                                    <th><h6>Hired Date:</h6></th>
-                                    <th><h6>{{employee.hired_date.date}}</h6></th>
-                                </tr>
-                                <tr>
-                                    <th><h6>Probation Date:</h6></th>
-                                    <th><h6>{{employee.probation_date.date}}</h6></th>
-                                </tr>
-                                <tr>
-                                    <th><h6>SL Start Date:</h6></th>
-                                    <th><h6>{{employee.sl_start_date.date}}</h6></th>
-                                </tr>
-                                <tr>
-                                    <th><h6>Regularization Date:</h6></th>
-                                    <th><h6>{{employee.regularization_date.date}}</h6></th>
-                                </tr>
-                                <tr>
-                                    <th><h6>Employee Status:</h6></th>
-                                    <th><h6>{{employee.employee_status}}</h6></th>
-                                </tr>
-                            </table>
-                        </div>
+    <div class="d-flex flex-column">
+        <div class="p-2">
+            <div class="d-flex flex-row">
+                <div class="p-2">
+                    <div class="employee_spec_details">
+                        <table>
+                            <tr>
+                                <th><h6>Employee Name:</h6></th>
+                                <th><h4><strong>{{employee.name}}</strong></h4></th>
+                            </tr>
+                            <tr>
+                                <th><h6>Hired Date:</h6></th>
+                                <th><h6>{{employee.hired_date}}</h6></th>
+                            </tr>
+                            <tr>
+                                <th><h6>Probation Date:</h6></th>
+                                <th><h6>{{employee.probation_date}}</h6></th>
+                            </tr>
+                            <tr>
+                                <th><h6>SL Start Date:</h6></th>
+                                <th><h6>{{employee.sl_start_date}}</h6></th>
+                            </tr>
+                            <tr>
+                                <th><h6>Regularization Date:</h6></th>
+                                <th class="editable_employee" data-id="{{employee.id}}" data-type="regularization_date"><h6>{{employee.regularization_date}}</h6></th>
+                            </tr>
+                            <tr>
+                                <th><h6>Employee Status:</h6></th>
+                                <th class="editable_employee" data-id="{{employee.id}}" data-type="employee_status"><h6>{{employee.employee_status}}</h6></th>
+                            </tr>
+                        </table>
                     </div>
-                    <div class="p-2">
-                        <div class="config_buttons">
-                            <div class="d-flex justify-content-between">
-                                <div class="p-2">
-                                    <button type="button" class="btn btn-primary config_button_style">EDIT</button>
-                                </div>
-                                <div class="p-2">
-                                    <button type="button" class="btn btn-primary config_button_style">SAVE</button>
-                                </div>
-                                <div class="p-2">
-                                    <button type="button" class="btn btn-primary config_button_style">VIEW</button>
-                                </div>
+                </div>
+                <div class="p-2">
+                    <div class="config_buttons">
+                        <div class="d-flex justify-content-between">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="ml-auto p-2">
-                        <div class="btn-group year_dropdown">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Year
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">2020</a>
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
+                            </div>
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">VIEW</button>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="ml-auto p-2">
+                    <div class="btn-group year_dropdown">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Year
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">2020</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="p-2">
-                <div class="leave_summary">
-                    <h5><strong>Leave Summary</strong></h5>
-                    <table class="table">
+        </div>
+        <div class="p-2">
+            <div class="d-flex flex-row">
+                <div class="p-2 earned_leave">
+                    <h5><strong>Bi-Monthly Earned Credits</strong></h5>
+                    <table class="table earned_leave_table">
                         <thead class="thead-dark">
                             <tr>
-                                <th scope="col">TYPE</th>
-                                <th scope="col">JAN</th>
-                                <th scope="col">FEB</th>
-                                <th scope="col">MAR</th>
-                                <th scope="col">APR</th>
-                                <th scope="col">MAY</th>
-                                <th scope="col">JUN</th>
-                                <th scope="col">JUL</th>
-                                <th scope="col">AUG</th>
-                                <th scope="col">SEP</th>
-                                <th scope="col">OCT</th>
-                                <th scope="col">NOV</th>
-                                <th scope="col">DEC</th>
-                                <th scope="col">PREV</th>
-                                <th scope="col">TOTAL</th>
+                                <th scope="col">Cut-off</th>
+                                <th scope="col">Vacation</th>
+                                <th scope="col">Sick</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <th scope="row">VL</th>
-
+                                <th scope="row">Beg. Bal</th>
+                                <td contenteditable="true" scope="row">{{employee.prev_vl_bal}}</td>
+                                <td contenteditable="true" scope="row">{{employee.prev_sl_bal}}</td>
                             </tr>
-                            <tr>
-                                <th scope="row">SL</th>
-                            </tr>
+                            {% for vl, sl in employee.get_earned_leaves %}
+                                <tr>
+                                    <th scope="row">{{vl.cut_off}}</th>
+                                    <td contenteditable="true" scope="row">{{vl.value}}</td>
+                                    <td contenteditable="true" scope="row">{{sl.value}}</td>
+                                </tr>
+                            {% endfor %}
+                                <tr>
+                                    <th scope="row">Total</th>
+                                    <td scope="row">{{employee.get_total_leaves.0}}</td>
+                                    <td scope="row">{{employee.get_total_leaves.1}}</td>
+                                </tr>
                         </tbody>
-
                     </table>
+                    <div class="d-flex flex-row">
+                        <div class="p-2">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
+                            </div>
+                        </div>
+                        <div class="ml-auto p-2">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
+                <div class="p-2 leaves_taken">
+                    <h5><strong>Leaves Taken</strong></h5>
+                    <table class="table leaves_taken_table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">No. of Days</th>
+                                <th scope="col">Type of Leave</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in employee.leave_set.all %}
+                                <tr>
+                                    <th scope="row">{{leave.date}}</th>
+                                    <td scope="row">{{leave.days}}</td>
+                                    <td scope="row">{{leave.type}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="d-flex flex-row">
+                        <div class="p-2">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
+                            </div>
+                        </div>
+                        <div class="ml-auto p-2">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2 offenses">
+                    <h5><strong>Timekeeping Offenses</strong></h5>
+                    <table class="table offenses_table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Offense Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for offense in employee.offense_set.all %}
+                                <tr>
+                                    <th scope="row">{{offense.date}}</th>
+                                    <td scope="row">{{offense.offense_name}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="d-flex flex-row">
+                        <div class="p-2">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
+                            </div>
+                        </div>
+                        <div class="ml-auto p-2">
+                            <div class="p-2">
+                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-    </body>
+    </div>
 {% endblock content %}
 
-</html>
+{% block custom_js %}
+    <script>
+        var edited_values
+    </script>
+{% endblock custom_js %}

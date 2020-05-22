@@ -16,25 +16,12 @@
 |    +----type
 
 
-+----TIMESHEET_SCHEMA
++----EARNED_LEAVE_SCHEMA
 |    +----id
 |    +----name(FK)
-|    +----date
-|    +----time-in
-|    +----time-out
-|    +----project
-
-
-+----TIMESHEET_OFFENSE_SCHEMA
-|    +----id
-|    +----name(FK)
-|    +----date
-
-
-+----USED_LEAVE_SCHEMA
-|    +----id
-|    +----name(FK)
-|    +----date
+|    +----cut_off
+|    +----value
 |    +----type
+
 
 

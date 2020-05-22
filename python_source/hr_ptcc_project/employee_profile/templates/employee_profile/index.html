@@ -36,7 +36,7 @@
                               <div class="p-2">
                                   <div class="employee_details">
                                       <h6><strong>{{employee.name}}</strong></h6>
-                                      <h6>{{employee.hired_date.date}}</h6>
+                                      <h6>{{employee.hired_date}}</h6>
                                       <h6>{{employee.employee_status}}</h6>
                                       <a href="{% url 'employee_profile:employee_details' employee.id %}" class="btn btn-primary stretched link">View Employee</a>
                                   </div>

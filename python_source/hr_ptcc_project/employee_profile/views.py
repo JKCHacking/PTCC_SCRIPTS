@@ -9,7 +9,7 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_employee_list'
 
     def get_queryset(self):
-        return Employee.objects.order_by('-name')
+        return Employee.objects.order_by('name')
 
 
 class EmployeeDetailView(generic.DetailView):

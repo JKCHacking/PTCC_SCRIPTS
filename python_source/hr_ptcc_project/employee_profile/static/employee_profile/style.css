@@ -130,10 +130,6 @@ ul ul a {
     background-color:#FFFFFF;
 }
 
-.table{
-    width:100%;
-}
-
 .config_buttons{
     margin-top:10px;
 }
@@ -152,7 +148,17 @@ ul ul a {
 .flex-column{
     width:100%;
 }
+.earned_leave_table{
+    background-color: #FFFFFF;
+}
+.leaves_taken_table{
+    background-color: #FFFFFF;
+}
 
-.leave_summary{
-    margin-left:10px;
+.offenses_table{
+    background-color: #FFFFFF;
+}
+
+.employee_detail_form{
+    width:100%;
 }
