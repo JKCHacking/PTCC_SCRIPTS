@@ -28,7 +28,8 @@
                                 <th>Regularization Date:</th>
                                 <td class="editable" 
                                     data-id="{{employee.id}}" 
-                                    data-type="employee-regularization_date">{{employee.regularization_date}}
+                                    data-type="employee-regularization_date"
+                                    name="format_date">{{employee.regularization_date}}
                                 </td>
                             </tr>
                             <tr>
@@ -82,7 +83,7 @@
                                     data-id="{{employee.id}}" 
                                     data-type="employee-prev_vl_bal" 
                                     scope="row"
-                                    name="flt">
+                                    name="format_float">
                                         {{employee.prev_vl_bal}}
                                 </td>
                                 <td 
@@ -90,7 +91,7 @@
                                     data-id="{{employee.id}}"
                                     data-type="employee-prev_sl_bal"
                                     scope="row"
-                                    name="flt">
+                                    name="format_float">
                                         {{employee.prev_sl_bal}}
                                 </td>
                             </tr>
@@ -100,13 +101,13 @@
                                     <td class="editable" 
                                         data-id="{{vl.id}}" 
                                         data-type="earned-{{vl.type}}"
-                                        name="flt"
+                                        name="format_float"
                                         scope="row">{{vl.value}}
                                     </td>
                                     <td class="editable" 
                                         data-id="{{sl.id}}" 
                                         data-type="earned-{{sl.type}}"
-                                        name="flt"
+                                        name="format_float"
                                         scope="row">{{sl.value}}
                                     </td>
                                 </tr>
@@ -132,9 +133,24 @@
                         <tbody>
                             {% for leave in employee.leave_set.all %}
                                 <tr>
-                                    <th scope="row">{{leave.date}}</th>
-                                    <td scope="row">{{leave.days}}</td>
-                                    <td scope="row">{{leave.type}}</td>
+                                    <td class="editable" 
+                                        data-id="{{leave.id}}" 
+                                        data-type="leave-date"
+                                        name="format_date"
+                                        scope="row">{{leave.date}}
+                                    </td>
+                                    <td class="editable" 
+                                        data-id="{{leave.id}}" 
+                                        data-type="leave-days"
+                                        name="format_text"
+                                        scope="row">{{leave.days}}
+                                    </td>
+                                    <td class="editable" 
+                                        data-id="{{leave.id}}" 
+                                        data-type="leave-type"
+                                        name="format_text"
+                                        scope="row">{{leave.type}}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -152,8 +168,17 @@
                         <tbody>
                             {% for offense in employee.offense_set.all %}
                                 <tr>
-                                    <th scope="row">{{offense.date}}</th>
-                                    <td scope="row">{{offense.offense_name}}</td>
+                                    <td class="editable" 
+                                        data-id="{{offense.id}}" 
+                                        data-type="offense-date"
+                                        name="format_date"
+                                        scope="row">{{offense.date}}
+                                    </td>
+                                    <td class="editable" 
+                                        data-id="{{offense.id}}" 
+                                        data-type="offense-offense_name"
+                                        name="format_text"
+                                        scope="row">{{offense.offense_name}}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -206,25 +231,40 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var edited_values_dict = {};
+
             $(document).on("dblclick", ".editable", function() {
                var value = ($(this).text()).trim();
                var data_type = $(this).data("type");
-
+               var name_element = $(this).attr("name");
                var input_type;
-               if (data_type == "employee-regularization_date") {
+               var input;
+
+               if (name_element == "format_date") {
                     input_type = "date";
                     value = convertDate(value);
                } else {
                     input_type = "text";
                }
 
-               var input;
                if (data_type == "employee-employee_status") {
                     input = "<select class='input-data'>" +
                                 "<option>"+value+"</option>" +
                                 "<option value='P'>P</option>" +
                                 "<option value='R1'>R1</option>" +
                                 "<option value='R'>R</option>" +
+                            "</select>";
+               } else if (data_type == "leave-type") {
+                    input = "<select class='input-data'>" +
+                                "<option>"+value+"</option>" +
+                                "<option value='SL'>SL</option>" +
+                                "<option value='VL'>VL</option>" +
+                            "</select>";
+               } else if (data_type == "offense-offense_name") {
+                    input = "<select class='input-data'>" +
+                                "<option>"+value+"</option>" +
+                                "<option value='Late'>Late</option>" +
+                                "<option value='No Time-in'>No Time-in</option>" +
+                                "<option value='No Time-out'>No Time-out</option>" +
                             "</select>";
                } else {
                    input = "<input type='"+input_type+"'" + 
@@ -281,11 +321,11 @@
                 var type = td.data("type");
                 var id = td.data("id");
 
-                if(type == "employee-regularization_date") {
+                if(name_element == "format_date") {
                     value = convertDate(value);
                 }
                 
-                if (name_element == "flt") {
+                if (name_element == "format_float") {
                     if (isNaN(value)) {
                         $(".info-modal-title").html("Error");
                         $(".info-modal-body").html("You have input an invalid data!");
@@ -312,7 +352,7 @@
             }
 
             function convertDate(date_string) {
-                month_shortcuts = {
+                var month_shortcuts = {
                     "Jan.": "January",
                     "Feb.": "February",
                     "Aug.": "August",
@@ -322,15 +362,14 @@
                     "Dec." : "December"
                 };
 
-                month = date_string.split(" ")[0];
-                if (month.includes(".")) {
-                    date_string = date_string.replace(month, month_shortcuts[month]);
-                }
-
                 var options = { year: 'numeric', month: 'long', day: 'numeric' };
                 var date = new Date(date_string);
 
                 if(isNaN(date_string[0])) {
+                    month = date_string.split(" ")[0];
+                    if (month.includes(".")) {
+                        date_string = date_string.replace(month, month_shortcuts[month]);
+                    }
                     dateString = (date.getFullYear() + "-" + ("0" + (date.getMonth()+1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2));
                 } else {
                     dateString = date.toLocaleDateString("en-US", options)
@@ -339,6 +378,7 @@
             }
 
             function sendToServer(edited_values_dict) {
+                console.log(edited_values_dict);
                 url = "http://127.0.0.1:8000/employee_profile/save_employee";
 
                     $.ajax({

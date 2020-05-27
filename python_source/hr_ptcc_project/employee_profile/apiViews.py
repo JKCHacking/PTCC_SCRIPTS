@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Employee, Earnedleave
+from .models import Employee, Earnedleave, Leave, Offense
 # import the logging library
 import logging
 import dateutil.parser
@@ -25,11 +25,9 @@ def save_employee(request):
         table_name = model_parts[0]
         column_name = model_parts[1]
 
-        if table_name == "earned":
-            earned_leave_model = Earnedleave.objects.get(id=id)
-            earned_leave_model.value = value
-
-            earned_leave_model.save()
+        logger.error(id)
+        logger.error(type)
+        logger.error(value)
 
         if table_name == "employee":
             employee = Employee.objects.get(id=id)
@@ -48,5 +46,38 @@ def save_employee(request):
                 employee.prev_sl_bal = value
 
             employee.save()
+
+        if table_name == "earned":
+            earned_leave_model = Earnedleave.objects.get(id=id)
+            earned_leave_model.value = value
+
+            earned_leave_model.save()
+
+        if table_name == "leave":
+            leave_model = Leave.objects.get(id=id)
+
+            if column_name == "date":
+                date_obj = dateutil.parser.parse(value)
+                leave_model.date = date_obj
+
+            if column_name == "days":
+                leave_model.days = value
+
+            if column_name == "type":
+                leave_model.type = value
+
+            leave_model.save()
+
+        if table_name == "offense":
+            offense_model = Offense.objects.get(id=id)
+
+            if column_name == "date":
+                date_obj = dateutil.parser.parse(value)
+                offense_model.date = date_obj
+
+            if column_name == "offense_name":
+                offense_model.offense_name = value
+
+            offense_model.save()
 
     return JsonResponse({"success": "All changes has been saved!"})
