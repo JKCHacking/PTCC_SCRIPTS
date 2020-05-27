@@ -9,28 +9,34 @@
                     <div class="employee_spec_details">
                         <table>
                             <tr>
-                                <th><h6>Employee Name:</h6></th>
-                                <th><h4><strong>{{employee.name}}</strong></h4></th>
+                                <th>Employee Name:</th>
+                                <td><h4><strong>{{employee.name}}</strong></h4></td>
                             </tr>
                             <tr>
-                                <th><h6>Hired Date:</h6></th>
-                                <th><h6>{{employee.hired_date}}</h6></th>
+                                <th>Hired Date:</th>
+                                <td id="hired_date">{{employee.hired_date}}</td>
                             </tr>
                             <tr>
-                                <th><h6>Probation Date:</h6></th>
-                                <th><h6>{{employee.probation_date}}</h6></th>
+                                <th>Probation Date:</th>
+                                <td id="probation_date">{{employee.probation_date}}</td>
                             </tr>
                             <tr>
-                                <th><h6>SL Start Date:</h6></th>
-                                <th><h6>{{employee.sl_start_date}}</h6></th>
+                                <th>SL Start Date:</th>
+                                <td id="sl_start_date">{{employee.sl_start_date}}</td>
                             </tr>
                             <tr>
-                                <th><h6>Regularization Date:</h6></th>
-                                <th class="editable_employee" data-id="{{employee.id}}" data-type="regularization_date"><h6>{{employee.regularization_date}}</h6></th>
+                                <th>Regularization Date:</th>
+                                <td class="editable" 
+                                    data-id="{{employee.id}}" 
+                                    data-type="employee-regularization_date">{{employee.regularization_date}}
+                                </td>
                             </tr>
                             <tr>
-                                <th><h6>Employee Status:</h6></th>
-                                <th class="editable_employee" data-id="{{employee.id}}" data-type="employee_status"><h6>{{employee.employee_status}}</h6></th>
+                                <th>Employee Status:</th>
+                                <td class="editable" 
+                                    data-id="{{employee.id}}" 
+                                    data-type="employee-employee_status">{{employee.employee_status}}
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -39,13 +45,7 @@
                     <div class="config_buttons">
                         <div class="d-flex justify-content-between">
                             <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
-                            </div>
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
-                            </div>
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">VIEW</button>
+                                <button type="button" class="btn btn-primary config_button_style" id="save_employee" disabled="true">SAVE</button>
                             </div>
                         </div>
                     </div>
@@ -77,14 +77,38 @@
                         <tbody>
                             <tr>
                                 <th scope="row">Beg. Bal</th>
-                                <td contenteditable="true" scope="row">{{employee.prev_vl_bal}}</td>
-                                <td contenteditable="true" scope="row">{{employee.prev_sl_bal}}</td>
+                                <td 
+                                    class="editable" 
+                                    data-id="{{employee.id}}" 
+                                    data-type="employee-prev_vl_bal" 
+                                    scope="row"
+                                    name="flt">
+                                        {{employee.prev_vl_bal}}
+                                </td>
+                                <td 
+                                    class="editable"
+                                    data-id="{{employee.id}}"
+                                    data-type="employee-prev_sl_bal"
+                                    scope="row"
+                                    name="flt">
+                                        {{employee.prev_sl_bal}}
+                                </td>
                             </tr>
                             {% for vl, sl in employee.get_earned_leaves %}
                                 <tr>
                                     <th scope="row">{{vl.cut_off}}</th>
-                                    <td contenteditable="true" scope="row">{{vl.value}}</td>
-                                    <td contenteditable="true" scope="row">{{sl.value}}</td>
+                                    <td class="editable" 
+                                        data-id="{{vl.id}}" 
+                                        data-type="earned-{{vl.type}}"
+                                        name="flt"
+                                        scope="row">{{vl.value}}
+                                    </td>
+                                    <td class="editable" 
+                                        data-id="{{sl.id}}" 
+                                        data-type="earned-{{sl.type}}"
+                                        name="flt"
+                                        scope="row">{{sl.value}}
+                                    </td>
                                 </tr>
                             {% endfor %}
                                 <tr>
@@ -94,18 +118,6 @@
                                 </tr>
                         </tbody>
                     </table>
-                    <div class="d-flex flex-row">
-                        <div class="p-2">
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
-                            </div>
-                        </div>
-                        <div class="ml-auto p-2">
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="p-2 leaves_taken">
                     <h5><strong>Leaves Taken</strong></h5>
@@ -127,18 +139,6 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    <div class="d-flex flex-row">
-                        <div class="p-2">
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
-                            </div>
-                        </div>
-                        <div class="ml-auto p-2">
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="p-2 offenses">
                     <h5><strong>Timekeeping Offenses</strong></h5>
@@ -158,26 +158,207 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    <div class="d-flex flex-row">
-                        <div class="p-2">
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">EDIT</button>
-                            </div>
-                        </div>
-                        <div class="ml-auto p-2">
-                            <div class="p-2">
-                                <button type="button" class="btn btn-primary config_button_style">SAVE</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title info-modal-title" id="infoModalLabel"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body info-modal-body">
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="info_button_close">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="saveModal" tabindex="-1" role="dialog" aria-labelledby="saveModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="saveModalLabel">Saving data</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to modify the data?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="save_button_close">Close</button>
+            <button type="button" class="btn btn-primary" id="save_button_modal">Save changes</button>
+            </div>
+        </div>
         </div>
     </div>
 {% endblock content %}
 
 {% block custom_js %}
-    <script>
-        var edited_values
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var edited_values_dict = {};
+            $(document).on("dblclick", ".editable", function() {
+               var value = ($(this).text()).trim();
+               var data_type = $(this).data("type");
+
+               var input_type;
+               if (data_type == "employee-regularization_date") {
+                    input_type = "date";
+                    value = convertDate(value);
+               } else {
+                    input_type = "text";
+               }
+
+               var input;
+               if (data_type == "employee-employee_status") {
+                    input = "<select class='input-data'>" +
+                                "<option>"+value+"</option>" +
+                                "<option value='P'>P</option>" +
+                                "<option value='R1'>R1</option>" +
+                                "<option value='R'>R</option>" +
+                            "</select>";
+               } else {
+                   input = "<input type='"+input_type+"'" + 
+                           "class='input-data'" + 
+                           "value='"+value+"'>";
+               }
+
+               $(this).html(input);
+               $(this).removeClass("editable_employee")
+               $("#save_employee").attr("disabled", false);
+               $('input[type="text"]')
+                // event handler
+                .keyup(resizeInput)
+                // resize on page load
+                .each(resizeInput);
+            });
+
+            $(document).on("blur", ".input-data", function(){
+                enterInput($(this));
+            });
+
+            $(document).on("keypress", ".input-data", function(e) {
+                var key = e.which;
+
+                if (key == 13) {
+                    enterInput($(this));
+                }
+            });
+
+            $("#save_employee").click(function() {
+                $("#saveModal").modal();
+            });
+
+            $("#save_button_modal").click(function() {
+                sendToServer(edited_values_dict);
+                $("#save_employee").attr("disabled", true);
+                $("#saveModal").modal("hide");
+            });
+
+            $("#info_button_close").click(function() {
+                $("#infoModal").modal("hide");
+                location.reload(true);
+            });
+
+            $("#save_button_close").click(function() {
+                location.reload(true);
+                $("#saveModal").modal("hide");
+            });
+
+            function enterInput(element) {
+                var value = (element.val()).trim();
+                var td = element.parent("td");
+                var name_element = td.attr("name");
+                var type = td.data("type");
+                var id = td.data("id");
+
+                if(type == "employee-regularization_date") {
+                    value = convertDate(value);
+                }
+                
+                if (name_element == "flt") {
+                    if (isNaN(value)) {
+                        $(".info-modal-title").html("Error");
+                        $(".info-modal-body").html("You have input an invalid data!");
+                        $("#infoModal").modal();
+                        return 0;
+                    }
+                }
+
+                element.remove();
+            
+                td.html(value);
+                td.addClass("editable_employee");
+                
+                var edited_employee_data = {
+                    "id" : id,
+                    "type": type,
+                    "value": value
+                };
+                edited_values_dict[edited_employee_data['type']] = edited_employee_data;
+            }
+
+            function resizeInput() {
+                $(this).attr('size', $(this).val().length);
+            }
+
+            function convertDate(date_string) {
+                month_shortcuts = {
+                    "Jan.": "January",
+                    "Feb.": "February",
+                    "Aug.": "August",
+                    "Sept." : "September",
+                    "Oct." : "October",
+                    "Nov." : "November",
+                    "Dec." : "December"
+                };
+
+                month = date_string.split(" ")[0];
+                if (month.includes(".")) {
+                    date_string = date_string.replace(month, month_shortcuts[month]);
+                }
+
+                var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                var date = new Date(date_string);
+
+                if(isNaN(date_string[0])) {
+                    dateString = (date.getFullYear() + "-" + ("0" + (date.getMonth()+1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2));
+                } else {
+                    dateString = date.toLocaleDateString("en-US", options)
+                }
+                return dateString;
+            }
+
+            function sendToServer(edited_values_dict) {
+                url = "http://127.0.0.1:8000/employee_profile/save_employee";
+
+                    $.ajax({
+                        url:url,
+                        type: "POST",
+                        dataType: "json",
+                        data: {data: JSON.stringify(edited_values_dict)}
+                    })
+                    .done(function(response) {
+                        $(".info-modal-title").html("Success");
+                        $(".info-modal-body").html(response.success);
+                        $("#infoModal").modal();
+                        edited_values_dict = {};
+                    })
+                    .fail(function(){
+                        $(".info-modal-title").html("Failed");
+                        $(".info-modal-body").html("Failed to save data!");
+                        $("#infoModal").modal();
+                    });
+            }
+        });
     </script>
 {% endblock custom_js %}

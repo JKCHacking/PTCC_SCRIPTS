@@ -13,6 +13,7 @@ class Employee(models.Model):
         (PROBATION, 'Probationary Employee')
     ]
 
+    employee_tin_id = models.IntegerField(default=0)
     name = models.CharField(max_length=200)
     probation_date = models.DateField()
     hired_date = models.DateField()
@@ -33,13 +34,16 @@ class Employee(models.Model):
 
     def get_total_leaves(self):
         vl_list, sl_list = self.get_vl_sl_list()
-        total_vl = 0
-        total_sl = 0
+        total_vl = self.prev_vl_bal
+        total_sl = self.prev_sl_bal
         for vl in vl_list:
             total_vl += vl.value
 
         for sl in sl_list:
             total_sl += sl.value
+
+        total_vl = round(total_vl, 3)
+        total_sl = round(total_sl, 3)
 
         return total_vl, total_sl
 
