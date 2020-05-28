@@ -361,15 +361,16 @@
                     "Nov." : "November",
                     "Dec." : "December"
                 };
-
+                
+                var month = date_string.split(" ")[0];
+                if (month.includes(".")) {
+                    date_string = date_string.replace(month, month_shortcuts[month]);
+                }
                 var options = { year: 'numeric', month: 'long', day: 'numeric' };
                 var date = new Date(date_string);
+                var dateString;
 
                 if(isNaN(date_string[0])) {
-                    month = date_string.split(" ")[0];
-                    if (month.includes(".")) {
-                        date_string = date_string.replace(month, month_shortcuts[month]);
-                    }
                     dateString = (date.getFullYear() + "-" + ("0" + (date.getMonth()+1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2));
                 } else {
                     dateString = date.toLocaleDateString("en-US", options)
@@ -379,7 +380,7 @@
 
             function sendToServer(edited_values_dict) {
                 console.log(edited_values_dict);
-                url = "http://127.0.0.1:8000/employee_profile/save_employee";
+                url = "{% url 'employee_profile:save_employee' %}";
 
                     $.ajax({
                         url:url,
@@ -388,8 +389,8 @@
                         data: {data: JSON.stringify(edited_values_dict)}
                     })
                     .done(function(response) {
-                        $(".info-modal-title").html("Success");
-                        $(".info-modal-body").html(response.success);
+                        $(".info-modal-title").html(response.head);
+                        $(".info-modal-body").html(response.body);
                         $("#infoModal").modal();
                         edited_values_dict = {};
                     })

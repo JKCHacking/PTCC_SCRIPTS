@@ -36,6 +36,47 @@
         <link rel="stylesheet" type="text/css" href="{% static 'employee_profile/style.css' %}">
     </head>
     <body>
+    {# modal side bar #}
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="uploadModalLabel">Uploade File</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <div id="upload_label"></div>
+                <form id="upload_form" action="{% url 'upload_view' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input id="file" type="file" name="file">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismisfs="modal" id="cancel_button">Cancel</button>
+                <button type="submit" form="upload_form" class="btn btn-primary" id="upload_button">Upload</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title info-modal-title" id="infoModalLabel"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body info-modal-body">
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="info_button_close" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
     {# Navigation Menu #}
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -66,7 +107,7 @@
             <!-- Sidebar -->
             <nav id="sidebar">
                 <div class="sidebar-header">
-                    <h3>EMPLOYEE MONITOR</h3>
+                    <a href="{% url 'employee_profile:index' %}"><h3>LEAVE REGISTRY</h3></a>
                 </div>
 
                 <ul class="list-unstyled components">
@@ -88,29 +129,35 @@
 <!--                    <li>-->
 <!--                        <a href="#">About</a>-->
 <!--                    </li>-->
-<!--                    <li>-->
-<!--                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Pages</a>-->
-<!--                        <ul class="collapse list-unstyled" id="pageSubmenu">-->
-<!--                            <li>-->
-<!--                                <a href="#">Page 1</a>-->
-<!--                            </li>-->
-<!--                            <li>-->
-<!--                                <a href="#">Page 2</a>-->
-<!--                            </li>-->
-<!--                            <li>-->
-<!--                                <a href="#">Page 3</a>-->
-<!--                            </li>-->
-<!--                        </ul>-->
-<!--                    </li>-->
+                   <li>
+                       <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">UPLOAD FILES</a>
+                        <ul class="collapse list-unstyled" id="pageSubmenu">
+                            <li>
+                                <a class="sidebar_button" id="upload_employee">Upload Employee Data</a>
+                            </li>
+                            <li>
+                                <a class="sidebar_button" id="upload_leaves">Upload Leaves of Employees</a>
+                            </li>
+                            <li>
+                                <a class="sidebar_button" id="upload_offenses">Upload Offenses of Employees</a>
+                            </li>
+                            <li>
+                                <a class="sidebar_button" id="upload_earned_leaves">Upload Earned Leaves of Employees</a>
+                            </li>
+                            <li>
+                                <a class="sidebar_button" id="upload_timesheet">Upload Timesheet Data</a>
+                            </li>
+                        </ul>
+                    </li>
 <!--                    <li>-->
 <!--                        <a href="#">Portfolio</a>-->
 <!--                    </li>-->
 <!--                    <li>-->
 <!--                        <a href="#">Contact</a>-->
 <!--                    </li>-->
-                    <li>
-                        <a href="#">IMPORT</a>
-                    </li>
+                    <!-- <li>
+                        <a href="{% url 'upload_view' %}">UPLOAD FILES</a>
+                    </li> -->
                     <li>
                         <a href="#">GENERATE</a>
                     </li>
@@ -143,7 +190,60 @@
                 crossorigin="anonymous"></script>
         {% endblock footer_javascript_site %}
         {% block custom_js %}{% endblock custom_js %}
-        {% block footer_javascript_section %}{% endblock footer_javascript_section %}
+        {% block footer_javascript_section %}
+            <script type="text/javascript">
+                $(document).ready(function(e) {
+                    $(document).on("click", ".sidebar_button", function() {
+                        $("#uploadModal").modal();
+                        id = $(this).attr("id");
+                        if (id == "upload_employee") {
+                            $("#upload_label").html("Please use 'employee.csv' file");
+                            $("#uploadModalLabel").html("Uploading Employee Data");
+                        } else if (id == "upload_leaves") {
+                            $("#upload_label").html("Please use 'leaves.csv' file");
+                            $("#uploadModalLabel").html("Uploading Leaves Data");
+                        } else if (id == "upload_offenses") {
+                            $("#upload_label").html("Please use 'offenses.csv' file");
+                            $("#uploadModalLabel").html("Uploading Offenses Data");
+                        } else if (id == "upload_earned_leaves") {
+                            $("#upload_label").html("Please use 'earned_leaves.csv' file");
+                            $("#uploadModalLabel").html("Uploading Earned Leaves Data");
+                        } else if (id == "upload_timesheet") {
+                            $("#upload_label").html("Please use 'timesheet.csv' file");
+                            $("#uploadModalLabel").html("Uploading Timesheet Data");
+                        }
+                    });
+
+                    $("#upload_form").submit(function(e) {
+                        console.log("helooo");
+                        e.preventDefault();
+                        var formData = new FormData($(this)[0]);
+                        var url = "{% url 'upload_view' %}";
+                        $.ajax({
+                            url:url,
+                            type: "POST",
+                            data: formData,
+                            async: false,
+                            cache: false,
+                            contentType: false,
+                            enctype: "multipart/form-data",
+                            processData: false,
+                        })
+                        .done(function(response) {
+                            $(".info-modal-title").html(response.head);
+                            $(".info-modal-body").html(response.body);
+                            $("#infoModal").modal();
+                            $("#uploadModal").modal('hide');
+                        })
+                        .fail(function(){
+                            $(".info-modal-title").html("Failed");
+                            $(".info-modal-body").html("Failed to save data!");
+                            $("#infoModal").modal();
+                        });
+                    });
+                });
+            </script>
+        {% endblock footer_javascript_section %}
         {% block footer_javascript_page %}{% endblock footer_javascript_page %}
     {% endblock footer_javascript %}
     <script src="{% static 'employee_profile/drop_down.js' %}"></script>

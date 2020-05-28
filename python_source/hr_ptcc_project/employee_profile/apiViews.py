@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 def save_employee(request):
     data = request.POST.get('data', '')
     data_dict = json.loads(data)
+    log_error = []
 
     for edited_employee_data in data_dict:
         id = data_dict[edited_employee_data]['id']
@@ -25,12 +26,11 @@ def save_employee(request):
         table_name = model_parts[0]
         column_name = model_parts[1]
 
-        logger.error(id)
-        logger.error(type)
-        logger.error(value)
-
         if table_name == "employee":
-            employee = Employee.objects.get(id=id)
+            try:
+                employee = Employee.objects.get(id=id)
+            except Employee.DoesNotExist:
+                log_error.append(f"Employee with ID {id} does not exist!")
 
             if column_name == "regularization_date":
                 date_obj = dateutil.parser.parse(value)
@@ -48,13 +48,19 @@ def save_employee(request):
             employee.save()
 
         if table_name == "earned":
-            earned_leave_model = Earnedleave.objects.get(id=id)
-            earned_leave_model.value = value
+            try:
+                earned_leave_model = Earnedleave.objects.get(id=id)
+            except Earnedleave.DoesNotExist:
+                log_error.append(f"Earned Leave with ID {id} does not exist!")
 
+            earned_leave_model.value = value
             earned_leave_model.save()
 
         if table_name == "leave":
-            leave_model = Leave.objects.get(id=id)
+            try:
+                leave_model = Leave.objects.get(id=id)
+            except Leave.DoesNotExist:
+                log_error.append(f"Leave with ID {id} does not exist!")
 
             if column_name == "date":
                 date_obj = dateutil.parser.parse(value)
@@ -69,7 +75,10 @@ def save_employee(request):
             leave_model.save()
 
         if table_name == "offense":
-            offense_model = Offense.objects.get(id=id)
+            try:
+                offense_model = Offense.objects.get(id=id)
+            except Offense.DoesNotExist:
+                log_error.append(f"Offense Object with ID {id} does not exist!")
 
             if column_name == "date":
                 date_obj = dateutil.parser.parse(value)
@@ -80,4 +89,9 @@ def save_employee(request):
 
             offense_model.save()
 
-    return JsonResponse({"success": "All changes has been saved!"})
+    if len(log_error) == len(data_dict):
+        return JsonResponse({"head": "Error", "body": f"Changes cannot be made reason: {log_error}"})
+    elif log_error and len(log_error) < len(data_dict):
+        return JsonResponse({"head": "Warning", "body": f"There are some changes failed to save: {log_error}"})
+    else:
+        return JsonResponse({"head": "Success", "body": "All changes has been saved!"})

@@ -13,7 +13,7 @@ class Employee(models.Model):
         (PROBATION, 'Probationary Employee')
     ]
 
-    employee_tin_id = models.IntegerField(default=0)
+    employee_tin_id = models.IntegerField(default=0, unique=True)
     name = models.CharField(max_length=200)
     probation_date = models.DateField()
     hired_date = models.DateField()

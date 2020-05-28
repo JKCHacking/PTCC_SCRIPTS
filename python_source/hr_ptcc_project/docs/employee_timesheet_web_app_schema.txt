@@ -1,5 +1,6 @@
 +----EMPLOYEE_SCHEMA
 |    +----id
+|    +----employee_tin_id
 |    +----name
 |    +----probation_date
 |    +----hired_date
@@ -10,7 +11,7 @@
 
 +----LEAVE_SCHEMA
 |    +----id
-|    +----name(FK)
+|    +----employee_id(FK)
 |    +----date
 |    +----value
 |    +----type
@@ -18,10 +19,15 @@
 
 +----EARNED_LEAVE_SCHEMA
 |    +----id
-|    +----name(FK)
+|    +----employee_id(FK)
 |    +----cut_off
 |    +----value
 |    +----type
 
 
++----OFFENSE_SCHEMA
+|    +----id
+|    +----employee_id(FK)
+|    +----date
+|    +----offense_name
 
