@@ -62,19 +62,20 @@
     </div>
     <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title info-modal-title" id="infoModalLabel"></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title info-modal-title" id="infoModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body info-modal-body">
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="info_button_close" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="info_button_ok" hidden="true">Generate</button>
+                </div>
             </div>
-            <div class="modal-body info-modal-body">
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="info_button_close" data-dismiss="modal">Close</button>
-            </div>
-        </div>
         </div>
     </div>
     {# Navigation Menu #}
@@ -158,6 +159,29 @@
         {% block footer_javascript_section %}
             <script type="text/javascript">
                 $(document).ready(function(e) {
+                    $("#generate_all").on("click", function() {
+                        $("#infoModal").modal();
+                        $(".info-modal-title").html("Generate All Employees");
+                        html_string = "<h6>These are the employees that will generate Leave Registry: </h6>";
+                        $.each($('input.form-check-input'), function() {
+                            employee_name = $(this).data("empname");
+                            html_string += "<h6>*<strong>"+ employee_name + "</strong></h6>"
+                        });
+                        $(".info-modal-body").html(html_string);
+
+                        $("input.form-check-input").prop("checked", true);
+                        $("#check_all_employee").prop("checked", true);
+                        $("#info_button_ok").attr("hidden", false);
+                    });
+
+                    $("#check_all_employee").click(function() {
+                        if($(this).prop("checked")) {
+                            $("input.form-check-input").prop("checked", true);
+                        } else {
+                            $("input.form-check-input").prop("checked", false);
+                        }
+                    });
+
                     $(document).on("click", ".sidebar_button", function() {
                         $("#uploadModal").modal();
                         id = $(this).attr("id");

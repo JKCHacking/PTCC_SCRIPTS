@@ -31,7 +31,6 @@ def upload_view(request):
     csv_file = request.FILES['file']
     csv_file_name = csv_file.name
     log_error = []
-    message_body = ''
     message_header = 'Upload Done'
 
     if not csv_file_name.endswith('.csv'):
@@ -112,7 +111,6 @@ def upload_view(request):
         else:
             message_body = "All data has uploaded successfully"
     elif csv_file_name == "earned_leaves.csv":
-        month_earned_list = []
         year_today = datetime.datetime.now().year
 
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):

@@ -99,3 +99,6 @@ def save_employee(request):
         header_message = "Success"
         body_message = "All changes has been saved!"
     return JsonResponse({"head": header_message, "body": body_message})
+
+# @csrf_exempt
+# def generate_all
