@@ -15,7 +15,13 @@ logger = Logger()
 class TowerMeasurer:
     def __init__(self):
         self.logger = logger.get_logger()
-
+        self.color_red_panels = 0
+        self.color_orange_panels = 0
+        self.color_yellow_panels = 0
+        self.color_yellow_green_panels = 0
+        self.color_green_panels = 0
+        self.color_blue_panels = 0
+        self.color_violet_panels = 0
         try:
             self.cad_application = client.GetActiveObject(Constants.APP_NAME, dynamic=True)
             self.cad_application.Visible = True
@@ -103,6 +109,13 @@ class TowerMeasurer:
             self.save_document(document)
             self.copy_file()
             self.clean_up_files()
+            self.logger.info(f'color_red_panels: {self.color_red_panels}')
+            self.logger.info(f'color_orange_panels: {self.color_orange_panels}')
+            self.logger.info(f'color_yellow_panels: {self.color_yellow_panels}')
+            self.logger.info(f'color_yellow_green_panels: {self.color_yellow_green_panels}')
+            self.logger.info(f'color_green_panels: {self.color_green_panels}')
+            self.logger.info(f'color_blue_panels: {self.color_blue_panels}')
+            self.logger.info(f'color_violet_panels: {self.color_violet_panels}')
 
     def set_object_color(self, obj, cold_bent):
         color_red = self.cad_application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
@@ -123,18 +136,25 @@ class TowerMeasurer:
 
         if 60 <= cold_bent < 70:
             obj.TrueColor = color_red
+            self.color_red_panels += 1
         elif 50 <= cold_bent < 60:
             obj.TrueColor = color_orange
+            self.color_orange_panels += 1
         elif 40 <= cold_bent < 50:
             obj.TrueColor = color_yellow
+            self.color_yellow_panels += 1
         elif 30 <= cold_bent < 40:
             obj.TrueColor = color_yellow_green
+            self.color_yellow_green_panels += 1
         elif 20 <= cold_bent < 30:
             obj.TrueColor = color_green
+            self.color_green_panels += 1
         elif 10 <= cold_bent < 20:
             obj.TrueColor = color_blue
+            self.color_blue_panels += 1
         elif 0 <= cold_bent < 10:
             obj.TrueColor = color_violet
+            self.color_violet_panels += 1
 
     @staticmethod
     def get_distance_between_points(pt1, pt2):
