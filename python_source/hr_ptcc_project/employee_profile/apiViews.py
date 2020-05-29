@@ -90,8 +90,12 @@ def save_employee(request):
             offense_model.save()
 
     if len(log_error) == len(data_dict):
-        return JsonResponse({"head": "Error", "body": f"Changes cannot be made reason: {log_error}"})
+        header_message = "Error"
+        body_message = f"Changes cannot be made reason: {log_error}"
     elif log_error and len(log_error) < len(data_dict):
-        return JsonResponse({"head": "Warning", "body": f"There are some changes failed to save: {log_error}"})
+        header_message = "Warning"
+        body_message = f"There are some changes failed to save: {log_error}"
     else:
-        return JsonResponse({"head": "Success", "body": "All changes has been saved!"})
+        header_message = "Success"
+        body_message = "All changes has been saved!"
+    return JsonResponse({"head": header_message, "body": body_message})

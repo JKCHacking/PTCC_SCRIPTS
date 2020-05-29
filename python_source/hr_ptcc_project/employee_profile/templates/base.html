@@ -54,7 +54,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismisfs="modal" id="cancel_button">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancel_button">Cancel</button>
                 <button type="submit" form="upload_form" class="btn btn-primary" id="upload_button">Upload</button>
             </div>
         </div>
@@ -81,10 +81,6 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-<!--                <button type="button" id="sidebarCollapse" class="btn btn-info">-->
-<!--                    <i class="fas fa-align-left"></i>-->
-<!--                    <span>Toggle Sidebar</span>-->
-<!--                </button>-->
                 <a class="navbar-brand" href="{% url 'employee_profile:index' %}">PTCC</a>
                 <button class="navbar-toggler" type="button"
                         data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -111,56 +107,25 @@
                 </div>
 
                 <ul class="list-unstyled components">
-<!--                    <p>Dummy Heading</p>-->
-<!--                    <li class="active">-->
-<!--                        <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>-->
-<!--                        <ul class="collapse list-unstyled" id="homeSubmenu">-->
-<!--                            <li>-->
-<!--                                <a href="#">Home 1</a>-->
-<!--                            </li>-->
-<!--                            <li>-->
-<!--                                <a href="#">Home 2</a>-->
-<!--                            </li>-->
-<!--                            <li>-->
-<!--                                <a href="#">Home 3</a>-->
-<!--                            </li>-->
-<!--                        </ul>-->
-<!--                    </li>-->
-<!--                    <li>-->
-<!--                        <a href="#">About</a>-->
-<!--                    </li>-->
                    <li>
-                       <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">UPLOAD FILES</a>
-                        <ul class="collapse list-unstyled" id="pageSubmenu">
+                       <a href="#uploadSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">UPLOAD FILES</a>
+                        <ul class="collapse list-unstyled" id="uploadSubmenu">
                             <li>
-                                <a class="sidebar_button" id="upload_employee">Upload Employee Data</a>
-                            </li>
-                            <li>
-                                <a class="sidebar_button" id="upload_leaves">Upload Leaves of Employees</a>
-                            </li>
-                            <li>
-                                <a class="sidebar_button" id="upload_offenses">Upload Offenses of Employees</a>
-                            </li>
-                            <li>
-                                <a class="sidebar_button" id="upload_earned_leaves">Upload Earned Leaves of Employees</a>
-                            </li>
-                            <li>
-                                <a class="sidebar_button" id="upload_timesheet">Upload Timesheet Data</a>
+                                <a class="sidebar_button" id="upload_csv">Upload a CSV File</a>
                             </li>
                         </ul>
                     </li>
-<!--                    <li>-->
-<!--                        <a href="#">Portfolio</a>-->
-<!--                    </li>-->
-<!--                    <li>-->
-<!--                        <a href="#">Contact</a>-->
-<!--                    </li>-->
-                    <!-- <li>
-                        <a href="{% url 'upload_view' %}">UPLOAD FILES</a>
-                    </li> -->
                     <li>
-                        <a href="#">GENERATE</a>
-                    </li>
+                        <a href="#generateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">GENERATE</a>
+                         <ul class="collapse list-unstyled" id="generateSubmenu">
+                             <li>
+                                 <a class="generate_sidebar_button" id="generate_all">Generate all</a>
+                             </li>
+                             <li>
+                                <a class="generate_sidebar_button" id="generate_selected">Generate selected</a>
+                            </li>
+                         </ul>
+                     </li>
                 </ul>
             </nav>
             {% block content %}
@@ -196,22 +161,18 @@
                     $(document).on("click", ".sidebar_button", function() {
                         $("#uploadModal").modal();
                         id = $(this).attr("id");
-                        if (id == "upload_employee") {
-                            $("#upload_label").html("Please use 'employee.csv' file");
-                            $("#uploadModalLabel").html("Uploading Employee Data");
-                        } else if (id == "upload_leaves") {
-                            $("#upload_label").html("Please use 'leaves.csv' file");
-                            $("#uploadModalLabel").html("Uploading Leaves Data");
-                        } else if (id == "upload_offenses") {
-                            $("#upload_label").html("Please use 'offenses.csv' file");
-                            $("#uploadModalLabel").html("Uploading Offenses Data");
-                        } else if (id == "upload_earned_leaves") {
-                            $("#upload_label").html("Please use 'earned_leaves.csv' file");
-                            $("#uploadModalLabel").html("Uploading Earned Leaves Data");
-                        } else if (id == "upload_timesheet") {
-                            $("#upload_label").html("Please use 'timesheet.csv' file");
-                            $("#uploadModalLabel").html("Uploading Timesheet Data");
-                        }
+                        $("#upload_label").html("<h6>Please upload CSV File in either of the following:</h6>" +
+                                                 "<h6>1. employee.csv</h6>" +
+                                                 "<h6>2. leaves.csv</h6>" +
+                                                 "<h6>3. offenses.csv</h6>" +
+                                                 "<h6>4. earned_leaves.csv</h6>"+
+                                                 "<h6>5. timesheet.csv</h6>");
+
+                        $("#uploadModalLabel").html("Upload CSV File");
+                    });
+
+                    $("#info_button_close").on("click", function() {
+                        location.reload();
                     });
 
                     $("#upload_form").submit(function(e) {
@@ -235,9 +196,9 @@
                             $("#infoModal").modal();
                             $("#uploadModal").modal('hide');
                         })
-                        .fail(function(){
+                        .fail(function(xhr, status, error){
                             $(".info-modal-title").html("Failed");
-                            $(".info-modal-body").html("Failed to save data!");
+                            $(".info-modal-body").html("Failed to save data! details: " + (xhr.responseText).split(".")[0]);
                             $("#infoModal").modal();
                         });
                     });

@@ -102,19 +102,9 @@ class Leave(models.Model):
 
 
 class Offense(models.Model):
-    NO_TIME_OUT = 'No Time-out'
-    NO_TIME_IN = 'No Time-in'
-    LATE = 'Late'
-
-    offense_choices = [
-        (NO_TIME_IN, 'No Time-in'),
-        (NO_TIME_OUT, 'No Time-out'),
-        (LATE, 'Late')
-    ]
-
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField()
-    offense_name = models.CharField(max_length=20, choices=offense_choices)
+    offense_name = models.CharField(max_length=20)
 
 
 class Earnedleave(models.Model):

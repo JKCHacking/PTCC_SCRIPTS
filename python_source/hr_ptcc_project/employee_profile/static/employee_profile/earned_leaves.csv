@@ -1,0 +1,3 @@
+employee_tin_id,employee_name,leave_type,january,february,march,april,may,june,july,august,september,october,november,december
+1234567,George Smith,VL,1.25,1.25,1.25,1.25,0,0,0,0,0,0,0,0
+1234567,George Smith,SL,0.833,0.833,0.833,0.833,0,0,0,0,0,0,0,0

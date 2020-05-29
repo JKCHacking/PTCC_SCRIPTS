@@ -49,6 +49,7 @@ a[data-toggle="collapse"] {
 body {
     font-family: 'Poppins', sans-serif;
     background: #E8E8E8;
+    /* background-image: url("/static/employee_profile/images/abstract_glass_building.jpg"); */
 }
 
 p {
