@@ -64,16 +64,17 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title info-modal-title" id="infoModalLabel"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                    <h5 class="modal-title info-modal-title" id="infoModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body info-modal-body">
                 </div>
                 <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="info_button_close" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="info_button_ok" hidden="true">Generate</button>
+                    <select id="year_selection" hidden="true"></select>
+                    <button type="button" class="btn btn-secondary" id="info_button_close" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="info_button_ok" hidden="true">Generate</button>
                 </div>
             </div>
         </div>
@@ -104,7 +105,7 @@
             <!-- Sidebar -->
             <nav id="sidebar">
                 <div class="sidebar-header">
-                    <a href="{% url 'employee_profile:index' %}"><h3>LEAVE REGISTRY</h3></a>
+                    <a href="{% url 'employee_profile:index' %}"><h3>DOCUMENT GENERATOR</h3></a>
                 </div>
 
                 <ul class="list-unstyled components">
@@ -117,15 +118,12 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#generateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">GENERATE</a>
-                         <ul class="collapse list-unstyled" id="generateSubmenu">
-                             <li>
-                                 <a class="generate_sidebar_button" id="generate_all">Generate all</a>
-                             </li>
-                             <li>
-                                <a class="generate_sidebar_button" id="generate_selected">Generate selected</a>
+                        <a href="#generateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">GENERATE FILES</a>
+                        <ul class="collapse list-unstyled" id="generateSubmenu">
+                            <li>
+                                <a class="generate_sidebar_button" id="generate_lr">Generate Leave Registry</a>
                             </li>
-                         </ul>
+                        </ul>
                      </li>
                 </ul>
             </nav>
@@ -159,19 +157,31 @@
         {% block footer_javascript_section %}
             <script type="text/javascript">
                 $(document).ready(function(e) {
-                    $("#generate_all").on("click", function() {
+                    var checked_employee_list = [];
+                    $("#generate_lr").on("click", function() {
+                        var html_string;
+                        var employee_name;
+
                         $("#infoModal").modal();
                         $(".info-modal-title").html("Generate All Employees");
                         html_string = "<h6>These are the employees that will generate Leave Registry: </h6>";
                         $.each($('input.form-check-input'), function() {
-                            employee_name = $(this).data("empname");
-                            html_string += "<h6>*<strong>"+ employee_name + "</strong></h6>"
+                            if ($(this).prop("checked")) {
+                                employee_name = $(this).data("empname");
+                                html_string += "<h6>* <strong>"+ employee_name + "</strong></h6>"
+                                checked_employee_list.push($(this).data("id"));
+                            }
                         });
-                        $(".info-modal-body").html(html_string);
 
-                        $("input.form-check-input").prop("checked", true);
-                        $("#check_all_employee").prop("checked", true);
+                        if (checked_employee_list.length == 0) {
+                            html_string = "<h6>No selected employees.</h6>"
+                            $("#info_button_ok").attr("disabled", true);
+                        }
+
+                        $(".info-modal-body").html(html_string);
                         $("#info_button_ok").attr("hidden", false);
+                        $("#year_selection").attr("hidden", false);
+                        populateYearSelection();
                     });
 
                     $("#check_all_employee").click(function() {
@@ -180,6 +190,12 @@
                         } else {
                             $("input.form-check-input").prop("checked", false);
                         }
+                    });
+
+                    $("#info_button_ok").on("click", function(){
+                        $("#info_button_ok").attr("hidden", true);
+                        $("#year_selection").attr("hidden", true);
+                        requestGenerate();
                     });
 
                     $(document).on("click", ".sidebar_button", function() {
@@ -196,11 +212,12 @@
                     });
 
                     $("#info_button_close").on("click", function() {
+                        $("#info_button_ok").attr("hidden", true);
+                        $("#year_selection").attr("hidden", true);
                         location.reload();
                     });
 
                     $("#upload_form").submit(function(e) {
-                        console.log("helooo");
                         e.preventDefault();
                         var formData = new FormData($(this)[0]);
                         var url = "{% url 'upload_view' %}";
@@ -226,6 +243,42 @@
                             $("#infoModal").modal();
                         });
                     });
+
+                    function populateYearSelection() {
+                        var start_year = 2000;
+                        var end_year = new Date().getFullYear();
+                        var options = "";
+                        for (var year = end_year; year >= start_year; year-- ) {
+                            options += "<option value=" + year +">"+ year + "</option>";
+                        }
+                        $("#year_selection").html(options);
+                    }
+
+                    function requestGenerate() {
+                        console.log(checked_employee_list);
+                        var url = "{% url 'employee_profile:generate_leave_registry' %}";
+                        var selected_year = $("#year_selection option:selected").text();
+                        var data = {
+                            "checked_employees":checked_employee_list,
+                            "year": selected_year
+                        };
+                        $.ajax({
+                            url:url,
+                            type:"POST",
+                            data:data
+                        })
+                        .done(function(response){
+                            $(".info-modal-title").html(response.head);
+                            $(".info-modal-body").html(response.body);
+                            $("#infoModal").modal();
+                            checked_employee_list = [];
+                        })
+                        .fail(function(){
+                            $(".info-modal-title").html("Failed");
+                            $(".info-modal-body").html("Failed to generate");
+                            $("#infoModal").modal();
+                        });
+                    }
                 });
             </script>
         {% endblock footer_javascript_section %}

@@ -28,6 +28,19 @@ class Employee(models.Model):
     def __str__(self):
         return self.name
 
+    def get_total_leaves_taken(self):
+        leaves_taken_obj_list = self.leave_set.all()
+        sum_vl_taken = 0
+        sum_sl_taken = 0
+
+        for leaves_taken_obj in leaves_taken_obj_list:
+            if leaves_taken_obj.type == "VL":
+                sum_vl_taken += leaves_taken_obj.days
+            elif leaves_taken_obj.type == "SL":
+                sum_sl_taken += leaves_taken_obj.days
+
+        return round(sum_vl_taken, 3), round(sum_sl_taken, 3)
+
     def get_earned_leaves(self):
         vl_list, sl_list = self.get_vl_sl_list()
         return zip(vl_list, sl_list)
