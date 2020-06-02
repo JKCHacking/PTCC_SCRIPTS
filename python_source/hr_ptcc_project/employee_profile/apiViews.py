@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.http import HttpResponse
 from openpyxl import load_workbook
 from .models import Employee, Earnedleave, Leave, Offense
 # import the logging library
@@ -105,21 +106,25 @@ def save_employee(request):
 
 @csrf_exempt
 def generate_leave_registry(request):
-    header_message = ""
-    body_message = ""
     employee_id_list = request.POST.getlist('checked_employees[]')
-    year = request.POST.get('year')
+    year_now = request.POST.get('year')
+    log_error = []
 
     template_ss_path = os.path.join(settings.STATIC_ROOT, 'employee_profile', 'files',
                                     'leave_registry_template_v1.xlsx')
     generated_file_path = os.path.join(settings.STATIC_ROOT, 'employee_profile', 'files',
-                                       f'generated_leave_registry_{year}.xlsx')
+                                       f'generated_leave_registry_{year_now}.xlsx')
 
     workbook = load_workbook(filename=template_ss_path)
 
     for id_string in employee_id_list:
         id_int = int(id_string)
-        employee_object = Employee.objects.get(id=id_int)
+        try:
+            employee_object = Employee.objects.get(id=id_int)
+        except Employee.DoesNotExist as e:
+            log_error.append(e)
+            continue
+
         template_work_sheet = workbook.worksheets[0]
         emp_reg_ws = workbook.copy_worksheet(template_work_sheet)
 
@@ -152,7 +157,7 @@ def generate_leave_registry(request):
         emp_reg_ws['G8'] = date_today.strftime('%B %d, %Y')
 
         # earned leave credits section
-        emp_reg_ws['C11'] = year
+        emp_reg_ws['C11'] = year_now
         emp_reg_ws['C15'] = vl_balance
         emp_reg_ws['D15'] = sl_balance
 
@@ -160,7 +165,7 @@ def generate_leave_registry(request):
         total_earned_vl = 0
         total_earned_sl = 0
         for vl, sl in employee_object.get_earned_leaves():
-            if str(vl.cut_off.year) == year and str(sl.cut_off.year) == year:
+            if str(vl.cut_off.year) == year_now and str(sl.cut_off.year) == year_now:
                 vl_value = vl.value
                 sl_value = sl.value
                 vl_cell_name = f'C{count}'
@@ -175,15 +180,24 @@ def generate_leave_registry(request):
         emp_reg_ws['D40'] = total_earned_sl
 
         # details of leave taken
-        
+        counter = 19
         total_vl_taken = 0
         total_sl_taken = 0
-        for taken_leave_obj in employee_object.leave_set.all():
-            if str(taken_leave_obj.date.year) == year:
-                if taken_leave_obj.type == 'VL':
-                    total_vl_taken += taken_leave_obj.days
-                elif taken_leave_obj.type == 'SL':
-                    total_sl_taken += taken_leave_obj.days
+        for leaves_taken_obj in employee_object.leave_set.all():
+            date_col = f'F{counter}'
+            num_days_col = f'G{counter}'
+            remarks_col = f'H{counter}'
+            leave_type_col = f'I{counter}'
+
+            if str(leaves_taken_obj.date.year) == year_now:
+                emp_reg_ws[date_col] = leaves_taken_obj.date.strftime("%B %d, %Y")
+                emp_reg_ws[num_days_col] = leaves_taken_obj.days
+                emp_reg_ws[leave_type_col] = leaves_taken_obj.type
+                if leaves_taken_obj.type == "VL":
+                    total_vl_taken += leaves_taken_obj.days
+                elif leaves_taken_obj.type == "SL":
+                    total_sl_taken += leaves_taken_obj.days
+                counter += 1
 
         # summary of leaves taken
         emp_reg_ws['G10'] = date_today.strftime('%B %d, %Y')
@@ -193,7 +207,56 @@ def generate_leave_registry(request):
         emp_reg_ws['H14'] = total_sl_taken
         emp_reg_ws['I13'] = total_earned_vl - total_vl_taken
         emp_reg_ws['I14'] = total_earned_sl - total_sl_taken
-        emp_reg_ws.title = f'{employee_object.name}_{year}_leave_registry'
+
+        # add 2 lines
+        emp_reg_ws.append([' '])
+        emp_reg_ws.append([' '])
+        # Time keeping offenses
+        years = -1
+        days_per_year = 365.24
+        contract_eval_date_end = employee_object.regularization_date.replace(year=int(year_now))
+        contract_eval_date_start = contract_eval_date_end + datetime.timedelta(days=(years*days_per_year))
+        emp_reg_ws.append(['', '', '', '', '', 'Contract Evaluation Date:',
+                           f'{contract_eval_date_start.strftime("%B %d, %Y")} to ' +
+                           f'{contract_eval_date_end.strftime("%B %d, %Y")}'])
+        emp_reg_ws.append(['', '', '', '', '', 'Date', 'Offense Name'])
+        for offense_object in employee_object.offense_set.all():
+            if contract_eval_date_start < offense_object.date < contract_eval_date_end:
+                emp_reg_ws.append(['', '', '', '', '', offense_object.date.strftime("%B %d, %Y"),
+                                   offense_object.offense_name])
+
+        # signature section
+        emp_reg_ws.append([' ', ' ', ' ', ' ', ' '])
+        emp_reg_ws.append([' ', ' ', ' ', ' ', ' '])
+        emp_reg_ws.append(['', '', '', '', '', 'Prepared By: ', ' ', 'Verified By:', ' ', 'Received By:'])
+        emp_reg_ws.append([' ', ' ', ' ', ' ', ' '])
+        emp_reg_ws.append([' ', ' ', ' ', ' ', ' '])
+        emp_reg_ws.append(['', '', '', '', '', 'Letecia Bodiongan', ' ', 'Susan Benjamin', ' ', employee_object.name])
+        emp_reg_ws.append(['', '', '', '', '', 'Accounting Supervisor - B', ' ', 'Finance and Admin Director', ' ',
+                           'Employee'])
+        emp_reg_ws.title = f'{employee_object.name}_{year_now}_leave_registry'
 
     workbook.save(generated_file_path)
-    return JsonResponse({"head": header_message, "body": body_message})
+    if log_error:
+        header_message = "Errors Detected"
+        body_message = f"Details: {log_error}"
+        file_name = os.path.basename(generated_file_path)
+    else:
+        header_message = "Success"
+        body_message = "Successfully created all Employee Leave Registry"
+        file_name = os.path.basename(generated_file_path)
+
+    return JsonResponse({"head": header_message, "body": body_message, "data": file_name})
+
+@csrf_exempt
+def download_file(request):
+    file_name = request.POST.get('filename')
+    generated_file_path = os.path.join(settings.STATIC_ROOT, 'employee_profile', 'files', file_name)
+
+    response = None
+    if os.path.exists(generated_file_path):
+        with open(generated_file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+            response['Content-Disposition'] = f'inline; filename={os.path.basename(generated_file_path)}'
+
+    return response
