@@ -52,14 +52,8 @@
                     </div>
                 </div>
                 <div class="ml-auto p-2">
-                    <div class="btn-group year_dropdown">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Year
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">2020</a>
-                        </div>
-                    </div>
+                    <label for="employee-details-year-selection">Year</label>
+                    <select id="employee-details-year-selection"></select>
                 </div>
             </div>
         </div>
@@ -96,28 +90,6 @@
                                             {{employee.prev_sl_bal}}
                                     </td>
                                 </tr>
-                                {% for vl, sl in employee.get_earned_leaves %}
-                                    <tr>
-                                        <th scope="row">{{vl.cut_off}}</th>
-                                        <td class="editable" 
-                                            data-id="{{vl.id}}" 
-                                            data-type="earned-{{vl.type}}"
-                                            name="format_float"
-                                            scope="row">{{vl.value}}
-                                        </td>
-                                        <td class="editable" 
-                                            data-id="{{sl.id}}" 
-                                            data-type="earned-{{sl.type}}"
-                                            name="format_float"
-                                            scope="row">{{sl.value}}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                    <tr>
-                                        <th scope="row">Total</th>
-                                        <td scope="row">{{employee.get_total_leaves.0}}</td>
-                                        <td scope="row">{{employee.get_total_leaves.1}}</td>
-                                    </tr>
                             </tbody>
                         </table>
                     </div>
@@ -134,28 +106,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for leave in employee.leave_set.all %}
-                                    <tr>
-                                        <td class="editable" 
-                                            data-id="{{leave.id}}" 
-                                            data-type="leave-date"
-                                            name="format_date"
-                                            scope="row">{{leave.date}}
-                                        </td>
-                                        <td class="editable" 
-                                            data-id="{{leave.id}}" 
-                                            data-type="leave-days"
-                                            name="format_text"
-                                            scope="row">{{leave.days}}
-                                        </td>
-                                        <td class="editable" 
-                                            data-id="{{leave.id}}" 
-                                            data-type="leave-type"
-                                            name="format_text"
-                                            scope="row">{{leave.type}}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -219,7 +169,10 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var edited_values_dict = {};
-
+            populateYearSelection();
+            displayEarnedLeave();
+            displayLeavesTaken();
+            displayOffenses();
             $(document).on("dblclick", ".editable", function() {
                var value = ($(this).text()).trim();
                var data_type = $(this).data("type");
@@ -301,6 +254,85 @@
                 location.reload(true);
                 $("#saveModal").modal("hide");
             });
+            
+            function displayEarnedLeave(){
+                var year_selected = $("#employee-details-year-selection option:selected").text();
+                var row_html = "";
+                var total_vl = parseFloat("{{employee.prev_vl_bal}}");
+                var total_sl = parseFloat("{{employee.prev_sl_bal}}");
+
+                {% for vl, sl in employee.get_earned_leaves %}
+                    var date_string = "{{vl.cut_off.isoformat}}";
+                    var date_js = new Date(date_string);
+                    var leave_year = date_js.getFullYear().toString();
+                    if (date_js.getFullYear().toString() == year_selected) {
+                        row_html += "<tr>"+
+                                        "<th scope='row'>{{vl.cut_off}}</th>"+
+                                        "<td class='editable' data-id='{{vl.id}}' data-type='earned-{{vl.type}}' name='format_float' scope='row'>{{vl.value}}</td>"+
+                                        "<td class='editable' data-id='{{sl.id}}' data-type='earned-{{sl.type}}' name='format_float' scope='row'>{{sl.value}}</td>"+
+                                    "</tr>";
+                        
+                        vl_value_int = "{{vl.value}}";
+                        sl_value_int = "{{sl.value}}";
+
+                        total_vl += parseFloat(vl_value_int);
+                        total_sl += parseFloat(sl_value_int);
+                    }
+                {% endfor %}
+                
+                var total_sl_vl_html = "<tr>"+
+                                            "<th scope='row'>Total</th>" +
+                                            "<td>" + total_vl.toFixed(3) +"</td>" +
+                                            "<td>" + total_sl.toFixed(3) +"</td>" +
+                                       "</tr>"
+                row_html += total_sl_vl_html;
+                $(".earned_leave_table").append(row_html);
+            }
+
+            function displayLeavesTaken(){
+                var year_selected = $("#employee-details-year-selection option:selected").text();
+                var row_html = "";
+                {% for leave in employee.leave_set.all %}
+                    var date_string = "{{leave.date.isoformat}}";
+                    var date_js = new Date(date_string);
+                    var leave_year = date_js.getFullYear().toString();
+                    if (date_js.getFullYear().toString() == year_selected) {
+                        row_html += "<tr>" +
+                                        "<td class='editable' data-id='{{leave.id}}' data-type='leave-date' name='format_date'>{{leave.date}}</td>" +
+                                        "<td class='editable' data-id='{{leave.id}}' data-type='leave-days' name='format_text' scope='row'>{{leave.days}}</td>" +
+                                        "<td class='editable' data-id='{{leave.id}}' data-type='leave-type' name='format_text' scope='row'>{{leave.type}}</td>" +
+                                    "</tr>";
+                    }
+                {% endfor %}
+                $(".leaves_taken_table").append(row_html);
+            }
+
+            function displayOffenses(){
+                var year_selected = $("#employee-details-year-selection option:selected").text();
+                var row_html = "";
+                {% for offense in employee.offense_set.all %}
+                    var date_string = "{{leave.date.isoformat}}";
+                    var date_js = new Date(date_string);
+                    var leave_year = date_js.getFullYear().toString();
+                    if (date_js.getFullYear().toString() == year_selected) {
+                        row_html += "<tr>" +
+                                        "<td class='editable' data-id='{{offense.id}}' data-type='offense-date' name='format_date' scope='row'>{{offense.date}}</td>" +
+                                        "<td class='editable' data-id='{{offense.id}}' data-type='offense-offense_name' name='format_text' scope='row'>{{offense.offense_name}}</td>" +
+                                    "</tr>";
+                    }
+                {% endfor %}
+                $(".offenses_table").append(row_html);
+            }
+
+            function populateYearSelection() {
+                var start_year = 2000;
+                var end_year = new Date().getFullYear();
+                var options = "";
+                for (var year = end_year; year >= start_year; year-- ) {
+                    options += "<option value=" + year +">"+ year + "</option>";
+                }
+                $("#employee-details-year-selection").html(options);
+            }
 
             function enterInput(element) {
                 var value = (element.val()).trim();

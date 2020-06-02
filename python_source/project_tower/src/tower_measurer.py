@@ -86,9 +86,11 @@ class TowerMeasurer:
                         pass
                     cold_bent = self.get_cold_bent(new_doc)
                     length, width = self.get_length_width(new_doc)
+                    color_str = self.set_object_color(obj, cold_bent)
                     handle = f'"{obj.Handle}"'
-                    data_list.append({"Handle": handle, "Length": length, "Width": width, "ColdBent": cold_bent})
-                    self.set_object_color(obj, cold_bent)
+                    data_list.append({"Handle": handle, "Length": length, "Width": width, "ColdBent": cold_bent,
+                                      "Color": color_str})
+
                     self.logger.info(f"Cold Bent: {cold_bent}")
                     self.delete_all_objects(new_doc)
                     panel_count = panel_count + 1
@@ -97,7 +99,7 @@ class TowerMeasurer:
             try:
                 self.logger.info("Writing to CSV File...")
                 with open(os.path.join(Constants.OUTPUT_DIR, output_csv), mode='w') as csvfile:
-                    field_names = ['Handle', 'Length', 'Width', 'ColdBent']
+                    field_names = ['Handle', 'Length', 'Width', 'ColdBent', 'Color']
                     csv_writer = csv.DictWriter(csvfile, fieldnames=field_names)
                     csv_writer.writeheader()
                     for data in data_list:
@@ -134,28 +136,38 @@ class TowerMeasurer:
         color_blue.SetRGB(0, 0, 255)
         color_violet.SetRGB(238, 130, 238)
 
+        color_string = ''
+
         if 60 <= cold_bent < 70:
             obj.TrueColor = color_red
             self.color_red_panels += 1
+            color_string = 'Red'
         elif 50 <= cold_bent < 60:
             obj.TrueColor = color_orange
             self.color_orange_panels += 1
+            color_string = 'Magenta'
         elif 40 <= cold_bent < 50:
             obj.TrueColor = color_yellow
             self.color_yellow_panels += 1
+            color_string = 'Yellow'
         elif 30 <= cold_bent < 40:
             obj.TrueColor = color_yellow_green
             self.color_yellow_green_panels += 1
+            color_string = 'Yellow Green'
         elif 20 <= cold_bent < 30:
             obj.TrueColor = color_green
             self.color_green_panels += 1
+            color_string = 'Green'
         elif 10 <= cold_bent < 20:
             obj.TrueColor = color_blue
             self.color_blue_panels += 1
+            color_string = 'Blue'
         elif 0 <= cold_bent < 10:
             obj.TrueColor = color_violet
             self.color_violet_panels += 1
+            color_string = 'Pink'
 
+        return color_string
     @staticmethod
     def get_distance_between_points(pt1, pt2):
         distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(pt1, pt2)]))
