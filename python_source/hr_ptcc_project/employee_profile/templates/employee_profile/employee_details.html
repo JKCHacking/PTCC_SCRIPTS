@@ -61,7 +61,7 @@
             <div class="d-flex flex-row">
                 <div class="p-2 earned_leave">
                     <h5><strong>Bi-Monthly Earned Credits</strong></h5>
-                    <div style="overflow:auto;height: 700px;width: 325px;">
+                    <div class="earned_leave_tbl_container" style="overflow:auto;height: 700px;width: 325px;">
                         <table class="table earned_leave_table">
                             <thead class="thead-dark">
                                 <tr>
@@ -121,21 +121,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for offense in employee.offense_set.all %}
-                                    <tr>
-                                        <td class="editable" 
-                                            data-id="{{offense.id}}" 
-                                            data-type="offense-date"
-                                            name="format_date"
-                                            scope="row">{{offense.date}}
-                                        </td>
-                                        <td class="editable" 
-                                            data-id="{{offense.id}}" 
-                                            data-type="offense-offense_name"
-                                            name="format_text"
-                                            scope="row">{{offense.offense_name}}</td>
-                                    </tr>
-                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -168,11 +153,11 @@
 {% block custom_js %}
     <script type="text/javascript">
         $(document).ready(function() {
+            
+            // initialize tables and selection year
+            initialize();
+
             var edited_values_dict = {};
-            populateYearSelection();
-            displayEarnedLeave();
-            displayLeavesTaken();
-            displayOffenses();
             $(document).on("dblclick", ".editable", function() {
                var value = ($(this).text()).trim();
                var data_type = $(this).data("type");
@@ -254,7 +239,22 @@
                 location.reload(true);
                 $("#saveModal").modal("hide");
             });
-            
+
+            $("#employee-details-year-selection").on("change", function(){
+                // remove all elements with class "removable"
+                $(".removable").remove();
+                displayEarnedLeave();
+                displayLeavesTaken();
+                displayOffenses();
+            });
+
+            function initialize() {
+                populateYearSelection();
+                displayEarnedLeave();
+                displayLeavesTaken();
+                displayOffenses();
+            }
+
             function displayEarnedLeave(){
                 var year_selected = $("#employee-details-year-selection option:selected").text();
                 var row_html = "";
@@ -267,9 +267,9 @@
                     var leave_year = date_js.getFullYear().toString();
                     if (date_js.getFullYear().toString() == year_selected) {
                         row_html += "<tr>"+
-                                        "<th scope='row'>{{vl.cut_off}}</th>"+
-                                        "<td class='editable' data-id='{{vl.id}}' data-type='earned-{{vl.type}}' name='format_float' scope='row'>{{vl.value}}</td>"+
-                                        "<td class='editable' data-id='{{sl.id}}' data-type='earned-{{sl.type}}' name='format_float' scope='row'>{{sl.value}}</td>"+
+                                        "<th class='removable' scope='row'>{{vl.cut_off}}</th>"+
+                                        "<td class='editable removable' data-id='{{vl.id}}' data-type='earned-{{vl.type}}' name='format_float' scope='row'>{{vl.value}}</td>"+
+                                        "<td class='editable removable' data-id='{{sl.id}}' data-type='earned-{{sl.type}}' name='format_float' scope='row'>{{sl.value}}</td>"+
                                     "</tr>";
                         
                         vl_value_int = "{{vl.value}}";
@@ -281,9 +281,9 @@
                 {% endfor %}
                 
                 var total_sl_vl_html = "<tr>"+
-                                            "<th scope='row'>Total</th>" +
-                                            "<td>" + total_vl.toFixed(3) +"</td>" +
-                                            "<td>" + total_sl.toFixed(3) +"</td>" +
+                                            "<th class='removable' scope='row'>Total</th>" +
+                                            "<td class='removable'>" + total_vl.toFixed(3) +"</td>" +
+                                            "<td class='removable'>" + total_sl.toFixed(3) +"</td>" +
                                        "</tr>"
                 row_html += total_sl_vl_html;
                 $(".earned_leave_table").append(row_html);
@@ -298,9 +298,9 @@
                     var leave_year = date_js.getFullYear().toString();
                     if (date_js.getFullYear().toString() == year_selected) {
                         row_html += "<tr>" +
-                                        "<td class='editable' data-id='{{leave.id}}' data-type='leave-date' name='format_date'>{{leave.date}}</td>" +
-                                        "<td class='editable' data-id='{{leave.id}}' data-type='leave-days' name='format_text' scope='row'>{{leave.days}}</td>" +
-                                        "<td class='editable' data-id='{{leave.id}}' data-type='leave-type' name='format_text' scope='row'>{{leave.type}}</td>" +
+                                        "<td class='editable removable' data-id='{{leave.id}}' data-type='leave-date' name='format_date'>{{leave.date}}</td>" +
+                                        "<td class='editable removable' data-id='{{leave.id}}' data-type='leave-days' name='format_text' scope='row'>{{leave.days}}</td>" +
+                                        "<td class='editable removable' data-id='{{leave.id}}' data-type='leave-type' name='format_text' scope='row'>{{leave.type}}</td>" +
                                     "</tr>";
                     }
                 {% endfor %}
@@ -311,13 +311,13 @@
                 var year_selected = $("#employee-details-year-selection option:selected").text();
                 var row_html = "";
                 {% for offense in employee.offense_set.all %}
-                    var date_string = "{{leave.date.isoformat}}";
+                    var date_string = "{{offense.date.isoformat}}";
                     var date_js = new Date(date_string);
                     var leave_year = date_js.getFullYear().toString();
                     if (date_js.getFullYear().toString() == year_selected) {
                         row_html += "<tr>" +
-                                        "<td class='editable' data-id='{{offense.id}}' data-type='offense-date' name='format_date' scope='row'>{{offense.date}}</td>" +
-                                        "<td class='editable' data-id='{{offense.id}}' data-type='offense-offense_name' name='format_text' scope='row'>{{offense.offense_name}}</td>" +
+                                        "<td class='editable removable' data-id='{{offense.id}}' data-type='offense-date' name='format_date' scope='row'>{{offense.date}}</td>" +
+                                        "<td class='editable removable' data-id='{{offense.id}}' data-type='offense-offense_name' name='format_text' scope='row'>{{offense.offense_name}}</td>" +
                                     "</tr>";
                     }
                 {% endfor %}
