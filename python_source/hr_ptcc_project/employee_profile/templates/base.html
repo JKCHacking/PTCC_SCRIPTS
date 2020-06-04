@@ -28,12 +28,14 @@
                       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
                       integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
                       crossorigin="anonymous">
+                <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+                    rel="stylesheet">
+                <link rel="stylesheet" type="text/css" href="{% static 'employee_profile/style.css' %}">
             {% endblock head_css_site %}
             {% block head_css_section %}
             {% endblock head_css_section %}
             {% block head_css_page %}{% endblock head_css_page %}
         {% endblock head_css %}
-        <link rel="stylesheet" type="text/css" href="{% static 'employee_profile/style.css' %}">
     </head>
     <body>
     {# modal side bar #}
@@ -138,7 +140,7 @@
 
         <!-- Copyright -->
         <div class="footer-copyright text-center py-3">© 2020 Copyright:
-        <a href="https://mdbootstrap.com/"> PTCC DESIGN</a>
+        <a href="http://www.ptcc.design/"> PTCC DESIGN</a>
         </div>
         <!-- Copyright -->
     
@@ -324,5 +326,4 @@
         {% endblock footer_javascript_section %}
         {% block footer_javascript_page %}{% endblock footer_javascript_page %}
     {% endblock footer_javascript %}
-    <script src="{% static 'employee_profile/drop_down.js' %}"></script>
 </html>

@@ -16,82 +16,141 @@ logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
-def save_employee(request):
-    data = request.POST.get('data', '')
+def save_changes(request):
+    data = request.POST.get('model_changes_dict', '')
     data_dict = json.loads(data)
     log_error = []
 
-    for edited_employee_data in data_dict:
-        id = data_dict[edited_employee_data]['id']
-        type = data_dict[edited_employee_data]['type']
-        value = data_dict[edited_employee_data]['value']
+    for action in data_dict:
+        for changes in data_dict[action]:
+            table = changes["table"]
 
-        model_parts = type.split('-')
-        table_name = model_parts[0]
-        column_name = model_parts[1]
+            if table == "employee":
+                # model attributes of employees that can be edited.
+                regularization_date = "regularization_date"
+                employee_status = "employee_status"
+                prev_vl_bal = "prev_vl_bal"
+                prev_sl_bal = "prev_sl_bal"
+                id_employee = int(changes["id"])
 
-        if table_name == "employee":
-            try:
-                employee = Employee.objects.get(id=id)
-            except Employee.DoesNotExist:
-                log_error.append(f"Employee with ID {id} does not exist!")
+                try:
+                    employee = Employee.objects.get(id=id_employee)
+                    if action == "edit":
+                        if regularization_date in changes:
+                            value = changes[regularization_date]
+                            date_obj = dateutil.parser.parse(value)
+                            employee.regularization_date = date_obj
+                        if employee_status in changes:
+                            value = changes[employee_status]
+                            employee.employee_status = value
+                        if prev_vl_bal in changes:
+                            value = changes[prev_vl_bal]
+                            employee.prev_vl_bal = value
+                        if prev_sl_bal in changes:
+                            value = changes[prev_sl_bal]
+                            employee.prev_sl_bal = value
+                        employee.save()
+                    elif action == "delete":
+                        employee.delete()
+                except Employee.DoesNotExist as e:
+                    log_error.append(f"action: {action} Error: {str(e)}")
 
-            if column_name == "regularization_date":
-                date_obj = dateutil.parser.parse(value)
-                employee.regularization_date = date_obj
+            # for now deleting record in earned table is not logical
+            elif table == "earned":
+                id_earned = changes["id"]
+                id_split = id_earned.split("-")
+                id_vl_earned = int(id_split[0])
+                id_sl_earned = int(id_split[1])
 
-            if column_name == "employee_status":
-                employee.employee_status = value
+                value_vl = changes["VL"]
+                value_sl = changes["SL"]
 
-            if column_name == "prev_vl_bal":
-                employee.prev_vl_bal = value
+                try:
+                    vl_earned_model = Earnedleave.objects.get(id=id_vl_earned)
+                    vl_earned_model.value = value_vl
+                    vl_earned_model.save()
+                except Earnedleave.DoesNotExist as e:
+                    log_error.append(f"action: {action} Error: {str(e)}")
 
-            if column_name == "prev_sl_bal":
-                employee.prev_sl_bal = value
+                try:
+                    sl_earned_model = Earnedleave.objects.get(id=id_sl_earned)
+                    sl_earned_model.value = value_sl
+                    sl_earned_model.save()
+                except Earnedleave.DoesNotExist as e:
+                    log_error.append(f"action: {action} Error: {str(e)}")
 
-            employee.save()
+            elif table == "leave":
+                id_leave = int(changes["id"].split("-")[0])
+                date = "date"
+                days = "days"
+                type = "type"
 
-        if table_name == "earned":
-            try:
-                earned_leave_model = Earnedleave.objects.get(id=id)
-            except Earnedleave.DoesNotExist:
-                log_error.append(f"Earned Leave with ID {id} does not exist!")
+                try:
+                    if action == "edit":
+                        leave_model = Leave.objects.get(id=id_leave)
+                        if date in changes:
+                            value = changes[date]
+                            date_obj = dateutil.parser.parse(value)
+                            leave_model.date = date_obj
 
-            earned_leave_model.value = value
-            earned_leave_model.save()
+                        if days in changes:
+                            value = changes[days]
+                            leave_model.days = value
 
-        if table_name == "leave":
-            try:
-                leave_model = Leave.objects.get(id=id)
-            except Leave.DoesNotExist:
-                log_error.append(f"Leave with ID {id} does not exist!")
+                        if type in changes:
+                            value = changes[type]
+                            leave_model.type = value
 
-            if column_name == "date":
-                date_obj = dateutil.parser.parse(value)
-                leave_model.date = date_obj
+                        leave_model.save()
+                    if action == "delete":
+                        leave_model = Leave.objects.get(id=id_leave)
+                        leave_model.delete()
+                except Leave.DoesNotExist as e:
+                    log_error.append(f"action: {action} Error: {str(e)}")
+                try:
+                    if action == "add":
+                        employee_id = id_leave
+                        employee = Employee.objects.get(id=employee_id)
+                        employee.leave_set.create(
+                            date=dateutil.parser.parse(changes[date]),
+                            days=changes[days],
+                            type=changes[type]
+                        )
+                except Employee.DoesNotExist as e:
+                    log_error.append(f"action: {action} Error: {str(e)}")
 
-            if column_name == "days":
-                leave_model.days = value
+            elif table == "offense":
+                id_offense = int(changes["id"].split("-")[0])
+                date = "date"
+                offense_name = "offense_name"
 
-            if column_name == "type":
-                leave_model.type = value
+                try:
+                    if action == "edit":
+                        offense_model = Offense.objects.get(id=id_offense)
+                        if date in changes:
+                            value = changes[date]
+                            date_obj = dateutil.parser.parse(value)
+                            offense_model.date = date_obj
+                        if offense_name in changes:
+                            value = changes[offense_name]
+                            offense_model.offense_name = value
+                        offense_model.save()
+                    if action == "delete":
+                        offense_model = Offense.objects.get(id=id_offense)
+                        offense_model.delete()
+                except Offense.DoesNotExist as e:
+                    log_error.append(f"action: {action} Error: {str(e)}")
 
-            leave_model.save()
-
-        if table_name == "offense":
-            try:
-                offense_model = Offense.objects.get(id=id)
-            except Offense.DoesNotExist:
-                log_error.append(f"Offense Object with ID {id} does not exist!")
-
-            if column_name == "date":
-                date_obj = dateutil.parser.parse(value)
-                offense_model.date = date_obj
-
-            if column_name == "offense_name":
-                offense_model.offense_name = value
-
-            offense_model.save()
+                try:
+                    if action == "add":
+                        employee_id = id_offense
+                        employee = Employee.objects.get(id=employee_id)
+                        employee.offense_set.create(
+                            date=dateutil.parser.parse(changes[date]),
+                            offense_name=changes[offense_name]
+                        )
+                except Employee.DoesNotExist as e:
+                    log_error.append(f"action: {action} Error: {str(e)}")
 
     if len(log_error) == len(data_dict):
         header_message = "Error"
@@ -102,6 +161,7 @@ def save_employee(request):
     else:
         header_message = "Success"
         body_message = "All changes has been saved!"
+
     return JsonResponse({"head": header_message, "body": body_message})
 
 @csrf_exempt

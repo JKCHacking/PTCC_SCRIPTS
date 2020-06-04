@@ -26,17 +26,20 @@
                             </tr>
                             <tr>
                                 <th>Regularization Date:</th>
-                                <td class="editable" 
+                                <td class="editable-employee" 
                                     data-id="{{employee.id}}" 
-                                    data-type="employee-regularization_date"
+                                    data-table="employee"
+                                    data-type="regularization_date"
                                     name="format_date">{{employee.regularization_date}}
                                 </td>
                             </tr>
                             <tr>
                                 <th>Employee Status:</th>
-                                <td class="editable" 
+                                <td class="editable-employee" 
                                     data-id="{{employee.id}}" 
-                                    data-type="employee-employee_status">{{employee.employee_status}}
+                                    data-table="employee"
+                                    data-type="employee_status"
+                                    name="format_select">{{employee.employee_status}}
                                 </td>
                             </tr>
                         </table>
@@ -61,33 +64,36 @@
             <div class="d-flex flex-row">
                 <div class="p-2 earned_leave">
                     <h5><strong>Bi-Monthly Earned Credits</strong></h5>
-                    <div class="earned_leave_tbl_container" style="overflow:auto;height: 700px;width: 325px;">
+                    <div class="earned_leave_tbl_container" style="overflow:auto;height: 700px;width: 450px;">
                         <table class="table table-hover earned_leave_table">
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col">Cut-off</th>
                                     <th scope="col">Vacation</th>
                                     <th scope="col">Sick</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr data-id='{{employee.id}}' data-table='employee'>
                                     <th scope="row">Beg. Bal</th>
                                     <td 
                                         class="editable" 
-                                        data-id="{{employee.id}}" 
-                                        data-type="employee-prev_vl_bal" 
+                                        data-type="prev_vl_bal" 
                                         scope="row"
                                         name="format_float">
-                                            {{employee.prev_vl_bal}}
+                                        {{employee.prev_vl_bal}}
                                     </td>
                                     <td 
                                         class="editable"
-                                        data-id="{{employee.id}}"
-                                        data-type="employee-prev_sl_bal"
+                                        data-type="prev_sl_bal"
                                         scope="row"
                                         name="format_float">
                                             {{employee.prev_sl_bal}}
+                                    </td>
+                                    <td>
+                                        <button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>
+                                        <button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -95,7 +101,14 @@
                     </div>
                 </div>
                 <div class="p-2 leaves_taken">
-                    <h5><strong>Leaves Taken</strong></h5>
+                    <div class="d-flex flex-row">
+                        <div class="p-2">
+                            <h5><strong>Leaves Taken</strong></h5>
+                        </div>
+                        <div class="ml-auto p-2">
+                            <button type="button" class="btn btn-info add-new" data-table="leaves_taken_table">+ Add New</button>
+                        </div>
+                    </div>
                     <div style="overflow:auto;height: 700px;">
                         <table class="table table-hover leaves_taken_table">
                             <thead class="thead-dark">
@@ -103,6 +116,7 @@
                                     <th scope="col">Date</th>
                                     <th scope="col">No. of Days</th>
                                     <th scope="col">Type of Leave</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -111,13 +125,21 @@
                     </div>
                 </div>
                 <div class="p-2 offenses">
-                    <h5><strong>Timekeeping Offenses</strong></h5>
+                    <div class="d-flex flex-row">
+                        <div class="p-2">
+                            <h5><strong>Offenses</strong></h5>
+                        </div>
+                        <div class="ml-auto p-2">
+                            <button type="button" class="btn btn-info add-new" data-table="offenses_table">+ Add New</button>
+                        </div>
+                    </div>
                     <div style="overflow:auto;height: 700px;">
                         <table class="table table-hover offenses_table">
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col">Date</th>
                                     <th scope="col">Offense Name</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -138,11 +160,11 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <div class="modal-body">
-                Are you sure you want to modify the data?
+            <div class="modal-body save-modal-body">
+                
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="save_button_close">Close</button>
+            <button type="button" class="btn btn-secondary" id="save_button_close">Cancel</button>
             <button type="button" class="btn btn-primary" id="save_button_modal">Save changes</button>
             </div>
         </div>
@@ -153,79 +175,85 @@
 {% block custom_js %}
     <script type="text/javascript">
         $(document).ready(function() {
-            
+            //this is the container to hold the changes made by the user
+            var model_changes_dict = {
+                "add":[],
+                "edit":[],
+                "delete":[],
+            };
             // initialize tables and selection year
             initialize();
 
-            var edited_values_dict = {};
-            $(document).on("dblclick", ".editable", function() {
+            $(document).on("dblclick", ".editable-employee", function() {
                var value = ($(this).text()).trim();
                var data_type = $(this).data("type");
                var name_element = $(this).attr("name");
-               var input_type;
-               var input;
+               var input = "";
 
                if (name_element == "format_date") {
-                    input_type = "date";
                     value = convertDate(value);
-               } else {
-                    input_type = "text";
-               }
-
-               if (data_type == "employee-employee_status") {
-                    input = "<select class='input-data'>" +
-                                "<option>"+value+"</option>" +
-                                "<option value='P'>P</option>" +
-                                "<option value='R1'>R1</option>" +
-                                "<option value='R'>R</option>" +
-                            "</select>";
-               } else if (data_type == "leave-type") {
-                    input = "<select class='input-data'>" +
-                                "<option>"+value+"</option>" +
-                                "<option value='SL'>SL</option>" +
-                                "<option value='VL'>VL</option>" +
-                            "</select>";
-               } else if (data_type == "offense-offense_name") {
-                    input = "<select class='input-data'>" +
-                                "<option>"+value+"</option>" +
-                                "<option value='Late'>Late</option>" +
-                                "<option value='No Time-in'>No Time-in</option>" +
-                                "<option value='No Time-out'>No Time-out</option>" +
-                            "</select>";
-               } else {
-                   input = "<input type='"+input_type+"'" + 
-                           "class='input-data'" + 
+                    input = "<input type='date'" + 
+                           "class='input-data-employee'" + 
                            "value='"+value+"'>";
+               } else if(name_element == "format_select") {
+                    if (data_type == "employee_status") {
+                            input = "<select class='input-data-employee'>" +
+                                        "<option>"+value+"</option>" +
+                                        "<option value='P'>P</option>" +
+                                        "<option value='R1'>R1</option>" +
+                                        "<option value='R'>R</option>" +
+                                    "</select>";
+                    } 
                }
 
                $(this).html(input);
-               $(this).removeClass("editable_employee")
                $("#save_employee").attr("disabled", false);
-               $('input[type="text"]')
-                // event handler
-                .keyup(resizeInput)
-                // resize on page load
-                .each(resizeInput);
             });
 
-            $(document).on("blur", ".input-data", function(){
-                enterInput($(this));
+            $(document).on("blur", ".input-data-employee", function(){
+                var input_values_dict = enterInput2($(this));
+                model_changes_dict["edit"].push(input_values_dict);
             });
 
-            $(document).on("keypress", ".input-data", function(e) {
+            $(document).on("keypress", ".input-data-employee", function(e) {
                 var key = e.which;
 
                 if (key == 13) {
-                    enterInput($(this));
+                    var input_values_dict = enterInput2($(this));
+                    model_changes_dict["edit"].push(input_values_dict);
                 }
             });
-
+            
             $("#save_employee").click(function() {
                 $("#saveModal").modal();
+                message = "You made the following changes: <br>";
+                total_edit = model_changes_dict["edit"].length;
+                total_delete = model_changes_dict["delete"].length;
+                total_add = model_changes_dict["add"].length;
+
+                if (total_edit > 0) {
+                    message += "Edited " + total_edit + " item(s)<br>";
+                }
+                if (total_delete > 0) {
+                    message += "Deleted " + total_delete + " item(s)<br>";
+                }
+                if (total_add > 0) {
+                    message += "Added " + total_add + " item(s)<br>";
+                }
+
+                message += "<br>Are you sure you want to add the changes?";
+
+                $("#save_button_modal").attr("disabled", false);
+                if (!total_add && !total_edit && !total_delete) {
+                    message = "You have not made any changes<br>";
+                    $("#save_button_modal").attr("disabled", true);
+                }
+                
+                $(".save-modal-body").html(message);
             });
 
             $("#save_button_modal").click(function() {
-                sendToServer(edited_values_dict);
+                sendToServer(model_changes_dict);
                 $("#save_employee").attr("disabled", true);
                 $("#saveModal").modal("hide");
             });
@@ -243,12 +271,147 @@
             $("#employee-details-year-selection").on("change", function(){
                 // remove all elements with class "removable"
                 $(".removable").remove();
+                $('[data-toggle="tooltip"]').tooltip()
                 displayEarnedLeave();
                 displayLeavesTaken();
                 displayOffenses();
             });
+            
+            //action add button
+            $("body").on('click', '.add', function() {
+                $("#save_employee").attr("disabled", false);
+                var cell_container = $(this).parent("td");
+                var row_container = cell_container.parent("tr");
+                var edit_element = cell_container.find(".edit");
+
+                //check for error first
+                var error_flag = checkInvalidInput(row_container);
+                if (error_flag == 0) {
+                    input_values_dict = enterInput(row_container);
+                    if (input_values_dict["id"].includes("new")) {
+                        model_changes_dict["add"].push(input_values_dict);
+                    } else {
+                        model_changes_dict["edit"].push(input_values_dict);
+                    }
+                }
+            });
+
+            //action edit button
+            $("body").on('click', '.edit', function(){
+                console.log("edit button clicked");
+                var cell_container = $(this).parent("td");
+                var row_container = cell_container.parent("tr");
+                var add_element = cell_container.find(".add");
+                
+                add_element.attr("hidden", false);
+                $(this).attr("hidden", true);
+                $.each(row_container.find(".editable"), function() {
+                    var data_type = $(this).data("type");
+                    var value = ($(this).text()).trim();
+                    var name_element = $(this).attr("name");
+                    var input;
+
+                    //determine what type of input html to display
+                    if (name_element == "format_date") {
+                            value = convertDate(value);
+                            input = "<input type='date'" + 
+                                    "class='input-data'" + 
+                                    "value='"+value+"'>";
+                    } else if(name_element == "format_select") {
+                        if (data_type == "employee_status") {
+                                input = "<select class='input-data'>" +
+                                            "<option>"+value+"</option>" +
+                                            "<option value='P'>P</option>" +
+                                            "<option value='R1'>R1</option>" +
+                                            "<option value='R'>R</option>" +
+                                        "</select>";
+                        } else if (data_type == "type") {
+                                input = "<select class='input-data'>" +
+                                            "<option>"+value+"</option>" +
+                                            "<option value='SL'>SL</option>" +
+                                            "<option value='VL'>VL</option>" +
+                                        "</select>";
+                        } else if (data_type == "offense_name") {
+                                input = "<select class='input-data'>" +
+                                            "<option>"+value+"</option>" +
+                                            "<option value='Late'>Late</option>" +
+                                            "<option value='No Time-in'>No Time-in</option>" +
+                                            "<option value='No Time-out'>No Time-out</option>" +
+                                        "</select>";
+                        } 
+                    }else {
+                            input = "<input type='text'" + 
+                                    "class='input-data'" + 
+                                    "value='"+value+"'>";
+                    }
+                    $(this).html(input);
+                    $('input[type="text"]')
+                    // event handler
+                    .keyup(resizeInput)
+                    // resize on page load
+                    .each(resizeInput);
+                });
+            });
+
+            //action delete button
+            $("body").on("click", ".delete", function() {
+                $("#save_employee").attr("disabled", false);
+                var delete_values_dict = {};
+                cell_container = $(this).parent("td");
+                row_container = cell_container.parent("tr");
+                
+                var id = row_container.data("id").toString();
+                var table = row_container.data("table");
+                delete_values_dict["id"] = id;
+                delete_values_dict["table"] = table;
+                //check if substring "new" is included in the id string
+                if (id.indexOf("new") === -1) {
+                    model_changes_dict["delete"].push(delete_values_dict);
+                } else {
+                    //remove the new added entry in the model changes container
+                    var add_changes = model_changes_dict["add"];
+                    for(var i = 0; i < add_changes.length; i++) {
+                        if(add_changes[i]["id"] == id){
+                            add_changes.splice(i, 1);
+                        }
+                    }
+                }
+                row_container.remove();
+            });
+
+            $(".add-new").click(function (){
+                table = $(this).data("table");
+                if (table == "leaves_taken_table") {
+                    row_html = "<tr class='removable' data-id='{{employee.id}}-new' data-table='leave'>" +
+                                "<td class='editable' data-type='date' name='format_date'></td>" +
+                                "<td class='editable' data-type='days' name='format_float' scope='row'></td>" +
+                                "<td class='editable' data-type='type' name='format_select' scope='row'></td>" +
+                                '<td>'+
+                                    '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                    '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                    '<button style="border:none;background:none;" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                '</td>'+
+                            "</tr>";
+                    table_class_name = "." + table;
+                }
+                else if (table == "offenses_table") {
+                    row_html = "<tr class='removable' data-id='{{employee.id}}-new' data-table='offense'>" +
+                                    "<td class='editable' data-type='date' name='format_date' scope='row'></td>" +
+                                    "<td class='editable' data-type='offense_name' name='format_select' scope='row'></td>" +
+                                    '<td>'+
+                                        '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                        '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                        '<button style="border:none;background:none;" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                    '</td>'+
+                                "</tr>";
+                    table_class_name = "." + table;
+                }
+
+                $(table_class_name).append(row_html);
+            });
 
             function initialize() {
+                $('[data-toggle="tooltip"]').tooltip()
                 populateYearSelection();
                 displayEarnedLeave();
                 displayLeavesTaken();
@@ -266,10 +429,14 @@
                     var date_js = new Date(date_string);
                     var leave_year = date_js.getFullYear().toString();
                     if (date_js.getFullYear().toString() == year_selected) {
-                        row_html += "<tr>"+
-                                        "<th class='removable' scope='row'>{{vl.cut_off}}</th>"+
-                                        "<td class='editable removable' data-id='{{vl.id}}' data-type='earned-{{vl.type}}' name='format_float' scope='row'>{{vl.value}}</td>"+
-                                        "<td class='editable removable' data-id='{{sl.id}}' data-type='earned-{{sl.type}}' name='format_float' scope='row'>{{sl.value}}</td>"+
+                        row_html += "<tr class='removable' data-id='{{vl.id}}-{{sl.id}}' data-table='earned'>"+
+                                        "<th scope='row'>{{vl.cut_off}}</th>"+
+                                        "<td class='editable' data-type='{{vl.type}}' name='format_float' scope='row'>{{vl.value}}</td>"+
+                                        "<td class='editable' data-type='{{sl.type}}' name='format_float' scope='row'>{{sl.value}}</td>"+
+                                        '<td>'+
+                                            '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                            '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                        '</td>'+
                                     "</tr>";
                         
                         vl_value_int = "{{vl.value}}";
@@ -280,10 +447,10 @@
                     }
                 {% endfor %}
                 
-                var total_sl_vl_html = "<tr>"+
-                                            "<th class='removable' scope='row'>Total</th>" +
-                                            "<td class='removable'>" + total_vl.toFixed(3) +"</td>" +
-                                            "<td class='removable'>" + total_sl.toFixed(3) +"</td>" +
+                var total_sl_vl_html = "<tr class='removable'>"+
+                                            "<th scope='row'>Total</th>" +
+                                            "<td>" + total_vl.toFixed(3) +"</td>" +
+                                            "<td>" + total_sl.toFixed(3) +"</td>" +
                                        "</tr>"
                 row_html += total_sl_vl_html;
                 $(".earned_leave_table").append(row_html);
@@ -297,10 +464,15 @@
                     var date_js = new Date(date_string);
                     var leave_year = date_js.getFullYear().toString();
                     if (date_js.getFullYear().toString() == year_selected) {
-                        row_html += "<tr>" +
-                                        "<td class='editable removable' data-id='{{leave.id}}' data-type='leave-date' name='format_date'>{{leave.date}}</td>" +
-                                        "<td class='editable removable' data-id='{{leave.id}}' data-type='leave-days' name='format_text' scope='row'>{{leave.days}}</td>" +
-                                        "<td class='editable removable' data-id='{{leave.id}}' data-type='leave-type' name='format_text' scope='row'>{{leave.type}}</td>" +
+                        row_html += "<tr class='removable' data-id='{{leave.id}}' data-table='leave'>" +
+                                        "<td class='editable' data-type='date' name='format_date'>{{leave.date}}</td>" +
+                                        "<td class='editable' data-type='days' name='format_float' scope='row'>{{leave.days}}</td>" +
+                                        "<td class='editable' data-type='type' name='format_select' scope='row'>{{leave.type}}</td>" +
+                                        '<td>'+
+                                            '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                            '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                            '<button style="border:none;background:none;" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                        '</td>'+
                                     "</tr>";
                     }
                 {% endfor %}
@@ -315,9 +487,14 @@
                     var date_js = new Date(date_string);
                     var leave_year = date_js.getFullYear().toString();
                     if (date_js.getFullYear().toString() == year_selected) {
-                        row_html += "<tr>" +
-                                        "<td class='editable removable' data-id='{{offense.id}}' data-type='offense-date' name='format_date' scope='row'>{{offense.date}}</td>" +
-                                        "<td class='editable removable' data-id='{{offense.id}}' data-type='offense-offense_name' name='format_text' scope='row'>{{offense.offense_name}}</td>" +
+                        row_html += "<tr class='removable' data-id='{{offense.id}}' data-table='offense'>" +
+                                        "<td class='editable' data-type='date' name='format_date' scope='row'>{{offense.date}}</td>" +
+                                        "<td class='editable' data-type='offense_name' name='format_select' scope='row'>{{offense.offense_name}}</td>" +
+                                        '<td>'+
+                                            '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                            '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                            '<button style="border:none;background:none;" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                        '</td>'+
                                     "</tr>";
                     }
                 {% endfor %}
@@ -334,39 +511,92 @@
                 $("#employee-details-year-selection").html(options);
             }
 
-            function enterInput(element) {
-                var value = (element.val()).trim();
-                var td = element.parent("td");
-                var name_element = td.attr("name");
-                var type = td.data("type");
-                var id = td.data("id");
+            //function to check for incorrect input in the table cell
+            function checkInvalidInput(row_container) {
+                var error_flag = 0;
+                $.each(row_container.find(".editable"), function() {
+                    var name_input_element = $(this).attr("name");
+                    var input_element = $(this).find(".input-data");
+                    var value = (input_element.val()).trim();
+                    var year_selected = $("#employee-details-year-selection option:selected").text();
 
-                if(name_element == "format_date") {
-                    value = convertDate(value);
-                }
-                
-                if (name_element == "format_float") {
-                    if (isNaN(value)) {
-                        $(".info-modal-title").html("Error");
-                        $(".info-modal-body").html("You have input an invalid data!");
-                        $("#infoModal").modal();
-                        return 0;
+                    $(this).removeClass("error");
+                    if(name_input_element == "format_float") {
+                        if (isNaN(value) || value === "") {
+                            $(this).addClass("error");
+                            error_flag = 1;
+                        }
+                    } else if(name_input_element == "format_date") {
+                        var date_js = new Date(value);
+                        var date_obj = convertDate(value);
+                        if (date_obj == "NaN-aN-aN") {
+                            $(this).addClass("error");
+                            error_flag = 1;
+                        } 
+                        //checking if the chosen year of the date is equal to the year selection
+                        else if(date_js.getFullYear().toString() != year_selected) {
+                            $(this).addClass("error");
+                            error_flag = 1;
+                        }
+                    } else if(name_input_element == "format_select") {
+                        if (value == "") {
+                            $(this).addClass("error");
+                            error_flag = 1;
+                        }
                     }
-                }
-
-                element.remove();
-            
-                td.html(value);
-                td.addClass("editable_employee");
-                
-                var edited_employee_data = {
-                    "id" : id,
-                    "type": type,
-                    "value": value
-                };
-                edited_values_dict[edited_employee_data['type']] = edited_employee_data;
+                });
+                return error_flag;
             }
 
+            // function serves the add edit and delete of table objects
+            function enterInput(row_container) {
+                var input_values_dict = {};
+                var id = row_container.data("id");
+                var table = row_container.data("table");
+
+                input_values_dict["id"] = id;
+                input_values_dict["table"] = table;
+                $.each(row_container.find(".editable"), function(){
+                    var type = $(this).data("type");
+                    var name_input_element = $(this).attr("name");
+                    var input_element = $(this).find(".input-data");
+                    var value = (input_element.val()).trim();
+                    if(name_input_element == "format_date") {
+                        value = convertDate(value);
+                    }
+
+                    input_values_dict[type] = value;
+                    input_element.remove();
+                    $(this).html(value);
+                });
+                $(".add").attr("hidden", true);
+                $(".edit").attr("hidden", false);
+                return input_values_dict;
+            }
+
+            // this function serves the editing of employee data
+            function enterInput2(input_element) {
+                var input_values_dict = {};
+                var parent_container = input_element.parent("td");
+                var id = parent_container.data("id");
+                var table = parent_container.data("table");
+                var type = parent_container.data("type");
+                var type_of_input = parent_container.attr("name");
+
+                var value = (input_element.val()).trim();
+                if(type_of_input == "format_date") {
+                    value = convertDate(value);
+                }
+
+                input_element.remove();
+                parent_container.html(value);
+
+                input_values_dict["id"] = id;
+                input_values_dict["table"] = table;
+                input_values_dict[type] = value;
+
+                return input_values_dict;
+            }
             function resizeInput() {
                 $(this).attr('size', $(this).val().length);
             }
@@ -398,21 +628,26 @@
                 return dateString;
             }
 
-            function sendToServer(edited_values_dict) {
-                console.log(edited_values_dict);
-                url = "{% url 'employee_profile:save_employee' %}";
-
+            function sendToServer(model_changes_dict) {
+                console.log(model_changes_dict);
+                url = "{% url 'employee_profile:save_changes' %}";
+                data = {
+                    "model_changes_dict": JSON.stringify(model_changes_dict)
+                }
                     $.ajax({
                         url:url,
                         type: "POST",
                         dataType: "json",
-                        data: {data: JSON.stringify(edited_values_dict)}
+                        data: data
                     })
                     .done(function(response) {
                         $(".info-modal-title").html(response.head);
                         $(".info-modal-body").html(response.body);
                         $("#infoModal").modal();
-                        edited_values_dict = {};
+                        model_changes_dict = {
+                            "edit":[],
+                            "delete":[]
+                        };
                     })
                     .fail(function(){
                         $(".info-modal-title").html("Failed");
