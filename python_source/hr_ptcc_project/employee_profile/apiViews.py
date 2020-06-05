@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.http import HttpResponse
+from django.db import IntegrityError
 from openpyxl import load_workbook
 from .models import Employee, Earnedleave, Leave, Offense
 # import the logging library
@@ -320,3 +321,60 @@ def download_file(request):
             response['Content-Disposition'] = f'inline; filename={os.path.basename(generated_file_path)}'
 
     return response
+
+@csrf_exempt
+def add_employee(request):
+    data_dict = request.POST.dict()
+    emp_tin_id = data_dict['emp_tin']
+    emp_name = data_dict['emp_name']
+    hired_date = data_dict['emp_hired_date']
+    probation_date = data_dict['emp_probation_date']
+    sl_start_date = data_dict['emp_sl_start_date']
+    regular_date = data_dict['emp_reg_date']
+    status = data_dict['emp_status']
+    prev_vl_bal = data_dict['prev_vl_bal']
+    prev_sl_bal = data_dict['prev_sl_bal']
+
+    try:
+        employee_model, created = Employee.objects.get_or_create(
+            employee_tin_id=emp_tin_id,
+            name=emp_name,
+            probation_date=probation_date,
+            hired_date=hired_date,
+            sl_start_date=sl_start_date,
+            regularization_date=regular_date,
+            employee_status=status,
+            prev_vl_bal=prev_vl_bal,
+            prev_sl_bal=prev_sl_bal,
+        )
+
+        if created:
+            header = "Success"
+            body_message = "Employee Added!"
+        else:
+            header = "Error"
+            body_message = "Employee already Exists"
+    except IntegrityError:
+        header = "Error"
+        body_message = "Employee already Exists"
+
+    return JsonResponse({"head": header, "body": body_message})
+
+@csrf_exempt
+def delete_employee(request):
+    employee_list = request.POST.getlist("employeeList[]")
+    log_error = []
+
+    for employee_id in employee_list:
+        try:
+            employee = Employee.objects.get(id=employee_id)
+            employee.delete()
+        except Employee.DoesNotExist as e:
+            log_error.append(f"Error: {str(e)}")
+    if log_error:
+        header_message = "Warning"
+        body_message = f"There are some problems encountered during delete of employee: {log_error}"
+    else:
+        header_message = "Success"
+        body_message = "Successfully Deleted all employees"
+    return JsonResponse({"head": header_message, "body": body_message})

@@ -529,15 +529,11 @@
                     } else if(name_input_element == "format_date") {
                         var date_js = new Date(value);
                         var date_obj = convertDate(value);
-                        if (date_obj == "NaN-aN-aN") {
+                        //checking if the chosen year of the date is equal to the year selection
+                        if (date_obj == "NaN-aN-aN" || date_js.getFullYear().toString() != year_selected) {
                             $(this).addClass("error");
                             error_flag = 1;
                         } 
-                        //checking if the chosen year of the date is equal to the year selection
-                        else if(date_js.getFullYear().toString() != year_selected) {
-                            $(this).addClass("error");
-                            error_flag = 1;
-                        }
                     } else if(name_input_element == "format_select") {
                         if (value == "") {
                             $(this).addClass("error");
@@ -649,9 +645,9 @@
                             "delete":[]
                         };
                     })
-                    .fail(function(){
+                    .fail(function(xhr, status, error) {
                         $(".info-modal-title").html("Failed");
-                        $(".info-modal-body").html("Failed to save data!");
+                        $(".info-modal-body").html("Failed to save data! details: " + (xhr.responseText).split(".")[0]);
                         $("#infoModal").modal();
                     });
             }

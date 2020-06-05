@@ -7,7 +7,7 @@
         <title>{% block title %}PTCC HR{% endblock title %}</title>
         {% block head_favicon %}
             <link rel="icon" type="image/jpg"
-                  href="{% static 'polls/images/image1.jpg' %}">
+                  href="{% static 'employee_profile/images/ptcc_icon.PNG' %}">
         {% endblock head_favicon %}
         {% block head_meta %}
             {% block head_meta_charset %}
@@ -76,7 +76,8 @@
                 <div class="modal-footer">
                     <select id="year_selection" hidden="true"></select>
                     <button type="button" class="btn btn-secondary" id="info_button_close" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="info_button_ok" hidden="true">Generate</button>
+                    <button type="button" class="btn btn-primary" id="generate_button" hidden="true">Generate</button>
+                    <button type="button" class="btn btn-primary" id="delete_button" hidden="true">Delete</button>
                 </div>
             </div>
         </div>
@@ -182,13 +183,13 @@
 
                         if (checked_employee_list.length == 0) {
                             html_string = "<h6>No selected employees.</h6>"
-                            $("#info_button_ok").attr("disabled", true);
+                            $("#generate_button").attr("disabled", true);
                         } else {
-                            $("#info_button_ok").attr("disabled", false);
+                            $("#generate_button").attr("disabled", false);
                         }
 
                         $(".info-modal-body").html(html_string);
-                        $("#info_button_ok").attr("hidden", false);
+                        $("#generate_button").attr("hidden", false);
                         $("#year_selection").attr("hidden", false);
                         populateYearSelection();
                     });
@@ -201,8 +202,8 @@
                         }
                     });
 
-                    $("#info_button_ok").on("click", function(){
-                        $("#info_button_ok").attr("hidden", true);
+                    $("#generate_button").on("click", function(){
+                        $("#generate_button").attr("hidden", true);
                         $("#year_selection").attr("hidden", true);
                         requestGenerate();
                     });
@@ -221,7 +222,7 @@
                     });
 
                     $("#info_button_close").on("click", function() {
-                        $("#info_button_ok").attr("hidden", true);
+                        $("#generate_button").attr("hidden", true);
                         $("#year_selection").attr("hidden", true);
                         location.reload();
                     });
@@ -315,9 +316,9 @@
                             $("#infoModal").modal();
                             checked_employee_list = [];
                         })
-                        .fail(function(){
+                        .fail(function(xhr, status, error) {
                             $(".info-modal-title").html("Failed");
-                            $(".info-modal-body").html("Failed to generate");
+                            $(".info-modal-body").html("Failed to save data! details: " + (xhr.responseText).split(".")[0]);
                             $("#infoModal").modal();
                         });
                     }

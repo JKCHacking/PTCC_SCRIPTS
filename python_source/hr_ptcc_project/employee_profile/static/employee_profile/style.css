@@ -122,6 +122,10 @@ ul ul a {
     border-radius: 5px;
 }
 
+.card {
+    margin-bottom: 5px;
+}
+
 .employee_spec_details{
     border:1px solid  #000000;
     border-radius:5px;
@@ -212,4 +216,17 @@ footer.page-footer {
 
 .error {
     border: 2px solid red;
+}
+
+.p-2 {
+    padding: .2rem;
+}
+
+.form-group {
+    margin-bottom: 5px;
+}
+
+.error-text {
+    color: red !important;
+    font-style: italic;
 }
