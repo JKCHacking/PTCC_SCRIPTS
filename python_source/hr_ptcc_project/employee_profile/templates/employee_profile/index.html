@@ -15,7 +15,8 @@
                 </div>
             </div>
 
-            <div class="card_container">
+            <div style="overflow:auto;height: 800px;">
+                <div class="card_container">
                 <div class="d-flex flex-column">
                     <div class="d-flex flex-row">
                         <div class="p-2">
@@ -88,6 +89,7 @@
                     </div>
                 </div>
             </div>
+        </div>
     </body>
     <div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -166,6 +168,7 @@
         $(document).ready(function() {
             var employeeIdList = [];
             $("#add-employee-button").click(function(){
+                $("#addEmployeeModal").modal("dispose");
                 $("#addEmployeeModal").modal();
             });
 
