@@ -7,15 +7,18 @@
                 <div class="p-2"><h2>EMPLOYEE LIST</h2></div>
             </div>
             <div class="card_container">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Employee's name" aria-label="Employee's name" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button">SEARCH</button>
+                <form method="GET" id="searchForm">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Search by employee's name" aria-label="Employee's name" aria-describedby="basic-addon2" name="search" value='{{request.GET.search}}' id="searchEmployee">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" form="searchForm" type="submit">SEARCH</button>
+                        </div>
                     </div>
-                </div>
+                </form>
+                
             </div>
 
-            <div style="overflow:auto;height: 800px;">
+            <div style="overflow:auto;height: 8ge00px;">
                 <div class="card_container">
                 <div class="d-flex flex-column">
                     <div class="d-flex flex-row">

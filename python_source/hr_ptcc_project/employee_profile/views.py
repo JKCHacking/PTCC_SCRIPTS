@@ -18,7 +18,12 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_employee_list'
 
     def get_queryset(self):
-        return Employee.objects.order_by('name')
+        query = self.request.GET.get('search')
+        if query:
+            object_list = Employee.objects.filter(name__icontains=query)
+        else:
+            object_list = Employee.objects.order_by('name')
+        return object_list
 
 
 class EmployeeDetailView(generic.DetailView):
