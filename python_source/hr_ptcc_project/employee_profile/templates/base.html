@@ -96,7 +96,9 @@
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">SIGN OUT</a>
+                        {% if user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'logout' %}">SIGN OUT</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
@@ -110,7 +112,7 @@
                 <div class="sidebar-header">
                     <a href="{% url 'employee_profile:index' %}"><h3>DOCUMENT GENERATOR</h3></a>
                 </div>
-
+                {% if user.is_authenticated %}
                 <ul class="list-unstyled components">
                    <li>
                        <a href="#uploadSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Upload Files</a>
@@ -129,6 +131,7 @@
                         </ul>
                      </li>
                 </ul>
+                {% endif %}
             </nav>
             {% block content %}
                 if you see this, something is wrong!

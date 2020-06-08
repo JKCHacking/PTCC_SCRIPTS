@@ -20,5 +20,6 @@ from employee_profile.views import upload_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('employee_profile/', include('employee_profile.urls')),
-    path('upload_files', upload_view, name='upload_view')
+    path('upload_files', upload_view, name='upload_view'),
+    path('', include("django.contrib.auth.urls"))
 ]

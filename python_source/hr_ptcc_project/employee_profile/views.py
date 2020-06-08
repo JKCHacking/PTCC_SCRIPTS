@@ -1,11 +1,10 @@
 import csv
 import io
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.views import generic
 from .models import Employee, Leave, Earnedleave, Offense, Timesheet
 from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse
+from django.shortcuts import  redirect
 import logging
 import dateutil.parser
 import datetime
@@ -18,12 +17,21 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_employee_list'
 
     def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return redirect('index')
         query = self.request.GET.get('search')
         if query:
             object_list = Employee.objects.filter(name__icontains=query)
         else:
             object_list = Employee.objects.order_by('name')
         return object_list
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('login')
+        else:
+            logger.error("LOGGED IN")
+            return super(IndexView, self).dispatch(request, *args, **kwargs)
 
 
 class EmployeeDetailView(generic.DetailView):
