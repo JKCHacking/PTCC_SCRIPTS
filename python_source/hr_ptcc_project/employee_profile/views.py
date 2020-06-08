@@ -30,7 +30,6 @@ class IndexView(generic.ListView):
         if not self.request.user.is_authenticated:
             return redirect('login')
         else:
-            logger.error("LOGGED IN")
             return super(IndexView, self).dispatch(request, *args, **kwargs)
 
 
