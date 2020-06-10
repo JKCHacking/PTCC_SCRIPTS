@@ -22,8 +22,6 @@ class DrawingPDFParser:
         interpreter = PDFPageInterpreter(rsrcmgr, device)
         pages = PDFPage.get_pages(fp)
 
-        text_height = self.get_text_height(fp, page_names)
-        print(f'Text Height: {text_height}')
         current_page_number = 0
         link_coor_list = []
         for page in pages:
@@ -34,57 +32,40 @@ class DrawingPDFParser:
             for lobj in layout:
                 if isinstance(lobj, LTTextBox):
                     text = lobj.get_text().replace("\n", "_")
-                    for page_name in page_names:
-                        if page_name in text:
-                            x0, y0_orig, x1, y1_orig = lobj.bbox
-                            x0 = page.mediabox[3] - x0
-                            x1 = page.mediabox[3] - x1
-                            rect_coord = [y0_orig, x0, y1_orig, x1]
-                            link_dict = self.create_link_dict(page_name, rect_coord, current_page_number)
+                    text_split = text.split("_")
+
+                    # -1 is the extra empty string
+                    num_label_in_box = len(text_split) - 1
+                    '''
+                                                                       ^ X
+                        +---------------------* (x_upper, y_upper)     |
+                        |                     |                        |
+                        |                     |                        |
+                        *---------------------+                        |
+                       (x_lower, y_lower)                              |
+                         Y <-------------------------------------------+
+                    '''
+                    y_lower, x_lower, y_upper, x_upper = lobj.bbox
+                    y_lower = page.mediabox[3] - y_lower
+                    y_upper = page.mediabox[3] - y_upper
+                    text_height = (x_upper - x_lower) / num_label_in_box
+                    for index, label in enumerate(text_split):
+                        if label in page_names and label != "":
+                            print(f'x_lower: {x_lower} y_lower: {y_lower} x_upper: {x_upper} y_upper: {y_upper} label: {label} text_height: {text_height} text: {text}')
+                            new_x_upper = x_upper - index * text_height
+                            new_x_lower = x_upper - (index + 1) * text_height
+                            rect_coord = [new_x_lower, y_lower, new_x_upper, y_upper]
+                            link_dict = self.create_link_dict(label, rect_coord, current_page_number)
                             link_coor_list.append(link_dict)
-                            print('At %r is text: %s' % (rect_coord, text))
-            current_page_number = current_page_number + 1
+            current_page_number += 1
         return link_coor_list
 
     @staticmethod
-    def get_text_height(fp, page_names):
-        rsrcmgr = PDFResourceManager()
-        laparams = LAParams()
-        device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        pages = PDFPage.get_pages(fp)
-
-        text_height = 0
-        current_page_number = 0
-        for page in pages:
-            print(f"current page: {current_page_number}")
-            interpreter.process_page(page)
-            layout = device.get_result()
-
-            for lobj in layout:
-                if isinstance(lobj, LTTextBox):
-                    text = lobj.get_text().replace("\n", "_")
-                    text_split = text.split("_")
-                    counter = 0
-                    for text in text_split:
-                        text = text.strip()
-                        if text in page_names:
-                            counter += 1
-                    if counter == 1:
-                        bottom, left, top, right = lobj.bbox
-                        text_height = right - left
-                        break
-            if text_height != 0:
-                break
-            current_page_number = current_page_number + 1
-        return text_height
-
-    @staticmethod
-    def create_link_dict(link_name, rect_coord, curr_page):
+    def create_link_dict(link_name, rect_coord, src_page):
         link_dict = {
             "link_name": link_name,
             "rect_coord": rect_coord,
-            "curr_page": curr_page
+            "src_page": src_page
         }
         return link_dict
 
@@ -93,7 +74,7 @@ class DrawingPDFParser:
         for link in link_list:
             if page_name == link['link_name']:
                 rect = link['rect_coord']
-                out_writer.addLink(link['curr_page'], dest_page, rect=rect,
+                out_writer.addLink(link['src_page'], dest_page, rect=rect,
                                    border=[16, 16, 1])
         return out_writer
 
