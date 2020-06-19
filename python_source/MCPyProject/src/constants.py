@@ -12,6 +12,14 @@ class Constants:
     TEST_DIR = os.path.join(PROJ_ROOT, 'test')
 
     JPG_FILE_EXT = '.jpg'
+    BMP_FILE_EXT = '.bmp'
+    PNG_FILE_EXT = '.png'
     MC_FILE_EXT = '.xmcd'
 
     IMAGE_SIZE = 250, 250
+
+    PASTE_KEY = '^v'
+    DOWN_ARROW = '{VK_DOWN}'
+    RIGHT_ARROW = '{VK_RIGHT}'
+    LEFT_ARROW = '{VK_LEFT}'
+    ENTER_KEY = '~'

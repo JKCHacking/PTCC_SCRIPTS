@@ -70,10 +70,10 @@ class MCPyScript:
             win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
             win32clipboard.CloseClipboard()
 
-            send_keys('^v')
-            send_keys('{VK_DOWN}' * offset_next_img)
-            send_keys('{VK_RIGHT}' * offset_name_img + image_name + '~')
-            send_keys('{VK_LEFT}' * offset_row_origin)
+            str_command = f"{Constants.PASTE_KEY}{Constants.DOWN_ARROW * offset_next_img}" + \
+                          f"{Constants.RIGHT_ARROW * offset_name_img}{image_name}{Constants.ENTER_KEY}" + \
+                          f"{Constants.LEFT_ARROW * offset_row_origin}"
+            send_keys(str_command)
 
         if self.ws.NeedsSave:
             self.logger.info("Worksheet has been saved")

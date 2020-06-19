@@ -17,7 +17,9 @@ class FileManager:
         for dirpath, dirname, filenames in os.walk(self.input_dir_path):
             for filename in filenames:
                 file_fullpath = os.path.join(dirpath, filename)
-                if file_fullpath.endswith(Constants.JPG_FILE_EXT):
+                if file_fullpath.endswith(Constants.JPG_FILE_EXT) or \
+                        file_fullpath.endswith(Constants.BMP_FILE_EXT) or \
+                        file_fullpath.endswith(Constants.PNG_FILE_EXT):
                     image_path_list.append(file_fullpath)
 
         return image_path_list
