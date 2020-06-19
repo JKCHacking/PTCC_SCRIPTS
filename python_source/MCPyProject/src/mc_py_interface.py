@@ -64,10 +64,12 @@ class MCPyScript:
                 img.thumbnail(Constants.IMAGE_SIZE, Image.ANTIALIAS)
                 img.convert("RGB").save(output, "BMP")
                 data = output.getvalue()[14:]
+
             win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
             win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
             win32clipboard.CloseClipboard()
+
             send_keys('^v')
             send_keys('{VK_DOWN}' * offset_next_img)
             send_keys('{VK_RIGHT}' * offset_name_img + image_name + '~')
