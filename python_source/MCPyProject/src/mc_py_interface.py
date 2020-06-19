@@ -1,16 +1,23 @@
 #!/usr/bin/env python
-from comtypes import client
-from comtypes import COMError
-from comtypes import automation
-from comtypes.client import Constants as ct_constants
 from src.constants import Constants
 from src.logger import Logger
+from src.file_manager import FileManager
+from comtypes import client
+from comtypes import COMError
+from comtypes.client import Constants as ct_constants
+from pywinauto import Application
+from pywinauto.keyboard import send_keys
+import os
+import io
+import ctypes
+import win32clipboard
+from PIL import Image
 
 logger = Logger()
 
 
 class MCPyScript:
-    def __init__(self):
+    def __init__(self, worksheet_fullpath):
         self.logger = logger.get_logger()
         try:
             self.mathcad = client.GetActiveObject(Constants.APP_NAME, dynamic=True)
@@ -21,38 +28,54 @@ class MCPyScript:
             self.mathcad = client.CreateObject(Constants.APP_NAME, dynamic=True)
             self.mathcad.Visible = True
 
+        self.worksheet_fullpath = worksheet_fullpath
         self.mc_constants = ct_constants(self.mathcad)
-
-    def evaluate_mathcad(self, worksheet_path):
+        self.user32 = ctypes.windll.user32
         ws_collection = self.mathcad.Worksheets
-        ws = ws_collection.Open(worksheet_path)
+        self.ws = ws_collection.Open(worksheet_fullpath)
 
-        try:
-            ina_val = automation.VARIANT(1000)
-            inb_val = automation.VARIANT(500)
+    def get_mchandle(self, ws_filename):
+        window_title = f'Mathcad - [{ws_filename}]'
+        handle = self.user32.FindWindowW(None, window_title)
+        return handle
 
-            ws.SetValue("ina", ina_val)
-            ws.SetValue("inb", inb_val)
-            ws.Recalculate()
+    def show_window(self):
+        ws_filename = os.path.basename(self.worksheet_fullpath)
+        ws_filename = ws_filename.split(".")[0]
+        handle = self.get_mchandle(ws_filename)
+        mc_app_auto = Application().connect(handle=handle)
+        dlg = mc_app_auto.top_window()
+        dlg.set_focus()
 
-            value_a = ws.GetValue("a")
-            value_b = ws.GetValue("b")
-            value_ina = ws.GetValue("ina")
-            value_inb = ws.GetValue("inb")
+    def import_images(self):
+        fm = FileManager()
+        image_fp_ls = fm.get_image_list()
+        offset_next_img = 26
+        offset_name_img = 10
+        offset_row_origin = offset_name_img
 
-            res = ws.GetValue("answer")
+        for image_fullpath in image_fp_ls:
+            img = Image.open(image_fullpath)
+            width, height = img.size
+            self.logger.info(f'Width: {width} Height: {height}')
+            image_name = os.path.basename(image_fullpath).split(".")[0]
 
-            self.logger.info(f'a: {value_a.AsString}')
-            self.logger.info(f'a: {value_a.GetElement(0,0).AsString}')
-            self.logger.info(f'a: {value_a.GetElement(1, 0).AsString}')
-            self.logger.info(f'a: {value_a.GetElement(2, 0).AsString}')
-            self.logger.info(f'b: {value_b.AsString}')
-            self.logger.info(f'ina: {value_ina.AsString}')
-            self.logger.info(f'inb: {value_inb.AsString}')
-            self.logger.info(f'Answer: {res.AsString}')
-        except COMError as e:
-            self.logger.info(str(e))
+            with io.BytesIO() as output:
+                img.thumbnail(Constants.IMAGE_SIZE, Image.ANTIALIAS)
+                img.convert("RGB").save(output, "BMP")
+                data = output.getvalue()[14:]
+            win32clipboard.OpenClipboard()
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+            win32clipboard.CloseClipboard()
+            send_keys('^v')
+            send_keys('{VK_DOWN}' * offset_next_img)
+            send_keys('{VK_RIGHT}' * offset_name_img + image_name + '~')
+            send_keys('{VK_LEFT}' * offset_row_origin)
 
-        save_changes_enum = self.mc_constants.mcSaveChanges
-        self.logger.info(save_changes_enum)
-        # ws.Save()
+        if self.ws.NeedsSave:
+            self.logger.info("Worksheet has been saved")
+            self.ws.Save()
+        else:
+            self.logger.info("Worksheet does not need to save")
+        # self.ws.Close()

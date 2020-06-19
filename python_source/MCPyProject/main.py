@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 from src.mc_py_interface import MCPyScript
-from src.constants import Constants
-import os
+from src.file_manager import FileManager
+import time
 
 if __name__ == "__main__":
-    mc_file_path = os.path.join(Constants.INPUT_DIR, "test.xmcd")
+    fm = FileManager()
+    ws_path_list = fm.get_ws_fp_ls()
 
-    mc_py_script = MCPyScript()
-    mc_py_script.evaluate_mathcad(mc_file_path)
+    mc_py_script = MCPyScript(ws_path_list[0])
+    mc_py_script.show_window()
+    # make sure that the window is already showing.
+    time.sleep(1)
+    mc_py_script.import_images()
