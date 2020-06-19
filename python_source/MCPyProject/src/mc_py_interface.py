@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+import os
+import io
+import ctypes
+import win32clipboard
 from src.constants import Constants
 from src.logger import Logger
 from src.file_manager import FileManager
@@ -7,10 +11,6 @@ from comtypes import COMError
 from comtypes.client import Constants as ct_constants
 from pywinauto import Application
 from pywinauto.keyboard import send_keys
-import os
-import io
-import ctypes
-import win32clipboard
 from PIL import Image
 
 logger = Logger()
