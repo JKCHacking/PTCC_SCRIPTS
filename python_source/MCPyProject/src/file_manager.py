@@ -41,3 +41,22 @@ class FileManager:
                     except SameFileError as e:
                         self.logger.warn(e)
         return ws_path_list
+
+    def get_template_ws(self):
+        template_file_name = 'generated_worksheet.xmcd'
+        template_ws_fp = os.path.join(Constants.TEMPLATE_DIR, template_file_name)
+        src = template_ws_fp
+        dst = os.path.join(self.output_dir_path, template_file_name)
+
+        if os.path.exists(template_ws_fp):
+            try:
+                copyfile(src, dst)
+                template_ws_fp = dst
+            except FileExistsError as e:
+                self.logger.warn(e)
+            except SameFileError as e:
+                self.logger.warn(e)
+        else:
+            template_ws_fp = None
+
+        return template_ws_fp

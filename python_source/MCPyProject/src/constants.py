@@ -10,6 +10,7 @@ class Constants:
     OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
     INPUT_DIR = os.path.join(PROJ_ROOT, "input")
     TEST_DIR = os.path.join(PROJ_ROOT, 'test')
+    TEMPLATE_DIR = os.path.join(PROJ_ROOT, 'templates')
 
     JPG_FILE_EXT = '.jpg'
     BMP_FILE_EXT = '.bmp'

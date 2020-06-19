@@ -5,7 +5,6 @@ import ctypes
 import win32clipboard
 from src.constants import Constants
 from src.logger import Logger
-from src.file_manager import FileManager
 from comtypes import client
 from comtypes import COMError
 from comtypes.client import Constants as ct_constants
@@ -47,17 +46,13 @@ class MCPyScript:
         dlg = mc_app_auto.top_window()
         dlg.set_focus()
 
-    def import_images(self):
-        fm = FileManager()
-        image_fp_ls = fm.get_image_list()
+    def import_images(self, image_fp_ls):
         offset_next_img = 26
-        offset_name_img = 10
-        offset_row_origin = offset_name_img
 
+        directory_object_list = []
         for image_fullpath in image_fp_ls:
+            image_path_list = []
             img = Image.open(image_fullpath)
-            width, height = img.size
-            self.logger.info(f'Width: {width} Height: {height}')
             image_name = os.path.basename(image_fullpath).split(".")[0]
 
             with io.BytesIO() as output:
@@ -70,9 +65,22 @@ class MCPyScript:
             win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
             win32clipboard.CloseClipboard()
 
-            str_command = f"{Constants.PASTE_KEY}{Constants.DOWN_ARROW * offset_next_img}" + \
-                          f"{Constants.RIGHT_ARROW * offset_name_img}{image_name}{Constants.ENTER_KEY}" + \
-                          f"{Constants.LEFT_ARROW * offset_row_origin}"
+            directory_object_list.append(image_name)
+            image_path_list.append(image_name)
+
+            basename = ""
+            dirname = image_fullpath
+            while basename != "input":
+                if basename != "" and basename not in directory_object_list:
+                    directory_object_list.append(basename)
+                    image_path_list.append(basename)
+                dirname = os.path.dirname(dirname)
+                basename = os.path.basename(dirname)
+
+            str_command = ""
+            for filename in reversed(image_path_list):
+                str_command += f"{filename} {Constants.ENTER_KEY} "
+            str_command += f"{Constants.PASTE_KEY} {Constants.DOWN_ARROW * offset_next_img}"
             send_keys(str_command)
 
         if self.ws.NeedsSave:
@@ -80,4 +88,4 @@ class MCPyScript:
             self.ws.Save()
         else:
             self.logger.info("Worksheet does not need to save")
-        # self.ws.Close()
+        self.ws.Close()
