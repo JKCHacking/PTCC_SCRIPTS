@@ -38,7 +38,7 @@ class MCPyScript:
         window_title = f'Mathcad - [{ws_filename}]'
         handle = self.user32.FindWindowW(None, window_title)
         if handle == 0:
-            window_title = f'Mathcad - [{ws_filename}.xmcd]'
+            window_title = f'Mathcad - [{ws_filename}{Constants.MC_FILE_EXT}]'
             handle = self.user32.FindWindowW(None, window_title)
         return handle
 
