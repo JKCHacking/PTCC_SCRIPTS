@@ -3,6 +3,7 @@ import os
 import io
 import ctypes
 import win32clipboard
+import time
 from src.constants import Constants
 from src.logger import Logger
 from comtypes import client
@@ -36,6 +37,9 @@ class MCPyScript:
     def get_mchandle(self, ws_filename):
         window_title = f'Mathcad - [{ws_filename}]'
         handle = self.user32.FindWindowW(None, window_title)
+        if handle == 0:
+            window_title = f'Mathcad - [{ws_filename}.xmcd]'
+            handle = self.user32.FindWindowW(None, window_title)
         return handle
 
     def show_window(self):
@@ -45,6 +49,7 @@ class MCPyScript:
         mc_app_auto = Application().connect(handle=handle)
         dlg = mc_app_auto.top_window()
         dlg.set_focus()
+        time.sleep(2)
 
     def import_images(self, image_fp_ls):
         offset_next_img = 26
