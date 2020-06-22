@@ -1,4 +1,5 @@
 from django.db import models
+from django.core import serializers
 import datetime
 
 
@@ -44,6 +45,22 @@ class Employee(models.Model):
     def get_earned_leaves(self):
         vl_list, sl_list = self.get_vl_sl_list()
         return zip(vl_list, sl_list)
+
+    def get_leaves_taken(self):
+        return serializers.serialize("json", self.leave_set.all())
+
+    def get_offenses(self):
+        return serializers.serialize("json", self.offense_set.all())
+
+    def get_earned_vl_list(self):
+        vl_list, sl_list = self.get_vl_sl_list()
+        vl_list_serialized = serializers.serialize("json", vl_list)
+        return vl_list_serialized
+
+    def get_earned_sl_list(self):
+        vl_list, sl_list = self.get_vl_sl_list()
+        sl_list_serialized = serializers.serialize("json", sl_list)
+        return sl_list_serialized
 
     def get_total_leaves(self):
         vl_list, sl_list = self.get_vl_sl_list()

@@ -193,6 +193,8 @@ def generate_leave_registry(request):
         hired_date = employee_object.hired_date
         regular_date = employee_object.regularization_date
         employee_status = employee_object.employee_status
+        prev_vl_bal = employee_object.prev_vl_bal
+        prev_sl_bal = employee_object.prev_sl_bal
 
         vacation_leave_benefits = 0
         sick_leave_benefits = 0
@@ -223,8 +225,8 @@ def generate_leave_registry(request):
         emp_reg_ws['D15'] = sl_balance
 
         count = 16
-        total_earned_vl = 0
-        total_earned_sl = 0
+        total_earned_vl = prev_vl_bal
+        total_earned_sl = prev_sl_bal
         for vl, sl in employee_object.get_earned_leaves():
             if str(vl.cut_off.year) == year_now and str(sl.cut_off.year) == year_now:
                 vl_value = vl.value

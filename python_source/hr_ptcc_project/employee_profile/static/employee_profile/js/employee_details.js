@@ -1,5 +1,6 @@
 $(document).ready(function() {
-    populateYearSelection();
+    // initialize tables and selection year
+    initialize();
 
     $(document).on("dblclick", ".editable-employee", function() {
        var value = ($(this).text()).trim();
@@ -84,6 +85,15 @@ $(document).ready(function() {
         location.reload(true);
         $("#saveModal").modal("hide");
     });
+
+    $("#employee-details-year-selection").on("change", function(){
+        // remove all elements with class "removable"
+        $(".removable").remove();
+        $('[data-toggle="tooltip"]').tooltip()
+        displayEarnedLeave();
+        displayLeavesTaken();
+        displayOffenses();
+    });
     
     //action add button
     $("body").on('click', '.add', function() {
@@ -96,8 +106,9 @@ $(document).ready(function() {
         var error_flag = checkInvalidInput(row_container);
         if (error_flag == 0) {
             input_values_dict = enterInput(row_container);
-            object_id = input_values_dict["id"].toString();
-            if (object_id.includes("new")) {
+            console.log(input_values_dict["id"]);
+            
+            if (input_values_dict["id"].includes("new")) {
                 model_changes_dict["add"].push(input_values_dict);
             } else {
                 model_changes_dict["edit"].push(input_values_dict);
@@ -191,7 +202,7 @@ $(document).ready(function() {
     $(".add-new").click(function (){
         table = $(this).data("table");
         if (table == "leaves_taken_table") {
-            row_html = "<tr class='removable' data-id='{{employee.id}}-new' data-table='leave'>" +
+            row_html = "<tr class='removable' data-id='" + employee_id + "-new' data-table='leave'>" +
                         "<td class='editable' data-type='date' name='format_date'></td>" +
                         "<td class='editable' data-type='days' name='format_float' scope='row'></td>" +
                         "<td class='editable' data-type='type' name='format_select' scope='row'></td>" +
@@ -204,7 +215,7 @@ $(document).ready(function() {
             table_class_name = "." + table;
         }
         else if (table == "offenses_table") {
-            row_html = "<tr class='removable' data-id='{{employee.id}}-new' data-table='offense'>" +
+            row_html = "<tr class='removable' data-id='" + employee_id + "-new' data-table='offense'>" +
                             "<td class='editable' data-type='date' name='format_date' scope='row'></td>" +
                             "<td class='editable' data-type='offense_name' name='format_select' scope='row'></td>" +
                             '<td>'+
@@ -218,6 +229,113 @@ $(document).ready(function() {
 
         $(table_class_name).append(row_html);
     });
+
+    function initialize() {
+        $('[data-toggle="tooltip"]').tooltip()
+        populateYearSelection();
+        displayEarnedLeave();
+        displayLeavesTaken();
+        displayOffenses();
+    }
+
+    function displayEarnedLeave(){
+        var year_selected = $("#employee-details-year-selection option:selected").text();
+        var row_html = "";
+        var total_vl = parseFloat(employee_prev_vl_bal);
+        var total_sl = parseFloat(employee_prev_sl_bal);
+
+        for(var i = 0; i < emp_vl_list.length; i++) {
+            var vl_object = emp_vl_list[i];
+            var sl_object = emp_sl_list[i];
+            var date_string = new Date(vl_object.fields.cut_off).toISOString();
+            var date_js = new Date(date_string);
+            var leave_year = date_js.getFullYear().toString();
+            
+            if (leave_year == year_selected) {
+                row_html += "<tr class='removable' data-id='" + vl_object.pk + "-" + sl_object.pk + "' data-table='earned'>"+
+                                "<th scope='row'>" + date_js.toLocaleDateString("en-US", date_options) + "</th>"+
+                                "<td class='editable' data-type='" + vl_object.fields.type + "' name='format_float' scope='row'>" + parseFloat(vl_object.fields.value).toFixed(3) + "</td>"+
+                                "<td class='editable' data-type='" + sl_object.fields.type + "' name='format_float' scope='row'>" + parseFloat(sl_object.fields.value).toFixed(3) + "</td>"+
+                                '<td>'+
+                                    '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                    '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                '</td>'+
+                            "</tr>";
+                vl_value_str = vl_object.fields.value;
+                sl_value_str = sl_object.fields.value;
+
+                total_vl += parseFloat(vl_value_str);
+                total_sl += parseFloat(sl_value_str);
+            }
+        }
+        var total_sl_vl_html = "<tr class='removable'>"+
+                                    "<th scope='row'>Total</th>" +
+                                    "<td>" + total_vl.toFixed(3) +"</td>" +
+                                    "<td>" + total_sl.toFixed(3) +"</td>" +
+                               "</tr>"
+        row_html += total_sl_vl_html;
+        $(".earned_leave_table").append(row_html);
+    }
+
+    function displayLeavesTaken(){
+        var year_selected = $("#employee-details-year-selection option:selected").text();
+        var row_html = "";
+
+        for(var i = 0; i < emp_leaves_taken.length; i++) {
+            var leave_taken_object = emp_leaves_taken[i];
+            var date_string = new Date(leave_taken_object.fields.date).toISOString();
+            var date_js = new Date(date_string);
+            var leave_year = date_js.getFullYear().toString();
+
+            if (leave_year == year_selected) {
+                row_html += "<tr class='removable' data-id='" + leave_taken_object.pk + "' data-table='leave'>" +
+                                "<td class='editable' data-type='date' name='format_date'>" + date_js.toLocaleDateString("en-US", date_options) + "</td>" +
+                                "<td class='editable' data-type='days' name='format_float' scope='row'>" + parseFloat(leave_taken_object.fields.days).toFixed(2) + "</td>" +
+                                "<td class='editable' data-type='type' name='format_select' scope='row'>" + leave_taken_object.fields.type + "</td>" +
+                                '<td>'+
+                                    '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                    '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                    '<button style="border:none;background:none;" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                '</td>'+
+                            "</tr>";
+            }
+        }
+        $(".leaves_taken_table").append(row_html);
+    }
+
+    function displayOffenses(){
+        var year_selected = $("#employee-details-year-selection option:selected").text();
+        var row_html = "";
+
+        for(var i = 0; i < emp_offenses.length; i++) {
+            var offense_object = emp_offenses[i];
+            var date_string = new Date(offense_object.fields.date).toISOString();
+            var date_js = new Date(date_string);
+            var leave_year = date_js.getFullYear().toString();
+            if (leave_year == year_selected) {
+                row_html += "<tr class='removable' data-id='" + offense_object.pk + "' data-table='offense'>" +
+                                "<td class='editable' data-type='date' name='format_date' scope='row'>"+ date_js.toLocaleDateString("en-US", date_options) +"</td>" +
+                                "<td class='editable' data-type='offense_name' name='format_select' scope='row'>" + offense_object.fields.offense_name + "</td>" +
+                                '<td>'+
+                                    '<button style="border:none;background:none;" class="add" title="Add" data-toggle="tooltip" hidden="true"><i class="material-icons"></i></button>'+
+                                    '<button style="border:none;background:none;display:inline-block;" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                    '<button style="border:none;background:none;" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons"></i></button>'+
+                                '</td>'+
+                            "</tr>";
+            }
+        }
+        $(".offenses_table").append(row_html);
+    }
+
+    function populateYearSelection() {
+        var start_year = 2000;
+        var end_year = new Date().getFullYear();
+        var options = "";
+        for (var year = end_year; year >= start_year; year-- ) {
+            options += "<option value=" + year +">"+ year + "</option>";
+        }
+        $("#employee-details-year-selection").html(options);
+    }
 
     //function to check for incorrect input in the table cell
     function checkInvalidInput(row_container) {
@@ -332,13 +450,30 @@ $(document).ready(function() {
         return dateString;
     }
 
-    function populateYearSelection() {
-        var start_year = 2000;
-        var end_year = new Date().getFullYear();
-        var options = "";
-        for (var year = end_year; year >= start_year; year-- ) {
-            options += "<option value=" + year +">"+ year + "</option>";
+    function sendToServer(model_changes_dict) {
+        console.log(model_changes_dict);
+        data = {
+            "model_changes_dict": JSON.stringify(model_changes_dict)
         }
-        $("#employee-details-year-selection").html(options);
+        $.ajax({
+            url:url_save_changes,
+            type: "POST",
+            dataType: "json",
+            data: data
+        })
+        .done(function(response) {
+            $(".info-modal-title").html(response.head);
+            $(".info-modal-body").html(response.body);
+            $("#infoModal").modal();
+            model_changes_dict = {
+                "edit":[],
+                "delete":[]
+            };
+        })
+        .fail(function(xhr, status, error) {
+            $(".info-modal-title").html("Failed");
+            $(".info-modal-body").html("Failed to save data! details: " + (xhr.responseText).split(".")[0]);
+            $("#infoModal").modal();
+        });
     }
 });
