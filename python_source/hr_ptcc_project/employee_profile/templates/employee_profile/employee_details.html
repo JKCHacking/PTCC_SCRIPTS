@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block head_css_section %}
+    <link rel="stylesheet" type="text/css" href="{% static 'employee_profile/css/employee_details.css' %}">
+{% endblock head_css_section %}
+
 {% block content %}
     <div class="d-flex flex-column">
-        <div class="p-2">
+        <div class="p-2 upper-section">
             <div class="d-flex flex-row">
                 <div class="p-2">
                     <div class="employee_spec_details">
