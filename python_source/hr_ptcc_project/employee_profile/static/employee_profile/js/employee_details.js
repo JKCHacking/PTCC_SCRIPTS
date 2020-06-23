@@ -157,6 +157,8 @@ $(document).ready(function() {
                                     "<option value='Late'>Late</option>" +
                                     "<option value='No Time-in'>No Time-in</option>" +
                                     "<option value='No Time-out'>No Time-out</option>" +
+                                    "<option value='Undertime'>Undertime</option>" +
+                                    "<option value='AWOL'>AWOL</option>" +
                                 "</select>";
                 } 
             }else {
