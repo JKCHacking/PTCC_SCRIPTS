@@ -328,7 +328,7 @@ $(document).ready(function() {
     }
 
     function populateYearSelection() {
-        var start_year = 2000;
+        var start_year = 1999;
         var end_year = new Date().getFullYear();
         var options = "";
         for (var year = end_year; year >= start_year; year-- ) {
