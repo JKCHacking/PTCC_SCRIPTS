@@ -6,8 +6,12 @@ class DataSorter:
     def __init__(self):
         logger = Logger()
         self.logger = logger.get_logger()
-        self.sorted_employee_list = list()
+        self.sorted_list = list()
 
-    def sort_data(self, employee_list):
-        self.sorted_employee_list = sorted(employee_list, key=itemgetter('hired_date', 'name'))
-        return self.sorted_employee_list
+    def sort_data_by_hired_date_name(self, ls):
+        self.sorted_list = sorted(ls, key=itemgetter('hired_date', 'name'))
+        return self.sorted_list
+
+    def sort_data_by_name(self, ls):
+        self.sorted_list = sorted(ls, key=itemgetter('name'))
+        return self.sorted_list
