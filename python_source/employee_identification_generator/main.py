@@ -15,7 +15,8 @@ if __name__ == "__main__":
     ic = IdCreator()
 
     employee_list = dp.parse_csv(input_file)
-    sorted_employee_list = ds.sort_data_by_hired_date_name(employee_list)
+    sorted_employee_list = ds.sort_data(employee_list, "hired_date", "name")
     sorted_employee_list = ic.create_id(sorted_employee_list)
-    sorted_employee_list = ds.sort_data_by_name(sorted_employee_list)
+    sorted_employee_list = ds.sort_data(sorted_employee_list, "name")
+
     dp.create_csv_output(sorted_employee_list)
