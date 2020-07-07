@@ -1,7 +1,7 @@
 import csv
 import os
 import datetime
-import dateutil
+import dateutil.parser
 from src.constants import Constants
 from src.logger import Logger
 

@@ -9,3 +9,4 @@ class Constants:
     INPUT_DIR = os.path.join(PROJ_ROOT, "input")
     TEST_DIR = os.path.join(PROJ_ROOT, 'test')
 
+    DATE_FORMAT = '%d-%B-%Y'
