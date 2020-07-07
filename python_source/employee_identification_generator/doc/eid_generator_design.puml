@@ -1,0 +1,43 @@
+@startuml
+Main -> DataParser: parse_csv(csv_path)
+activate DataParser
+loop for row in csv_data
+    DataParser -> DataParser: create hired_date datetime object
+    DataParser -> DataParser: create employee dictionary
+    DataParser -> DataParser: push employee dictionary to employee list
+end loop
+DataParser -->Main : employee_list
+deactivate DataParser
+Main -> DataSorter: sort_data(employee_list)
+
+activate DataSorter
+
+
+loop for employee_dict in employee_list
+    DataSorter -> DataSorter: sort by "hired_date" and "name"
+end loop
+DataSorter --> Main: sorted_employee_list
+deactivate DataSorter
+
+Main -> IdCreator: create_id(sorted_employee_list)
+activate IdCreator
+IdCreator -> IdCreator: i = 0
+IdCreator -> IdCreator: date_tracker = sorted_employee_list[0]["hired_date"]
+loop for employee in sorted_employee_list
+    alt if date_tracker != employee["hired_date"]
+        IdCreator -> IdCreator: i = 0
+        IdCreator -> IdCreator: date_tracker = employee["hired_date"]
+    end alt
+    IdCreator -> IdCreator: emp_id = f"{date_tracker.date}{date_tracker.month}{date_tracker.year}{index}"
+    IdCreator -> IdCreator: employee.update({"name": employee["name"], "hired_date": employee["hired_date"], "emp_id":emp_id})
+    IdCreator -> IdCreator: i++
+end loop
+IdCreator --> Main: sorted_employee_list
+deactivate IdCreator
+Main -> DataParser: create_csv_output(sorted_employee_list)
+activate DataParser
+DataParser -> DataParser: Open File(employee.csv)
+DataParser --> Main
+deactivate DataParser
+
+@enduml
