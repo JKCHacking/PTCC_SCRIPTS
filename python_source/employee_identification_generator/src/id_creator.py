@@ -17,7 +17,7 @@ class IdCreator:
             day = date_tracker.day
             month = date_tracker.month
             year = date_tracker.year
-            emp_id = f"{day:02d}{month:02d}{year:02d}{index:02d}"
+            emp_id = f"{day:02d}{month:02d}{year}{index:02d}"
             employee.update({"name": employee["name"], "hired_date": date_tracker.strftime(Constants.DATE_FORMAT),
                              "id": emp_id})
             index += 1
