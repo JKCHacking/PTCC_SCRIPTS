@@ -25,7 +25,8 @@ class ImageParser:
 
                     file_name_split = file_name.split("_")
                     month = int(file_name_split[0])
-                    day = int(file_name_split[1])
+                    # day = int(file_name_split[1])
+                    day = 21
                     time = file_name_split[2]
                     time = int(time.replace('p', '.'))
 
@@ -53,7 +54,8 @@ class ImageParser:
                     print(solar_alt)
                     print(azimuth)
 
-                    date = f'{Constants.MONTH_NAME[month-1]} {day}'
+                    # date = f'{Constants.MONTH_NAME[month-1]} {day}'
+                    date = f'{Constants.MONTH_NAME[month-1]}'
                     ref = '100'
                     self.__put_text(image_full_path, date, time_obj.strftime(Constants.TIME_24_FORMAT),
                                     solar_alt, azimuth, ref)
