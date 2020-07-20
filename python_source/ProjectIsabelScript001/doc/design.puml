@@ -1,0 +1,4 @@
+@startuml
+Main -> ImageParser: parse_image()
+ImageParser -> ImageParser:
+@enduml
