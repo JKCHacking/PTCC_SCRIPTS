@@ -25,8 +25,7 @@ class ImageParser:
 
                     file_name_split = file_name.split("_")
                     month = int(file_name_split[0])
-                    # day = int(file_name_split[1])
-                    day = 21
+                    day = int(file_name_split[1])
                     time = file_name_split[2]
                     time = int(time.replace('p', '.'))
 
