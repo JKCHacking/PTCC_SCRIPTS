@@ -1,5 +1,7 @@
 import fitz
 
+SEARCH_MODE = "blocks"
+
 
 class PdfScript:
     def __init__(self, filepath):
@@ -7,7 +9,7 @@ class PdfScript:
 
     def search_title(self, page, title_pattern):
         title = None
-        for textpage in page.getText("blocks"):
+        for textpage in page.getText(SEARCH_MODE):
             text = textpage[4]
             if text.startswith(title_pattern):
                 title = text
@@ -19,13 +21,12 @@ class PdfScript:
         page = self.doc[16]
         yield page
 
-    def search_strings_from_page(self, page, text_list):
-        for textpage in page.getText("blocks"):
+    def search_strings_from_page(self, page, pattern_list):
+        for textpage in page.getText(SEARCH_MODE):
             text = textpage[4]
-            print(text)
-            if any(pattern in text for pattern in text_list):
-                print(True)
-                yield text
+            for pattern in pattern_list:
+                if pattern in text:
+                    yield text, pattern
 
     def search_annotations_from_page(self, page):
         for annot in page.annots():
