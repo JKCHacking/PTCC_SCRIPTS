@@ -16,11 +16,8 @@ class PdfScript:
         return title
 
     def get_page_from_file(self):
-        # TODO: CHANGE THIS LATER
-        # for page in self.doc.pages:
-        #     yield page
-        page = self.doc[16]
-        yield page
+        for page in self.doc.pages:
+            yield page
 
     def search_strings_from_page(self, page, pattern_list):
         for textpage in page.getText(SEARCH_MODE):
