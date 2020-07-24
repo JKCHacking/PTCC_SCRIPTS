@@ -1,0 +1,20 @@
+@startuml
+Main -> PdfScript: get_document(pdf_fp)
+Activate PdfScript
+PdfScript --> Main: document
+Deactivate PdfScript
+Main -> PdfScript: read_document(document)
+Activate PdfScript
+loop page in document
+    loop lettering, shapes in page
+        loop shape in shapes
+            alt color of shape is in color comment list
+            PdfScript -> PdfScript: bbox of shape
+
+        end alt
+        end loop
+    end loop
+end loop
+
+
+@enduml

@@ -1,0 +1,58 @@
+Problem Statement: 
+	Extract comments from the PDF file and put them in Excel file.
+
+Given:
+	PTCC comment-> PURPLE font, common string: "PTCC:", inside a box
+	AFE comment -> BLUE font, common string: "AFE;", inside a box
+	YKK comment -> GREEN font, common string: "YKK:", inside a box
+
+Possible Technology to use: 
+	* minecart -> get all shapes and determine the color.
+	* pdfminer -> conflict with minecart pdfminer3k
+	* PyMuPDF  -> get text inside the bounding box.
+	* PyPDF
+	* PyPDF2
+	* FPDF
+	* reportlab
+	* openpyxl -> writing comments retrieve in excel file.
+
+* Get test data (1page with comments) - DONE
+====================MINECART docs==========================
+
+<snip>
+
+>>> pdffile = open('example.pdf', 'rb')
+>>> doc = minecart.Document(pdffile)
+>>> page = doc.get_page(3)
+>>> for shape in page.shapes.iter_in_bbox((0, 0, 100, 200)):
+...     print shape.path, shape.fill.color.as_rgb()
+>>> im = page.images[0].as_pil()  # requires pillow
+>>> im.show()
+
+</snip>
+
+minecart.Document:
+	methods:
+		.get_page(num) -> minecart.Page
+		.iter_pages() -> minecart.Page
+minecart.Page:
+	attributes:
+		.images (list of Image objects)
+		.letterings (list of text in Lettering objects)
+			Lettering
+				.getbbox()
+				.font
+		.shapes (list of Shape objects)
+			Shape
+				.stroke (object)
+					.color
+						.as_rgb()
+					.linewidth
+					.linecap
+					.linejoin
+					.miterlimit
+					.dash
+				.fill (object)
+					.color
+						.as_rgb()
+				.path (list with a coordinates used to define the shape)

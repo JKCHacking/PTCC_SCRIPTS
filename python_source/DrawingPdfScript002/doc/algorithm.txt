@@ -1,0 +1,13 @@
+get all the shapes in the pdf file.
+if shape color is in ['BLUE', 'PURPLE', 'GREEN']
+	get the bounding box of the shape
+	use the bounding box of the shape to get all the comment inside.
+	if the comment has ['PTCC', 'YKK', 'AFE']
+		get the commenter name
+		pass the commenter name and the comment to write_spreadsheet() of ExcelScript object.
+
+
+create a workbook
+create worksheet
+rename the worksheet with the page title [???]
+put comment in the column using the commenter name (PTCC - 1, YKK - 2, AFE - 3)
