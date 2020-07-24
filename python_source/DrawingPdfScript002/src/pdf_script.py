@@ -16,6 +16,7 @@ class PdfScript:
         return title
 
     def get_page_from_file(self):
+        # TODO: CHANGE THIS LATER
         # for page in self.doc.pages:
         #     yield page
         page = self.doc[16]

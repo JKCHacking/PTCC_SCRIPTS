@@ -20,14 +20,9 @@ class ExcelScript(metaclass=ExcelScriptMeta):
         for i, col in enumerate(columns_list):
             worksheet.cell(row=1, column=i+1, value=col)
 
-    def add_worksheet_contents(self, worksheet, contents, position, overwrite=True):
+    def add_worksheet_contents(self, worksheet, contents, position):
         row = position[0]
         col = position[1]
-        # prevents from overwriting current contents
-        if not overwrite:
-            curr_content = worksheet.cell(row=row, column=col)
-            if curr_content != " " or curr_content != "":
-                row = row + 1
         worksheet.cell(row=row, column=col, value=contents)
     
     def save_workbook(self):
@@ -35,3 +30,14 @@ class ExcelScript(metaclass=ExcelScriptMeta):
 
     def delete_worksheet(self, worksheet):
         self.workbook.remove(worksheet)
+
+    def get_nrows_in_col(self, worksheet, column):
+        i = 0
+        while True:
+            i += 1
+            cell = worksheet.cell(row=i, column=column)
+            content = cell.value
+            if content is None:
+                nrows = i - 1
+                break
+        return nrows
