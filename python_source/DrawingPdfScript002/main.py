@@ -59,7 +59,7 @@ def main(input_pdf_fp, output_xlsx_fp):
         "ALL BRACKET SYSTEM",
         "ALL MEP PENETRATION",
         "ALL GLASS FOR",
-        "BMU SYSTEM SETTING",
+        "BMU SYSTEM",
         "PENETRATION AT ALUM"
     ]
 
@@ -69,7 +69,8 @@ def main(input_pdf_fp, output_xlsx_fp):
     ps = PdfScript(input_pdf_fp)
     es = ExcelScript(output_xlsx_fp)
 
-    for page in ps.get_page_from_file():
+    for pagenum, page in enumerate(ps.get_page_from_file()):
+        print(f"Current Page Number: {pagenum}")
         page_title = ps.search_title(page, title_pattern)
         worksheet = es.create_worksheet(page_title)
 
