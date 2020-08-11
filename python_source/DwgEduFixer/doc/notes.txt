@@ -1,0 +1,8 @@
+According here:
+https://forums.autodesk.com/t5/net/axinterop-acctrllib-dll-licensing/td-p/5058122
+
+AcCtrl.dll is useless if you dont have Autocad installed.
+
+
+error message dialog: Student Version - Plot Stamp Detected
+
