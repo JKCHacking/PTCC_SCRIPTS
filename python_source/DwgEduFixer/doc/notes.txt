@@ -1,3 +1,13 @@
+Solution:
+1. DWG to PDF
+	convert dwg to pdf
+	scan pdf with string "STUDENT"
+	mark dwg file as student
+
+2. open trueview or use autocad
+	open drawing in autocad
+	check for dialogs
+
 According here:
 https://forums.autodesk.com/t5/net/axinterop-acctrllib-dll-licensing/td-p/5058122
 
