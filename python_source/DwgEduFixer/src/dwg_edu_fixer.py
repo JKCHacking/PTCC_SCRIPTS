@@ -12,13 +12,8 @@ APP_NAME = "BricscadApp.AcadApplication"
 
 
 class CadDocument:
-    def __init__(self):
-        try:
-            self.cad_application = client.GetActiveObject(APP_NAME, dynamic=True)
-            self.cad_application.Visible = False
-        except(OSError, COMError):
-            self.cad_application = client.CreateObject(APP_NAME, dynamic=True)
-            self.cad_application.Visible = False
+    def __init__(self, cad_application):
+        self.cad_application = cad_application
 
     def open_document(self, document_path):
         document = None
@@ -55,6 +50,26 @@ class CadDocument:
         os.remove(document_path)
 
 
+class CadApp:
+    def __init__(self):
+        self.cad_application = None
+
+    def start_app(self):
+        try:
+            self.cad_application = client.GetActiveObject(APP_NAME, dynamic=True)
+            self.cad_application.Visible = False
+        except(OSError, COMError):
+            self.cad_application = client.CreateObject(APP_NAME, dynamic=True)
+            self.cad_application.Visible = False
+        return self.cad_application
+
+    def get_cad_application(self):
+        return self.cad_application
+
+    def exit_app(self):
+        self.cad_application.Quit()
+
+
 class TrueViewerApp:
     def __init__(self):
         self.user32 = ctypes.windll.user32
@@ -71,7 +86,6 @@ class TrueViewerApp:
         dlg.set_focus()
 
     def open_file(self, file_full_path):
-        print(file_full_path)
         if os.path.exists(file_full_path):
             self.show_window()
 
@@ -109,8 +123,8 @@ class TrueViewerApp:
 
 
 # converts student dwg to dxf then dxf to commercial dwg
-def conversion_process(dir_path, orig_fn):
-    doc = CadDocument()
+def conversion_process(dir_path, orig_fn, cad_application):
+    doc = CadDocument(cad_application.get_cad_application())
     file_name = os.path.splitext(orig_fn)[0]
 
     dwg_fp = os.path.join(dir_path, f"{file_name}.dwg")
@@ -149,6 +163,9 @@ def clean_up_files(dir):
 
 def main(dir_or_file):
     # open trueview by executing the dwgviewr.exe
+    cad_app = CadApp()
+    cad_app.start_app()
+
     tv_app = TrueViewerApp()
     tv_app.start_app()
 
@@ -157,7 +174,7 @@ def main(dir_or_file):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(".dwg") and is_student_file(file_full_path, tv_app):
-                    conversion_process(dir_path, file_name)
+                    conversion_process(dir_path, file_name, cad_app)
         clean_up_files(dir_or_file)
 
     elif os.path.isfile(dir_or_file):
@@ -165,10 +182,11 @@ def main(dir_or_file):
         file_name = os.path.basename(dir_or_file)
         file_full_path = os.path.join(dir_path, file_name)
         if is_student_file(file_full_path, tv_app):
-            conversion_process(dir_path, file_name)
+            conversion_process(dir_path, file_name, cad_app)
             dir = os.path.dirname(dir_or_file)
             clean_up_files(dir)
     tv_app.exit_app()
+    cad_app.exit_app()
 
 
 if __name__ == "__main__":
