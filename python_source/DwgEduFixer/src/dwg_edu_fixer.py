@@ -76,6 +76,7 @@ class TrueViewerApp:
         self.tv_app = None
 
     def start_app(self):
+        # open trueview by executing the dwgviewr.exe
         tv_exec = "C:\\Program Files\\Autodesk\\DWG TrueView 2020 - English\\dwgviewr.exe"
         self.tv_app = Application(backend='win32').start(tv_exec)
         # self.tv_app.top_window().wait('ready')
@@ -162,7 +163,6 @@ def clean_up_files(dir):
 
 
 def main(dir_or_file):
-    # open trueview by executing the dwgviewr.exe
     cad_app = CadApp()
     cad_app.start_app()
 
