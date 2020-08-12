@@ -5,12 +5,12 @@ from src.util.constants import Constants
 from src.util.logger import get_logger
 from src.util.exec_timer import timeit
 
-main_logger = get_logger("MainLogger")
+logger = get_logger("DWGEduFixerLogger")
 
 
 # converts student dwg to dxf then dxf to commercial dwg
 def conversion_process(dir_path, orig_fn, cad_application):
-    main_logger.info("Fixing...")
+    logger.info("Fixing...")
     doc = cad_application.create_document()
     # getting file name without extension
     file_name = os.path.splitext(orig_fn)[0]
@@ -61,11 +61,11 @@ def main(dir_or_file):
         for dir_path, dir_names, file_names in os.walk(dir_or_file):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
-                main_logger.info(f"Working with file: {file_name}")
+                logger.info(f"Working with file: {file_name}")
                 if file_full_path.endswith(Constants.DWG_FILE_EXT):
                     # file is a student version file
                     if is_student_file(file_full_path, tv_app):
-                        main_logger.warning(f"{file_name} is a Student Version")
+                        logger.warning(f"{file_name} is a Student Version")
                         # do the conversion "curing" process
                         conversion_process(dir_path, file_name, cad_app)
                     else:
@@ -77,9 +77,9 @@ def main(dir_or_file):
     elif os.path.isfile(dir_or_file):
         dir_path = os.path.dirname(dir_or_file)
         file_name = os.path.basename(dir_or_file)
-        main_logger.info(f"Working with file: {file_name}")
+        logger.info(f"Working with file: {file_name}")
         if dir_or_file.endswith(Constants.DWG_FILE_EXT) and is_student_file(dir_or_file, tv_app):
-            main_logger.info(f"WARNING: {file_name} is a Student Version")
+            logger.info(f"WARNING: {file_name} is a Student Version")
             conversion_process(dir_path, file_name, cad_app)
             clean_up_files(dir_path)
     tv_app.exit_app()
