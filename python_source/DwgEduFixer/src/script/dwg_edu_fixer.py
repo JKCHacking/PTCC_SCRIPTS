@@ -76,7 +76,7 @@ def main(dir_or_file):
                 logger.info(f"Working with file: {file_name}")
                 if file_full_path.endswith(Constants.DWG_FILE_EXT) and is_student_file(file_full_path, tv_app):
                     logger.warning(f"{file_name} is a Student Version")
-                    write_logfile(file_name, dir_or_file)
+                    write_logfile(file_full_path, dir_or_file)
                     # do the conversion "curing" process
                     conversion_process(dir_path, file_name, cad_app)
         clean_up_files(dir_or_file)
@@ -87,7 +87,7 @@ def main(dir_or_file):
         logger.info(f"Working with file: {file_name}")
         if dir_or_file.endswith(Constants.DWG_FILE_EXT) and is_student_file(dir_or_file, tv_app):
             logger.info(f"WARNING: {file_name} is a Student Version")
-            write_logfile(file_name, dir_path)
+            write_logfile(dir_or_file, dir_path)
             # do the conversion "curing" process
             conversion_process(dir_path, file_name, cad_app)
             clean_up_files(dir_path)
