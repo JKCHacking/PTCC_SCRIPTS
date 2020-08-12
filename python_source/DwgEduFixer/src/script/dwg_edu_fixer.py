@@ -51,6 +51,17 @@ def clean_up_files(dir):
                 os.remove(os.path.join(dir_path, file_name))
 
 
+def write_logfile(str_txt, workdir):
+    logfile_fp = os.path.join(workdir, "student_version_list.txt")
+    mode = "w"
+    if os.path.exists(logfile_fp):
+        mode = "a"
+
+    logfile = open(logfile_fp, mode)
+    logfile.write(f"{str_txt}\n")
+    logfile.close()
+
+
 @timeit
 def main(dir_or_file):
     cad_app = CadApp()
@@ -66,16 +77,18 @@ def main(dir_or_file):
                 logger.info(f"Working with file: {file_name}")
                 if file_full_path.endswith(Constants.DWG_FILE_EXT) and is_student_file(file_full_path, tv_app):
                     logger.warning(f"{file_name} is a Student Version")
+                    write_logfile(file_name, dir_or_file)
                     # do the conversion "curing" process
                     conversion_process(dir_path, file_name, cad_app)
         clean_up_files(dir_or_file)
 
-    elif os.path.isfile(dir_or_file):
+    else:
         dir_path = os.path.dirname(dir_or_file)
         file_name = os.path.basename(dir_or_file)
         logger.info(f"Working with file: {file_name}")
         if dir_or_file.endswith(Constants.DWG_FILE_EXT) and is_student_file(dir_or_file, tv_app):
             logger.info(f"WARNING: {file_name} is a Student Version")
+            write_logfile(file_name, dir_path)
             # do the conversion "curing" process
             conversion_process(dir_path, file_name, cad_app)
             clean_up_files(dir_path)
