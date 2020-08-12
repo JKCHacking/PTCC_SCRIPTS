@@ -2,7 +2,6 @@ import os
 import ctypes
 import time
 from pywinauto.application import Application
-from pywinauto.keyboard import send_keys
 from pywinauto.timings import TimeoutError
 from src.util.logger import get_logger
 
@@ -18,34 +17,35 @@ class TrueViewerApp:
         # open trueview by executing the dwgviewr.exe
         tv_exec = "C:\\Program Files\\Autodesk\\DWG TrueView 2020 - English\\dwgviewr.exe"
         self.tv_app = Application(backend='win32').start(tv_exec)
-        # self.tv_app.top_window().wait('ready')
         time.sleep(5)
-
-    def show_window(self):
-        dlg = self.tv_app.top_window()
-        dlg.set_focus()
+        self.tv_app.top_window().type_keys('^o')  # HACK
 
     def open_file(self, file_full_path):
-        if os.path.exists(file_full_path):
-            self.show_window()
-
+        if os.path.exists(file_full_path) and self.tv_app.window(title_re="DWG TrueView").exists():
             # show the select file window
-            str_command = f"%fo"
-            send_keys(str_command)
+            print("send the open file command")
+            str_command = f"^o"
+            self.tv_app.top_window().type_keys(str_command)
+            print("waiting for open file window to appear...")
             # wait for the file window to appear
-            self.wait_window_by_title('Select File')
-            # type the file name
-            str_command = f'+{{VK_END}}{{DELETE}}{file_full_path}~'
-            send_keys(str_command, with_spaces=True)
+            file_window = self.wait_window_by_title('Select File')
+            if file_window:
+                print("File window displayed! Typing the file name...")
+                # type the file name
+                str_command = f'+{{VK_END}}{{DELETE}}{file_full_path}~'
+                self.tv_app.top_window().type_keys(str_command, with_spaces=True)
+            else:
+                print("File Window did not appear, something went wrong...")
+                self.logger.error("File Window did not appear, something went wrong...")
         else:
             self.logger.error("File not found: {file_full_path}")
 
     def wait_window_by_title(self, title):
         found = True
         try:
-            self.tv_app.window(title_re=title).wait('visible', timeout=5, retry_interval=0.5)
+            self.tv_app.window(title_re=title).wait('ready', timeout=5, retry_interval=0.5)
         except TimeoutError:
-            self.logger.warning(f"Waiting time expired, Window with title {title} was not found.")
+            self.logger.warning(f'Waiting time expired, Window with title "{title}" was not found.')
             found = False
         return found
 
@@ -56,7 +56,8 @@ class TrueViewerApp:
         return handle
 
     def close_top_window(self):
-        send_keys("%{F4}")
+        print("Close top window executed.")
+        self.tv_app.top_window().type_keys("%{F4}")
 
     def exit_app(self):
         self.logger.info(f"Exiting DWG TrueViewer...")

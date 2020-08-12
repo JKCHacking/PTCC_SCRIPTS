@@ -32,16 +32,18 @@ def conversion_process(dir_path, orig_fn, cad_application):
 
 
 def is_student_file(file_full_path, trueview_app):
-    error_title_dialog = "Student Version - Plot Stamp Detected"
+    student_title_dialog = "Student Version - Plot Stamp Detected"
     # open dwg file
     trueview_app.open_file(file_full_path)
-    # check if dialog error is displayed
-    is_student = trueview_app.wait_window_by_title(error_title_dialog)
+    # wait for student version dialog to appear
+    is_student = trueview_app.wait_window_by_title(student_title_dialog)
+    print(f"is file a student: {is_student}")
     trueview_app.close_top_window()
     return is_student
 
 
 def clean_up_files(dir):
+    logger.info("Removing unnecessary files...")
     for dir_path, dir_names, file_names in os.walk(dir):
         for file_name in file_names:
             file_full_path = os.path.join(dir_path, file_name)
@@ -62,16 +64,10 @@ def main(dir_or_file):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
                 logger.info(f"Working with file: {file_name}")
-                if file_full_path.endswith(Constants.DWG_FILE_EXT):
-                    # file is a student version file
-                    if is_student_file(file_full_path, tv_app):
-                        logger.warning(f"{file_name} is a Student Version")
-                        # do the conversion "curing" process
-                        conversion_process(dir_path, file_name, cad_app)
-                    else:
-                        # go to the next file
-                        pass
-
+                if file_full_path.endswith(Constants.DWG_FILE_EXT) and is_student_file(file_full_path, tv_app):
+                    logger.warning(f"{file_name} is a Student Version")
+                    # do the conversion "curing" process
+                    conversion_process(dir_path, file_name, cad_app)
         clean_up_files(dir_or_file)
 
     elif os.path.isfile(dir_or_file):
@@ -80,6 +76,7 @@ def main(dir_or_file):
         logger.info(f"Working with file: {file_name}")
         if dir_or_file.endswith(Constants.DWG_FILE_EXT) and is_student_file(dir_or_file, tv_app):
             logger.info(f"WARNING: {file_name} is a Student Version")
+            # do the conversion "curing" process
             conversion_process(dir_path, file_name, cad_app)
             clean_up_files(dir_path)
     tv_app.exit_app()
