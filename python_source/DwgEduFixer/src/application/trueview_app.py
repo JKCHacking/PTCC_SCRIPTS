@@ -4,14 +4,17 @@ import time
 from pywinauto.application import Application
 from pywinauto.keyboard import send_keys
 from pywinauto.timings import TimeoutError
+from src.util.logger import get_logger
 
 
 class TrueViewerApp:
     def __init__(self):
+        self.logger = get_logger("TrueViewerAppLogger")
         self.user32 = ctypes.windll.user32
         self.tv_app = None
 
     def start_app(self):
+        self.logger.info(f"Starting DWG TrueViewer...")
         # open trueview by executing the dwgviewr.exe
         tv_exec = "C:\\Program Files\\Autodesk\\DWG TrueView 2020 - English\\dwgviewr.exe"
         self.tv_app = Application(backend='win32').start(tv_exec)
@@ -32,17 +35,17 @@ class TrueViewerApp:
             # wait for the file window to appear
             self.wait_window_by_title('Select File')
             # type the file name
-            str_command = f'{file_full_path}~'
+            str_command = f'+{{VK_END}}{{DELETE}}{file_full_path}~'
             send_keys(str_command, with_spaces=True)
         else:
-            print("File not found: {file_full_path}")
+            self.logger.error("File not found: {file_full_path}")
 
     def wait_window_by_title(self, title):
         found = True
         try:
             self.tv_app.window(title_re=title).wait('visible', timeout=5, retry_interval=0.5)
         except TimeoutError:
-            print(f"Waiting time expired, Window with title {title} was not found.")
+            self.logger.warning(f"Waiting time expired, Window with title {title} was not found.")
             found = False
         return found
 
@@ -56,4 +59,5 @@ class TrueViewerApp:
         send_keys("%{F4}")
 
     def exit_app(self):
+        self.logger.info(f"Exiting DWG TrueViewer...")
         self.tv_app.kill()

@@ -1,17 +1,22 @@
-import argparse
 import os
 from src.application.cad_app import CadApp
 from src.application.trueview_app import TrueViewerApp
-from src.document.cad_document import CadDocument
+from src.util.constants import Constants
+from src.util.logger import get_logger
+from src.util.exec_timer import timeit
+
+main_logger = get_logger("MainLogger")
 
 
 # converts student dwg to dxf then dxf to commercial dwg
 def conversion_process(dir_path, orig_fn, cad_application):
-    doc = CadDocument(cad_application.get_cad_application())
+    main_logger.info("Fixing...")
+    doc = cad_application.create_document()
+    # getting file name without extension
     file_name = os.path.splitext(orig_fn)[0]
 
-    dwg_fp = os.path.join(dir_path, f"{file_name}.dwg")
-    dxf_fp = os.path.join(dir_path, f"{file_name}.dxf")
+    dwg_fp = os.path.join(dir_path, f"{file_name}{Constants.DWG_FILE_EXT}")
+    dxf_fp = os.path.join(dir_path, f"{file_name}{Constants.DXF_FILE_EXT}")
 
     # convert dwg to dxf
     document_obj = doc.open_document(dwg_fp)
@@ -22,7 +27,7 @@ def conversion_process(dir_path, orig_fn, cad_application):
     document_obj = doc.open_document(dxf_fp)
     doc.save_as_document(document_obj=document_obj, file_name=dwg_fp, file_type="ac2013_dwg")
     doc.close_document(document_obj)
-    
+
     doc.delete_document(dxf_fp)
 
 
@@ -40,10 +45,11 @@ def clean_up_files(dir):
     for dir_path, dir_names, file_names in os.walk(dir):
         for file_name in file_names:
             file_full_path = os.path.join(dir_path, file_name)
-            if file_full_path.endswith(".bak"):
+            if file_full_path.endswith(Constants.BAK_FILE_EXT):
                 os.remove(os.path.join(dir_path, file_name))
 
 
+@timeit
 def main(dir_or_file):
     cad_app = CadApp()
     cad_app.start_app()
@@ -55,31 +61,26 @@ def main(dir_or_file):
         for dir_path, dir_names, file_names in os.walk(dir_or_file):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
-                if file_full_path.endswith(".dwg") and is_student_file(file_full_path, tv_app):
-                    conversion_process(dir_path, file_name, cad_app)
+                main_logger.info(f"Working with file: {file_name}")
+                if file_full_path.endswith(Constants.DWG_FILE_EXT):
+                    # file is a student version file
+                    if is_student_file(file_full_path, tv_app):
+                        main_logger.warning(f"{file_name} is a Student Version")
+                        # do the conversion "curing" process
+                        conversion_process(dir_path, file_name, cad_app)
+                    else:
+                        # go to the next file
+                        pass
+
         clean_up_files(dir_or_file)
 
     elif os.path.isfile(dir_or_file):
         dir_path = os.path.dirname(dir_or_file)
         file_name = os.path.basename(dir_or_file)
-        file_full_path = os.path.join(dir_path, file_name)
-        if is_student_file(file_full_path, tv_app):
+        main_logger.info(f"Working with file: {file_name}")
+        if dir_or_file.endswith(Constants.DWG_FILE_EXT) and is_student_file(dir_or_file, tv_app):
+            main_logger.info(f"WARNING: {file_name} is a Student Version")
             conversion_process(dir_path, file_name, cad_app)
-            dir = os.path.dirname(dir_or_file)
-            clean_up_files(dir)
+            clean_up_files(dir_path)
     tv_app.exit_app()
     cad_app.exit_app()
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(usage="main")
-    parser.add_argument("--in_file", help="Input DWG File", type=str)
-    parser.add_argument('--in_folder', help="Input DWG Folder", type=str)
-    args = parser.parse_args()
-
-    if args.in_file and os.path.isfile(args.in_file):
-        main(args.in_file)
-    elif args.in_folder and os.path.isdir(args.in_folder):
-        main(args.in_folder)
-    else:
-        print("Invalid input, please check your input commands.")

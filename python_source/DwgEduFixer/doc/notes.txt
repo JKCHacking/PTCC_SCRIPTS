@@ -10,9 +10,16 @@ Solution:
 
 According here:
 https://forums.autodesk.com/t5/net/axinterop-acctrllib-dll-licensing/td-p/5058122
-
 AcCtrl.dll is useless if you dont have Autocad installed.
 
 
 error message dialog: Student Version - Plot Stamp Detected
 
+Test: [Manual Testing] TODO: Automated testing
+Typical test: 3 drawings
+    testcase1: All files in the directory are all student version - PASSED
+    testcase2: All files in the directory are all non-student version -
+    testcase3: 1 file in the directory is student version and other files are non-student version
+    testcase4: 1 file in the directory is non-student version and other files are student version
+load testing:
+    testcase5: 40 files
