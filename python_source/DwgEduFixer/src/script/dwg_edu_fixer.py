@@ -37,7 +37,6 @@ def is_student_file(file_full_path, trueview_app):
     trueview_app.open_file(file_full_path)
     # wait for student version dialog to appear
     is_student = trueview_app.wait_window_by_title(student_title_dialog)
-    print(f"is file a student: {is_student}")
     trueview_app.close_top_window()
     return is_student
 

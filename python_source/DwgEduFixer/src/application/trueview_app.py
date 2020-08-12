@@ -23,19 +23,15 @@ class TrueViewerApp:
     def open_file(self, file_full_path):
         if os.path.exists(file_full_path) and self.tv_app.window(title_re="DWG TrueView").exists():
             # show the select file window
-            print("send the open file command")
             str_command = f"^o"
             self.tv_app.top_window().type_keys(str_command)
-            print("waiting for open file window to appear...")
             # wait for the file window to appear
             file_window = self.wait_window_by_title('Select File')
             if file_window:
-                print("File window displayed! Typing the file name...")
                 # type the file name
                 str_command = f'+{{VK_END}}{{DELETE}}{file_full_path}~'
                 self.tv_app.top_window().type_keys(str_command, with_spaces=True)
             else:
-                print("File Window did not appear, something went wrong...")
                 self.logger.error("File Window did not appear, something went wrong...")
         else:
             self.logger.error("File not found: {file_full_path}")
@@ -56,7 +52,6 @@ class TrueViewerApp:
         return handle
 
     def close_top_window(self):
-        print("Close top window executed.")
         self.tv_app.top_window().type_keys("%{F4}")
 
     def exit_app(self):

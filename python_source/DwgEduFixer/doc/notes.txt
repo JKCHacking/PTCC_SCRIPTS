@@ -23,4 +23,4 @@ Typical test: 3 drawings
     testcase4: 1 file in the directory is non-student version and other files are student version - PASSED
 load testing:
     testcase5: 40 files - student - PASSED
-               40 files - non-student -
+               40 files - non-student - PASSED
