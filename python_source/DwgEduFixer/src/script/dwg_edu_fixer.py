@@ -33,11 +33,12 @@ def conversion_process(dir_path, orig_fn, cad_application):
 
 def is_student_file(file_full_path, trueview_app):
     student_title_dialog = "Student Version - Plot Stamp Detected"
+    is_student = False
     # open dwg file
-    trueview_app.open_file(file_full_path)
-    # wait for student version dialog to appear
-    is_student = trueview_app.wait_window_by_title(student_title_dialog)
-    trueview_app.close_top_window()
+    dialog_list_result = trueview_app.open_file(file_full_path)
+    if dialog_list_result:
+        if any(student_title_dialog in dialog_title for dialog_title in dialog_list_result):
+            is_student = True
     return is_student
 
 
