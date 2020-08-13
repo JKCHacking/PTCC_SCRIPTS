@@ -74,12 +74,13 @@ def main(dir_or_file):
         for dir_path, dir_names, file_names in os.walk(dir_or_file):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
-                logger.info(f"Working with file: {file_name}")
-                if file_full_path.endswith(Constants.DWG_FILE_EXT) and is_student_file(file_full_path, tv_app):
-                    logger.warning(f"{file_name} is a Student Version")
-                    write_logfile(file_full_path, dir_or_file)
-                    # do the conversion "curing" process
-                    conversion_process(dir_path, file_name, cad_app)
+                if file_full_path.endswith(Constants.DWG_FILE_EXT):
+                    logger.info(f"Working with file: {file_name}")
+                    if is_student_file(file_full_path, tv_app):
+                        logger.warning(f"{file_name} is a Student Version")
+                        write_logfile(file_full_path, dir_or_file)
+                        # do the conversion "curing" process
+                        conversion_process(dir_path, file_name, cad_app)
         clean_up_files(dir_or_file)
 
     else:
