@@ -42,10 +42,18 @@ def is_student_file(file_full_path, trueview_app):
     is_student = trueview_app.wait_window_by_title(student_title_dialog, 5)
     if is_student:
         trueview_app.send_command(close_window_command)
+
     # this is a drawing tab
     while trueview_app.get_top_window_title() == '':
         logger.info(f"Attempting to close the tab {os.path.basename(file_full_path)}")
         trueview_app.send_command(close_tab_command)
+
+    time.sleep(0.5)
+    # check for post-load dialog windows (closes the dialog and the drawing tab)
+    while trueview_app.get_top_window_title() != '' and "DWG TrueView" not in trueview_app.get_top_window_title():
+        trueview_app.send_command(close_window_command)
+        trueview_app.send_command(close_tab_command)
+
     return is_student
 
 
