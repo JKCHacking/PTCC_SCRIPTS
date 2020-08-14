@@ -36,19 +36,12 @@ def is_student_file(file_full_path, trueview_app):
     close_window_command = "%{F4}"
     close_tab_command = "^{F4}"
     student_title_dialog = "Student Version - Plot Stamp Detected"
-    is_student = False
-    delay_sec = 5
     # open dwg file
     trueview_app.open_file(file_full_path)
-    time.sleep(delay_sec)
-    # dialog appeared
-    while trueview_app.get_top_window_title() != '':
-        logger.info(f"Attempting to close dialog {trueview_app.get_top_window_title()}")
-        # check if its a student dialog error
-        if student_title_dialog in trueview_app.get_top_window_title():
-            is_student = True
+    # wait for 5 seconds if student version warning window will appear
+    is_student = trueview_app.wait_window_by_title(student_title_dialog, 5)
+    if is_student:
         trueview_app.send_command(close_window_command)
-
     # this is a drawing tab
     while trueview_app.get_top_window_title() == '':
         logger.info(f"Attempting to close the tab {os.path.basename(file_full_path)}")
@@ -94,7 +87,7 @@ def main(dir_or_file):
                         logger.warning(f"{file_name} is a Student Version")
                         write_logfile(file_full_path, dir_or_file)
                         # do the conversion "curing" process
-                        conversion_process(dir_path, file_name, cad_app)
+                        # conversion_process(dir_path, file_name, cad_app) # TODO: Temporary only
         clean_up_files(dir_or_file)
 
     else:
@@ -105,7 +98,7 @@ def main(dir_or_file):
             logger.info(f"WARNING: {file_name} is a Student Version")
             write_logfile(dir_or_file, dir_path)
             # do the conversion "curing" process
-            conversion_process(dir_path, file_name, cad_app)
+            # conversion_process(dir_path, file_name, cad_app) # TODO: Temporary only
             clean_up_files(dir_path)
     tv_app.exit_app()
     cad_app.exit_app()
