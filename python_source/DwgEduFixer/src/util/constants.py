@@ -16,3 +16,4 @@ class Constants:
     DWG_FILE_EXT = '.dwg'
     DXF_FILE_EXT = '.dxf'
     BAK_FILE_EXT = '.bak'
+    TXT_FILE_EXT = '.txt'

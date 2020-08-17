@@ -39,7 +39,7 @@ class TrueViewerApp:
                 # wait for the file window to appear
                 file_window = self.wait_window_by_title('Select File', 2)
 
-            # clear text then paste to select file window
+            # clear text then paste to Select File Window
             self.send_command(clear_text_command + paste_command, with_spaces=True)
             while 'Select File' in self.get_top_window_title():
                 self.send_command(enter_command)

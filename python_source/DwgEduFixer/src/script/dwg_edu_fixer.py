@@ -1,7 +1,6 @@
 import os
 import time
-from src.application.cad_app import CadApp
-from src.application.trueview_app import TrueViewerApp
+import shutil
 from src.util.constants import Constants
 from src.util.logger import get_logger
 from src.util.exec_timer import timeit
@@ -78,13 +77,7 @@ def write_logfile(str_txt, workdir):
 
 
 @timeit
-def main(dir_or_file):
-    cad_app = CadApp()
-    cad_app.start_app()
-
-    tv_app = TrueViewerApp()
-    tv_app.start_app()
-
+def main(dir_or_file, cad_app, tv_app):
     if os.path.isdir(dir_or_file):
         for dir_path, dir_names, file_names in os.walk(dir_or_file):
             for file_name in file_names:
@@ -94,11 +87,11 @@ def main(dir_or_file):
                     if is_student_file(file_full_path, tv_app):
                         logger.warning(f"{file_name} is a Student Version")
                         write_logfile(file_full_path, dir_or_file)
-                        # do the conversion "curing" process
-                        # conversion_process(dir_path, file_name, cad_app) # TODO: Temporary only
+                    # do the conversion "curing" process
+                    conversion_process(dir_path, file_name, cad_app)
         clean_up_files(dir_or_file)
 
-    else:
+    elif os.path.isfile(dir_or_file):
         dir_path = os.path.dirname(dir_or_file)
         file_name = os.path.basename(dir_or_file)
         logger.info(f"Working with file: {file_name}")
@@ -106,7 +99,14 @@ def main(dir_or_file):
             logger.info(f"WARNING: {file_name} is a Student Version")
             write_logfile(dir_or_file, dir_path)
             # do the conversion "curing" process
-            # conversion_process(dir_path, file_name, cad_app) # TODO: Temporary only
+            conversion_process(dir_path, file_name, cad_app)
             clean_up_files(dir_path)
-    tv_app.exit_app()
-    cad_app.exit_app()
+        elif dir_or_file.endswith(Constants.TXT_FILE_EXT):
+            with open(dir_or_file, "r") as file:
+                file_list = file.read().splitlines()
+                for file_path in file_list:
+                    if is_student_file(file_path, tv_app):
+                        write_logfile(file_path, dir_path)
+                        # do the conversion "curing" process
+                        conversion_process(dir_path, file_name, cad_app)
+            clean_up_files(dir_path)
