@@ -43,6 +43,8 @@ class TrueViewerApp:
             self.send_command(clear_text_command + paste_command, with_spaces=True)
             while 'Select File' in self.get_top_window_title():
                 self.send_command(enter_command)
+            self.tv_app.wait_cpu_usage_lower(threshold=4, timeout=60)
+            self.logger.info("File is fully loaded.")
         else:
             self.logger.error("File not found: {file_full_path}")
 

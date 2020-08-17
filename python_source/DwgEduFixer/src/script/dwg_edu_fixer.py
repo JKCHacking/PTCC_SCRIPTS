@@ -37,8 +37,8 @@ def is_student_file(file_full_path, trueview_app):
     student_title_dialog = "Student Version - Plot Stamp Detected"
     # open dwg file
     trueview_app.open_file(file_full_path)
-    # wait for 5 seconds if student version warning window will appear
-    is_student = trueview_app.wait_window_by_title(student_title_dialog, 5)
+    # wait for 2 seconds if student version warning window will appear
+    is_student = trueview_app.wait_window_by_title(student_title_dialog, 2)
     if is_student:
         trueview_app.send_command(close_window_command)
 
@@ -87,8 +87,8 @@ def main(dir_or_file, cad_app, tv_app):
                     if is_student_file(file_full_path, tv_app):
                         logger.warning(f"{file_name} is a Student Version")
                         write_logfile(file_full_path, dir_or_file)
-                    # do the conversion "curing" process
-                    conversion_process(dir_path, file_name, cad_app)
+                        # do the conversion "curing" process
+                        conversion_process(dir_path, file_name, cad_app)
         clean_up_files(dir_or_file)
 
     elif os.path.isfile(dir_or_file):
