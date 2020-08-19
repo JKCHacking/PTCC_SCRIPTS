@@ -1,4 +1,6 @@
+from openpyxl import Workbook
 from src.application.application import Application
+from src.document.exceldocument import ExcelDocument
 
 
 class ExcelApp(Application):
@@ -12,4 +14,5 @@ class ExcelApp(Application):
         pass
 
     def create_document(self, filepath):
-        pass
+        workbook = Workbook()
+        return ExcelDocument(workbook)
