@@ -8,6 +8,7 @@ class Constants:
     UTIL_DIR = os.path.dirname(os.path.realpath(__file__))
     SRC_DIR = os.path.dirname(UTIL_DIR)
     ROOT_DIR = os.path.dirname(SRC_DIR)
+    TEST_DIR = os.path.join(ROOT_DIR, "test")
 
     JPG_FILE_EXT = '.jpg'
     BMP_FILE_EXT = '.bmp'

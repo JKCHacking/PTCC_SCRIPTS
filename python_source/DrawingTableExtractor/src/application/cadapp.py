@@ -4,6 +4,7 @@ from src.application.application import Application
 from src.document.caddocument import CadDocument
 from src.util.constants import Constants
 from src.util.logger import get_logger
+from src.util.util import Utilities
 
 
 class CadApp(Application):
@@ -15,10 +16,12 @@ class CadApp(Application):
         self.logger.info(f"Starting {Constants.BRICS_APP_NAME}...")
         try:
             self.cad_application = client.GetActiveObject(Constants.BRICS_APP_NAME, dynamic=True)
-            self.cad_application.Visible = False
+            self.cad_application.Visible = True
         except(OSError, COMError):
             self.cad_application = client.CreateObject(Constants.BRICS_APP_NAME, dynamic=True)
-            self.cad_application.Visible = False
+            self.cad_application.Visible = True
+        handle = Utilities.get_handle_by_title("BricsCAD")
+        Utilities.activate_window(handle[0])
         return self.cad_application
 
     def stop_app(self):
