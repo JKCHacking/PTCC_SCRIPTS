@@ -6,7 +6,7 @@ class ExcelDocument(Document):
         self.excel_doc = excel_doc
 
     def create_worksheet(self, worksheet_name):
-        pass
+        return self.excel_doc.create_sheet(worksheet_name)
 
     def add_worksheet_contents(self, worksheet, contents, position):
         row = position[0]
