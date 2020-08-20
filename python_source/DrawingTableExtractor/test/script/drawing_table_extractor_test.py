@@ -10,7 +10,6 @@ class DrawingTableExtractorTest(unittest.TestCase):
 
     def __common(self, test_filepath, expected_filepath):
         expected_sheetnames = ["W.01.DL.08A", "W.01.DL.08B", "W.01.DL.08C", "W.01.DL.08D", "W.01.DL.08E"]
-
         pdf1 = os.path.join(os.path.join(Constants.TEST_DIR, "testdata", "test_dir", "W.01.DL.08A.pdf"))
         pdf2 = os.path.join(os.path.join(Constants.TEST_DIR, "testdata", "test_dir", "W.01.DL.08B.pdf"))
         pdf3 = os.path.join(os.path.join(Constants.TEST_DIR, "testdata", "test_dir", "W.01.DL.08C.pdf"))
