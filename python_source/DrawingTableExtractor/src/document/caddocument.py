@@ -27,7 +27,7 @@ class CadDocument(Document):
         time.sleep(1)
         Utilities.send_command(delete_command + paste_command + enter_command)
 
-    def layout_to_pdf(self):
+    def layouts_to_pdf(self):
         layouts = self.get_layouts()
         dir_name = os.path.dirname(self.get_document_fp())
         layout_name_list = []
@@ -41,4 +41,4 @@ class CadDocument(Document):
         return layout_name_list
 
     def close(self):
-        self.document.Close()
+        self.document.Close(False)

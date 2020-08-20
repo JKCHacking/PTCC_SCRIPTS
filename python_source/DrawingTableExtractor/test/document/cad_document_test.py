@@ -54,6 +54,7 @@ class CadDocumentTest(unittest.TestCase):
         doc = self.cad_application.Documents.Open(test_data_path)
         cad_document = CadDocument(doc)
         layout_name_list = cad_document.layout_to_pdf()
+        cad_document.close()
 
         self.assertEqual(layout_name_list, expected)
         self.assertTrue(os.path.exists(pdf1))

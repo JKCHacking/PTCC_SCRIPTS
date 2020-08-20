@@ -15,3 +15,9 @@ class ExcelDocument(Document):
 
     def save(self, filepath):
         self.excel_doc.save(filepath)
+
+    def remove_worksheet(self, worksheet):
+        self.excel_doc.remove(worksheet)
+
+    def get_worksheet_by_name(self, name):
+        return self.excel_doc[name]

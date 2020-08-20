@@ -14,7 +14,7 @@ class PdfApp(Application):
         pass
 
     def open_document(self, filepath):
-        return PdfDocument(filepath)
+        pass
 
     def create_document(self, filepath):
-        pass
+        return PdfDocument(filepath)
