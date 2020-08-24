@@ -1,0 +1,69 @@
+Problem Statement:
+* Extract tables in DWG file.
+* Put them in excel file
+
+Solutions:
+* Parse the table inside DWG file. (Difficult)
+    ** you need algorithm to tell what a cell is.
+    ** determine the position of the text.
+    ** get all the horizontal and vertical lines.
+
+* Convert DWG to PDF and use existing PDF Parser libraries (Easy)
+    ** use _exportpdf command in Bricscad to convert DWG to PDF.
+    ** use camelot to get the data from the Table inside the PDF.
+    ** parse the inside the output.
+
+Algorithm:
+DWG -> PDF -> EXCEL
+
+Open DWF file in Bricscad
+for layout in Document.layouts
+    make the layout active
+    send _exportpdf command
+    put name as "temp.pdf" (pywinauto.keyboard.send_command)
+    work with pandas dataframe to get data
+    must delete the temp.pdf later
+
+CAMELOT API:
+MAIN INTERFACE:
+camelot.read_pdf()
+
+LOWER LEVEL CLASSES:
+
+LEVEL1:
+camelot.handlers.PDFHandler()
+camelot.parsers.Stream()
+camelot.parsers.Lattice()
+
+LEVEL2:
+camelot.core.TableList()
+camelot.core.Table()
+camelot.core.Cell()
+
+1DWG = 1WORKBOOK
+1DWG layout = 1 Worksheet
+
+Bricscad Application
+Methods:
+    start_app()
+    exit_app()
+    export_to_pdf(filepath)
+    open_document()
+
+PDF Application
+Methods:
+    start_app()
+    exit_app()
+    extract_table_data()
+    open_document()
+
+Excel Application
+Methods:
+    start_app()
+    exit_app()
+    create_worksheet()
+    add_worksheet_contents()
+
+
+
+
