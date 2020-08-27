@@ -1,11 +1,9 @@
 import os
 import unittest
-import time
 from comtypes import client, COMError
 from openpyxl import load_workbook
 from src.script.drawing_table_extractor_v2 import is_inside_box, get_entities_within_box, main, is_between_line, get_entities_between_points
 from src.util.constants import Constants
-from src.util.util import Utilities
 
 
 class DrawingTableExtractorTest(unittest.TestCase):

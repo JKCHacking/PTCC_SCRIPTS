@@ -33,7 +33,7 @@ def is_between_line(left, right, point):
         is_between = left_y <= point_y <= right_y
     elif left_y == right_y:
         is_between = left_x <= point_x <= right_x
-    else:  #  TODO: line are not the same length
+    else:  # TODO: line are not the same length
         is_between = False
     return is_between
 
@@ -62,12 +62,13 @@ def get_entities_within_box(entities, entity_type_ls, min, max):
 def get_entities_between_points(entities, entity_type_ls, left, right):
     entity_list = []
     for entity in entities:
-        ins_point = entity.InsertionPoint
-        if entity.ObjectName in entity_type_ls and is_between_line(left, right, ins_point):
-            ins_point_x = ins_point[0]
-            ins_point_y = ins_point[1]
-            text_string = entity.TextString
-            entity_list.append((ins_point_x, ins_point_y, text_string))
+        if entity.ObjectName in entity_type_ls:
+            ins_point = entity.InsertionPoint
+            if is_between_line(left, right, ins_point):
+                ins_point_x = ins_point[0]
+                ins_point_y = ins_point[1]
+                text_string = entity.TextString
+                entity_list.append((ins_point_x, ins_point_y, text_string))
     return entity_list
 
 
@@ -123,7 +124,7 @@ def extract_cad_table(cad_doc):
     for entity in modelspace:
         # searching for the outside box of the table
         if entity.ObjectName == "AcDbPolyline" and entity.Layer != "Defpoints" and entity.Closed and entity.Visible:
-            print(entity.Handle)
+            logger.info(f"Table found with Handle: {entity.Handle}")
             # getting the bounding box of the table
             min_point, max_point = cad_doc.get_bounding_box(entity)
             # getting all the text entities inside the table box
@@ -175,7 +176,8 @@ def script_process(cad_app, excel_app, dir_path, file_name):
     file_full_path = os.path.join(dir_path, file_name)
     cad_doc = cad_app.open_document(file_full_path)
     file_name_only = os.path.splitext(file_name)[0]
-    workbook = excel_app.create_document(os.path.join(dir_path, f'{file_name_only}.xlsx'))
+    excel_file_path = os.path.join(dir_path, f'{file_name_only}.xlsx')
+    workbook = excel_app.create_document(excel_file_path)
     for table_data in extract_cad_table(cad_doc):
         sheet_name = f"{file_name_only}{chr(post_fix)}"
         worksheet = workbook.create_worksheet(sheet_name)
