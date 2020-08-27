@@ -15,4 +15,4 @@ class ExcelApp(Application):
 
     def create_document(self, filepath):
         workbook = Workbook()
-        return ExcelDocument(workbook)
+        return ExcelDocument(workbook, filepath)

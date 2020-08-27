@@ -4,66 +4,38 @@ Problem Statement:
 
 Solutions:
 * Parse the table inside DWG file. (Difficult)
-    ** you need algorithm to tell what a cell is.
-    ** determine the position of the text.
-    ** get all the horizontal and vertical lines.
+    * get the boundary of the column name.
 
 * Convert DWG to PDF and use existing PDF Parser libraries (Easy)
     ** use _exportpdf command in Bricscad to convert DWG to PDF.
     ** use camelot to get the data from the Table inside the PDF.
     ** parse the inside the output.
 
-Algorithm:
-DWG -> PDF -> EXCEL
+ALGORITHM PSUEDO CODE:
 
-Open DWF file in Bricscad
-for layout in Document.layouts
-    make the layout active
-    send _exportpdf command
-    put name as "temp.pdf" (pywinauto.keyboard.send_command)
-    work with pandas dataframe to get data
-    must delete the temp.pdf later
+ask for a list of column names
+for each column_name
+    for entity in modelspace
+        if MTEXT/TEXT Entity TextString == column_name
+            if not MTEXT/TEXT Entity TextString already is already a key in dictionary
 
-CAMELOT API:
-MAIN INTERFACE:
-camelot.read_pdf()
+            else
 
-LOWER LEVEL CLASSES:
-
-LEVEL1:
-camelot.handlers.PDFHandler()
-camelot.parsers.Stream()
-camelot.parsers.Lattice()
-
-LEVEL2:
-camelot.core.TableList()
-camelot.core.Table()
-camelot.core.Cell()
-
-1DWG = 1WORKBOOK
-1DWG layout = 1 Worksheet
-
-Bricscad Application
-Methods:
-    start_app()
-    exit_app()
-    export_to_pdf(filepath)
-    open_document()
-
-PDF Application
-Methods:
-    start_app()
-    exit_app()
-    extract_table_data()
-    open_document()
-
-Excel Application
-Methods:
-    start_app()
-    exit_app()
-    create_worksheet()
-    add_worksheet_contents()
+            {MTEXT/TEXT Entity.position : []}
+            vpt1, vpt2 = get the vertical boundary points for that entity
+            for each entity in modelspace
+                if Entity is MTEXT or TEXT and vpt1 < entity.position < vpt2
+                    dict = {entity.TextString: entity.position}
 
 
+{"NO.": [{"1": (x,y)},{"2": (x,y)},{"3": (x,y)}]}
 
+I think parsing the table is very difficult!!!
+how will parse these lines to form a table and cells, with rows and columns.
 
+how to tell if its a box? -> a box is made up of 4 points.
+
+table - BIG BOX (algorithm to scan all boxes and determine who is the biggest of them all)
+    cell - small box within
+        row - y position of the cell within the table
+        column - x position of the cell within the table

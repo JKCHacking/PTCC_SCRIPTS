@@ -1,6 +1,6 @@
 import argparse
 import os
-from src.script.drawing_table_extractor import main
+from src.script.drawing_table_extractor_v2 import main
 
 
 if __name__ == "__main__":
