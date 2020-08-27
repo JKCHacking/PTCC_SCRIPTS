@@ -9,9 +9,6 @@ class ExcelDocument(Document):
     def create_worksheet(self, worksheet_name):
         return self.excel_doc.create_sheet(worksheet_name)
 
-    def add_worksheet_contents(self, worksheet, contents, row, col):
-        worksheet.cell(row=row, column=col, value=contents)
-
     def save(self):
         self.excel_doc.save(self.filepath)
 

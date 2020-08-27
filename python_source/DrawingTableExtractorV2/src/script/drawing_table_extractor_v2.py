@@ -1,9 +1,7 @@
 import os
 import re
-import array
-import numpy as np
-from scipy import spatial
-from math import sqrt
+import operator
+from math import degrees, floor
 from src.factory.applicationfactory import ApplicationFactory
 from src.util.exec_timer import timeit
 from src.util.constants import Constants
@@ -11,33 +9,6 @@ from src.util.logger import get_logger
 from src.util.util import Utilities
 
 logger = get_logger("DWGTableExtractor")
-
-
-def add_table_column(ws, wb):
-    wb.add_worksheet_contents(ws, "NO.", (1, 1))
-    wb.add_worksheet_contents(ws, "DRAWING NUMBER", (1, 2))
-    wb.add_worksheet_contents(ws, "DRAWING TITLE", (1, 3))
-    wb.add_worksheet_contents(ws, "SUBMISSION 1", (1, 4))
-    wb.add_worksheet_contents(ws, "REV. NO", (2, 4))
-    wb.add_worksheet_contents(ws, "DATE", (2, 5))
-    wb.add_worksheet_contents(ws, "SUBMISSION 2", (1, 6))
-    wb.add_worksheet_contents(ws, "REV. NO", (2, 6))
-    wb.add_worksheet_contents(ws, "DATE", (2, 7))
-    wb.add_worksheet_contents(ws, "SUBMISSION 3", (1, 8))
-    wb.add_worksheet_contents(ws, "REV. NO", (2, 8))
-    wb.add_worksheet_contents(ws, "DATE", (2, 9))
-    wb.add_worksheet_contents(ws, "SUBMISSION 4", (1, 10))
-    wb.add_worksheet_contents(ws, "REV. NO", (2, 10))
-    wb.add_worksheet_contents(ws, "DATE", (2, 11))
-    wb.add_worksheet_contents(ws, "SUBMISSION 5", (1, 12))
-    wb.add_worksheet_contents(ws, "REV. NO", (2, 12))
-    wb.add_worksheet_contents(ws, "DATE", (2, 13))
-    wb.add_worksheet_contents(ws, "SUBMISSION 6", (1, 14))
-    wb.add_worksheet_contents(ws, "REV. NO", (2, 14))
-    wb.add_worksheet_contents(ws, "DATE", (2, 15))
-    wb.add_worksheet_contents(ws, "SUBMISSION 7", (1, 16))
-    wb.add_worksheet_contents(ws, "REV. NO", (2, 16))
-    wb.add_worksheet_contents(ws, "DATE", (2, 17))
 
 
 def is_inside_box(min, max, point):
@@ -60,8 +31,10 @@ def is_between_line(left, right, point):
 
     if left_x == right_x:
         is_between = left_y <= point_y <= right_y
-    else:
+    elif left_y == right_y:
         is_between = left_x <= point_x <= right_x
+    else:  #  TODO: line are not the same length
+        is_between = False
     return is_between
 
 
@@ -86,40 +59,55 @@ def get_entities_within_box(entities, entity_type_ls, min, max):
     return entity_list
 
 
-def get_entities_between_line(entities, entity_type_ls, left, right):
+def get_entities_between_points(entities, entity_type_ls, left, right):
     entity_list = []
     for entity in entities:
-        if entity.ObjectName in entity_type_ls:
+        ins_point = entity.InsertionPoint
+        if entity.ObjectName in entity_type_ls and is_between_line(left, right, ins_point):
+            ins_point_x = ins_point[0]
+            ins_point_y = ins_point[1]
             text_string = entity.TextString
-            if is_between_line(left, right, entity.InsertionPoint):
-                ins_point = entity.InsertionPoint
-                ins_point_x = ins_point[0]
-                ins_point_y = ins_point[1]
-                text_string = entity.TextString
-                entity_list.append((text_string, ins_point_x, ins_point_y))
+            entity_list.append((ins_point_x, ins_point_y, text_string))
     return entity_list
 
 
-def sort_pt_lst(pt_list, target_point):
-    sorted_res = sorted(pt_list, key=lambda p: sqrt((p[1] - target_point[0])**2 + (p[2] - target_point[1])**2))
-    return sorted_res
+def add_table_column(ws):
+    ws.cell(row=1, column=1, value="NO.")
+    ws.cell(row=1, column=2, value="DRAWING NUMBER")
+    ws.cell(row=1, column=3, value="DRAWING TITLE")
+    ws.cell(row=1, column=4, value="SUBMISSION 1")
+    ws.cell(row=2, column=4, value="REV. NO")
+    ws.cell(row=2, column=5, value="DATE")
+    ws.cell(row=1, column=6, value="SUBMISSION 2")
+    ws.cell(row=2, column=6, value="REV. NO")
+    ws.cell(row=2, column=7, value="DATE")
+    ws.cell(row=1, column=8, value="SUBMISSION 3")
+    ws.cell(row=2, column=8, value="REV. NO")
+    ws.cell(row=2, column=9, value="DATE")
+    ws.cell(row=1, column=10, value="SUBMISSION 4")
+    ws.cell(row=2, column=10, value="REV. NO")
+    ws.cell(row=2, column=11, value="DATE")
+    ws.cell(row=1, column=12, value="SUBMISSION 5")
+    ws.cell(row=2, column=12, value="REV. NO")
+    ws.cell(row=2, column=13, value="DATE")
+    ws.cell(row=1, column=14, value="SUBMISSION 6")
+    ws.cell(row=2, column=14, value="REV. NO")
+    ws.cell(row=2, column=15, value="DATE")
+    ws.cell(row=1, column=16, value="SUBMISSION 7")
+    ws.cell(row=2, column=16, value="REV. NO")
+    ws.cell(row=2, column=17, value="DATE")
 
 
-def get_nearest_pt(pt_list, target):
-    node = list(target)
-    nodes = np.asarray(pt_list)
-    dist, index = spatial.KDTree(nodes).query(node)
-    return index
+def add_excel_data(worksheet, data):
+    # add data to worksheet
+    for row, row_list in enumerate(data):
+        row = row + 3
+        for column, row_data in enumerate(row_list):
+            worksheet.cell(row=row, column=column + 1, value=row_data[2])
 
 
-def extract_cad_table(cadapp, excelapp, drawing_filepath):
-    curr_dir = os.path.dirname(drawing_filepath)
-    drawing_file_name = os.path.basename(drawing_filepath)
-    drawing_name = os.path.splitext(drawing_file_name)[0]
-
-    cad_doc = cadapp.open_document(drawing_filepath)
+def extract_cad_table(cad_doc):
     modelspace = cad_doc.get_modelspace()
-    workbook = excelapp.create_document(os.path.join(curr_dir, f'{drawing_name}.xlsx'))
 
     text_types = ['AcDbMText', 'AcDbText']
     line_types = ['AcDbPolyline', 'AcDbLine']
@@ -127,7 +115,9 @@ def extract_cad_table(cadapp, excelapp, drawing_filepath):
         re.compile("^NO."),
         re.compile("DRAWING...NUMBER"),
         re.compile("DRAWING TITLE"),
-        re.compile("SUBMISSION [0-9]+")
+        re.compile("SUBMISSION [0-9]+"),
+        re.compile("REV. NO."),
+        re.compile("DATE")
     ]
 
     for entity in modelspace:
@@ -140,55 +130,61 @@ def extract_cad_table(cadapp, excelapp, drawing_filepath):
             text_entities = get_entities_within_box(modelspace, text_types, min_point, max_point)
             # getting all the line entities inside the table box
             line_entities = get_entities_within_box(modelspace, line_types, min_point, max_point)
-            # searching for column names (which will match the text string inside regex list)
-            for regex in reg_column_names:
-                for ent_text in text_entities:
-                    text_string = ent_text.TextString
-                    # if a column name is found (matched the regex)
-                    if regex.match(text_string):
-                        print(f"{text_string} Matched in regex List")
-                        inst_point = ent_text.InsertionPoint
-                        inst_point_x = inst_point[0]
-                        inst_point_y = inst_point[1]
 
-                        # create a horizontal line at the insertion point of the text
-                        # for getting all the intersecting lines
-                        start_point = array.array('d', (inst_point_x + 0.125, inst_point_y, 0))
-                        end_point = array.array('d', (inst_point_x - 0.125, inst_point_y, 0))
-                        h_line = cad_doc.add_line(start_point, end_point)
-                        # get all the intersecting lines
-                        h_p_list = []
-                        for ent_line in line_entities:
-                            # horizontal
-                            h_int_p = h_line.IntersectWith(ent_line, 1)
-                            if h_int_p and h_int_p != inst_point:
-                                if len(h_int_p) == 6:
-                                    first_half = h_int_p[:3]
-                                    second_half = h_int_p[3:]
-                                    h_p_list.append(first_half)
-                                    h_p_list.append(second_half)
-                                else:
-                                    h_p_list.append(h_int_p)
-                        h_line.Delete()
-                        # getting the point in a line that is nearest to the MText Entity
-                        index = get_nearest_pt(h_p_list, inst_point)
-                        right_v_pt = h_p_list.pop(int(index))
-                        index = get_nearest_pt(h_p_list, inst_point)
-                        left_v_pt = h_p_list.pop(int(index))
+            # start points of every horizontal lines
+            h_s_pt_list = []
+            for line in line_entities:
+                if line.ObjectName == 'AcDbPolyline':
+                    exploded_line = line.Explode()
+                    for e_line in exploded_line:
+                        angle = floor(degrees(e_line.Angle))
+                        if angle == 0:
+                            start_point = e_line.StartPoint
+                            h_s_pt_list.append(start_point)
+                        elif angle == 180:
+                            end_point = e_line.EndPoint
+                            h_s_pt_list.append(end_point)
+            # sorted from top to bottom points within rows of the table (start points of every horizontal lines)
+            sorted_h_s_pt_list = sorted(h_s_pt_list, key=operator.itemgetter(1), reverse=True)
 
-                        right = right_v_pt
-                        left = left_v_pt
-                        if right_v_pt[0] < left_v_pt[0]:
-                            right = left_v_pt
-                            left = right_v_pt
+            # remove all column entities in the table
+            data_entity_list = []  # data entities only (no column entities)
+            for text_ent in text_entities:
+                text_string = text_ent.TextString
+                if not any(regex.match(text_string) for regex in reg_column_names):
+                    data_entity_list.append(text_ent)
 
-                        # getting the entities between the points nearest to the Column name
-                        text_ent_list = get_entities_between_line(text_entities, text_types, left, right)
-                        if not text_ent_list:
-                            print(f"There are no texts found under column {text_string}")
-                        sorted_list = sort_pt_lst(text_ent_list, inst_point)
-                        for text_ent in sorted_list:
-                            print(text_ent)
+            table_rows_list = []
+            for index, h_s_pt in enumerate(sorted_h_s_pt_list):
+                try:
+                    top = h_s_pt
+                    bottom = sorted_h_s_pt_list[index + 1]
+                    # print(f"top: {top}, bottom: {bottom}")
+                    row_entities_list = get_entities_between_points(data_entity_list, text_types, bottom, top)
+                    if row_entities_list:
+                        # sort according to x value (left to right)
+                        sorted_row_entities_list = sorted(row_entities_list, key=operator.itemgetter(0))
+                        table_rows_list.append(sorted_row_entities_list)
+                except IndexError:
+                    pass
+            yield table_rows_list
+
+
+def script_process(cad_app, excel_app, dir_path, file_name):
+    post_fix = 65  # A
+    file_full_path = os.path.join(dir_path, file_name)
+    cad_doc = cad_app.open_document(file_full_path)
+    file_name_only = os.path.splitext(file_name)[0]
+    workbook = excel_app.create_document(os.path.join(dir_path, f'{file_name_only}.xlsx'))
+    for table_data in extract_cad_table(cad_doc):
+        sheet_name = f"{file_name_only}{chr(post_fix)}"
+        worksheet = workbook.create_worksheet(sheet_name)
+        add_table_column(worksheet)
+        add_excel_data(worksheet, table_data)
+        post_fix += 1
+    cad_doc.close()
+    default_ws = workbook.get_worksheet_by_name("Sheet")
+    workbook.remove_worksheet(default_ws)
     workbook.save()
 
 
@@ -206,14 +202,14 @@ def main(dir_or_file):
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(Constants.DWG_FILE_EXT):
                     logger.info(f"Working with file: {file_name}")
-                    extract_cad_table(cad_application, excel_application, file_full_path)
+                    script_process(cad_application, excel_application, dir_path, file_name)
         Utilities.clean_up_file(['.bak'], dir_or_file)
     elif os.path.isfile(dir_or_file):
         directory = os.path.dirname(dir_or_file)
         file_name = os.path.basename(dir_or_file)
         if dir_or_file.endswith(Constants.DWG_FILE_EXT):
             logger.info(f"Working with file: {file_name}")
-            extract_cad_table(cad_application, excel_application, dir_or_file)
+            script_process(cad_application, excel_application, directory, file_name)
         Utilities.clean_up_file(['.bak'], directory)
     cad_application.stop_app()
     excel_application.stop_app()

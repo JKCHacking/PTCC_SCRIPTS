@@ -3,7 +3,7 @@ import unittest
 import time
 from comtypes import client, COMError
 from openpyxl import load_workbook
-from src.script.drawing_table_extractor_v2 import is_inside_box, get_entities_within_box, main, is_between_line, get_entities_between_line
+from src.script.drawing_table_extractor_v2 import is_inside_box, get_entities_within_box, main, is_between_line, get_entities_between_points
 from src.util.constants import Constants
 from src.util.util import Utilities
 
@@ -71,8 +71,8 @@ class DrawingTableExtractorTest(unittest.TestCase):
 
     def test_is_outside_h_line(self):
         left = (0, 0)
-        right = (5, 0)
-        point1 = (10, 5)
+        right = (0, 5)
+        point1 = (10, 10)
         point2 = (-10, -10)
         self.assertFalse(is_between_line(left, right, point1))
         self.assertFalse(is_between_line(left, right, point2))
@@ -94,13 +94,13 @@ class DrawingTableExtractorTest(unittest.TestCase):
         modelspace = doc.ModelSpace
 
         expected = ["01.COVER", "COVER PAGE", "WEST F2 - TOP HAT GENERAL ASSEMBLY"]
-        ent_ls = get_entities_between_line(modelspace, ['AcDbMText', 'AcDbText'], (0, 10, 0), (5, 10, 0))
+        ent_ls = get_entities_between_points(modelspace, ['AcDbMText', 'AcDbText'], (0, 10, 0), (5, 10, 0))
         self.assertEqual(3, len(ent_ls))
         for ent in ent_ls:
             self.assertTrue(ent.TextString in expected)
 
     def __common(self, test_filepath, expected_filepath):
-        expected_sheetnames = ["W.01.DL.08A", "W.01.DL.08B", "W.01.DL.08C", "W.01.DL.08D", "W.01.DL.08E"]
+        expected_sheetnames = ["testdata1A", "testdata1B", "testdata1C", "testdata1D", "testdata1E"]
         main(test_filepath)
 
         self.assertTrue(expected_filepath)
