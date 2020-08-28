@@ -1,3 +1,5 @@
+Warning: This note is not updated. (28/08/2020)
+
 Problem Statement:
 * Extract tables in DWG file.
 * Put them in excel file
@@ -39,3 +41,9 @@ table - BIG BOX (algorithm to scan all boxes and determine who is the biggest of
     cell - small box within
         row - y position of the cell within the table
         column - x position of the cell within the table
+
+LIMITATIONS:
+1. This script can only perfectly extract data from a normal table (no merged cells, if yes, double check results).
+2. This script assumes that the table is wrapped with a closed polyline box. (if its a line box it will not be able to find it)
+3. This script only extracts data and does not include column names. (Column names are inserted statically)
+4. "Deleted" note BlockReference will not be detected, so rows with deleted note will still remain.
