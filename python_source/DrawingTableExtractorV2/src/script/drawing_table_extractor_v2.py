@@ -181,7 +181,7 @@ def extract_cad_table(cad_doc):
                     pass
             yield table_rows_list
     if count_table_detected == 0:
-        logger.warning("No tables found in Drawing file.")
+        logger.info("No tables found in Drawing file.")
 
 
 def script_process(cad_app, excel_app, dir_path, file_name):
