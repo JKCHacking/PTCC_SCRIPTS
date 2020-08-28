@@ -12,7 +12,7 @@ class Logger(object):
     def __init__(self, logger_name):
         self.logger_name = logger_name
         datetime_now = datetime.datetime.now()
-        date = datetime_now.date
+        date = datetime_now.day
         month = datetime_now.month
         year = datetime_now.year
         hour = datetime_now.hour
