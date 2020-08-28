@@ -149,13 +149,14 @@ def extract_cad_table(cad_doc):
                 if line.ObjectName == 'AcDbPolyline':
                     exploded_line = line.Explode()
                     for e_line in exploded_line:
-                        angle = floor(degrees(e_line.Angle))
-                        if angle == 0:
-                            start_point = e_line.StartPoint
-                            h_s_pt_list.append(start_point)
-                        elif angle == 180:
-                            end_point = e_line.EndPoint
-                            h_s_pt_list.append(end_point)
+                        if e_line.ObjectName == "AcDbLine":
+                            angle = floor(degrees(e_line.Angle))
+                            if angle == 0:
+                                start_point = e_line.StartPoint
+                                h_s_pt_list.append(start_point)
+                            elif angle == 180:
+                                end_point = e_line.EndPoint
+                                h_s_pt_list.append(end_point)
             # sorted from top to bottom points within rows of the table (start points of every horizontal lines)
             sorted_h_s_pt_list = sorted(h_s_pt_list, key=operator.itemgetter(1), reverse=True)
 
