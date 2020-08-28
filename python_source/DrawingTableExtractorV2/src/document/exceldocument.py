@@ -21,3 +21,6 @@ class ExcelDocument(Document):
 
     def get_worksheet_by_name(self, name):
         return self.excel_doc[name]
+
+    def get_worksheets(self):
+        return self.excel_doc.worksheets
