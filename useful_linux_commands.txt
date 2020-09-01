@@ -1,2 +1,3 @@
 search for directories that contains specific file and copy in a directory:
 find . -name '*.dwg' -printf '%h\n' | sort -u | grep 2020 | xargs -I{} cp -rf "{}" "directory/"
+find . -maxdepth 3  -type f -name '*.xlsx' -exec cp -v -t "./done" --parents {} +
