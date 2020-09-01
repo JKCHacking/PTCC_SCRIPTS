@@ -129,13 +129,11 @@ def extract_cad_table(cad_doc):
         re.compile("REV. NO."),
         re.compile("DATE")
     ]
-    count_table_detected = 0
 
     for entity in modelspace:
         # searching for the outside box of the table
         if entity.ObjectName == "AcDbPolyline" and entity.Layer != "Defpoints" and entity.Closed and entity.Visible:
             logger.info(f"Table found with Handle: {entity.Handle}")
-            count_table_detected += 1
             # getting the bounding box of the table
             min_point, max_point = cad_doc.get_bounding_box(entity)
             # getting all the text entities inside the table box
@@ -181,8 +179,6 @@ def extract_cad_table(cad_doc):
                 except IndexError:
                     pass
             yield table_rows_list
-    if count_table_detected == 0:
-        logger.info("No tables found in Drawing file.")
 
 
 def script_process(cad_app, excel_app, dir_path, file_name):
@@ -205,6 +201,8 @@ def script_process(cad_app, excel_app, dir_path, file_name):
         default_ws = workbook.get_worksheet_by_name("Sheet")
         workbook.remove_worksheet(default_ws)
         workbook.save()
+    else:
+        logger.info(f"No tables found in Drawing file: {file_full_path}")
 
 
 @timeit
