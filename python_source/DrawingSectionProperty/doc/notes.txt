@@ -1,0 +1,20 @@
+main.py
+* this accepts the following input from the user:
+    1. -f = filepath (but this will be change as it will get the files from the input/ directory)
+    2. -m =
+
+
+Classes:
+1. SectionPropertyScript
+    * parse_inputs()
+    * iter_input()
+2. Pre-Processor
+    * create_geometry(model_space)
+    * create_mesh(geometry, mesh_size)
+    * create_materials(material_list)
+3. Solver
+    * create_section(geometry, mesh, materials)
+    * calculate_properties(cross_section)
+4. Post-Processor
+    * get_properties(cross_section)
+    * create_pdf(properties)
