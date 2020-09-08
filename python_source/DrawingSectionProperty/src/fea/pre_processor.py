@@ -1,12 +1,14 @@
 import numpy as np
+import sectionproperties.pre.sections as sections
 from math import sqrt, ceil
 from ezdxf import readfile
 from ezdxf import math
 
 
 class PreProcessor:
-    def __init__(self, segment_size):
+    def __init__(self, segment_size, has_hole):
         self.seg_siz_mult = segment_size / 100
+        self.has_hole = has_hole
 
     def __get_polylines_within(self, parent_polyline, polylines):
         pl_child_list = []
@@ -36,7 +38,7 @@ class PreProcessor:
                 pl_list.append(ent)
         return pl_list
 
-    def __get_points_and_facets(self, parent_pl, child_pl_list):
+    def __get_points_and_facets(self, parent_pl, child_pl_list=None):
         profile_points = []
         profile_facets = []
 
@@ -47,9 +49,10 @@ class PreProcessor:
 
         for ent in parent_pl.virtual_entities():
             self.__add_to_lists(ent, profile_points, profile_facets, shape_size)
-        for child_pl in child_pl_list:
-            for ent in child_pl.virtual_entities():
-                self.__add_to_lists(ent, profile_points, profile_facets, shape_size)
+        if child_pl_list:
+            for child_pl in child_pl_list:
+                for ent in child_pl.virtual_entities():
+                    self.__add_to_lists(ent, profile_points, profile_facets, shape_size)
         return profile_points, profile_facets
 
     def __add_to_lists(self, ent, profile_points, profile_facets, shape_size):
@@ -98,11 +101,20 @@ class PreProcessor:
         return seg_arc_pts
 
     def __get_holes(self, child_pl_list):
+        hole_points = []
+        for child_pl in child_pl_list:
+            points = child_pl.get_points()
+            bbox = math.BoundingBox2d(points)
+            hole_points.append(list(bbox.center))
+        return hole_points
 
-        pass
-
-    def __get_control_points(self):
-        pass
+    def __get_control_points(self, parent_pl, child_list_pl=None):
+        control_points = []
+        for ent in parent_pl.virtual_entities():
+            if parent_pl.has_arc:
+                if child_list_pl:
+                    pass
+        return control_points
 
     def create_geometry(self, file_fp):
         '''
@@ -117,12 +129,25 @@ class PreProcessor:
         for polyline in polylines:
             print(f"POLYLINE found: {polyline.dxf.handle}")
             parent_pl = polyline
-            child_pl_list = self.__get_polylines_within(parent_pl, polylines)
-            if child_pl_list:
-                # we found a profile
-                profile_points, profile_facets = self.__get_points_and_facets(parent_pl, child_pl_list)
-                hole_points = self.__get_holes(child_pl_list)
+            if self.has_hole:
+                # if theres a hole there should always be child poly-lines inside.
+                child_pl_list = self.__get_polylines_within(parent_pl, polylines)
 
+                profile_points, profile_facets = self.__get_points_and_facets(parent_pl, child_pl_list)
+                control_points = self.__get_control_points(parent_pl, child_pl_list)
+                hole_points = self.__get_holes(child_pl_list)
+            else:
+                profile_points, profile_facets = self.__get_points_and_facets(parent_pl)
+                control_points = self.__get_control_points(parent_pl)
+                hole_points = []
+
+            geometry = sections.CustomSection(
+                profile_points,
+                profile_facets,
+                hole_points,
+                control_points
+            )
+            geometry_list.append(geometry)
         return geometry_list
 
     def create_mesh(self, mesh_size):
