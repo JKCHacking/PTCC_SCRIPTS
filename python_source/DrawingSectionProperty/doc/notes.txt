@@ -18,3 +18,36 @@ Classes:
 4. Post-Processor
     * get_properties(cross_section)
     * create_pdf(properties)
+
+problems along the way:
+1. child entities that describes holes can also be non line entities.
+Example:
+    * Circle
+so this should also be supported.
+
+Test cases (Pre Processor):
+Case #1: - PASS (will detect the profile and the hole)
+    * single profile
+    * Profile is made of polyline (lines and arcs)
+    * there are polyline holes
+Case #2: - PASS (will detect the profile and the hole)
+    * single profile
+    * profile is made of polylines (lines and arcs)
+    * there are circle holes
+Case #3: - FAIL (it will not detect the profile)
+    * single profile
+    * profile is not made of poylines (purely circle)
+    * does not have holes
+Case #4: - PASS
+    * two profiles touching
+    * profile 1 and profile 2 is made of polylines
+    * profile 1 and profile 2 has polyline holes
+Case #5: - PASS (will only detect profile 1)
+    * two profiles touching
+    * profile 1 is made of polylines and profile 2 is not made of polylines
+    * profile 1 and profile 2 has polyline holes
+
+Assumptions:
+1. This assumes that the profiles are made of
+polylines. else it wont be detected.
+2. supported entities as holes : polylines and circle

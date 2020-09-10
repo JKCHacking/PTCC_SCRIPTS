@@ -1,6 +1,6 @@
 import numpy as np
 import sectionproperties.pre.sections as sections
-from math import sqrt, ceil
+from math import ceil
 from ezdxf import readfile
 from ezdxf import math
 
@@ -11,7 +11,7 @@ class PreProcessor:
         self.has_hole = has_hole
 
     def __get_polylines_within(self, parent_polyline, polylines):
-        pl_child_list = []
+        ent_child_list = []
         parent_handle = parent_polyline.dxf.handle
         parent_points = parent_polyline.get_points()
         bbox_parent = math.BoundingBox2d(parent_points)
@@ -28,8 +28,8 @@ class PreProcessor:
             child_max = bbox_child.extmax
             if parent_min[0] < child_min[0] and parent_min[1] < child_min[1] and\
                 parent_max[0] > child_max[0] and parent_max[1] > child_max[1]:
-                pl_child_list.append(polyline)
-        return pl_child_list
+                ent_child_list.append(polyline)
+        return ent_child_list
 
     def __get_polylines(self, modelspace):
         pl_list = []
@@ -38,20 +38,20 @@ class PreProcessor:
                 pl_list.append(ent)
         return pl_list
 
-    def __get_points_and_facets(self, parent_pl, child_pl_list=None):
+    def __get_points_and_facets(self, parent_pl, child_ent_list):
         profile_points = []
         profile_facets = []
 
-        parent_bbox = math.BoundingBox2d(parent_pl.get_points())
+        parent_bbox = math.BoundingBox2d(parent_pl.get_points('xy'))
         bbox_x = parent_bbox.size[0]
         bbox_y = parent_bbox.size[1]
         shape_size = min(bbox_x, bbox_y)
 
         for ent in parent_pl.virtual_entities():
             self.__add_to_lists(ent, profile_points, profile_facets, shape_size)
-        if child_pl_list:
-            for child_pl in child_pl_list:
-                for ent in child_pl.virtual_entities():
+        if child_ent_list:
+            for child_ent in child_ent_list:
+                for ent in child_ent.virtual_entities():
                     self.__add_to_lists(ent, profile_points, profile_facets, shape_size)
         return profile_points, profile_facets
 
@@ -62,37 +62,39 @@ class PreProcessor:
             profile_facets.append([len(profile_points) - 2, len(profile_points) - 1])
         elif ent.dxftype() == "ARC":
             seg_arc_points = self.calculate_arc_segmentation(ent, shape_size)
-            for ind, _ in enumerate(seg_arc_points):
-                if ind % 2 == 0:
+            try:
+                for ind, _ in enumerate(seg_arc_points):
                     profile_points.append(seg_arc_points[ind])
                     profile_points.append(seg_arc_points[ind + 1])
                     profile_facets.append([len(profile_points) - 2, len(profile_points) - 1])
+            except IndexError:
+                pass
 
     def calculate_arc_segmentation(self, arc_ent, shape_size):
         seg_arc_pts = []
-        s_point = arc_ent.start_point
-        e_point = arc_ent.end_point
-        center_point = arc_ent.dxf.center
+        s_point = arc_ent.start_point[:-1]
+        # e_point = arc_ent.end_point[:-1]
+        center_point = arc_ent.dxf.center[:-1]
+        center_point_x, center_point_y = center_point
+        s_point_x, s_point_y = s_point
+        # e_point_x, e_point_y = e_point
+
         radius = arc_ent.dxf.radius
-        s_ang = arc_ent.dxf.start_angle
-        e_ang = arc_ent.dxf.end_angle
-        center_point_x = center_point[0]
-        center_point_y = center_point[1]
-        s_point_x = s_point[0]
-        # s_point_y = s_point[1]
-        e_point_x = e_point[0]
-        # e_point_y = e_point[1]
-
-        start_t = np.arccos((s_point_x - center_point_x) / radius)
-        end_t = np.arccos((e_point_x - center_point_x) / radius)
-
-        seg_size = self.seg_siz_mult * shape_size
+        s_ang = round(arc_ent.dxf.start_angle)
+        e_ang = round(arc_ent.dxf.end_angle)
         tot_ang = e_ang - s_ang
+
+        if e_ang < s_ang:
+            e_ang += 360
+
+        seg_arc_pts.append([s_point_x, s_point_y])
+        seg_size = self.seg_siz_mult * shape_size
         arc_len = abs(radius * np.radians(tot_ang))
         arc_div = ceil(arc_len / seg_size)
-        arc_div = arc_div if arc_div % 2 == 0 else arc_div + 1  # to avoid out of range index later
-        arc_T = np.linspace(start_t, end_t, arc_div)
 
+        s_ang_rad = np.radians(s_ang)
+        e_ang_rad = np.radians(e_ang)
+        arc_T = np.linspace(s_ang_rad, e_ang_rad, arc_div)
         list_x = center_point_x + radius * np.cos(arc_T)
         list_y = center_point_y + radius * np.sin(arc_T)
 
@@ -108,13 +110,51 @@ class PreProcessor:
             hole_points.append(list(bbox.center))
         return hole_points
 
-    def __get_control_points(self, parent_pl, child_list_pl=None):
-        control_points = []
-        for ent in parent_pl.virtual_entities():
-            if parent_pl.has_arc:
+    def __get_control_points(self, parent_pl, child_list_pl):
+        control_point = []
+        parent_points = self.__convert_to_vec2s(parent_pl.get_points('xy'))
+        parent_bbox = math.BoundingBox2d(parent_points)
+        min_pt = parent_bbox.extmin
+        max_pt = parent_bbox.extmax
+
+        # boundary of the parent polyline
+        x_min = min_pt[0]
+        y_min = min_pt[1]
+        x_max = max_pt[0]
+        y_max = max_pt[1]
+
+        cp_found = False
+        # get the candidate X,Y
+        for y in np.arange(y_min, y_max, 0.05):
+            for x in np.arange(x_min, x_max, 0.05):
+                pt_list = [x, y]
+                bbox_point = math.Vec2(pt_list)
                 if child_list_pl:
-                    pass
-        return control_points
+                    for child_pl in child_list_pl:
+                        child_points = self.__convert_to_vec2s(child_pl.get_points('xy'))
+                        if math.is_point_in_polygon_2d(bbox_point, parent_points) == 1:
+                            if math.is_point_in_polygon_2d(bbox_point, child_points) == -1:
+                                control_point.append(pt_list)
+                                cp_found = True
+                                break
+                else:
+                    if math.is_point_in_polygon_2d(bbox_point, parent_points) == 1:
+                        control_point.append(pt_list)
+                        cp_found = True
+                        break
+                if cp_found:
+                    break
+            if cp_found:
+                break
+        return control_point
+
+    def __convert_to_vec2s(self, pt_list):
+        vec2_list = []
+        if pt_list:
+            for pt in pt_list:
+                vec2_pt = math.Vec2(pt)
+                vec2_list.append(vec2_pt)
+        return vec2_list
 
     def create_geometry(self, file_fp):
         '''
@@ -129,25 +169,24 @@ class PreProcessor:
         for polyline in polylines:
             print(f"POLYLINE found: {polyline.dxf.handle}")
             parent_pl = polyline
+            child_ent_list = []
+            hole_points = []
             if self.has_hole:
                 # if theres a hole there should always be child poly-lines inside.
-                child_pl_list = self.__get_polylines_within(parent_pl, polylines)
+                child_ent_list = self.__get_polylines_within(parent_pl, polylines)
+                hole_points = self.__get_holes(child_ent_list)
 
-                profile_points, profile_facets = self.__get_points_and_facets(parent_pl, child_pl_list)
-                control_points = self.__get_control_points(parent_pl, child_pl_list)
-                hole_points = self.__get_holes(child_pl_list)
-            else:
-                profile_points, profile_facets = self.__get_points_and_facets(parent_pl)
-                control_points = self.__get_control_points(parent_pl)
-                hole_points = []
+            profile_points, profile_facets = self.__get_points_and_facets(parent_pl, child_ent_list)
+            control_points = self.__get_control_points(parent_pl, child_ent_list)
 
-            geometry = sections.CustomSection(
-                profile_points,
-                profile_facets,
-                hole_points,
-                control_points
-            )
-            geometry_list.append(geometry)
+            if self.has_hole and child_ent_list or not self.has_hole:
+                geometry = sections.CustomSection(
+                    profile_points,
+                    profile_facets,
+                    hole_points,
+                    control_points
+                )
+                geometry_list.append(geometry)
         return geometry_list
 
     def create_mesh(self, mesh_size):
