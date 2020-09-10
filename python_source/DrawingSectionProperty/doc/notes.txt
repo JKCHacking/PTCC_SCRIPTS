@@ -35,7 +35,7 @@ Case #2: - PASS (will detect the profile and the hole)
     * single profile
     * profile is made of polylines (lines and arcs)
     * there are circle holes
-Case #3: - FAIL (it will not detect the profile)
+Case #3: - PASS (it will detect the profile and should have no holes)
     * single profile
     * profile is made of poylines
     * does not have holes
