@@ -26,6 +26,7 @@ Example:
 so this should also be supported.
 
 Test cases (Pre Processor):
+CREATION OF GEOMETRY
 Case #1: - PASS (will detect the profile and the hole)
     * single profile
     * Profile is made of polyline (lines and arcs)
@@ -36,13 +37,17 @@ Case #2: - PASS (will detect the profile and the hole)
     * there are circle holes
 Case #3: - FAIL (it will not detect the profile)
     * single profile
+    * profile is made of poylines
+    * does not have holes
+Case #4: - FAIL (it will not detect the profile)
+    * single profile
     * profile is not made of poylines (purely circle)
     * does not have holes
-Case #4: - PASS
+Case #5: - PASS
     * two profiles touching
     * profile 1 and profile 2 is made of polylines
     * profile 1 and profile 2 has polyline holes
-Case #5: - PASS (will only detect profile 1)
+Case #6: - PASS (will only detect profile 1)
     * two profiles touching
     * profile 1 is made of polylines and profile 2 is not made of polylines
     * profile 1 and profile 2 has polyline holes
