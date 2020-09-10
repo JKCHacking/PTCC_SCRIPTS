@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Script(ABC):
+class BaseScript(ABC):
     @abstractmethod
     def open_file(self, document):
         pass

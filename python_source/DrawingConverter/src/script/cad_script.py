@@ -3,12 +3,12 @@ from comtypes import client
 from comtypes import COMError
 from src.constants import Constants
 from src.logger import Logger
-from src.script import Script
+from src.script.base_script import BaseScript
 
 logger = Logger()
 
 
-class CadScript(Script):
+class CadScript(BaseScript):
     def __init__(self, cad_application):
         self.cad_application = cad_application
         self.logger = logger.get_logger()
@@ -39,7 +39,7 @@ class CadScript(Script):
     def delete_file(self, doc):
         pass
 
-    def check_file(self, doc):
+    def check_student_version(self, doc):
         pass
 
     def dwg2dxf(self, document):
