@@ -39,15 +39,19 @@ Case #3: - PASS (it will detect the profile and should have no holes)
     * single profile
     * profile is made of poylines
     * does not have holes
-Case #4: - FAIL (it will not detect the profile)
+Case #4: - LIMITATION (it will not detect the profile and will Detect the holes as profiles)
     * single profile
     * profile is not made of poylines (purely circle)
     * does not have holes
-Case #5: - PASS
+Case #5: - will not detect the profile and will not detect the holes as profiles
+    * single profile
+    * profile is not made of poylines (purely circle)
+    * does have holes
+Case #6: - PASS (will detect 2 profiles with holes)
     * two profiles touching
     * profile 1 and profile 2 is made of polylines
     * profile 1 and profile 2 has polyline holes
-Case #6: - PASS (will only detect profile 1)
+Case #7: - PASS (will only detect profile 1)
     * two profiles touching
     * profile 1 is made of polylines and profile 2 is not made of polylines
     * profile 1 and profile 2 has polyline holes
