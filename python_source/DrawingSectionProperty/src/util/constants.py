@@ -20,3 +20,5 @@ class Constants:
     DXF_FILE_EXT = '.dxf'
     BAK_FILE_EXT = '.bak'
     TXT_FILE_EXT = '.txt'
+
+    ROUND_PRECISION = 5
