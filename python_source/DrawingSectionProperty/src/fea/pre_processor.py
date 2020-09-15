@@ -5,9 +5,12 @@ from sectionproperties.analysis.cross_section import CrossSection
 from math import ceil
 from ezdxf import readfile
 from ezdxf import math
+from src.util.constants import Constants
 
 
 class PreProcessor:
+    def __init__(self):
+        self.geometry_list = []
 
     def __get_child_entities_within(self, parent_polyline, modelspace):
         ent_child_list = []
@@ -75,8 +78,10 @@ class PreProcessor:
             start_point = list(ent.dxf.start[:-1])
             end_point = list(ent.dxf.end[:-1])
 
-            s_point = [start_point[0], start_point[1]]
-            e_point = [end_point[0], end_point[1]]
+            s_point = [round(start_point[0], Constants.ROUND_PRECISION),
+                       round(start_point[1], Constants.ROUND_PRECISION)]
+            e_point = [round(end_point[0], Constants.ROUND_PRECISION),
+                       round(end_point[1], Constants.ROUND_PRECISION)]
 
             if s_point in profile_points and e_point not in profile_points:
                 profile_points.append(e_point)
@@ -97,8 +102,10 @@ class PreProcessor:
                     start_point = seg_arc_points[ind]
                     end_point = seg_arc_points[ind + 1]
 
-                    s_point = [start_point[0], start_point[1]]
-                    e_point = [end_point[0], end_point[1]]
+                    s_point = [round(start_point[0], Constants.ROUND_PRECISION),
+                               round(start_point[1], Constants.ROUND_PRECISION)]
+                    e_point = [round(end_point[0], Constants.ROUND_PRECISION),
+                               round(end_point[1], Constants.ROUND_PRECISION)]
 
                     if s_point in profile_points and e_point not in profile_points:
                         profile_points.append(e_point)
@@ -156,10 +163,12 @@ class PreProcessor:
                 points = child_ent.get_points()
                 bbox = math.BoundingBox2d(points)
                 bbox_center_x, bbox_center_y = bbox.center
-                hole_points.append([bbox_center_x, bbox_center_y])
+                hole_points.append([round(bbox_center_x, Constants.ROUND_PRECISION),
+                                    round(bbox_center_y, Constants.ROUND_PRECISION)])
             else:  # CIRCLE
                 center_x, center_y = child_ent.dxf.center[:-1]
-                hole_points.append([center_x, center_y])
+                hole_points.append([round(center_x, Constants.ROUND_PRECISION),
+                                    round(center_y, Constants.ROUND_PRECISION)])
         return hole_points
 
     def __get_control_points(self, parent_pl, child_ent_list):
@@ -179,7 +188,7 @@ class PreProcessor:
         # get the candidate X,Y
         for y in np.arange(y_min, y_max, 0.05):
             for x in np.arange(x_min, x_max, 0.05):
-                pt_list = [x, y]
+                pt_list = [round(x, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)]
                 possible_c_point = math.Vec2(pt_list)
                 if child_ent_list:  # if there are holes
                     for child_ent in child_ent_list:
@@ -221,14 +230,13 @@ class PreProcessor:
         """
             creates the geometry of each profile inside the drawing file
         """
-        # list of geometry objects
-        geometry_list = []
+        print("Creating geometry...")
+        geometry = None
         drawing_file = readfile(file_fp)
         mod_space = drawing_file.modelspace()
         polylines = self.__get_polylines(mod_space)
 
         for polyline in polylines:
-            print(f"POLYLINE found: {polyline.dxf.handle}")
             parent_pl = polyline
             child_ent_list = []
             hole_points = []
@@ -247,10 +255,33 @@ class PreProcessor:
                     hole_points,
                     control_points
                 )
-                geometry_list.append(geometry)
-        return geometry_list
+                self.geometry_list.append(geometry)
 
-    def create_section(self, geometry_list, mesh_size, material_list=None):
+        if len(self.geometry_list) > 1:
+            geometry = sections.MergedSection(self.geometry_list)
+        elif self.geometry_list:
+            geometry = self.geometry_list[0]
+        
+        if geometry:
+            print("Cleaning geometry...")
+            geometry.clean_geometry(verbose=True)
+        return geometry
+
+    def create_mesh(self, geometry, mesh_size):
+        print("Creating mesh...")
+        mesh_sizes = []
+        mesh_size_mult = mesh_size / 100
+
+        # get the mesh size for each geometry
+        for geom in self.geometry_list:
+            x_min, x_max, y_min, y_max = geom.calculate_extents()
+            min_size = min(abs(x_max - x_min), abs(y_max - y_min))
+            mesh_sizes.append(min_size * mesh_size_mult)
+
+        mesh = geometry.create_mesh(mesh_sizes)
+        return mesh
+
+    def create_section(self, geometry, mesh, material_list=None):
         """
             creates the cross section of given geometry and mesh
             :param
@@ -259,24 +290,6 @@ class PreProcessor:
             :return
             cross_section object
         """
-        mesh_sizes = []
-        mesh_size_mult = mesh_size / 100
-
-        # get the mesh size for each geometry
-        for geom in geometry_list:
-            x_min, x_max, y_min, y_max = geom.calculate_extents()
-            min_size = min(abs(x_max - x_min), abs(y_max - y_min))
-            mesh_sizes.append(min_size * mesh_size_mult)
-
-        if len(geometry_list) > 1:
-            geometry = sections.MergedSection(geometry_list)
-        else:
-            geometry = geometry_list[0]
-
-        print("Cleaning geometry...")
-        geometry.clean_geometry(verbose=True)
-        print("Creating mesh...")
-        mesh = geometry.create_mesh(mesh_sizes)
         print("Creating CrossSection...")
         cross_section = CrossSection(geometry, mesh, material_list)
         return cross_section

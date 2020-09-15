@@ -2,6 +2,8 @@ import os
 from reportlab.lib.units import inch
 from src.util.constants import Constants
 from src.fea.pre_processor import PreProcessor
+from src.fea.analysis_calculator import AnalysisCalculator
+from src.fea.post_processor import PostProcessor
 
 
 class SectionPropertyReporter:
@@ -23,11 +25,32 @@ class SectionPropertyReporter:
 
     def iter_input(self):
         input_dir = Constants.INPUT_DIR
+        mat_list = []
         for dir_path, dir_names, file_names in os.walk(input_dir):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(Constants.DXF_FILE_EXT):
                     # Pre-Processor
+                    pre_proc = PreProcessor()
+                    geometry = pre_proc.create_geometry(file_full_path, self.hole, self.seg_size)
+                    mesh = pre_proc.create_mesh(geometry, self.mesh_size)
+
+                    if self.materials:
+                        mat_list = pre_proc.create_materials(self.materials)
+
+                    cross_section = pre_proc.create_section(geometry, mesh, mat_list)
                     # Solver
+                    cross_section = AnalysisCalculator.calculate_section_properties(cross_section)
                     # Post-Processor
-                    pass
+                    post_proc = PostProcessor(cross_section)
+
+                    post_proc.create_pdf(file_name,
+                                         self.title,
+                                         self.title_font_size,
+                                         self.num_format,
+                                         self.num_decimal,
+                                         self.paper_size,
+                                         self.report_font_size,
+                                         self.landscape,
+                                         self.weighted,
+                                         self.long)
