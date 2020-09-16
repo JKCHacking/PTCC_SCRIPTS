@@ -1,6 +1,6 @@
 import os
 import unittest
-import sectionproperties.pre.sections as sections
+import src.sectionproperties.pre.sections as sections
 from src.fea.pre_processor import PreProcessor
 from src.util.constants import Constants
 
