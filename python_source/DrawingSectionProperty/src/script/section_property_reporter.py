@@ -42,15 +42,15 @@ class SectionPropertyReporter:
                     # Solver
                     cross_section = AnalysisCalculator.calculate_section_properties(cross_section)
                     # Post-Processor
-                    post_proc = PostProcessor(cross_section)
+                    post_proc = PostProcessor(geometry, cross_section)
 
-                    post_proc.create_pdf(file_name,
-                                         self.title,
-                                         self.title_font_size,
-                                         self.num_format,
-                                         self.num_decimal,
-                                         self.paper_size,
-                                         self.report_font_size,
-                                         self.landscape,
-                                         self.weighted,
-                                         self.long)
+                    post_proc.generate_pdf_report(file_name,
+                                                  self.title,
+                                                  self.title_font_size,
+                                                  self.num_format,
+                                                  self.num_decimal,
+                                                  self.paper_size,
+                                                  self.report_font_size,
+                                                  self.landscape,
+                                                  self.weighted,
+                                                  self.long)

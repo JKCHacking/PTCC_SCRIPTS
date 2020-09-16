@@ -11,6 +11,7 @@ class Constants:
     TEST_DIR = os.path.join(ROOT_DIR, "test")
     INPUT_DIR = os.path.join(ROOT_DIR, 'input')
     OUTPUT_DIR = os.path.join(ROOT_DIR, 'output')
+    IMAGES_DIR = os.path.join(ROOT_DIR, 'images')
 
     JPG_FILE_EXT = '.jpg'
     BMP_FILE_EXT = '.bmp'
@@ -22,3 +23,9 @@ class Constants:
     TXT_FILE_EXT = '.txt'
 
     ROUND_PRECISION = 5
+
+    IMAGE_WIDTH = 200
+    IMAGE_HEIGHT = 50
+
+    FIGURE_WIDTH = 12
+    FIGURE_HEIGHT = 15
