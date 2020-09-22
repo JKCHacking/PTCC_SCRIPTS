@@ -247,7 +247,7 @@ class PostProcessor:
                     if i == 0:  # reuse the previously created page
                         partitioned_content = "\n".join(content_lines[start:end])
                         rc = page.insertTextbox(body_rect, partitioned_content, fontsize=self.report_fontsize,
-                                                align=fitz.TEXT_ALIGN_JUSTIFY, expandtabs=4)
+                                                align=fitz.TEXT_ALIGN_JUSTIFY, expandtabs=8)
                         print(rc)
                     else:
                         # create a new page
@@ -259,7 +259,7 @@ class PostProcessor:
                         # add the body parts
                         partitioned_content = "\n".join(content_lines[start:end])
                         rc = page.insertTextbox(body_rect, "\n" + partitioned_content, fontsize=self.report_fontsize,
-                                                align=fitz.TEXT_ALIGN_JUSTIFY, expandtabs=4)
+                                                align=fitz.TEXT_ALIGN_JUSTIFY, expandtabs=8)
                         print(rc)
                 except IndexError as ie:
                     print(str(ie))
