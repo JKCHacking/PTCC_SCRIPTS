@@ -1,0 +1,34 @@
+Cross-sectional area			A	=	{a}
+Moment of inertia about geometric axes thru centroid
+    About x axis				Ixx_c	=	{ixx_c}
+    About y axis				Iyy_c	=	{iyy_c}
+    Product of inertia			Ixy_c	=	{ixy_c}
+Extreme fiber centroidal distances for bending about geometric axes
+    Distance to topmost fiber                       cy+  =  {cy_plus}
+    Distance to bottommost fiber                    cy-  =  {cy_minus}
+    Distance to rightmost fiber                     cx+  =  {cx_plus}
+    Distance to leftmost fiber                      cx-  =  {cx_minus}
+Elastic section modulus about geometric axes
+    About x axis, topmost fiber                    Sxx+  =  {sxx_plus}
+    About x axis, bottommost fiber                 Sxx-  =  {sxx_minus}
+    About y axis, rightmost fiber                  Syy+  =  {syy_plus}
+    About y axis, leftmost fiber                   Syy-  =  {syy_minus}
+Radius of gyration about x axis                      rx  =  {rx}
+Radius of gyration about y axis                      ry  =  {ry}
+Principal axis angle from geometric axis            phi  =  {phi}
+St. Venant torsion constant                           J  =  {j}
+Warping constant                                     Cw  =  {cw}
+Shear center coordinates wrt origin
+    x axis coor. (elasticity method)               x_se  =  {x_se}
+    y axis coor. (elasticity method)               y_se  =  {y_se}
+Monosymmetry coefficient for geometric axes bending
+    About x axis, topmost fiber                 beta_x+  =  {beta_x_plus}
+    About x axis, bottommost fiber              beta_x-  =  {beta_x_minus}
+    About y axis, rightmost fiber               beta_y+  =  {beta_y_plus}
+    About y axis, leftmost fiber                beta_y-  =  {beta_y_minus}
+Plastic centroid coor. wrt origin for bending about geometric axes
+    x axis coor.                                   x_pc  =  {x_pc}
+    y axis coor.                                   y_pc  =  {y_pc}
+Plastic section modulus about geometric axes
+    About x axis                                    Zxx  =  {zxx}
+    About y axis                                    Zyy  =  {zyy}

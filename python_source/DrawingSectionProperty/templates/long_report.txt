@@ -1,0 +1,92 @@
+Cross-sectional area                                   A  =  {a}
+First moment of area about global x axis              Qx  =  {qx}
+First moment of area about global y axis              Qy  =  {qy}
+Elastic centroid x axis coor. wrt origin              cx  =  {cx}
+Elastic centroid y axis coor. wrt origin              cy  =  {cy}
+Moment of inertia about geometric axes thru origin
+     About x axis                                  Ixx_g  =  {ixx_g}
+     About y axis                                  Iyy_g  =  {iyy_g}
+     Product of inertia thru origin                Ixy_g  =  {ixy_g}
+Moment of inertia about geometric axes thru centroid
+     About x axis                                  Ixx_c  =  {ixx_c}
+     About y axis                                  Iyy_c  =  {iyy_c}
+     Product of inertia                            Ixy_c  =  {ixy_c}
+Extreme fiber centroidal distances for bending about geometric axes
+     Distance to topmost fiber                       cy+  =  {cy_plus}
+     Distance to bottommost fiber                    cy-  =  {cy_minus}
+     Distance to rightmost fiber                     cx+  =  {cx_plus}
+     Distance to leftmost fiber                      cx-  =  {cx_minus}
+Elastic section modulus about geometric axes
+     About x axis, topmost fiber                    Sxx+  =  {sxx_plus}
+     About x axis, bottommost fiber                 Sxx-  =  {sxx_minus}
+     About y axis, rightmost fiber                  Syy+  =  {syy_plus}
+     About y axis, leftmost fiber                   Syy-  =  {syy_minus}
+Radius of gyration about x axis                       rx  =  {rx}
+Radius of gyration about y axis                       ry  =  {ry}
+Principal axis angle from geometric axis             phi  =  {phi}
+Moment of inertia about principal axes thru centroid
+     About x axis                                  I11_c  =  {i11_c}
+     About y axis                                  I22_c  =  {i22_c}
+Extreme fiber centroidal distances for bending about principal axes
+     Distance to "topmost" fiber                     c2+  =  {c2_plus}
+     Distance to "bottommost" fiber                  c2-  =  {c2_minus}
+     Distance to "rightmost" fiber                   c1+  =  {c1_plus}
+     Distance to "leftmost" fiber                    c1-  =  {c1_minus}
+Elastic section modulus about principal axes
+     About x axis, "topmost" fiber                  S11+  =  {s11_plus}
+     About x axis, "bottommost" fiber               S11-  =  {s11_minus}
+     About y axis, "rightmost" fiber                S22+  =  {s22_plus}
+     About y axis, "leftmost" fiber                 S22-  =  {s22_minus}
+Radius of gyration about principal x axis            r11  =  {r11}
+Radius of gyration about principal y axis            r22  =  {r22}
+St. Venant torsion constant                            J  =  {j}
+Warping constant                                      Cw  =  {cw}
+Shear center coordinates wrt origin
+     x axis coor. (elasticity method)               x_se  =  {x_se}
+     y axis coor. (elasticity method)               y_se  =  {y_se}
+     x axis coor. (Treftz's method)                 x_st  =  {x_st}
+     y axis coor. (Treftz's method)                 y_st  =  {y_st}
+Shear center coordinates wrt centroid
+     x axis coor. (elasticity method)             x_se_o  =  {x_se_o}
+     y axis coor. (elasticity method)             y_se_o  =  {y_se_o}
+     x axis coor. (Treftz's method)               x_st_o  =  {x_st_o}
+     y axis coor. (Treftz's method)               y_st_o  =  {y_st_o}
+Principal axis shear center coor. wrt origin
+     x axis coor. (elasticity method)              x1_se  =  {x1_se}
+     y axis coor. (elasticity method)              y2_se  =  {y2_se}
+Principal axis shear center coor. wrt centroid
+     x axis coor. (elasticity method)            x1_se_o  =  {x1_se_o}
+     y axis coor. (elasticity method)            y2_se_o  =  {y2_se_o}
+Shear area for loading along geometric axes
+     For loading along x axis                       A_sx  =  {a_sx}
+     For loading along y axis                       A_sy  =  {a_sy}
+Shear area for loading along principal axes
+     For loading along x axis                      A_s11  =  {a_s11}
+     For loading along y axis                      A_s22  =  {a_s22}
+Monosymmetry coefficient for geometric axes bending
+     About x axis, topmost fiber                 beta_x+  =  {beta_x_plus}
+     About x axis, bottommost fiber              beta_x-  =  {beta_x_minus}
+     About y axis, rightmost fiber               beta_y+  =  {beta_y_plus}
+     About y axis, leftmost fiber                beta_y-  =  {beta_y_minus}
+Monosymmetry coefficient for principal axes bending
+     About x axis, "topmost" fiber              beta_11+  =  {beta_11_plus}
+     About x axis, "bottommost" fiber           beta_11-  =  {beta_11_minus}
+     About y axis, "rightmost" fiber            beta_22+  =  {beta_22_plus}
+     About y axis, "leftmost" fiber             beta_22-  =  {beta_22_minus}
+Plastic centroid coor. wrt origin for bending about geometric axes
+     x axis coor.                                   x_pc  =  {x_pc}
+     y axis coor.                                   y_pc  =  {y_pc}
+Plastic section modulus about geometric axes
+     About x axis                                    Zxx  =  {zxx}
+     About y axis                                    Zyy  =  {zyy}
+Plastic centroid coor. wrt origin for bending about principal axes
+     x axis coor.                                 x11_pc  =  {x11_pc}
+     y axis coor.                                 y22_pc  =  {y22_pc}
+Plastic section modulus about principal axes
+     About x axis                                    Z11  =  {z11}
+     About y axis                                    Z22  =  {z22}
+Centroidal shape factor about principal axes
+    wrt x axis, "topmost" fiber                    SF_11+ = {sf_11_plus}
+    wrt x axis, "bottommost" fiber                 SF_11- = {sf_11_minus}
+    wrt y axis, "rightmost" fiber                  SF_22+ = {sf_22_plus}
+    wrt y axis, "leftmost" fiber                   SF_22- = {sf_22_minus}

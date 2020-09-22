@@ -60,3 +60,34 @@ Assumptions:
 1. This assumes that the profiles are made of
 polylines. else it wont be detected.
 2. supported entities as holes : polylines and circle
+
+forms of the Report:
+1. long version
+2. short version
+3. long version + material details
+4. long version + material details + weighted
+5. short version + material details
+6. short version + material details + weighted
+
+Post-Processor Testcase:
+1. Long, No Material
+2. Short, No Material
+3. Long, 1 Material
+4. Short, 1 Material
+5. Long, 2 Material
+6. Short, 2 Material
+7. Long, 2 Material, Weighted
+8. Short, 2 Material, Weighted
+
+Note: 1 DXF File = 1 PDF File
+
+Problem to resolve:
+1. does not detect hole between two touching Profiles
+2. Inconsistent number of material to the number of profile inside the dxf file.
+    2.1 material = 0, profile = 2 -> no materials will be implemented on the profiles
+    2.2 material = 1, profile = 2 -> material will be used on the both profiles
+    2.3 material = 2, profile = 2 -> material 1 to profile 1, material 2 to profile 2
+    2.4 material = 2, profile = 3 -> material 1 to profile 1, material 2 to profile 2,
+                                     material 2 to profile 3.
+3. resolve all "None" in report.
+4. inconsistent spacing in report
