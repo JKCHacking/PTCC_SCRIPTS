@@ -1,8 +1,8 @@
-Cross-sectional area			A	=	{a}
+Cross-sectional area                                  A  =  {a}
 Moment of inertia about geometric axes thru centroid
-    About x axis				Ixx_c	=	{ixx_c}
-    About y axis				Iyy_c	=	{iyy_c}
-    Product of inertia			Ixy_c	=	{ixy_c}
+    About x axis                                  Ixx_c  =  {ixx_c}
+    About y axis                                  Iyy_c  =  {iyy_c}
+    Product of inertia                            Ixy_c  =  {ixy_c}
 Extreme fiber centroidal distances for bending about geometric axes
     Distance to topmost fiber                       cy+  =  {cy_plus}
     Distance to bottommost fiber                    cy-  =  {cy_minus}

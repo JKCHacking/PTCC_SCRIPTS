@@ -65,7 +65,7 @@ class PostProcessor:
 
     def __add_mesh_page(self, pdf_doc, paper_size_rect):
         temp_mesh_fp = os.path.join(Constants.OUTPUT_DIR, "mesh.jpg")
-        fig, ax = self.cross_sec.plot_mesh(pause=False)
+        fig, ax = self.cross_sec.plot_mesh(pause=False, materials=True)
         return self.__put_figure_in_page(fig, ax, pdf_doc, paper_size_rect, temp_mesh_fp)
 
     def __add_geom_page(self, pdf_doc, paper_size_rect):
@@ -222,7 +222,11 @@ class PostProcessor:
                               page.rect.width - self.paper_margin,
                               page.rect.height - self.paper_margin - Constants.IMAGE_HEIGHT)
 
-        rc = page.insertTextbox(body_rect, report_content, fontsize=self.report_fontsize, expandtabs=8)
+        rc = page.insertTextbox(body_rect,
+                                report_content,
+                                fontsize=self.report_fontsize,
+                                expandtabs=8,
+                                align=fitz.TEXT_ALIGN_LEFT)
         print(rc)
         if rc < 0:  # this is the case when the contents does not fit inside the body space of the page.
             # we have to split the whole content into multiple pages
@@ -246,8 +250,11 @@ class PostProcessor:
                 try:
                     if i == 0:  # reuse the previously created page
                         partitioned_content = "\n".join(content_lines[start:end])
-                        rc = page.insertTextbox(body_rect, partitioned_content, fontsize=self.report_fontsize,
-                                                align=fitz.TEXT_ALIGN_JUSTIFY, expandtabs=8)
+                        rc = page.insertTextbox(body_rect,
+                                                partitioned_content,
+                                                fontsize=self.report_fontsize,
+                                                align=fitz.TEXT_ALIGN_JUSTIFY,
+                                                expandtabs=8)
                         print(rc)
                     else:
                         # create a new page
@@ -258,8 +265,11 @@ class PostProcessor:
                         self.__add_footer(page)
                         # add the body parts
                         partitioned_content = "\n".join(content_lines[start:end])
-                        rc = page.insertTextbox(body_rect, "\n" + partitioned_content, fontsize=self.report_fontsize,
-                                                align=fitz.TEXT_ALIGN_JUSTIFY, expandtabs=8)
+                        rc = page.insertTextbox(body_rect,
+                                                "\n" + partitioned_content,
+                                                fontsize=self.report_fontsize,
+                                                align=fitz.TEXT_ALIGN_JUSTIFY,
+                                                expandtabs=8)
                         print(rc)
                 except IndexError as ie:
                     print(str(ie))
