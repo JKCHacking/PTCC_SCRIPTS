@@ -1,5 +1,7 @@
+import itertools
 import numpy as np
 import src.sectionproperties.pre.sections as sections
+from src.util.line import get_points_bet_points
 from src.sectionproperties.pre.pre import Material
 from src.sectionproperties.analysis.cross_section import CrossSection
 from math import ceil
@@ -235,6 +237,8 @@ class PreProcessor:
         drawing_file = readfile(file_fp)
         mod_space = drawing_file.modelspace()
         polylines = self.__get_polylines(mod_space)
+        contact_points = []
+        additional_holes = []
 
         for polyline in polylines:
             parent_pl = polyline
@@ -259,9 +263,30 @@ class PreProcessor:
 
         if len(self.geometry_list) > 1:
             geometry = sections.MergedSection(self.geometry_list)
+            geometry_points = self.__convert_to_vec2s(geometry.points)
+
+            # there will be possible holes formed by two or more profiles in contact
+            # check if there are contacts made by two or more profiles
+            for base_geometry in self.geometry_list:
+                base_points = base_geometry.points
+                for comp_geometry in self.geometry_list:
+                    if base_geometry is not comp_geometry:
+                        comp_points = comp_geometry.points
+                        for point in base_points:
+                            if point in comp_points and point not in contact_points:
+                                contact_points.append(point)
+            if contact_points:  # there's a contact between geometries
+                sorted_points = sorted(contact_points, key=lambda k: [k[0], k[1]])
+                for i, point in enumerate(sorted_points):
+                    try:
+                        start = point
+                        end = sorted_points[i + 1]
+                        possible_hole_points = get_points_bet_points(start, end)
+                    except IndexError:
+                        pass
         elif self.geometry_list:
             geometry = self.geometry_list[0]
-        
+
         if geometry:
             print("Cleaning geometry...")
             geometry.clean_geometry(verbose=True)

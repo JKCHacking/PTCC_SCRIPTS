@@ -82,7 +82,8 @@ Post-Processor Testcase:
 Note: 1 DXF File = 1 PDF File
 
 Problem to resolve:
-1. does not detect hole between two touching Profiles
+1. does not detect hole between two touching Profiles -> Drop this feature.
+(just dont let the profiles touch each other)
 2. Inconsistent number of material to the number of profile inside the dxf file.
     2.1 material = 0, profile = 2 -> no materials will be implemented on the profiles
     2.2 material = 1, profile = 2 -> material will be used on the both profiles
@@ -91,3 +92,15 @@ Problem to resolve:
                                      material 2 to profile 3.
 3. resolve all "None" in report.
 4. inconsistent spacing in report
+
+
+How to get the holes if there are contacts between two profile?
+1. Get all the contact points
+2. sort all the contact points (^ x and ^ y)
+3.
+
+* We cannot use bounding boxes because there are instance where bounding box overlap.
+*
+Solution 1:
+1. Get all the contact points then scan all the points in line with the contacts points.
+check each points if they are outside
