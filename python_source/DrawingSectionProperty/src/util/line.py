@@ -44,12 +44,12 @@ def get_points_bet_points(origin, target):
     # Step along x-axis
     for i in np.arange(origin[0], target[0] + step, step):
         y = get_y(i, m, c)
-        coord_list.append([i, round(y, Constants.ROUND_PRECISION)])
+        coord_list.append([round(i, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
 
     # Step along y-axis
     for i in np.arange(origin[1], target[1] + step, step):
         x = get_x(i, m, c)
-        coord_list.append([round(x, Constants.ROUND_PRECISION), i])
+        coord_list.append([round(x, Constants.ROUND_PRECISION), round(i, Constants.ROUND_PRECISION)])
 
     # return unique list
     return list(k for k, _ in itertools.groupby(sorted(coord_list)))
