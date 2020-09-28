@@ -237,7 +237,6 @@ class PreProcessor:
         mod_space = drawing_file.modelspace()
         polylines = self.__get_polylines(mod_space)
         contact_points = []
-        additional_holes = []
 
         for polyline in polylines:
             parent_pl = polyline
@@ -287,7 +286,7 @@ class PreProcessor:
                                         geometry.add_hole(h_point)
                                         break
                             except IndexError:
-                                pass
+                                break
         elif self.geometry_list:
             geometry = self.geometry_list[0]
 

@@ -8,7 +8,7 @@ from src.util.constants import Constants
 class PreProcessorTest(unittest.TestCase):
 
     # =============================CREATE_GEOMETRY_TEST==============================================
-    def test_create_geometry_case_1_simple(self):
+    def test_create_geometry_01(self):
         """
         Case #1:
         * Complexity: Simple
@@ -16,7 +16,7 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return: will detect the profile and the hole
+        Expected: Will detect the 1 profile and the 1 hole
         """
         segment_size = 0.25
         has_holes = True
@@ -29,7 +29,7 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(1, len(geometry.holes))
         geometry.plot_geometry()
 
-    def test_create_geometry_case_1_complex(self):
+    def test_create_geometry_02(self):
         """
         Case #1:
         * Complexity: Complex
@@ -37,7 +37,7 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return: will detect the profile and the hole
+        Expected: will detect the 1 profile and 2 holes
         """
         segment_size = 0.25
         has_holes = True
@@ -50,7 +50,7 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(2, len(geometry.holes))
         geometry.plot_geometry()
 
-    def test_create_geometry_case_1_complex_2(self):
+    def test_create_geometry_03(self):
         """
         Case #1:
         * Complexity: Complex
@@ -58,7 +58,7 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return: will detect the profile and the hole
+        Expected: will detect the 1 profile and the 1 hole
         """
         segment_size = 0.25
         has_holes = True
@@ -71,7 +71,7 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(1, len(geometry.holes))
         geometry.plot_geometry()
 
-    def test_create_geometry_case_1_complex_3(self):
+    def test_create_geometry_04(self):
         """
         Case #1:
         * Complexity: Complex
@@ -79,7 +79,7 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return: will detect the profile and the hole
+        Expected: will detect the 1 profile and the 5 hole
         """
         segment_size = 0.25
         has_holes = True
@@ -92,7 +92,7 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(5, len(geometry.holes))
         geometry.plot_geometry()
 
-    def test_create_geometry_case_2(self):
+    def test_create_geometry_05(self):
         """
         Case #2:
         * Complexity: Simple
@@ -100,7 +100,7 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Polyline
         * Profile1 Hole: Circle
         * Has hole: Yes
-        :return: PASS (will detect the profile and the hole)
+        Expected: PASS (will detect the 1 profile and the 2 hole)
         """
         segment_size = 0.25
         has_holes = True
@@ -113,14 +113,14 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(2, len(geometry.holes))
         geometry.plot_geometry()
 
-    def test_create_geometry_case_3(self):
+    def test_create_geometry_06(self):
         """Case #3:
         * Complexity: Simple
         * Profile No: 1
         * Profile1 Type: Polyline
         * Profile1 Hole: None
         * Has hole: No
-        :return: PASS (it will detect the profile and should have no holes)
+        Expected: PASS (it will detect the 1 profile and should have no holes)
         """
         segment_size = 0.25
         has_holes = False
@@ -133,7 +133,7 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(0, len(geometry.holes))
         geometry.plot_geometry()
 
-    def test_create_geometry_case_3_complex(self):
+    def test_create_geometry_07(self):
         """
         Case #3:
         * Complexity: Complex
@@ -141,7 +141,7 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Polyline
         * Profile1 Hole: None
         * Has hole: No
-        :return: PASS (it will detect the profile and should have no holes)
+        Expected: PASS (it will detect the 1 profile and should have no holes)
         """
         segment_size = 0.25
         has_holes = False
@@ -154,7 +154,7 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(0, len(geometry.holes))
         geometry.plot_geometry()
 
-    def test_create_geometry_case_4_complex(self):  # LIMITATION
+    def test_create_geometry_08(self):  # LIMITATION
         """
         Case #4: - LIMITATION (it will not detect the profile and will Detect the holes as profiles)
         * Complexity: Complex
@@ -162,7 +162,6 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Non-Polyline (Lines and Arcs)
         * Profile1 Hole: None
         * Has hole: No
-        :return:
         """
         segment_size = 0.25
         has_holes = False
@@ -181,7 +180,7 @@ class PreProcessorTest(unittest.TestCase):
         geometry2.plot_geometry()
         geometry.plot_geometry()
 
-    def test_create_geometry_case_5_complex(self):
+    def test_create_geometry_09(self):
         """
         Case #5: - will not detect the profile and will not detect the holes as profiles
         * Complexity: Complex
@@ -189,7 +188,6 @@ class PreProcessorTest(unittest.TestCase):
         * Profile1 Type: Non-Polyline (Lines and Arcs)
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return
         """
         segment_size = 0.25
         has_holes = True
@@ -199,7 +197,7 @@ class PreProcessorTest(unittest.TestCase):
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         self.assertEqual(None, geometry)
 
-    def test_create_geometry_2_simp_prof(self):
+    def test_create_geometry_10(self):
         """
         * Complexity: Simple
         * Profile No: 2
@@ -226,17 +224,17 @@ class PreProcessorTest(unittest.TestCase):
         geometry2.plot_geometry()
         geometry.plot_geometry()
 
-    def test_create_geometry_case_6(self):
+    def test_create_geometry_11(self):
         """
-        Case #6: - PASS (will detect 2 profiles with holes)
+        Desc: This should test in determining a hole when two profiles are in contact.
         * Complexity: Complex
         * Profile No: 2
-        * Profile1 Type: Polyline
-        * Profile1 Hole: Polyline
-        * Profile2 Type: Polyline
-        * Profile2 Hole: Polyline
+        * Profile1: Polyline, 2 Polyline Hole
+        * Profile2: Polyline, 1 Polyline Hole
         * Has hole: Yes
-        :return:
+
+        The contact creates another hole between profiles. therefore there should be additional holes
+        2(Profile 1) + 1 (Profile 2) + 1 (contact) = 4 holes
         """
         segment_size = 0.25
         has_holes = True
@@ -247,15 +245,15 @@ class PreProcessorTest(unittest.TestCase):
         geometry_list = pre_processor.geometry_list
         geometry1 = geometry_list[0]
         geometry2 = geometry_list[1]
-        # self.assertEqual(2, len(geometry_list))
-        # self.assertEqual(2, len(geometry1.holes))
-        # self.assertEqual(1, len(geometry2.holes))
-        # self.assertEqual(3, len(geometry.holes))
+        self.assertEqual(2, len(geometry_list))
+        self.assertEqual(2, len(geometry1.holes))
+        self.assertEqual(1, len(geometry2.holes))
+        self.assertEqual(4, len(geometry.holes))
         geometry1.plot_geometry()
         geometry2.plot_geometry()
         geometry.plot_geometry()
 
-    def test_create_geometry_case_7(self):
+    def test_create_geometry_12(self):
         """
         Case #7: - PASS (will only detect profile 1)
         * Complexity: Complex
@@ -265,7 +263,6 @@ class PreProcessorTest(unittest.TestCase):
         * Profile2 Type: Non-Polyline
         * Profile2 Hole: Polyline
         * Has hole: Yes
-        :return
         """
         segment_size = 0.25
         has_holes = True
@@ -278,15 +275,44 @@ class PreProcessorTest(unittest.TestCase):
         self.assertEqual(2, len(geometry.holes))
         geometry.plot_geometry()
 
+    def test_create_geometry_13(self):
+        """
+        * Complexity: Simple
+        * Profile No: 3
+        * Profile1: Polyline, No Hole
+        * Profile2: Polyline, No Hole
+        * Profile3: Polyline, No Hole
+        * Has hole: No
+
+        Warning: This test does not pass
+        """
+        segment_size = 0.25
+        has_holes = False
+        pre_processor = PreProcessor()
+
+        testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata014.dxf")
+        geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
+        geometry_list = pre_processor.geometry_list
+        geometry1 = geometry_list[0]
+        geometry2 = geometry_list[1]
+        geometry3 = geometry_list[2]
+        self.assertEqual(2, len(geometry_list))
+        self.assertEqual(2, len(geometry1.holes))
+        self.assertEqual(1, len(geometry2.holes))
+        self.assertEqual(2, len(geometry.holes))
+        geometry1.plot_geometry()
+        geometry2.plot_geometry()
+        geometry3.plot_geometry()
+        geometry.plot_geometry()
+
     # =============================CREATE_SECTION_TEST==============================================
-    def test_create_section_single_simple_profile(self):
+    def test_create_section_01(self):
         '''
         * Complexity: Simple
         * Profile No: 1
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return:
         '''
         segment_size = 0.25
         mesh_size = 5.0
@@ -299,14 +325,13 @@ class PreProcessorTest(unittest.TestCase):
         cross_section = pre_processor.create_section(geometry, mesh)
         cross_section.plot_mesh()
 
-    def test_create_section_single_complex_profile(self):
+    def test_create_section_02(self):
         '''
         * Complexity: Complex
         * Profile No: 1
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return:
         '''
         segment_size = 0.25
         mesh_size = 5.0
@@ -319,14 +344,13 @@ class PreProcessorTest(unittest.TestCase):
         cross_section = pre_processor.create_section(geometry, mesh)
         cross_section.plot_mesh()
 
-    def test_create_section_single_complex_profile_2(self):
+    def test_create_section_03(self):
         '''
         * Complexity: Simple
         * Profile No: 1
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return:
         '''
         segment_size = 0.25
         mesh_size = 5.0
@@ -339,14 +363,13 @@ class PreProcessorTest(unittest.TestCase):
         cross_section = pre_processor.create_section(geometry, mesh)
         cross_section.plot_mesh()
 
-    def test_create_section_2_simple_profile(self):
+    def test_create_section_04(self):
         '''
         * Complexity: Simple
         * Profile No: 2
         * Profile1 Type: Polyline
         * Profile1 Hole: Polyline
         * Has hole: Yes
-        :return:
         '''
         segment_size = 0.25
         mesh_size = 5.0
@@ -359,7 +382,7 @@ class PreProcessorTest(unittest.TestCase):
         cross_section = pre_processor.create_section(geometry, mesh)
         cross_section.plot_mesh()
 
-    def test_create_section_2_complex_profile(self):
+    def test_create_section_05(self):
         '''
         * Complexity: Complex
         * Profile No: 2
@@ -368,7 +391,6 @@ class PreProcessorTest(unittest.TestCase):
         * Profile2 Type: Polyline
         * Profile2 Hole: Polyline
         * Has hole: Yes
-        :return:
         '''
         segment_size = 0.25
         mesh_size = 5.0
@@ -381,7 +403,7 @@ class PreProcessorTest(unittest.TestCase):
         cross_section = pre_processor.create_section(geometry, mesh)
         cross_section.plot_mesh()
 
-    def test_create_section_2_simple_profile_2(self):
+    def test_create_section_06(self):
         """
         * Complexity: Simple
         * Profile No: 2
@@ -390,7 +412,6 @@ class PreProcessorTest(unittest.TestCase):
         * Profile2 Type: Polyline
         * Profile2 Hole: None
         * Has hole: False
-        :return:
         """
         pre_processor = PreProcessor()
 
@@ -402,7 +423,7 @@ class PreProcessorTest(unittest.TestCase):
         cross_section = pre_processor.create_section([isection, box], mesh)
         cross_section.plot_mesh()
 
-    def test_create_section_2_simple_profile_w_materials(self):
+    def test_create_section_07(self):
         """
             * Complexity: Simple
             * Profile No: 2
@@ -425,6 +446,27 @@ class PreProcessorTest(unittest.TestCase):
         material_list = pre_processor.create_materials(materials)
         cross_section = pre_processor.create_section(geometry, mesh, material_list)
         cross_section.plot_mesh(materials=True)
+
+    def test_create_section_08(self):
+        """
+            * Complexity: Simple
+            * Profile No: 3
+            * Profile1: Polyline, No hole
+            * Profile2: Polyline, No hole
+            * Profile3: Polyline, No hole
+            * Has hole: False
+            * Has Material: False
+        """
+        pre_processor = PreProcessor()
+        segment_size = 0.25
+        mesh_size = 5.0
+        has_holes = False
+
+        testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata014.dxf")
+        geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
+        mesh = pre_processor.create_mesh(geometry, mesh_size)
+        cross_section = pre_processor.create_section(geometry, mesh)
+        cross_section.plot_mesh()
 
 
 if __name__ == "__main__":

@@ -82,8 +82,7 @@ Post-Processor Testcase:
 Note: 1 DXF File = 1 PDF File
 
 Problem to resolve:
-1. does not detect hole between two touching Profiles -> Drop this feature.
-(just dont let the profiles touch each other)
+1. does not detect hole between two touching Profiles
 2. Inconsistent number of material to the number of profile inside the dxf file.
     2.1 material = 0, profile = 2 -> no materials will be implemented on the profiles
     2.2 material = 1, profile = 2 -> material will be used on the both profiles

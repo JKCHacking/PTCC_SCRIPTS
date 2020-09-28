@@ -41,13 +41,13 @@ def get_points_from_line(origin, target):
 
     if origin[0] == target[0]:  # vertical line
         x = origin[0]
-        for y in np.arange(origin[1], target[1] + step, step):
+        for y in np.arange(origin[1], target[1], step):
             coord_list.append([round(x, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
     elif origin[1] == target[1]:  # horizontal line
         y = origin[1]
-        for x in np.arange(origin[0], target[0] + step, step):
+        for x in np.arange(origin[0], target[0], step):
             coord_list.append([round(x, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
-    else:
+    else:  # diagonal line
         for x in np.arange(origin[0], target[0] + step, step):
             y = get_y(x, m, c)
             coord_list.append([round(x, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
