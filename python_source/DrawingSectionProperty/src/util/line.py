@@ -1,4 +1,3 @@
-import itertools
 import numpy as np
 from src.util.constants import Constants
 
@@ -14,9 +13,9 @@ def slope(origin, target):
 def line_eqn(origin, target):
     x = origin[0]
     y = origin[1]
-
-    c = y - (slope(origin, target) * x)
     m = slope(origin, target)
+    c = y - (m * x)
+
     return m, c
 
 
@@ -26,30 +25,32 @@ def get_y(x, slope, c):
     return y
 
 
-def get_x(y, slope, c):
-    # x = (y-c)/m
-    if slope == 0:
-        c = 0   # vertical lines never intersect with y-axis
-    if slope == 0:
-        slope = 1   # Do NOT divide by zero
-    x = (y - c) / slope
-    return x
+# def get_x(y, slope, c):
+#     # x = (y-c)/m
+#     if slope == 0:
+#         c = 0   # vertical lines never intersect with y-axis
+#         slope = 1   # Do NOT divide by zero
+#     x = (y - c) / slope
+#     return x
 
 
-def get_points_bet_points(origin, target):
-    step = 0.05
+def get_points_from_line(origin, target):
+    step = 0.005
     coord_list = []
     m, c = line_eqn(origin, target)
 
-    # Step along x-axis
-    for i in np.arange(origin[0], target[0] + step, step):
-        y = get_y(i, m, c)
-        coord_list.append([round(i, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
-
-    # Step along y-axis
-    for i in np.arange(origin[1], target[1] + step, step):
-        x = get_x(i, m, c)
-        coord_list.append([round(x, Constants.ROUND_PRECISION), round(i, Constants.ROUND_PRECISION)])
+    if origin[0] == target[0]:  # vertical line
+        x = origin[0]
+        for y in np.arange(origin[1], target[1] + step, step):
+            coord_list.append([round(x, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
+    elif origin[1] == target[1]:  # horizontal line
+        y = origin[1]
+        for x in np.arange(origin[0], target[0] + step, step):
+            coord_list.append([round(x, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
+    else:
+        for x in np.arange(origin[0], target[0] + step, step):
+            y = get_y(x, m, c)
+            coord_list.append([round(x, Constants.ROUND_PRECISION), round(y, Constants.ROUND_PRECISION)])
 
     # return unique list
-    return list(k for k, _ in itertools.groupby(sorted(coord_list)))
+    return sorted(coord_list, key=lambda p: [p[0], p[1]])

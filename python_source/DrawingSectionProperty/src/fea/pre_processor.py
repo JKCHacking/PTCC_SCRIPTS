@@ -1,9 +1,8 @@
-import itertools
 import numpy as np
-import src.sectionproperties.pre.sections as sections
-from src.util.line import get_points_bet_points
-from src.sectionproperties.pre.pre import Material
-from src.sectionproperties.analysis.cross_section import CrossSection
+import sectionproperties.pre.sections as sections
+from src.util.line import get_points_from_line
+from sectionproperties.pre.pre import Material
+from sectionproperties.analysis.cross_section import CrossSection
 from math import ceil
 from ezdxf import readfile
 from ezdxf import math
@@ -263,27 +262,32 @@ class PreProcessor:
 
         if len(self.geometry_list) > 1:
             geometry = sections.MergedSection(self.geometry_list)
-            geometry_points = self.__convert_to_vec2s(geometry.points)
 
             # there will be possible holes formed by two or more profiles in contact
             # check if there are contacts made by two or more profiles
             for base_geometry in self.geometry_list:
                 base_points = base_geometry.points
+                base_vec_points = self.__convert_to_vec2s(base_points)
                 for comp_geometry in self.geometry_list:
                     if base_geometry is not comp_geometry:
                         comp_points = comp_geometry.points
+                        comp_vec_points = self.__convert_to_vec2s(comp_points)
                         for point in base_points:
                             if point in comp_points and point not in contact_points:
                                 contact_points.append(point)
-            if contact_points:  # there's a contact between geometries
-                sorted_points = sorted(contact_points, key=lambda k: [k[0], k[1]])
-                for i, point in enumerate(sorted_points):
-                    try:
-                        start = point
-                        end = sorted_points[i + 1]
-                        possible_hole_points = get_points_bet_points(start, end)
-                    except IndexError:
-                        pass
+                        sorted_con_points = sorted(contact_points, key=lambda k: [k[0], k[1]])
+                        for i, con_point in enumerate(sorted_con_points):
+                            try:
+                                start = con_point
+                                end = sorted_con_points[i + 1]
+                                possible_hole_points = get_points_from_line(start, end)
+                                for h_point in possible_hole_points:
+                                    if math.is_point_in_polygon_2d(math.Vec2(h_point), base_vec_points) == -1 and \
+                                            math.is_point_in_polygon_2d(math.Vec2(h_point), comp_vec_points) == -1:
+                                        geometry.add_hole(h_point)
+                                        break
+                            except IndexError:
+                                pass
         elif self.geometry_list:
             geometry = self.geometry_list[0]
 

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import src.sectionproperties.pre.pre as pre
-import src.sectionproperties.post.post as post
+import sectionproperties.pre.pre as pre
+import sectionproperties.post.post as post
 
 
 class Geometry:

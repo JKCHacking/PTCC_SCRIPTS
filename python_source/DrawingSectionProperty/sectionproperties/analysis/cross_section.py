@@ -8,10 +8,10 @@ import matplotlib.cm as cm
 import matplotlib.patches as mpatches
 from matplotlib.colors import ListedColormap
 import meshpy.triangle as triangle
-import src.sectionproperties.pre.pre as pre
-import src.sectionproperties.analysis.fea as fea
-import src.sectionproperties.analysis.solver as solver
-import src.sectionproperties.post.post as post
+import sectionproperties.pre.pre as pre
+import sectionproperties.analysis.fea as fea
+import sectionproperties.analysis.solver as solver
+import sectionproperties.post.post as post
 
 
 class CrossSection:
@@ -695,7 +695,7 @@ class CrossSection:
                 self.section_props.phi = 0
             else:
                 self.section_props.phi = np.arctan2(
-                    self.section_props.ixx_c - self.section_props.i11_c,
+                    self.section_props.ixx_c - i11_c,
                     self.section_props.ixy_c
                 ) * 180 / np.pi
 

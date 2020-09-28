@@ -1,8 +1,8 @@
 import unittest
 from src.fea.post_processor import PostProcessor
-import src.sectionproperties.pre.sections as sections
-from src.sectionproperties.analysis.cross_section import CrossSection
-from src.sectionproperties.pre.pre import Material
+import sectionproperties.pre.sections as sections
+from sectionproperties.analysis.cross_section import CrossSection
+from sectionproperties.pre import Material
 
 
 class PostProcessorTest(unittest.TestCase):
