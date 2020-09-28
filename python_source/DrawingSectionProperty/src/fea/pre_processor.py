@@ -309,7 +309,7 @@ class PreProcessor:
         mesh = geometry.create_mesh(mesh_sizes)
         return mesh
 
-    def create_section(self, geometry, mesh, material_list=None):
+    def create_section(self, geometry, mesh, material_list):
         """
             creates the cross section of given geometry and mesh
             :param
@@ -386,8 +386,20 @@ class PreProcessor:
                 yield_strength = 210
                 color = 'silver'
             else:
-                print(f"Input {mat} not supported.")
+                print(f"Input `{mat}` not supported.")
             material = Material(name=name, elastic_modulus=elastic_modulus,
                        poissons_ratio=poissons_ratio, yield_strength=yield_strength, color=color)
             materials.append(material)
+
+        num_mat = len(materials)
+        num_geom = len(self.geometry_list)
+
+        diff = abs(num_mat - num_geom)
+
+        if num_mat < num_geom:
+            for _ in range(diff):
+                materials.append(materials[-1])
+        elif num_mat > num_geom:
+            for _ in range(diff):
+                materials.pop()
         return materials

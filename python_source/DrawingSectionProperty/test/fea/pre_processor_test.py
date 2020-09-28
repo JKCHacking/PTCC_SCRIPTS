@@ -318,11 +318,12 @@ class PreProcessorTest(unittest.TestCase):
         mesh_size = 5.0
         has_holes = True
         pre_processor = PreProcessor()
+        materials = None
 
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata004.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh)
+        cross_section = pre_processor.create_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_02(self):
@@ -337,11 +338,12 @@ class PreProcessorTest(unittest.TestCase):
         mesh_size = 5.0
         has_holes = True
         pre_processor = PreProcessor()
+        materials = None
 
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata001.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh)
+        cross_section = pre_processor.create_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_03(self):
@@ -356,11 +358,12 @@ class PreProcessorTest(unittest.TestCase):
         mesh_size = 5.0
         has_holes = True
         pre_processor = PreProcessor()
+        materials = None
 
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata002.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh)
+        cross_section = pre_processor.create_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_04(self):
@@ -375,11 +378,12 @@ class PreProcessorTest(unittest.TestCase):
         mesh_size = 5.0
         has_holes = True
         pre_processor = PreProcessor()
+        materials = None
 
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata011.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh)
+        cross_section = pre_processor.create_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_05(self):
@@ -396,11 +400,12 @@ class PreProcessorTest(unittest.TestCase):
         mesh_size = 5.0
         has_holes = True
         pre_processor = PreProcessor()
+        materials = None
 
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata009.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh)
+        cross_section = pre_processor.create_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_06(self):
@@ -414,13 +419,14 @@ class PreProcessorTest(unittest.TestCase):
         * Has hole: False
         """
         pre_processor = PreProcessor()
+        materials = None
 
         isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
         box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
 
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
-        cross_section = pre_processor.create_section([isection, box], mesh)
+        cross_section = pre_processor.create_section([isection, box], mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_07(self):
@@ -461,12 +467,144 @@ class PreProcessorTest(unittest.TestCase):
         segment_size = 0.25
         mesh_size = 5.0
         has_holes = False
+        materials = None
 
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata014.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh)
+        cross_section = pre_processor.create_section(geometry, mesh, materials)
         cross_section.plot_mesh()
+
+    # ============================================== CREATE MATERIAL TEST ==============================
+    def test_create_material_01(self):
+        """
+        Desc: no materials will be implemented on the profiles
+        material = 0
+        profile = 2
+        """
+
+        error_list = []
+        materials = None
+        pre_proc = PreProcessor()
+
+        isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
+        pre_proc.geometry_list = [isection, box]
+
+        geometry = sections.MergedSection([isection, box])
+        mesh = geometry.create_mesh([1.5, 2.0])
+        try:
+            cross_section = pre_proc.create_section([isection, box], mesh, materials)
+            cross_section.plot_mesh(materials=True)
+        except AssertionError as ae:
+            print(str(ae))
+            error_list.append(ae)
+        self.assertEqual(0, len(error_list))
+
+    def test_create_material_02(self):
+        """
+        Desc: material 1 will be used on the both profiles
+        material = 1
+        profile = 2
+        """
+        materials = ["aluminum_ams_nmms"]
+        error_list = []
+
+        pre_proc = PreProcessor()
+        isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
+
+        pre_proc.geometry_list = [isection, box]
+        material_list = pre_proc.create_materials(materials)
+        geometry = sections.MergedSection([isection, box])
+        mesh = geometry.create_mesh([1.5, 2.0])
+        try:
+            cross_section = pre_proc.create_section([isection, box], mesh, material_list)
+            cross_section.plot_mesh(materials=True)
+        except AssertionError as ae:
+            print(str(ae))
+            error_list.append(ae)
+
+        self.assertEqual(0, len(error_list))
+
+    def test_create_material_03(self):
+        """
+        Desc: material 1 to profile 1, material 2 to profile 2
+        material = 2
+        profile = 2
+        """
+        materials = ["aluminum_ams_nmms", "carbon_steel_ams_nmms"]
+        error_list = []
+
+        pre_proc = PreProcessor()
+        isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
+
+        pre_proc.geometry_list = [isection, box]
+        material_list = pre_proc.create_materials(materials)
+
+        geometry = sections.MergedSection([isection, box])
+        mesh = geometry.create_mesh([1.5, 2.0])
+        try:
+            cross_section = pre_proc.create_section([isection, box], mesh, material_list)
+            cross_section.plot_mesh(materials=True)
+        except AssertionError as ae:
+            print(str(ae))
+            error_list.append(ae)
+
+        self.assertEqual(0, len(error_list))
+
+    def test_create_material_04(self):
+        """
+        Desc: material 1 to profile 1, material 2 to profile 2, material 2 to profile 3.
+        material = 2
+        profile = 3
+        """
+        materials = ["aluminum_ams_nmms", "carbon_steel_ams_nmms"]
+        error_list = []
+
+        pre_proc = PreProcessor()
+        isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
+        octagon = sections.PolygonSection(d=200, t=6, n_sides=8, r_in=20, n_r=12)
+        pre_proc.geometry_list = [isection, box, octagon]
+        geometry = sections.MergedSection([isection, box, octagon])
+        mesh = geometry.create_mesh([1.5, 2.0, 2.5])
+        material_list = pre_proc.create_materials(materials)
+        try:
+            cross_section = pre_proc.create_section([isection, box, octagon], mesh, material_list)
+            cross_section.plot_mesh(materials=True)
+        except AssertionError as ae:
+            print(str(ae))
+            error_list.append(ae)
+
+        self.assertEqual(0, len(error_list))
+
+    def test_create_material_05(self):
+        """
+        Desc: material 1 to profile 1, material 2 to profile 2, material 3 will be disregarded.
+        material = 3
+        profile = 2
+        """
+        materials = ["aluminum_ams_nmms", "carbon_steel_ams_nmms", "stainless_steel_ams_nmms"]
+        error_list = []
+
+        pre_proc = PreProcessor()
+        isection = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
+        box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
+        pre_proc.geometry_list = [isection, box]
+        geometry = sections.MergedSection([isection, box])
+        mesh = geometry.create_mesh([1.5, 2.0])
+        material_list = pre_proc.create_materials(materials)
+
+        try:
+            cross_section = pre_proc.create_section([isection, box], mesh, material_list)
+            cross_section.plot_mesh(materials=True)
+        except AssertionError as ae:
+            print(str(ae))
+            error_list.append(ae)
+
+        self.assertEqual(0, len(error_list))
 
 
 if __name__ == "__main__":

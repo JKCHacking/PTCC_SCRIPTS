@@ -1,9 +1,3 @@
-main.py
-* this accepts the following input from the user:
-    1. -f = filepath (but this will be change as it will get the files from the input/ directory)
-    2. -m =
-
-
 Classes:
 1. SectionPropertyScript
     * parse_inputs()
@@ -85,10 +79,12 @@ Problem to resolve:
 1. does not detect hole between two touching Profiles
 2. Inconsistent number of material to the number of profile inside the dxf file.
     2.1 material = 0, profile = 2 -> no materials will be implemented on the profiles
-    2.2 material = 1, profile = 2 -> material will be used on the both profiles
+    2.2 material = 1, profile = 2 -> material 1 will be used on the both profiles
     2.3 material = 2, profile = 2 -> material 1 to profile 1, material 2 to profile 2
     2.4 material = 2, profile = 3 -> material 1 to profile 1, material 2 to profile 2,
                                      material 2 to profile 3.
+    2.5 material = 3, profile = 2 -> material 1 to profile 1, material 2 to profile 2,
+                                     material 3 will be disregarded.
 3. resolve all "None" in report.
 4. inconsistent spacing in report
 
@@ -96,10 +92,9 @@ Problem to resolve:
 How to get the holes if there are contacts between two profile?
 1. Get all the contact points
 2. sort all the contact points (^ x and ^ y)
-3.
 
 * We cannot use bounding boxes because there are instance where bounding box overlap.
-*
+
 Solution 1:
-1. Get all the contact points then scan all the points in line with the contacts points.
+* Get all the contact points then scan all the points in line with the contacts points.
 check each points if they are outside

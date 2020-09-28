@@ -25,7 +25,7 @@ class SectionPropertyReporter:
 
     def iter_input(self):
         input_dir = Constants.INPUT_DIR
-        mat_list = []
+        mat_list = None
         for dir_path, dir_names, file_names in os.walk(input_dir):
             for file_name in file_names:
                 file_full_path = os.path.join(dir_path, file_name)
