@@ -36,7 +36,7 @@ class PostProcessor:
         self.paper_margin = 0.50 * inch
 
     def __put_figure_in_page(self, fig, axis, pdf_doc, ps_rect, figure_output_fp):
-        axis.legend(loc="upper right", bbox_to_anchor=(1, 1))
+        # axis.legend(loc="upper right", bbox_to_anchor=(1, 1))
         fig.set_figwidth(Constants.FIGURE_WIDTH)
         fig.set_figheight(Constants.FIGURE_HEIGHT)
         fig.savefig(figure_output_fp, dpi=300)
@@ -105,6 +105,17 @@ class PostProcessor:
                                   f"{self.cross_sec.get_ea()}\n"
 
         if self.long:
+            # case where s
+            sf_11_plus = self.cross_sec.get_sf_p()[0]
+            sf_11_minus = self.cross_sec.get_sf_p()[1]
+            sf_22_plus = self.cross_sec.get_sf_p()[2]
+            sf_22_minus = self.cross_sec.get_sf_p()[3]
+
+            sf_11_plus = sf_11_plus if sf_11_plus is not None else 0
+            sf_11_minus = sf_11_minus if sf_11_minus is not None else 0
+            sf_22_plus = sf_22_plus if sf_22_plus is not None else 0
+            sf_22_minus = sf_22_minus if sf_22_minus is not None else 0
+
             long_templ_fp = os.path.join(Constants.TEMPL_DIR, "long_report.txt")
             with open(long_templ_fp, "r") as f:
                 templ_contents = f.read()
@@ -177,10 +188,10 @@ class PostProcessor:
                     y22_pc=num_form.format(self.cross_sec.get_pc_p()[1]),
                     z11=None,
                     z22=None,
-                    sf_11_plus=num_form.format(self.cross_sec.get_sf_p()[0]),
-                    sf_11_minus=num_form.format(self.cross_sec.get_sf_p()[1]),
-                    sf_22_plus=num_form.format(self.cross_sec.get_sf_p()[2]),
-                    sf_22_minus=num_form.format(self.cross_sec.get_sf_p()[3]),
+                    sf_11_plus=num_form.format(sf_11_plus),
+                    sf_11_minus=num_form.format(sf_11_minus),
+                    sf_22_plus=num_form.format(sf_22_plus),
+                    sf_22_minus=num_form.format(sf_22_minus),
                 )
 
         else:
@@ -227,7 +238,6 @@ class PostProcessor:
                                 fontsize=self.report_fontsize,
                                 expandtabs=8,
                                 align=fitz.TEXT_ALIGN_LEFT)
-        print(rc)
         if rc < 0:  # this is the case when the contents does not fit inside the body space of the page.
             # we have to split the whole content into multiple pages
             # determine the number of lines that can be fit inside
@@ -255,7 +265,6 @@ class PostProcessor:
                                                 fontsize=self.report_fontsize,
                                                 align=fitz.TEXT_ALIGN_JUSTIFY,
                                                 expandtabs=8)
-                        print(rc)
                     else:
                         # create a new page
                         page = pdf_doc.newPage(width=paper_size_rect.width, height=paper_size_rect.height)
@@ -270,7 +279,6 @@ class PostProcessor:
                                                 fontsize=self.report_fontsize,
                                                 align=fitz.TEXT_ALIGN_JUSTIFY,
                                                 expandtabs=8)
-                        print(rc)
                 except IndexError as ie:
                     print(str(ie))
                 start += fit_lines
@@ -348,3 +356,4 @@ class PostProcessor:
         # add cross sectional properties report page
         pdf_doc = self.__add_report_page(pdf_doc, ps_rect)
         pdf_doc.save(output_pdf_fp)
+        print("Generate Report Complete. Can be Found in `output` folder")

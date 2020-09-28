@@ -86,7 +86,7 @@ Problem to resolve:
     2.5 material = 3, profile = 2 -> material 1 to profile 1, material 2 to profile 2,
                                      material 3 will be disregarded.
 3. resolve all "None" in report.
-4. inconsistent spacing in report
+4. inconsistent spacing in report -> To be resolved later
 
 
 How to get the holes if there are contacts between two profile?

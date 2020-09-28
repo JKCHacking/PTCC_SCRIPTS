@@ -7,8 +7,9 @@ from sectionproperties.pre.pre import Material
 
 class PostProcessorTest(unittest.TestCase):
 
-    def test_generate_long_report(self):
+    def test_generate_report_01(self):
         """
+        Long report
         No Material
         """
 
@@ -49,8 +50,9 @@ class PostProcessorTest(unittest.TestCase):
                                   long)
         post_proc.generate_pdf_report()
 
-    def test_generate_short_report(self):
+    def test_generate_report_02(self):
         """
+        Short Report
         No Material
         """
         filename = "short_0_mat.pdf"
@@ -89,8 +91,9 @@ class PostProcessorTest(unittest.TestCase):
                                   long)
         post_proc.generate_pdf_report()
 
-    def test_generate_long_report_1_mat(self):
+    def test_generate_report_03(self):
         """
+        Long Report
         1 Material
         """
         filename = "long_1_mat.pdf"
@@ -104,16 +107,16 @@ class PostProcessorTest(unittest.TestCase):
         weighted = False
         long = True
 
-        timber = Material(
-            name='Timber', elastic_modulus=8e3, poissons_ratio=0.35, yield_strength=20,
-            color='burlywood'
+        steel = Material(
+            name='Steel', elastic_modulus=200e3, poissons_ratio=0.3, yield_strength=500,
+            color='grey'
         )
 
-        materials = [timber]
+        materials = [steel]
 
         geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
         mesh = geometry.create_mesh([1.5])
-        cross_section = CrossSection(geometry, mesh)
+        cross_section = CrossSection(geometry, mesh, materials)
         cross_section.calculate_geometric_properties()
         cross_section.calculate_plastic_properties()
         cross_section.calculate_warping_properties()
@@ -133,8 +136,9 @@ class PostProcessorTest(unittest.TestCase):
                                   long)
         post_proc.generate_pdf_report()
 
-    def test_generate_short_report_1_mat(self):
+    def test_generate_report_04(self):
         """
+        Short Report
         1 Material
         """
         filename = "short_1_mat.pdf"
@@ -156,7 +160,7 @@ class PostProcessorTest(unittest.TestCase):
 
         geometry = sections.ISection(d=203, b=133, t_f=7.8, t_w=5.8, r=8.9, n_r=8)
         mesh = geometry.create_mesh([1.5])
-        cross_section = CrossSection(geometry, mesh)
+        cross_section = CrossSection(geometry, mesh, materials)
         cross_section.calculate_geometric_properties()
         cross_section.calculate_plastic_properties()
         cross_section.calculate_warping_properties()
@@ -176,11 +180,12 @@ class PostProcessorTest(unittest.TestCase):
                                   long)
         post_proc.generate_pdf_report()
 
-    def test_generate_long_report_2_mat(self):
+    def test_generate_report_05(self):
         """
+        Long Report
         2 Material
         """
-        filename = "filename_stub.pdf"
+        filename = "long_2_mat.pdf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -207,7 +212,7 @@ class PostProcessorTest(unittest.TestCase):
         box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
-        cross_section = CrossSection(geometry, mesh)
+        cross_section = CrossSection(geometry, mesh, materials)
         cross_section.calculate_geometric_properties()
         cross_section.calculate_plastic_properties()
         cross_section.calculate_warping_properties()
@@ -227,11 +232,12 @@ class PostProcessorTest(unittest.TestCase):
                                   long)
         post_proc.generate_pdf_report()
 
-    def test_generate_short_report_2_mat(self):
+    def test_generate_report_06(self):
         """
+        Short Report
         2 Material
         """
-        filename = "filename_stub.pdf"
+        filename = "short_2_mat.pdf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -258,7 +264,7 @@ class PostProcessorTest(unittest.TestCase):
         box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
-        cross_section = CrossSection(geometry, mesh)
+        cross_section = CrossSection(geometry, mesh, materials)
         cross_section.calculate_geometric_properties()
         cross_section.calculate_plastic_properties()
         cross_section.calculate_warping_properties()
@@ -278,11 +284,13 @@ class PostProcessorTest(unittest.TestCase):
                                   long)
         post_proc.generate_pdf_report()
 
-    def test_generate_long_report_2_mat_weighted(self):
+    def test_generate_report_07(self):
         """
+        Long Report
+        Weighted
         2 Material
         """
-        filename = "filename_stub.pdf"
+        filename = "long_2_mat_weighted.pdf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -309,7 +317,7 @@ class PostProcessorTest(unittest.TestCase):
         box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
-        cross_section = CrossSection(geometry, mesh)
+        cross_section = CrossSection(geometry, mesh, materials)
         cross_section.calculate_geometric_properties()
         cross_section.calculate_plastic_properties()
         cross_section.calculate_warping_properties()
@@ -329,11 +337,14 @@ class PostProcessorTest(unittest.TestCase):
                                   long)
         post_proc.generate_pdf_report()
 
-    def test_generate_short_report_2_mat_weighted(self):
+    def test_generate_report_08(self):
         """
+        Short Report
+        Weighted
         2 Material
         """
-        filename = "filename_stub.pdf"
+        filename = "short_2_mat_weighted.pdf"
+        
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -360,7 +371,7 @@ class PostProcessorTest(unittest.TestCase):
         box = sections.Rhs(d=100, b=150, t=6, r_out=15, n_r=8, shift=[-8.5, 203])
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
-        cross_section = CrossSection(geometry, mesh)
+        cross_section = CrossSection(geometry, mesh, materials)
         cross_section.calculate_geometric_properties()
         cross_section.calculate_plastic_properties()
         cross_section.calculate_warping_properties()
