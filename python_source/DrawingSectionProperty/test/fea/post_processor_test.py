@@ -16,7 +16,7 @@ class PostProcessorTest(unittest.TestCase):
         """
 
         # Typical Settings
-        filename = "long_0_mat.pdf"
+        filename = "long_0_mat.dxf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -58,7 +58,7 @@ class PostProcessorTest(unittest.TestCase):
         Short Report
         No Material
         """
-        filename = "short_0_mat.pdf"
+        filename = "short_0_mat.dxf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -100,7 +100,7 @@ class PostProcessorTest(unittest.TestCase):
         Long Report
         1 Material
         """
-        filename = "long_1_mat.pdf"
+        filename = "long_1_mat.dxf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -146,7 +146,7 @@ class PostProcessorTest(unittest.TestCase):
         Short Report
         1 Material
         """
-        filename = "short_1_mat.pdf"
+        filename = "short_1_mat.dxf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -191,7 +191,7 @@ class PostProcessorTest(unittest.TestCase):
         Long Report
         2 Material
         """
-        filename = "long_2_mat.pdf"
+        filename = "long_2_mat.dxf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -244,7 +244,7 @@ class PostProcessorTest(unittest.TestCase):
         Short Report
         2 Material
         """
-        filename = "short_2_mat.pdf"
+        filename = "short_2_mat.dxf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -298,7 +298,7 @@ class PostProcessorTest(unittest.TestCase):
         Weighted
         2 Material
         """
-        filename = "long_2_mat_weighted.pdf"
+        filename = "long_2_mat_weighted.dxf"
         title = "Cross Sectional Properties Report"
         title_fs = 16
         num_format = "float"
@@ -352,7 +352,7 @@ class PostProcessorTest(unittest.TestCase):
         Weighted
         2 Material
         """
-        filename = "short_2_mat_weighted.pdf"
+        filename = "short_2_mat_weighted.dxf"
         
         title = "Cross Sectional Properties Report"
         title_fs = 16

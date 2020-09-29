@@ -357,7 +357,8 @@ class PostProcessor:
 
     def generate_pdf_report(self):
         # determine the paper size
-        output_pdf_fp = os.path.join(Constants.OUTPUT_DIR, self.filename)
+        file = os.path.splitext(self.filename)[0] + ".pdf"
+        output_pdf_fp = os.path.join(Constants.OUTPUT_DIR, file)
         if self.paper_size == "A4" and not self.landscape:
             ps_rect = fitz.PaperRect('a4')
         elif self.paper_size == "A4" and self.landscape:

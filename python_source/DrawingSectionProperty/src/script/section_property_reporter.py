@@ -13,8 +13,8 @@ class SectionPropertyReporter:
         self.title_font_size = args.tfs
         self.num_format = args.nf
         self.num_decimal = args.nd
-        self.seg_size = args.ms
-        self.mesh_size = args.ss
+        self.seg_size = args.ss
+        self.mesh_size = args.ms
         self.paper_margin = 0.50 * inch
         self.paper_size = args.ps
         self.report_font_size = args.rfs
