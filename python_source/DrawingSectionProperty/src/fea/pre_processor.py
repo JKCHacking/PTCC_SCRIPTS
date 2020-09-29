@@ -309,7 +309,7 @@ class PreProcessor:
         mesh = geometry.create_mesh(mesh_sizes)
         return mesh
 
-    def create_section(self, geometry, mesh, material_list):
+    def create_cross_section(self, geometry, mesh, material_list):
         """
             creates the cross section of given geometry and mesh
             :param

@@ -323,7 +323,7 @@ class PreProcessorTest(unittest.TestCase):
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata004.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh, materials)
+        cross_section = pre_processor.create_cross_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_02(self):
@@ -343,7 +343,7 @@ class PreProcessorTest(unittest.TestCase):
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata001.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh, materials)
+        cross_section = pre_processor.create_cross_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_03(self):
@@ -363,7 +363,7 @@ class PreProcessorTest(unittest.TestCase):
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata002.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh, materials)
+        cross_section = pre_processor.create_cross_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_04(self):
@@ -383,7 +383,7 @@ class PreProcessorTest(unittest.TestCase):
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata011.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh, materials)
+        cross_section = pre_processor.create_cross_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_05(self):
@@ -405,7 +405,7 @@ class PreProcessorTest(unittest.TestCase):
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata009.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh, materials)
+        cross_section = pre_processor.create_cross_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_06(self):
@@ -426,7 +426,7 @@ class PreProcessorTest(unittest.TestCase):
 
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
-        cross_section = pre_processor.create_section([isection, box], mesh, materials)
+        cross_section = pre_processor.create_cross_section([isection, box], mesh, materials)
         cross_section.plot_mesh()
 
     def test_create_section_07(self):
@@ -450,7 +450,7 @@ class PreProcessorTest(unittest.TestCase):
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
         material_list = pre_processor.create_materials(materials)
-        cross_section = pre_processor.create_section(geometry, mesh, material_list)
+        cross_section = pre_processor.create_cross_section(geometry, mesh, material_list)
         cross_section.plot_mesh(materials=True)
 
     def test_create_section_08(self):
@@ -472,7 +472,7 @@ class PreProcessorTest(unittest.TestCase):
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", "testdata014.dxf")
         geometry = pre_processor.create_geometry(testdata_file_path, has_holes, segment_size)
         mesh = pre_processor.create_mesh(geometry, mesh_size)
-        cross_section = pre_processor.create_section(geometry, mesh, materials)
+        cross_section = pre_processor.create_cross_section(geometry, mesh, materials)
         cross_section.plot_mesh()
 
     # ============================================== CREATE MATERIAL TEST ==============================
@@ -494,7 +494,7 @@ class PreProcessorTest(unittest.TestCase):
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
         try:
-            cross_section = pre_proc.create_section([isection, box], mesh, materials)
+            cross_section = pre_proc.create_cross_section([isection, box], mesh, materials)
             cross_section.plot_mesh(materials=True)
         except AssertionError as ae:
             print(str(ae))
@@ -519,7 +519,7 @@ class PreProcessorTest(unittest.TestCase):
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
         try:
-            cross_section = pre_proc.create_section([isection, box], mesh, material_list)
+            cross_section = pre_proc.create_cross_section([isection, box], mesh, material_list)
             cross_section.plot_mesh(materials=True)
         except AssertionError as ae:
             print(str(ae))
@@ -546,7 +546,7 @@ class PreProcessorTest(unittest.TestCase):
         geometry = sections.MergedSection([isection, box])
         mesh = geometry.create_mesh([1.5, 2.0])
         try:
-            cross_section = pre_proc.create_section([isection, box], mesh, material_list)
+            cross_section = pre_proc.create_cross_section([isection, box], mesh, material_list)
             cross_section.plot_mesh(materials=True)
         except AssertionError as ae:
             print(str(ae))
@@ -572,7 +572,7 @@ class PreProcessorTest(unittest.TestCase):
         mesh = geometry.create_mesh([1.5, 2.0, 2.5])
         material_list = pre_proc.create_materials(materials)
         try:
-            cross_section = pre_proc.create_section([isection, box, octagon], mesh, material_list)
+            cross_section = pre_proc.create_cross_section([isection, box, octagon], mesh, material_list)
             cross_section.plot_mesh(materials=True)
         except AssertionError as ae:
             print(str(ae))
@@ -598,7 +598,7 @@ class PreProcessorTest(unittest.TestCase):
         material_list = pre_proc.create_materials(materials)
 
         try:
-            cross_section = pre_proc.create_section([isection, box], mesh, material_list)
+            cross_section = pre_proc.create_cross_section([isection, box], mesh, material_list)
             cross_section.plot_mesh(materials=True)
         except AssertionError as ae:
             print(str(ae))

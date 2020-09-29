@@ -46,17 +46,9 @@ Shear center coordinates wrt origin
      y axis coor. (elasticity method)               y_se  =  {y_se}
      x axis coor. (Treftz's method)                 x_st  =  {x_st}
      y axis coor. (Treftz's method)                 y_st  =  {y_st}
-Shear center coordinates wrt centroid
-     x axis coor. (elasticity method)             x_se_o  =  {x_se_o}
-     y axis coor. (elasticity method)             y_se_o  =  {y_se_o}
-     x axis coor. (Treftz's method)               x_st_o  =  {x_st_o}
-     y axis coor. (Treftz's method)               y_st_o  =  {y_st_o}
 Principal axis shear center coor. wrt origin
      x axis coor. (elasticity method)              x1_se  =  {x1_se}
      y axis coor. (elasticity method)              y2_se  =  {y2_se}
-Principal axis shear center coor. wrt centroid
-     x axis coor. (elasticity method)            x1_se_o  =  {x1_se_o}
-     y axis coor. (elasticity method)            y2_se_o  =  {y2_se_o}
 Shear area for loading along geometric axes
      For loading along x axis                       A_sx  =  {a_sx}
      For loading along y axis                       A_sy  =  {a_sy}

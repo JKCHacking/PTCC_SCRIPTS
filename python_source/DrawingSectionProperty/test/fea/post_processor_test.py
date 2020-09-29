@@ -1,5 +1,7 @@
+import os
 import unittest
 from src.fea.post_processor import PostProcessor
+from src.util.constants import Constants
 import sectionproperties.pre.sections as sections
 from sectionproperties.analysis.cross_section import CrossSection
 from sectionproperties.pre.pre import Material
@@ -49,6 +51,7 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))
 
     def test_generate_report_02(self):
         """
@@ -90,6 +93,7 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))
 
     def test_generate_report_03(self):
         """
@@ -135,6 +139,7 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))
 
     def test_generate_report_04(self):
         """
@@ -179,6 +184,7 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))
 
     def test_generate_report_05(self):
         """
@@ -231,6 +237,7 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))
 
     def test_generate_report_06(self):
         """
@@ -283,6 +290,7 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))
 
     def test_generate_report_07(self):
         """
@@ -336,6 +344,7 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))
 
     def test_generate_report_08(self):
         """
@@ -390,3 +399,4 @@ class PostProcessorTest(unittest.TestCase):
                                   weighted,
                                   long)
         post_proc.generate_pdf_report()
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, filename)))

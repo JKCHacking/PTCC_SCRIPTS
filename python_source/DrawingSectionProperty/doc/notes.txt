@@ -76,16 +76,24 @@ Post-Processor Testcase:
 Note: 1 DXF File = 1 PDF File
 
 Problem to resolve:
-1. does not detect hole between two touching Profiles
-2. Inconsistent number of material to the number of profile inside the dxf file.
-    2.1 material = 0, profile = 2 -> no materials will be implemented on the profiles
-    2.2 material = 1, profile = 2 -> material 1 will be used on the both profiles
-    2.3 material = 2, profile = 2 -> material 1 to profile 1, material 2 to profile 2
-    2.4 material = 2, profile = 3 -> material 1 to profile 1, material 2 to profile 2,
+1. does not detect hole between two touching Profiles -> DONE
+2. Inconsistent number of material to the number of profile inside the dxf file. -> DONE
+    2.1 material = 0, profile = 2 -> no materials will be implemented on the profiles -> DONE
+    2.2 material = 1, profile = 2 -> material 1 will be used on the both profiles -> DONE
+    2.3 material = 2, profile = 2 -> material 1 to profile 1, material 2 to profile 2 -> DONE
+    2.4 material = 2, profile = 3 -> material 1 to profile 1, material 2 to profile 2, -> DONE
                                      material 2 to profile 3.
-    2.5 material = 3, profile = 2 -> material 1 to profile 1, material 2 to profile 2,
+    2.5 material = 3, profile = 2 -> material 1 to profile 1, material 2 to profile 2, -> DONE
                                      material 3 will be disregarded.
 3. resolve all "None" in report.
+    3.1 Extreme Fiber centroidal distances for bending about geometric axes -> [/] calculate_extreme_fibres(0) -> DONE
+    3.2 Elastic section modulus about geometric axes -> [/] get_z() -> DONE
+    3.3 Extreme fiber centroidal distances for bending about principal axes -> [/] calculate_extreme_fibres(phi) -> DONE
+    3.4 Elastic section modulus about principal axes -> [/]get_zp() -> DONE
+    3.5 Shear center coordinates wrt centroid [???] -> inconsistent output (removed)
+    3.6 Principal axis shear center coor. wrt centroid [???] -> inconsistent output (removed)
+    3.7 Plastic section modulus about geometric axes -> geometric = centroidal [???] [/] get_s() -> DONE
+    3.8 Plastic section modulus about principal axes [/] get_sp() -> DONE
 4. inconsistent spacing in report -> To be resolved later
 
 

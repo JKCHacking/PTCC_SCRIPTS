@@ -38,7 +38,7 @@ class SectionPropertyReporter:
                     if self.materials:
                         mat_list = pre_proc.create_materials(self.materials)
 
-                    cross_section = pre_proc.create_section(geometry, mesh, mat_list)
+                    cross_section = pre_proc.create_cross_section(geometry, mesh, mat_list)
                     # Solver
                     cross_section = AnalysisCalculator.calculate_section_properties(cross_section)
                     # Post-Processor
