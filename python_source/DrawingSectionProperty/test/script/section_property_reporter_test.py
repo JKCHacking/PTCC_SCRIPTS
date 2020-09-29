@@ -9,6 +9,7 @@ class SectionPropertyReporterTest(unittest.TestCase):
 
     def test_script_01(self):
         file_input = "testdata001.dxf"
+        output_file = os.path.splitext(file_input)[0] + ".pdf"
         testdata_file_path = os.path.join(Constants.TEST_DIR, "testdata", file_input)
         
         src = testdata_file_path
@@ -23,4 +24,4 @@ class SectionPropertyReporterTest(unittest.TestCase):
         output, error = process.communicate()
         print(output.decode("utf-8"))
         os.remove(dest)
-        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, file_input)))
+        self.assertTrue(os.path.exists(os.path.join(Constants.OUTPUT_DIR, output_file)))
