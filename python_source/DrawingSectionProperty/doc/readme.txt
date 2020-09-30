@@ -6,6 +6,7 @@ have alot of dxf files as input.
 in the input folder and output files in the output folder.
 3. changed the module structure to make them testable
 4. added alot of test cases. located in the test folder
+5. refactor code that has very tight coupling to other libraries.
 
 5. Notes to consider:
 For Inconsistent number of material to the number of profile inside the dxf file.
