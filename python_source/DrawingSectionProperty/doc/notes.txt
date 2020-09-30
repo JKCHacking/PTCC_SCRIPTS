@@ -106,3 +106,21 @@ How to get the holes if there are contacts between two profile?
 Solution 1:
 * Get all the contact points then scan all the points in line with the contacts points.
 check each points if they are outside
+
+Test case for script:
+1. Long, No Material
+2. Short, No Material
+3. Long, 1 Material
+4. Short, 1 Material
+5. Long, 2 Material
+6. Short, 2 Material
+7. Long, 2 Material, Weighted
+8. Short, 2 Material, Weighted
+9. Long, 2 File, File1 = 1 Profile, File2 = 1 Profile, No Material
+10. Short, 2 File, File1 = 1 Profile, File2 = 1 Profile, No Material
+11. Long, 2 File, File1 = 1 Profile, File2 = 1 Profile, 2 Material
+12. Long, 2 File, File1 = 1 Profile, File2 = 1 Profile, 1 Material
+13. Long, 2 File, File1 = 1 Profile, File2 = 1 Profile, 3 Material
+14. Long, 2 File, File1 = 1 Profile, File2 = 2 Profile, 3 Material
+15. Long, 2 File, File1 = 1 Profile, File2 = 2 Profile, 2 Material
+16. Long, 2 File, File1 = 1 Profile, File2 = 2 Profile, 4 Material
