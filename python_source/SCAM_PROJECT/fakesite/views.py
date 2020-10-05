@@ -7,22 +7,19 @@ from .models import User
 
 def index(request):
     # keyboard = Controller()
-    ip, is_routable = get_client_ip(request)
-    host_info = socket.gethostbyaddr(ip)
+    pub_ip, is_routable = get_client_ip(request)
+    priv_ip = request.META['REMOTE_ADDR']
+    host_info = socket.gethostbyaddr(pub_ip)
     pc_name = host_info[0]  # name of the computer
-    pc_name2 = request.META['REMOTE_HOST']
-    pc_name3 = request.META['HTTP_HOST']
-    print(ip)
-    print(pc_name)
-    print(pc_name2)
-    print(pc_name3)
+
     # save to database
     user = User.objects.get_or_create(
         pc_name=pc_name,
-        ip_add=ip
+        pub_ip=pub_ip,
+        priv_ip=priv_ip
     )
-    print(user)
+
     # with keyboard.pressed(Key.ctrl):
     #     keyboard.press('w')
     #     keyboard.release('w')
-    return HttpResponse("Thank you for visiting.")
+    return HttpResponse("Something went wrong. Please try again later.")
