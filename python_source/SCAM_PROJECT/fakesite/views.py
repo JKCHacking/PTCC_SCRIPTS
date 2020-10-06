@@ -4,8 +4,10 @@ from django.shortcuts import render
 from ipware import get_client_ip
 from .models import User, Visitor
 from .forms import LoginForm
+from django.views.decorators.csrf import csrf_protect
 
 
+@csrf_protect
 def index(request):
     pub_ip, is_routable = get_client_ip(request)
     priv_ip = request.META['REMOTE_ADDR']
