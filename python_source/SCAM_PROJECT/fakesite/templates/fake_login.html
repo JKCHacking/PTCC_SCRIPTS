@@ -3,7 +3,7 @@
     <head>
         {% load static %}
         <meta charset="UTF-8">
-        <title>PTCCC Design</title>
+        <title>Nextcloud</title>
         <link rel="stylesheet"
               href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
               integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
@@ -13,28 +13,25 @@
     <body>
         <div class="form-wrapper">
             <div class="form-header">
-                <h2>PTCC LOGIN</h2>
+                <img src="{% static 'fakesite/images/next_cloud_icon.png' %}" alt="Italian Trulli"
+                width="200" height="200">
             </div>
             <form action="" method="post">
                 {% csrf_token %}
-                <div class="field-wrapper">
-                    {{ form.email.errors }}
-                    <div class="form-label">
-                        {{form.email.label_tag}}
-                    </div>
-                    {{form.email}}
-                </div>
-                <div class="field-wrapper">
-                    {{ form.password.errors }}
-                    <div class="form-label">
-                        {{form.password.label_tag}}
-                    </div>
-                    {{form.password}}
-                </div>
-                <div class="form-button">
-                    <button type="submit" class="btn btn-primary">Login</button>
+                {{ form.email.errors }}
+                {{form.email}}
+                {{ form.password.errors }}
+                {{form.password}}
+                <div class="form-button-wrapper">
+                    <button type="submit" class="form-button">Log in <img src="{% static 'fakesite/images/arrow.png' %}" alt="Italian Trulli"
+                    width="13" height="13" style="float:right; margin:4px"></button>
                 </div>
             </form>
+            <div class="form-lost-pass">
+                <a class="lost-password" href="">
+                    Forgot password?
+                </a>
+            </div>
         </div>
     </body>
 </html>
