@@ -1,0 +1,23 @@
+1. get 1 dxf file
+2. create ezdxf file object
+3. get the modelspace
+4. get the all polylines
+5. for each poyline, get the bounding box.
+6. get the width and height of the polyline.
+7. save the handle, width and height of the polyline
+
+                                 width
+                        |----------^-----------|
+                        +----------------------* (xmax, ymax) -
+                        |                      |              |
+                        |                      |              |
+                        |                      |              |
+                        |                      |               > Height
+                        |                      |              |
+                        |                      |              |
+                        |                      |              |
+                        *----------------------+              _
+                      (xmin, ymin)
+
+                      w = xmax - xmin
+                      h = ymax - ymin
