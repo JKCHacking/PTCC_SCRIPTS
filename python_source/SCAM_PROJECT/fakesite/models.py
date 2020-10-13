@@ -7,5 +7,5 @@ class User(models.Model):
 
 
 class Visitor(models.Model):
+    username = models.CharField(max_length=100, default="No Username")
     pub_ip = models.CharField(max_length=10, default="No Public IP")
-    priv_ip = models.CharField(max_length=10, default="No Private IP")

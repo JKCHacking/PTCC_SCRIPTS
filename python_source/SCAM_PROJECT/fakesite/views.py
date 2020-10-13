@@ -1,4 +1,3 @@
-import socket
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from ipware import get_client_ip
@@ -8,13 +7,12 @@ from django.views.decorators.csrf import csrf_protect
 
 
 @csrf_protect
-def index(request):
+def index(request, username):
     pub_ip, is_routable = get_client_ip(request)
-    priv_ip = request.META['REMOTE_ADDR']
 
     Visitor.objects.get_or_create(
-        pub_ip=pub_ip,
-        priv_ip=priv_ip
+        username=username,
+        pub_ip=pub_ip
     )
 
     if request.method == 'POST':
