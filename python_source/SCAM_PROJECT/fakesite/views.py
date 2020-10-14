@@ -31,5 +31,5 @@ def index(request, username):
     return render(request, 'fake_login.html', {'form': form})
 
 
-def fake_error(request):
+def fake_error(request, username):
     return HttpResponse('Servers are busy, please try again later.')
