@@ -31,5 +31,6 @@ def index(request, username):
     return render(request, 'fake_login.html', {'form': form})
 
 
+@csrf_protect
 def fake_error(request, username):
     return HttpResponse('Servers are busy, please try again later.')
