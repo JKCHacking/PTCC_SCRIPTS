@@ -30,3 +30,31 @@ class Constants:
 
     FIGURE_WIDTH = 12
     FIGURE_HEIGHT = 15
+
+    INS_UNITS = {
+        0: "Unitless",
+        1: "Inches",
+        2: "Feet",
+        3: "Miles",
+        4: "Millimeters",
+        5: "Centimeters",
+        6: "Meters",
+        7: "Kilometers",
+        8: "Microinches",
+        9: "Mils",
+        10: "Yards",
+        11: "Angstroms",
+        12: "Nanometers",
+        13: "Microns",
+        14: "Decimeters",
+        15: "Decameters",
+        16: "Hectometers",
+        17: "Gigameters",
+        18: "Astronomical Units",
+        19: "Light Years",
+        20: "Parsecs",
+        21: "US Survey Feet",
+        22: "US Survey Inch",
+        23: "US Survey Yard",
+        24: "US Survey Mile"
+    }
