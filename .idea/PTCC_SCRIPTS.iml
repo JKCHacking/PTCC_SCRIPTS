@@ -4,7 +4,6 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/python_source/Timesheet Calculator/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/python_source/Timesheet Calculator/test" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/python_source/DrawingSectionProperty" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
