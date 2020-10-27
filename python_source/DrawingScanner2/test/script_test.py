@@ -101,3 +101,72 @@ class ScriptTest(unittest.TestCase):
             # os.remove(expected_output_path)
             # delete the copied files in the input folder
             # os.remove(dest)
+
+    def test_iter_input_05(self):
+        '''
+            tests is_notch function
+        '''
+        testdata_fname = 'testdata007.dxf'
+        testdata_file = os.path.join(Constants.TEST_DIR, "testdata", testdata_fname)
+
+        source = testdata_file
+        dest = os.path.join(Constants.INPUT_DIR, testdata_fname)
+        shutil.copyfile(source, dest)
+
+        script = Script()
+        script.iter_input()
+
+        testdata_file = os.path.join(Constants.TEST_DIR, "testdata", testdata_fname)
+        filename_ext = os.path.basename(testdata_file)
+        filename = os.path.splitext(filename_ext)[0]
+        expected_output_path = os.path.join(Constants.OUTPUT_DIR, filename + '.xlsx')
+        dest = os.path.join(Constants.INPUT_DIR, testdata_fname)
+
+        self.assertTrue(os.path.exists(expected_output_path))
+        os.remove(dest)
+
+    def test_iter_input_06(self):
+        '''
+            tests is_notch function
+        '''
+        testdata_fname = 'testdata008.dxf'
+        testdata_file = os.path.join(Constants.TEST_DIR, "testdata", testdata_fname)
+
+        source = testdata_file
+        dest = os.path.join(Constants.INPUT_DIR, testdata_fname)
+        shutil.copyfile(source, dest)
+
+        script = Script()
+        script.iter_input()
+
+        testdata_file = os.path.join(Constants.TEST_DIR, "testdata", testdata_fname)
+        filename_ext = os.path.basename(testdata_file)
+        filename = os.path.splitext(filename_ext)[0]
+        expected_output_path = os.path.join(Constants.OUTPUT_DIR, filename + '.xlsx')
+        dest = os.path.join(Constants.INPUT_DIR, testdata_fname)
+
+        self.assertTrue(os.path.exists(expected_output_path))
+        os.remove(dest)
+
+    def test_iter_input_07(self):
+        '''
+            tests is_notch function
+        '''
+        testdata_fname = 'testdata009.dxf'
+        testdata_file = os.path.join(Constants.TEST_DIR, "testdata", testdata_fname)
+
+        source = testdata_file
+        dest = os.path.join(Constants.INPUT_DIR, testdata_fname)
+        shutil.copyfile(source, dest)
+
+        script = Script()
+        script.iter_input()
+
+        testdata_file = os.path.join(Constants.TEST_DIR, "testdata", testdata_fname)
+        filename_ext = os.path.basename(testdata_file)
+        filename = os.path.splitext(filename_ext)[0]
+        expected_output_path = os.path.join(Constants.OUTPUT_DIR, filename + '.xlsx')
+        dest = os.path.join(Constants.INPUT_DIR, testdata_fname)
+
+        self.assertTrue(os.path.exists(expected_output_path))
+        os.remove(dest)

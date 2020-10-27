@@ -31,26 +31,39 @@ class Script:
                     for block_ent in self.__get_blocks(file_full_path):
                         # polyline container
                         pl_list = []
+                        notch_list = []
                         # getting all the polylines in the block reference
                         for entity in block_ent.virtual_entities():
                             type = entity.dxftype()
-                            if type == "LWPOLYLINE" or type == "POLYLINE":
+                            if (type == "LWPOLYLINE" or type == "POLYLINE") and entity.closed:
                                 found = False
                                 count = 1
                                 width, height = self.__compute_width_height(entity)
                                 rgb_str = self.__get_rgb(entity)
-                                # checking if same polyline already exist in the list.
-                                for ent_member in pl_list:
-                                    if ent_member['A'] == rgb_str and ent_member['C'] == height:
-                                        ent_member['D'] += 1
-                                        found = True
-                                        break
-                                if not found:
-                                    pl_data_dict = self.__compose_data_dict(rgb_str, width, height, count)
-                                    pl_list.append(pl_data_dict)
+                                if not self.__is_notch(entity):
+                                    # checking if same polyline already exist in the list.
+                                    for ent_member in pl_list:
+                                        if ent_member['A'] == rgb_str and ent_member['B'] == width and \
+                                                ent_member['C'] == height:
+                                            ent_member['D'] += 1
+                                            found = True
+                                            break
+                                    if not found:
+                                        pl_data_dict = self.__compose_data_dict(rgb_str, width, height, count)
+                                        pl_list.append(pl_data_dict)
+                                else:
+                                    for ent_member in notch_list:
+                                        if ent_member['A'] == rgb_str and ent_member['B'] == width and \
+                                                ent_member['C'] == height:
+                                            ent_member['D'] += 1
+                                            found = True
+                                            break
+                                    if not found:
+                                        pl_data_dict = self.__compose_data_dict(rgb_str, width, height, count)
+                                        notch_list.append(pl_data_dict)
                         block_name = block_ent.dxf.name
                         # for every block you create 1 worksheet
-                        self.__create_spreadsheet(workbook, block_name, pl_list)
+                        self.__create_spreadsheet(workbook, block_name, pl_list, notch_list)
                     filename_ext = os.path.basename(file_full_path)
                     filename = os.path.splitext(filename_ext)[0]
                     output_dir = os.path.join(Constants.OUTPUT_DIR, filename + '.xlsx')
@@ -61,7 +74,39 @@ class Script:
                     else:
                         print(f"No BlockReference Found inside file: {file_full_path}")
 
-    def __create_spreadsheet(self, workbook, block_name, ent_list):
+    def __is_notch(self, polyline):
+        is_notch = False
+
+        ent_point = polyline.get_points('xy')
+        rounded_ent_points = [(round(point[0], Constants.ROUND_PRECISION), round(point[1], Constants.ROUND_PRECISION))
+                              for point in ent_point]
+
+        bbox = ezdxf.math.BoundingBox2d(rounded_ent_points)
+        extmin = bbox.extmin
+        extmax = bbox.extmax
+
+        # getting the extremas of the bounding box
+        xmax, ymax = extmax
+        xmin, ymin = extmin
+
+        four_corners = [(xmin, ymax), (xmax, ymax), (xmin, ymin), (xmax, ymin)]
+
+        vec_pl_points = self.__convert_to_vec2s(rounded_ent_points)
+        for corner_point in four_corners:
+            vec_corn_point = ezdxf.math.Vec2(corner_point)
+            if ezdxf.math.is_point_in_polygon_2d(vec_corn_point, vec_pl_points, abs_tol=1e-5) == -1:
+                is_notch = True
+                break
+        return is_notch
+
+    def __convert_to_vec2s(self, pt_list):
+        vec2_list = []
+        for pt in pt_list:
+            vec2_pt = ezdxf.math.Vec2(pt)
+            vec2_list.append(vec2_pt)
+        return vec2_list
+
+    def __create_spreadsheet(self, workbook, block_name, ent_list, notch_list):
         # add unit conversions that are necessary
         new_unit = self.unit
         if self.unit == "Inches":
@@ -70,6 +115,14 @@ class Script:
         worksheet = workbook.create_sheet(f"BlockReference {block_name}")
         worksheet.append(fieldnames)
         for i, ent_prop in enumerate(ent_list):
+            worksheet.append(ent_prop)
+            color = Color(rgb=ent_prop['A'])
+            fill = PatternFill(patternType='solid', fgColor=color)
+            worksheet[f'A{i+2}'].fill = fill
+
+        worksheet.append([""])
+        worksheet.append(["Notches:"])
+        for i, ent_prop in enumerate(notch_list):
             worksheet.append(ent_prop)
             color = Color(rgb=ent_prop['A'])
             fill = PatternFill(patternType='solid', fgColor=color)

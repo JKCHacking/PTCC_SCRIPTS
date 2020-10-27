@@ -23,7 +23,7 @@ class Constants:
     BAK_FILE_EXT = '.bak'
     TXT_FILE_EXT = '.txt'
 
-    ROUND_PRECISION = 5
+    ROUND_PRECISION = 4
 
     IMAGE_WIDTH = 200
     IMAGE_HEIGHT = 50
