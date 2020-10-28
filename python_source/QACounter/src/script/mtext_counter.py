@@ -1,0 +1,2 @@
+class MTextCounter:
+    pass
