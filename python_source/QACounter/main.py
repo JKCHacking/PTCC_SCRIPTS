@@ -14,9 +14,9 @@ if __name__ == "__main__":
                              '2. bdc (BlockDimCounter) - Counts all the polylines inside the block and '
                              'tally each with width and height of the polyline')
     args = parser.parse_args()
-    if args.s == "mtc":
+    if args.s[0] == "mtc":
         script = MTextCounter()
-    elif args.s == "bdc":
+    elif args.s[0] == "bdc":
         script = BlockDimCounter()
     else:
         print("Not supported.")
