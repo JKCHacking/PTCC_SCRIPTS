@@ -19,6 +19,11 @@ class CadManager:
             if layout_name != "Model":
                 yield self.doc.layout(layout_name)
 
+    def get_all_layout_space(self):
+        layout_list = self.doc.layout_names_in_taborder()
+        for layout_name in layout_list:
+            yield self.doc.layout(layout_name)
+
     def get_mtext(self, space):
         for ent in space:
             if ent.dxftype() == "MTEXT":

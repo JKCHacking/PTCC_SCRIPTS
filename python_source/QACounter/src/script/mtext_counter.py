@@ -18,9 +18,9 @@ class MTextCounter:
                     workbook = Workbook()
                     cad_manager = CadManager(file_full_path)
                     # getting each paperspace layout
-                    for paperspace in cad_manager.get_paperspace():
+                    for space in cad_manager.get_all_layout_space():
                         mtext_list = []
-                        for mtext_ent in cad_manager.get_mtext(paperspace):
+                        for mtext_ent in cad_manager.get_mtext(space):
                             found = False
                             count = 1
                             text = mtext_ent.plain_text()
@@ -33,7 +33,7 @@ class MTextCounter:
                             if not found:
                                 mtext_data_dict = self.__compose_data_dict(text, count)
                                 mtext_list.append(mtext_data_dict)
-                        ps_name = paperspace.name
+                        ps_name = space.name
                         # for every paperspace layout you create 1 worksheet
                         self.__create_spreadsheet(workbook, ps_name, mtext_list)
                     filename_ext = os.path.basename(file_full_path)
