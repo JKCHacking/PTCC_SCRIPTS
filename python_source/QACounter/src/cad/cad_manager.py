@@ -5,7 +5,7 @@ from src.util.constants import Constants
 
 class CadManager:
     def __init__(self, cad_file_name):
-        self.doc = ezdxf.read(cad_file_name)
+        self.doc = ezdxf.readfile(cad_file_name)
         ins_unit_num = self.doc.header["$INSUNITS"]
         self.unit = Constants.INS_UNITS[ins_unit_num]
 

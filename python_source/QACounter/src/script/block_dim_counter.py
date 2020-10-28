@@ -16,7 +16,7 @@ class BlockDimCounter:
 
     def iter_input(self):
         """
-            gets every file in the output folder and process the necessary data
+            gets every file in the input folder and process the necessary data
         """
         input_dir = Constants.INPUT_DIR
         for dir_path, dir_names, file_names in os.walk(input_dir):
@@ -37,7 +37,7 @@ class BlockDimCounter:
                             if polyline.closed:
                                 found = False
                                 count = 1
-                                width, height = self.__compute_width_height(polyline)
+                                width, height = self.__compute_width_height(polyline, cad_manager.unit)
                                 rgb_str = self.__get_rgb(polyline)
                                 if not self.__is_notch(polyline):
                                     # checking if same polyline already exist in the list.
@@ -107,8 +107,8 @@ class BlockDimCounter:
 
     def __create_spreadsheet(self, workbook, block_name, ent_list, notch_list, unit):
         # add unit conversions that are necessary
-        new_unit = self.unit
-        if self.unit == "Inches":
+        new_unit = unit
+        if unit == "Inches":
             new_unit = "Feet-Inch"
         fieldnames = ['RGBColor', f'Width ({new_unit})', f'Height ({new_unit})', 'Count']
         worksheet = workbook.create_sheet(f"BlockReference {block_name}")
@@ -157,7 +157,7 @@ class BlockDimCounter:
             ent_color_hex_str = "FFFFFF"
         return ent_color_hex_str
 
-    def __compute_width_height(self, polyline):
+    def __compute_width_height(self, polyline, unit):
         # getting the points for creation of bounding box
         ent_points = polyline.get_points('xy')
         bbox = ezdxf.math.BoundingBox2d(ent_points)
@@ -174,7 +174,7 @@ class BlockDimCounter:
 
         # add unit conversions that are necessary
         # convert inches to feet-inch
-        if self.unit == "Inches":
+        if unit == "Inches":
             w = self.__convert_inches_to_feet_inch(w)
             h = self.__convert_inches_to_feet_inch(h)
         return w, h
