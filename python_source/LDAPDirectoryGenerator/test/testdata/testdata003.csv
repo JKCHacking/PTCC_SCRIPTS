@@ -1,0 +1,3 @@
+dn,street,l,st,facsimileTelephoneNumber,telephoneNumber,mobile,mail
+"ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=TNT International Express,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,

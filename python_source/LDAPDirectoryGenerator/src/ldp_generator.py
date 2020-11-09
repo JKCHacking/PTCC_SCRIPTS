@@ -55,6 +55,8 @@ class LDAPGenerator:
 
     def create_workbook(self, data, output_path):
         wb = openpyxl.workbook.Workbook()
+        ws = None
+        current_char = ''
         for row in data:
             contact_name = row[0]
             street = row[1]
@@ -65,27 +67,42 @@ class LDAPGenerator:
             mobile = row[6]
             email = row[7]
 
-            current_char = ''
+            # this represent the starting letter of each names.
             watcher = Watcher(current_char)
             current_char = contact_name[0]
             watcher.set_value(current_char)
             if watcher.has_changed():
                 if current_char.isnumeric():
                     ws_name = "123"
-                    ws = wb.create_sheet(ws_name)
-                    ws.append([ws_name])
                 else:
                     ws_name = current_char
-                    ws = wb.create_sheet(ws_name)
-                    ws.append([ws_name])
-            ws.append([contact_name])
-            ws.append([street])
-            ws.append([city])
-            ws.append([country])
-            ws.append([f"Fax: {fax.replace('|', '/')}"])
-            ws.append([f"Telephone: {tel_num.replace('|', '/')}"])
-            ws.append([f"Mobile: {mobile.replace('|', '/')}"])
-            ws.append([f"E-Mail: {email.replace('|', '/')}"])
+                ws = wb.create_sheet(ws_name)
+                ws.append([ws_name])
+                ws.append([""])
+            if contact_name:
+                ws.append([contact_name])
+            if street:
+                ws.append([street])
+            if city:
+                ws.append([city])
+            if country:
+                ws.append([country])
+            if fax:
+                fax_list = fax.split("|")
+                fax_text = "/\n".join(fax_list)
+                ws.append([f"Fax: {fax_text}"])
+            if tel_num:
+                tel_num_list = tel_num.split("|")
+                tel_num_text = "/\n".join(tel_num_list)
+                ws.append([f"Telephone: {tel_num_text}"])
+            if mobile:
+                mobile_list = mobile.split("|")
+                mobile_text = "/\n".join(mobile_list)
+                ws.append([f"Mobile: {mobile_text}"])
+            if email:
+                email_list = email.split("|")
+                email_text = "/\n".join(email_list)
+                ws.append([f"E-Mail: {email_text}"])
             ws.append([""])
 
         if len(wb.worksheets) > 1:

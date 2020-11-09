@@ -1,0 +1,14 @@
+dn,street,l,st,facsimileTelephoneNumber,telephoneNumber,mobile,mail
+"ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=TNT International Express,ou=Miscellaneous,dc=ptcc,dc=design","PAIR PAGS Cargo Center, NAIA, Ninoy Aquino Ave.",Pasay City,Metro Manila,+63 (2) 5517490,+63 (2) 5510918|+63 (2) 813277|+63 (2) 98132790|+63 (2) 5515632,6394512345,test@mail.com
+"cn=A.D.D.J. Trading,ou=Miscellaneous,dc=ptcc,dc=design","4478 C Calhoun St., Pio del Pilar",Makati City,"Metro Manila,Philippines",+63 (2) 7502243,+63 (2) 8890892|+63 (2) 8444179|+63 (2) 8450711,12345678,adj@mail.com
+"cn=Antomy Chan,cn=Shangri-la Hotels and Resorts,ou=Miscellaneous,dc=ptcc,dc=design","Room 1211, 12/F CITIC Tower, 1 Tim Mei Avenue, Central, Hong Kong",,,+852 2599-3710,Direct: +852 2599-3729|+852 2599-3000,,antomy.chan@shangri-la.com
+"cn=Pathfinder Motel,ou=Miscellaneous,dc=ptcc,dc=design","Cnr Burke & Cotham Roads, Kew, Victoria 3101",,,+03 9817-5680,+03 9817-4551,,pathfindermotel@bigpond.com
+"cn=Ivy Huang,cn=Pathfinder Motel,ou=Miscellaneous,dc=ptcc,dc=design","Cnr Burke & Cotham Roads, Kew, Victoria 3101",,,+03 9817-5680,+03 9817-4551,,pathfindermotel@bigpond.com
+"cn=Design Coordinates\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Suite 202, 2/F ITC Bldg., 337 Sen. Gil Puyat Ave., Makati City, Philippines",,,+63 (2) 899-9276,+63 (2) 896-1981 to 84,,dciworks@skyinet.net|info@dci.com.ph
+"cn=Flor A. Beltran,cn=BayanTel,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,+63 (920) 9063951,
+"cn=Antel 2000 Corporate Centre Condominium Association\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","121 Valero St., Salcedo Village Makati City, Philippines",,,+63 (2) 7511525,+63 (2) 7511524,,
+"cn=Aileen Reyes,cn=Antel 2000 Corporate Centre Condominium Association\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,+63 (917) 3924551,raileen@usa.net
+"cn=Alpha Salcedo Condominium (Admin Office),ou=Miscellaneous,dc=ptcc,dc=design","G/F A S Bldg., H.V. dela Costa, Salcedo Village",Makati City,"Metro Manila, Philippines",+63 (2) 8400961,+63 (2) 8401134|+63 (2) 8401135|+63 (2) 8401104,,
+"cn=Alcatel Philippines Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Access Systems Division, 6/F Sterling Centre, 131 de Rosa cor. Esteban Street, Legaspi Village",Makati City,"Metro Manila, Philippines",+63 (2) 8923976,+63 (2) 7506800,,
+"cn=Antel Land Holdings Inc.,ou=Miscellaneous,dc=ptcc,dc=design",7829 Makati Avenue Makati City Philippines,,,+63 (2) 8960361,+63 (2) 8952107|+63 (2) 8994066,,

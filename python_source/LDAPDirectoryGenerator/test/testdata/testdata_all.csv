@@ -1,0 +1,342 @@
+dn,street,l,st,facsimileTelephoneNumber,telephoneNumber,mobile,mail
+"ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Shangri-la Hotels and Resorts,ou=Miscellaneous,dc=ptcc,dc=design","Room 1211, 12/F CITIC Tower, 1 Tim Mei Avenue, Central, Hong Kong",,,"+852 2599-3710","Direct Line: +852 2599-3729|+852 2599-3000",,
+"cn=Antomy Chan,cn=Shangri-la Hotels and Resorts,ou=Miscellaneous,dc=ptcc,dc=design","Room 1211, 12/F CITIC Tower, 1 Tim Mei Avenue, Central, Hong Kong",,,"+852 2599-3710","Direct: +852 2599-3729|+852 2599-3000",,"antomy.chan@shangri-la.com"
+"cn=Pathfinder Motel,ou=Miscellaneous,dc=ptcc,dc=design","Cnr Burke & Cotham Roads, Kew, Victoria 3101",,,"+03 9817-5680","+03 9817-4551",,"pathfindermotel@bigpond.com"
+"cn=Ivy Huang,cn=Pathfinder Motel,ou=Miscellaneous,dc=ptcc,dc=design","Cnr Burke & Cotham Roads, Kew, Victoria 3101",,,"+03 9817-5680","+03 9817-4551",,"pathfindermotel@bigpond.com"
+"cn=Design Coordinates\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Suite 202, 2/F ITC Bldg., 337 Sen. Gil Puyat Ave., Makati City, Philippines",,,"+63 (2) 899-9276","+63 (2) 896-1981 to 84",,"dciworks@skyinet.net|info@dci.com.ph"
+"cn=Jun I.  Luzentales,cn=Design Coordinates\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Suite 202, ITC Building, 337 Sen. Gil Puyat Ave., Makati City",,,"899-9276","896-1981 to 84",,"info@dci.com.ph"
+"cn=Aburauf Transport L.L.C.,ou=Miscellaneous,dc=ptcc,dc=design","P.O. Box 171869
+Deira Dubai, UAE",,,"+971 4 273-6767","+971 4 273-6767",,
+"cn=Anthony Mendes,cn=Aburauf Transport L.L.C.,ou=Miscellaneous,dc=ptcc,dc=design","P.O. Box 171869, Deira, Dubai, UAE",,,"+971 4 273-6767","+971 4 273-6767","+971 50 674-3138","mendesaj1969@yahoo.com"
+"cn=BayanTel,ou=Miscellaneous,dc=ptcc,dc=design","2/F Bayan Tel Corporate Center, Malingap corner Maginhawa Streets, Teacher's Village East, Diliman 1101  Quezon City Philippines",,,"+63 (2) 4494520","+63 (2) 4494568",,
+"cn=Flor A. Beltran,cn=BayanTel,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (920) 9063951",
+"cn=Antel 2000 Corporate Centre Condominium Association\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","121 Valero St., Salcedo Village Makati City, Philippines",,,"+63 (2) 7511525","+63 (2) 7511524",,
+"cn=Aileen Reyes,cn=Antel 2000 Corporate Centre Condominium Association\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 3924551","raileen@usa.net"
+"cn=Alpha Salcedo Condominium (Admin Office),ou=Miscellaneous,dc=ptcc,dc=design","G/F A S Bldg., H.V. dela Costa, Salcedo Village","Makati City","Metro Manila, Philippines","+63 (2) 8400961","+63 (2) 8401134|+63 (2) 8401135|+63 (2) 8401104",,
+"cn=Alcatel Philippines Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Access Systems Division, 6/F Sterling Centre, 131 de Rosa cor. Esteban Street, Legaspi Village","Makati City","Metro Manila, Philippines","+63 (2) 8923976","+63 (2) 7506800",,
+"cn=Antel Land Holdings Inc.,ou=Miscellaneous,dc=ptcc,dc=design","7829 Makati Avenue Makati City Philippines",,,"+63 (2) 8960361","+63 (2) 8952107|+63 (2) 8994066",,
+"cn=Bon Voyage International Travel and Tours\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","501 IPI Buendia Tower,Unit 603, Sen. Gil Puyat Avenue 1231 Pasay City Philippines",,,"+63 (2) 8870729","+63 (2) 8870725",,
+"cn=Valenzuela\2C Catherine A.,cn=Bon Voyage International Travel and Tours\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 8419628","kate.valenzuela@bonvoyage-trvl.com"
+"cn=The Philippine American Life and General Insurance Company,ou=Miscellaneous,dc=ptcc,dc=design","G/F CVA & Sons Bldg., J.P. Laurel Ave.","Davao City","Philippines","+63 (82) 2210390","+63 (82) 2271492|+63 (82) 2210390",,
+"cn=Airfreight 2100\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","3rd Floor, Cargohaus Bldg., Brgy. Vitalez, Old MIA Road, NAIA Complex","Paranaque City","Metro Manila, Philippines","+63 (2) 8540237","+63 (2) 8547586",,
+"cn=Bureau of Internal Revenue (RD050),ou=Miscellaneous,dc=ptcc,dc=design","Atrium Building (RD0 50) Makati City, Philippines",,,"+63 (2) 6210411","+63 (2) 8190062",,
+"cn=Benitez Parlade Africa Herrera Parlade & Panga Law Offices,ou=Miscellaneous,dc=ptcc,dc=design","15th Floor, Security Bank Centre, 6776 Ayala Avenue Makati City Philippines",,,"+63 (2) 8911401","+63 (2) 8911270|+63 (2) 8911241",,"attorneys@pablaw.com.ph"
+"cn=Kink Cakes,ou=Miscellaneous,dc=ptcc,dc=design","839 Midland Mansion, Pasay Road, Makati City, Philippines",,,"+63 (2) 8924515","+63 (2) 8934343|+63 (2) 8924515",,
+"cn=TNT International Express,ou=Miscellaneous,dc=ptcc,dc=design","PAIR PAGS Cargo Center, NAIA, Ninoy Aquino Ave.","Pasay City","Metro Manila","+63 (2) 5517490","+63 (2) 5510918|+63 (2) 813277|+63 (2) 98132790|+63 (2) 5515632",,
+"cn=Fed Ex,ou=Miscellaneous,dc=ptcc,dc=design","3rd Floor, Cargohaus Bldg., Brgy. Vitalez Old Mia Road, NAIA Complex, Paranaque, Philippines",,,,"+63 (2) 8545454|+63 (2) 8866787",,
+"cn=Lot Doronila,cn=Fed Ex,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8545311|+63 (2) 8794434","+63 (917) 5337830","ldoronila@fedex.com"
+"cn=Picazo Buyco Tan Fider & Santos Law Offices,ou=Miscellaneous,dc=ptcc,dc=design","18th, 19th and 17th Floors Liberty Center, 104 H. V. Dela Costa St., Salcedo Village, Makati City, Philippines",,,"+63 (2) 8881011|+63 (2) 8446167","+63 (2) 8880999",,"picazo@info.com.ph"
+"cn=Daphne Jereza,cn=Picazo Buyco Tan Fider & Santos Law Offices,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"dtjereza@picazolaw.com"
+"cn=Mobeline Car Charter Services,ou=Miscellaneous,dc=ptcc,dc=design","Unit A-7701 Saint Paul Road, San Antonio Village, Makati City, Philippines",,,"+63 (2) 5628106","+63 (2) 8902778|+63 (2) 8902587|+63 (2) 8995124",,
+"cn=R. F. de Guzman and Associates (Law Firm),ou=Miscellaneous,dc=ptcc,dc=design","F. Mercedes I Bldg., #39 Anapolis St., Greenhills, San Juan, Metro Manila, Philippines",,,"+63 (2) 7274842","+63 (2) 7259590|+63 (2) 7274842",,
+"cn=Roque Butuyan & Gangoso Law Offices,ou=Miscellaneous,dc=ptcc,dc=design","Unit 1105 Antel 2000, Corporate Centre, Valero St., Salcedo Village, Makati City, Philippines",,,"+63 (2) 8873893","+63 (2) 8873893 to 94",,"rbbglaw@skyinet.net"
+"cn=Harry Roque,cn=Roque Butuyan & Gangoso Law Offices,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5398096",
+"cn=Rennaisance New World Hotel,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 816888|+63 (2) 8116777",,
+"cn=North Star International Travel Inc.,ou=Miscellaneous,dc=ptcc,dc=design","G/F Heart Tower Condominium, 108 Valero Street, Salcedo Village, Makati City, Philippines",,,"+63 (2) 8156392","+63 (2) 8121978",,"outbound@northstar-travel.com.ph"
+"cn=Standard Chartered Bank,ou=Miscellaneous,dc=ptcc,dc=design","6788 Ayala Avenue","Makati City","Metro Manila","+63 (2) 8867019","+63 (2) 8867888",,
+"cn=Karen Lim,cn=Standard Chartered Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"Lim.Karen-T@ph.standardchartered.com"
+"cn=Don Cornelius B. Alviar,cn=Standard Chartered Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8867019",,
+"cn=Security Bank Corporation,ou=Miscellaneous,dc=ptcc,dc=design","G/F 184 LPL Plaza, LP Leviste Street, Salcedo Village, Makati City, Philippines",,,"+63 (2) 8124045","+63 (2) 8403720|+63 (2) 8403713|+63 (2) 8160197|+63 (2) 8153357|+63 (2) 8153329|+63 (2) 8403242",,
+"cn=Rebecca Muyot,cn=Security Bank Corporation,ou=Miscellaneous,dc=ptcc,dc=design","SECURITY BANK CORPORATION G/F, 124 LPL Plaza, LP Leviste St., Salcedo Village, Makati City, Philippines",,,"+63 (02) 8124045","+63 (02) 8403720|+63 (2) 8160197","+63 (917) 8865863|+63 (918) 9172745|+63 (918) 9095918","rmuyot@securitybank.com.ph"
+"cn=Microcircuits Systems Int. Inc.,ou=Miscellaneous,dc=ptcc,dc=design","2nd Floor Saville Bldg., 8728 Paseo de Roxas, cor. Sen. Gil Puyat Ave., Makati City, Philippines",,,"+63 (2) 8953769","+63 (2) 8904843",,
+"cn=Plan Travel Ltd.,ou=Miscellaneous,dc=ptcc,dc=design","Room 1004-6, Regent Centre, 88 Queen's Road C., Hong Kong",,,"+852 28681536","+852 28108668",,"info@plantravel.com.hk"
+"cn=Grace Leung,cn=Plan Travel Ltd.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+852 31047322",,"grace@plantravel.com.hk"
+"cn=Philam Insurance Company Inc.,ou=Miscellaneous,dc=ptcc,dc=design","5th Floor, Philam Building,100 C. Palanca Jr. cor. dela Rosa St., Legaspi Village, Makati City, Philippines",,,,"+63 (2) 7543541",,
+"cn=John Michael Hocson,cn=Philam Insurance Company Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 7018658",
+"cn=MIS Net,ou=Miscellaneous,dc=ptcc,dc=design","22/F Antel 2000 Corporate Centre, 121 Valero Street, Salcedo Village, Makati City, Philippines",,,"+63 (2) 8871718","+63 (2) 8871718 ext 187",,
+"cn=Jennie Mendez,cn=MIS Net,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"JennieM@misnet.com.ph"
+"cn=Okamura Office Furniture System,ou=Miscellaneous,dc=ptcc,dc=design","U-Bix Annex, Angono St., cor. J.P. Rizal, Makati City, Philippines",,,"+63 (2) 8977168|+63 (2) 8991752","+63 (2) 8976811|+63 (2) 8975123|+63 (2) 8976797|+63 (2) 8977168",,
+"cn=Lyn Vergara,cn=Okamura Office Furniture System,ou=Miscellaneous,dc=ptcc,dc=design","E.L. Tower Showroom, G/F E.L. Tower, EDSA Guadalupe, Makati City, Philippines",,,"+63 (2) 8977168|+63 (2) 8991752","+63 (2) 8976811|+63 (2)  8975123|+63 (2) 8976797|+63 (2)  8977168|+63 (2) 8991776|+63 (2) 8991775|+63 (2) 8991752","+63 (917) 5309078","lvergara@fastmail.i-next.net"
+"cn=Power Books Specialty Store,ou=Miscellaneous,dc=ptcc,dc=design","918 A. Arnaiz Avenue, Makati City, Philippines",,,"+63 (2) 8130673","+63 (2) 8444455",,"ibid@powerbooks.com.ph"
+"cn=Microstation Computer Center,ou=Miscellaneous,dc=ptcc,dc=design","Space 80, Level 3, Annex Building, Robinson's Galleria Extension, Mandaluyong City, Philippines",,,"+63 (2) 6372785","+63 (2) 6338490|+63 (2) 6371473|+63 (2) 6371474",,
+"cn=Shiela Marie Coronel,cn=Microstation Computer Center,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"shiela@unforgettable.com"
+"cn=Practical Computer,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"polhamus@frontiernet.net"
+"cn=Sampaguita Travel Corporation,ou=Miscellaneous,dc=ptcc,dc=design","G/F Mareic Bldg., Tordesillas St., Salcedo Village, Makati City, Philippines",,,"+63 (2) 8195037","+63 (2) 8933806|+63 (2) 8933810|+63 (2) 8921121 to 23|+63 (2) 8195038",,
+"cn=Microbase Incorporated,ou=Miscellaneous,dc=ptcc,dc=design","5/F Casmer Bldg.,195 Salcedo St., Legaspi VillageMakati CityPhilippines",,,"+63 (2) 8170258","+63 (2) 8137603 loc 141",,
+"cn=Emilio Choa,cn=Microbase Incorporated,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"emilioc@microbase.com.ph"
+"cn=Progress (Home & Office Furnishings),ou=Miscellaneous,dc=ptcc,dc=design","#7 Sheridan cor. Pines Street, Mandaluyong City, Philippines",,,"+63 (2) 6374498","+63 (2) 6374497",,
+"cn=Sun Life of Canada (Philippines)\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Linden New Business Office, 6/F Philcox Bldg., 172 Salcedo St., Legaspi Village","Makati City","Metro Manila",,"+63 (2) 8174536",,
+"cn=Lita Natividad,cn=Sun Life of Canada (Philippines)\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8470593",,
+"cn=Precision IT Services on Time Inc. (PIT Stop),ou=Miscellaneous,dc=ptcc,dc=design","Penthouse Glass Tower Bldg., 115 C. Palanca St., Legaspi Village, Makati City, Philippines",,,"+63 (2) 8151363","+63 (2) 8133138",,
+"cn=Monte Cielo Marketing Corporation,ou=Miscellaneous,dc=ptcc,dc=design","71 Anakbayan St., Paltok, Quezon City, Philippines",,,"+63 (2) 7405473","+63 (2) 7400123",,
+"cn=Regus Instant Office Worldwide,ou=Miscellaneous,dc=ptcc,dc=design","18/F Philamlife Tower, 8767 Paseo de Roxas, Makati City, Philippines",,,"+63 (2) 8308489","+63 (2) 8308488",,
+"cn=Claire Aclo,cn=Regus Instant Office Worldwide,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"claire.aclo@regus.com"
+"cn=P&T Consultants Pte Ltd.,ou=Miscellaneous,dc=ptcc,dc=design","2300 Clifford Centre, 24 Raffles Place, Singapore 048621",,,"+65 65351283","+65 65352011",,"pta@ptcon.com.sg"
+"cn=Philippine Long Distance Telephone Company,ou=Miscellaneous,dc=ptcc,dc=design","9/F PLDT Tower I, 6799 Ayala Avenue, Makati City, Philippines",,,"+63 (2) 8437094","+63 (2) 8444118",,
+"cn=Mario Paguio,cn=Philippine Long Distance Telephone Company,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"mcpaguio@pldt.com.ph"
+"cn=Jose Darryl M. Alano,cn=Philippine Long Distance Telephone Company,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"jmalano@pldt.com.ph"
+"cn=Redshed Cafe,ou=Miscellaneous,dc=ptcc,dc=design","Medhurst Wines, 24 Medhurst Road Gruyere, Victoria 3770 Australia",,,,"03 5964.9022",,"redshedcafe@medhurstwines.com.au"
+"cn=Novelle Office Furniture & Design,ou=Miscellaneous,dc=ptcc,dc=design","G/F HPL Building, 60 Sen. Gil Puyat Ave., Makati City, Metro Manila, Philippines",,,"+63 (2) 8439460","+63 (2) 8160985",,"novelle@Philonline.com.ph"
+"cn=Smart Communications\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Smart Tower, 6799 Ayala Avenue","Makati City","Metro Manila","+63 (2) 5113060","+63 (2) 5112061",,
+"cn=Tuazon\2C Amie N.,cn=Smart Communications\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (918) 9489854","antuazon@smart.com.ph"
+"cn=Philippine Bank of Communications,ou=Miscellaneous,dc=ptcc,dc=design","Ground Floor, PBCom Tower, 6795 Ayala Avenue cor. Herrera St., Makati City, Philippines",,,"+63 (2) 8102334","+63 (2) 8102311|+63 (2) 8102332",,
+"cn=Minuteman Printers Inc.,ou=Miscellaneous,dc=ptcc,dc=design","G4 & G5 Valero Plaza, 124 Valero Street, Salcedo Village, Makati City, Philippines",,,"+63 (2) 8101163","+63 (2) 8184139|+63 (2) 8173620",,
+"cn=Rustans (Delivery),cn=Minuteman Printers Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 (2) 8981272","+63 (2) 8981268",,
+"cn=Shelarie Canapi,cn=Minuteman Printers Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5407037",
+"cn=Philippine Long Distance Telephone Company (PLDT),ou=Miscellaneous,dc=ptcc,dc=design","3/F Locsin Building, Ayala Avenue cor. Makati Ave., Makati City, Philippines",,,"+63 (2) 8151859","+63 (2) 8303547|+63 (2) 8303546|+63 (2) 8151780",,
+"cn=M-Tech Medical Diagnostic And Therapeutic Center,ou=Miscellaneous,dc=ptcc,dc=design","379 Sen. Gil Puyat Avenue, Bel-Air Village, Makati City, Philippines",,,,"+63 (2) 8966751 to 56 loc 205",,
+"cn=Raquel Monje-Abin,cn=M-Tech Medical Diagnostic And Therapeutic Center,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"raquelmonjeabin@hotmail.com"
+"cn=Phillip Lancaster Electronics,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+44 (12) 33632612","+44 (12) 33632612",,
+"cn=TECfurn Systems Furniture,ou=Miscellaneous,dc=ptcc,dc=design","UNIT 1025 Cityland Condominium, Calle Estacion St., Pasong Tamo","Makati City","Metro Manila","+63 (2) 7502204","+63 (2) 7502204",,
+"cn=China Travel International Investment H. K. Ltd.,ou=Miscellaneous,dc=ptcc,dc=design","12/F, CTS House, 78-83 Connaught Road, Central, Hong Kong",,,"+852 25437270","+852 28533111",,
+"cn=Eastern Telecommunications Philippines Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Telecoms Plaza, 316 Sen. Gil Puyat Avenue, Salcedo Village, Makati City, Philippines",,,"+63 (2) 3388711","+63 (2) 3008888",,
+"cn=Cesar Herbosa,cn=Eastern Telecommunications Philippines Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 3001533","+63 (920) 9233073","herbosaCL@etpi.com.ph"
+"cn=Island Photo Center Inc.,ou=Miscellaneous,dc=ptcc,dc=design","G/F Makati Executive Center, Herrera cor. San Agustin St., Salcedo Village, Makati City, Philippines",,,,"+63 (2) 8128253",,
+"cn=Shalimar Sports International,ou=Miscellaneous,dc=ptcc,dc=design","2/F Shalimar Bldg., 1053 Vito Cruz Street, Manila, Philippines",,,"+63 (2) 5269866|+63 (2) 8950462","+63 (2) 5269861 to 63","+63 (917) 8767903","shalimar@pworld.net.ph"
+"cn=Sanjeeb Gopaldas,cn=Shalimar Sports International,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5336449",
+"cn=Easy Ink Trading,ou=Miscellaneous,dc=ptcc,dc=design","8119-H Lumbayao St., San Antonio Village, Makati City, Philippines",,,,"+63 (2) 8901266",,
+"cn=Reggie Gallardo,cn=Easy Ink Trading,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 8300591","dee-djo@pacific.net.ph"
+"cn=Excel Frames & Decors,ou=Miscellaneous,dc=ptcc,dc=design","19 Mindanao Avenue, Quezon City, Philippines",,,"+63 (2) 9240196","+63 (2) 4113705",,
+"cn=Sonny Osi,cn=Excel Frames & Decors,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (912) 8413643","sonnyosi@evoserve.com"
+"cn=Executive International Movers\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","No. 10, P. Antonio St., Barrio Ugong, Pasig City, Metro Manila, Philippines",,,"+63 (2) 6718338","+63 (2) 6718000",,
+"cn=Arnie Jereza,cn=Executive International Movers\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 8464982","arniej@eimovers.com"
+"cn=Expert Interior Products,ou=Miscellaneous,dc=ptcc,dc=design","Unit 3, 41 Bulacan St., Brgy. Bungad, Quezon City, Philippines",,,"+63 (2) 4136452","+63 (2) 4138848",,"expert@broline.com"
+"cn=United Coconut Planters Bank,ou=Miscellaneous,dc=ptcc,dc=design","UCPB Valero Branch, G/F Antel 2000 Corporate Centre, 121 Valero St., Salcedo Village","Makati City","Metro Manila","+63 (2) 8875258","+63 (2) 8875255|+63 (2) 8875257",,
+"cn=Ma. Ruby De Vera,cn=United Coconut Planters Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8875254",,
+"ou=Web Solutions,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Mannix B. Pabalan,ou=Web Solutions,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5298843","mannixbp@wspi.com.ph"
+"cn=Hazel Sabile,ou=Web Solutions,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (919) 4085299","hazel@wspi.com.ph"
+"ou=White Flag General Trasportation,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Mansab Ali,ou=White Flag General Trasportation,ou=Miscellaneous,dc=ptcc,dc=design","P.O Box 46100 Fikree Bldg., Office NO. 38 Near Bus Stand, Bur Dubai, United Arab Emirates",,,"+971 (4) 3935681","+971 (4) 39333852","+971 (50) 6506408","mansab07@yahoo.com"
+"cn=Haji Ishfaq Ali,ou=White Flag General Trasportation,ou=Miscellaneous,dc=ptcc,dc=design","P.O. Box 46100. Fikree Bldg Office No. 38 near Bus Stand, Bur","Dubai","United Arab Emirates","+971 (4) 3935681","+971 (4) 3933852","+971 (50) 3476183",
+"ou=WLC - World Link Couriers,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Joey Pelayo,ou=WLC - World Link Couriers,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (920) 2433884",
+"ou=WSA - Wireless Services Asia,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Christian Ryan Santos,ou=WSA - Wireless Services Asia,ou=Miscellaneous,dc=ptcc,dc=design","53/F PBCom Tower, 6795 Ayala Avenue, Cor. V.A. Rufino St., Makati City, Philippines",,,"+63 (2) 8166440","+63 (2) 8166441","+63 (917) 8151692","ryan.santos@wsworldwide.com"
+"cn=Dubai Delight Bakery,ou=Miscellaneous,dc=ptcc,dc=design","PO Box 22826 United Arab Emirates",,,,"+971 (4) 3476778",,
+"cn=Les Howard,cn=Dubai Delight Bakery,ou=Miscellaneous,dc=ptcc,dc=design","(Friend of Dean Cordon) United Arab Emirates",,,,,"+971 (50) 4985884","les.howard@dubaidelight.ae"
+"cn=Dos Palmas Arraceffi Island Resort,ou=Miscellaneous,dc=ptcc,dc=design","Honda Bay Puerto Princesa, Palawan, Philippines|Unit 1005 Antel Global Corporate Center, Julia Vargas Ave., Ortigas Center, Pasig City, Philippines",,,"+63 (2) 6374230","+63 (2) 6374226|+63 (2) 6374236",,
+"cn=Document Parcel Express (Phils.),ou=Miscellaneous,dc=ptcc,dc=design","Oyster Industrial Complex, Bldg. 1, Ninoy Aquino Avenue, San Dionisio, Paranaque City, Philippines",,,"+63 (2) 8203091|+63 (32) 3455386","+63 (2) 8296700",,"mnl.sales@dpex.com|dpecebu@skyinet.net"
+"cn=Carrence See Sun,cn=Document Parcel Express (Phils.),ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (916) 4531271",
+"o=Asian Development Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Chatiya Nantham,o=Asian Development Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"cnantham@adb.org"
+"cn=AIM Conference Center,ou=Miscellaneous,dc=ptcc,dc=design","Benavidez cor. Trasierra Streets, Legaspi Village 1260","Makati City","Metro Manila,Philippines","+63 (2) 7517160","+63 (2) 7501010 loc 2037",,
+"cn=Mayette Sagales-Delfin,cn=AIM Conference Center,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"mdelfin@dataserve.aim.edu.ph"
+"cn=Alfredo Agalud-ud,ou=Miscellaneous,dc=ptcc,dc=design","1651 Candida Street, Pandacan",,"Metro Manila,Philippines",,"+63 (2) 8162809|+63 (2) 5626921",,
+"o=APC - American Power Conversion Corporation,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Odette Malong,o=APC - American Power Conversion Corporation,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5353588","Odette.Malong@apcc.com"
+"o=A.O.MECHANICAL CONSULTANT,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 813-0406",,
+"cn=Amadeo Pasia,o=A.O.MECHANICAL CONSULTANT,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 2 813-0406","+63 917 856-2095","adingslv2002@yahoo.com"
+"cn=Alpha Graphics,ou=Miscellaneous,dc=ptcc,dc=design","G/F Grand Tower Bldg., 150 Alfaro near cor. Villar St., Salcedo Village","Makati City","Metro Manila, Philippines","+63 (2) 8400222","+63 (2) 8400223",,"alphagra@skyinet.net"
+"cn=Roni G. Arguelles,cn=Alpha Graphics,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 918 8678940",
+"cn=Almojuela Printing,ou=Miscellaneous,dc=ptcc,dc=design","8903 Obrero St., Barangay Olympia","Makati City","Metro Manila, Philippines",,"+63 (2) 8995375",,
+"cn=Armando Pamaran,cn=Almojuela Printing,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 3601113",
+"cn=Gardex Electronics (PH) Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Rm 104, Narra Bldg., 2276 Don Chino Roces Ave. Ext., Makati City, Philippines",,"1231","+63 (2) 8185006","+63 (2) 8167095|+63 (2) 8928428",,"gardex@mozcom.com"
+"cn=Valdez\2C Joseph Calvin,cn=Gardex Electronics (PH) Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 8933814",
+"cn=Globe Telecom Inc.,ou=Miscellaneous,dc=ptcc,dc=design","4/F Globe Telecom Plaza II, Madison St., 1552 Mandaluyong City, Philippines",,,"+63 (2) 7302177","+63 (2) 7302351",,"globesolutions@globetel.com.ph"
+"cn=Ma. Lirio San Jose,cn=Globe Telecom Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5888024","lsanjose@globetel.com.ph"
+"cn=Golden Forum Land Inc.-Seibu Tower,ou=Miscellaneous,dc=ptcc,dc=design","3rd Floor Forum Fort Bldg., 31 Street cor. 2nd St., Bonifacio Stopover, Fort Bonifacio, Global City, Philippines",,,"+63 (02) 8191913","+63 (02) 8160912",,
+"cn=Goode Communications Phils. Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Rm. 206 Ayala Life FGU Center, Alabang-Zapote Road cor. Acacia Ave., Madrigal Business Park, Alabang Muntinlupa City, Philippines",,,"+63 (2) 8099813","+63 (2) 8099890",,"goodephil@yahoo.com"
+"cn=Tristan C. Arcega,cn=Goode Communications Phils. Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 917 4616989",
+"cn=Graceworth Office Systems,ou=Miscellaneous,dc=ptcc,dc=design","5th Flr. Yao Bldg., 249 Rizal Ave. cor. 7th Ave., Caloocan City, Philippines",,,"+63 2 364-9925","+63 2 364-9844|+63 2 364-9854",,
+"cn=Nestee Macadaeg II,cn=Graceworth Office Systems,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 364-9925","+63 2 364-9854|+63 2 364-9844",,
+"cn=Insular Life Assurance Co. Limited,ou=Miscellaneous,dc=ptcc,dc=design","Insular Life Bldg., 6781 Ayala Ave., Makati City, Philippines",,,"+63 (2) 8178859","+63 (2) 8173051 loc 3190",,
+"cn=Parkway Inn Hotel,ou=Miscellaneous,dc=ptcc,dc=design","132 Sukhumvit Road, Bangkok, Thailand",,,"+66 (2) 2542180","+66 (2) 2553711 to 13",,"parkway@bkk2.loxinfo.co.th"
+"cn=Mrs. Ngo (Chinese Interpreter),ou=Miscellaneous,dc=ptcc,dc=design","#35 Unit F, Horseshoe Executive Homes, Horseshoe Village, Big Horseshoe St., San Juan, Metro Manila, Philippines",,,"+63 (2) 7245721","+63 (2) 7228321",,
+"cn=Ma. Corazon DL. Ramirez,ou=Miscellaneous,dc=ptcc,dc=design","Philamcare Health Systems, Inc., 7/F Philamlife Building, United Nations Ave., Ermita, Manila, Philippines",,,"+63 (2) 5278985","+63 (2) 5283717",,"Cora-D.Ramirez@AIG.com"
+"cn=Pamela Casin,ou=Miscellaneous,dc=ptcc,dc=design","Security Bank Corporation, Security Bank Centre, 6776 Ayala Avenue, 0719 Makati City, Metro Manila, Philippines",,,"+63 (2) 8945292|+63 (2) 8911397|+63 (2) 8101082","+63 (2) 88878 loc 2315",,"pcasin@securitybank.com.ph"
+"cn=Net Support,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"support-tickets@communitech.net"
+"cn=Nicole Tovey,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"ntovey@bussmurton.co.uk"
+"cn=Lhody A. Fabriga,ou=Miscellaneous,dc=ptcc,dc=design","Unit 101, 10/F Leagspi Suites Building, 178 Salcedo Street, Legaspi Village, 1200 Makati City",,,"+63 (2) 894.2590|+63 (2) 752.4525 local 141","+63 (2) 752.4525 to 29|+63 (2) 840.4050 to 51|+63 (2) 840.4323, 24, 34, 45|+63 (2) 840.4389|+63 (2) 840.4356, 59, 89, 90, 98|+63 (2) 893.6349","0918.927.2308","landrada@microimageph.com"
+"cn=Coby's Marketing,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 (2) 2465265","+63 (2) 6364896",,
+"cn=Mtrade Inc.,ou=Miscellaneous,dc=ptcc,dc=design","4/F OAC Bldg., San Miguel Avenue, 1605 Ortigas Centre, Pasig City, Philippines",,,"+63 (2) 6336530","+63 (2) 6346101 to 04",,"citamac@mtech.com.ph"
+"cn=Fuji Xerox Philippines Inc.,ou=Miscellaneous,dc=ptcc,dc=design","19F 6788 Building, Ayala Avenue, 1229  Makati City, Philippines",,,"+63 (2) 8867101","+63 (2) 8867075 to 94",,
+"cn=Health Maintenance Organization Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Penthouse, Jaka II Building, 150 Legaspi St., Legaspi Village, Makati City, Philippines",,,"+63 (2) 8109329","+63 (2) 8128997|+63 (2) 8128998|+63 (2) 8160087",,
+"cn=Edelfonso Ponce,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 9384721","+63 (918) 6579787",
+"cn=Berlitz Languages Centres,ou=Miscellaneous,dc=ptcc,dc=design","Berlitz Languages Limited Suite 708, One Pacific Place, 88 Queensway Hong Kong",,,"+852 25259757","+86 (10) 65930478",,
+"cn=Tom Godfrey,cn=Berlitz Languages Centres,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+852 21572211",,"thomas.godfrey@berlitz.com"
+"cn=General Organization for Social Insurance,ou=Miscellaneous,dc=ptcc,dc=design","P.O. Box 5319, Manama, Bahrain",,,"+973 533681","+973 531040",,
+"cn=Kathlene Elna Dela Pena,ou=Miscellaneous,dc=ptcc,dc=design","Unit 1004 Liberty Center Bldg., 104 H.V. Dela Costa St., Salcedo Village, Makati City, Philippines",,,"+63 (2) 7501806","+63 (2) 7501800","+63 (927) 8723632","len.delapena@q-linux.com"
+"cn=Deliverers Trucking Services,ou=Miscellaneous,dc=ptcc,dc=design","Block 1 Lot 5, Mozart St., Greenville Subdivision, Tandang Sora, Quezon City, Philippines",,,,"+63 (2) 4556021",,
+"cn=Comclark Network and Technology Corp.,ou=Miscellaneous,dc=ptcc,dc=design","Pres. Manuel A. Roxas Highway, Clark Special Economic Zone, Pampanga, Philippines",,,"+63 (45) 5993777","+63 (45) 5993888|+63 (45) 5993777",,
+"cn=Victor Mangulabnan,cn=Comclark Network and Technology Corp.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (920) 6007335","victor@comclark.com"
+"cn=Fitness International,ou=Miscellaneous,dc=ptcc,dc=design","LKG Tower Level 12B, Ayala Avenue, Makati City, Philippines",,,"+63 (2) 8841166","+63 (2) 8841161 to 64",,
+"cn=Villacorte\2C Dolly R.,cn=Fitness International,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (922) 8009652","dolly.fitnessintl@johnclements.com"
+"cn=Integrated Computer Systems Inc.,ou=Miscellaneous,dc=ptcc,dc=design","3/F Limketkai Building, Ortigas Avenue, San Juan, Metro Manila, Philippines",,,"+63 (2) 7214502","+63 (2) 8453349|+63 (2) 7273801",,"icsengg@integratedcom.com|consult@ics.com.ph"
+"cn=Viana\2C Ferdinand E.,cn=Integrated Computer Systems Inc.,ou=Miscellaneous,dc=ptcc,dc=design","UNIT 704 Antel 2000 Bldg., Valero St.","Makati City","Metro Manila","+63 (2) 8453321 ext. 16","+63 (2) 8453321/23|+63 (2) 8453349/51",,
+"cn=International Exchange Bank,ou=Miscellaneous,dc=ptcc,dc=design","G/F Vicente Madrigal Bldg., 6793 Ayala Ave., Makati City, Philippines",,,"+63 (2) 8915851","+63 (2) 8915852 to 56",,
+"cn=Uy\2C Mercy Lynne G.,cn=International Exchange Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 (2) 8915938",,,
+"cn=Francis Honesto De Leon,cn=International Exchange Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 (2) 8915938",,"+63 (918) 9008878",
+"cn=Stephanie Caracta,cn=International Exchange Bank,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (918) 9014574",
+"cn=Far East Bank and Trust Company,ou=Miscellaneous,dc=ptcc,dc=design","12/F FEBTC Bldg., Sen. Gil Puyat Avenue, Makati City, Philippines",,,"+63 (2) 8915216","+63 (2) 8915210|+63 (2) 8459888|+63 (2) 8914095 to 98",,
+"cn=Citimotors Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Corner Pasong Tamo and Don Bosco St., Philippines",,,"+63 (2) 8175199","+63 (2) 8170477|+63 (2) 8925763",,
+"cn=Fabriano Societa Per Azioni\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","103 Mercedes Avenue, Brgy. San Miguel, Pasig City, Philippines",,,"+63 (2) 6418754","+63 (2) 6433456",,
+"cn=Forte Showroom Corporation [Dimensione],ou=Miscellaneous,dc=ptcc,dc=design","2214 Tolentino St., Pasay City, Metro Manila, Philippines",,,"+63 (2) 8448150","+63 (2) 8872311",,
+"cn=Diana Joy Manuel,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (918) 9181396","dmanuel@fpdsavills.com.ph"
+"cn=Janice Fernandez,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8304017",,"janice@fraserhospitality.com"
+"cn=Susan Ilaga,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8867075 to 94 local 143","+63 (919) 9370974","susan.ilaga@phl.xerox.com"
+"cn=Fung & Fung Solicitors,ou=Miscellaneous,dc=ptcc,dc=design","2301-4, 23/F, Hang Seng Bank North Point Branch Building, 339 King's Road, Hong Kong",,,"+852 28068875","+852 28068284|+852 28068847",,
+"cn=Charlie E. J. Hannant,ou=Miscellaneous,dc=ptcc,dc=design","HSBC Bldg.,4th Flr.,312/45 Al Souq Road, Bur Dubai PO Box 4604 Dubai, UAE",,,"+971 (4) 3536012","+971 (4) 5077580","+971 (50) 6574012","charleshannant@hsbc.com"
+"cn=April Ria Morales,ou=Miscellaneous,dc=ptcc,dc=design","G/F The Enterprise Center, Tower 1, 6766 Ayala Ave., Corner Paseo de Roxas, Makati City, Philippines",,,"+63 (2) 7512979","+63 (2) 7555257",,
+"cn=Columbia Technologies Inc.,ou=Miscellaneous,dc=ptcc,dc=design","4/Flr., Caresma Bldg., #50 Polaris St., Bel-Air, Makati City, Philippines",,,"+63 (2) 8966253","+63 (2) 8960927",,
+"cn=Agnes L. Cacho,cn=Columbia Technologies Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8972961","+63 917 4576331","acacho@cti-phil.com"
+"cn=Convey (Phils.) Advertising Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Suite 410 FEM11 Bldg., A. Soriano 11 St. (Aduana), Intramuros, Manila, Philippines",,,"+63 (2) 5272858","+63 (2) 5271623",,
+"cn=Knox Coeli,cn=Convey (Phils.) Advertising Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (918) 9385879",
+"cn=Citibind Corporation,ou=Miscellaneous,dc=ptcc,dc=design","8999-A Aranga St., San Antonio Village, Makati City, Philippines",,,"+63 (2) 8953687","+63 (2) 8903013|+63 (2) 8960852",,"citibind@info.com.ph"
+"cn=Mike Garcia,cn=Citibind Corporation,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (919) 8570744",
+"cn=Carlos Cinco,ou=Miscellaneous,dc=ptcc,dc=design","Room 1401 C, Security Bank Centre, 6776 Ayala Avenue, Makati City, Philippines",,,"+63 (2) 8911132","+63 (2) 8911132",,
+"cn=Canon Marketing (Philippines) Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Marvin Plaza Building, 2153 Don Chino Roces Avenue, Makati City, Philippines",,,"+63 (2) 8944174","+63 (2) 8126076 to 79",,"cmp_sales@cspl.canon.com.sg"
+"cn=Marivic Gaddi,cn=Canon Marketing (Philippines) Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 (2) 7298482","+63 (2) 7298482","+63 (917) 5268750",
+"cn=City Garden Hotel (Makati),ou=Miscellaneous,dc=ptcc,dc=design","7870 Makati cor. Kalayaan Avenue, Makati City, Philippines",,,"+63 (2) 8991415","+63 (2) 8991111",,"citygarden@pacific.net.ph"
+"cn=Columbia Computer Superstore,ou=Miscellaneous,dc=ptcc,dc=design","4/F SM Megamall Bldg. A, EDSA, Brgy. Highway Hills, Mandaluyong City, Philippines",,,"+63 (2) 6339311","+63 (2) 6339307 to 10",,
+"cn=Columbia Computer Center,ou=Miscellaneous,dc=ptcc,dc=design","G/F Park Square 1, Ayala Center, Makati City, Philippines",,,"+63 (2) 8671705","+63 (2) 8671704 to 06",,
+"cn=Chan & Tang Certified Public Accountants,ou=Miscellaneous,dc=ptcc,dc=design","Rooms 2305-8, 23/F, Hang Seng North Point Building, 341 King's Road, North Point, Hong Kong",,,"+852 25984909","+852 25988062",,
+"cn=Tang\2C T. Y.,cn=Chan & Tang Certified Public Accountants,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"tying@chantang.com.hk"
+"cn=Business Camp Party Experts,ou=Miscellaneous,dc=ptcc,dc=design","1762 Nicanor St. (Reposo) Makati City Philippines",,,"+63 (2)8972908","+63 (2) 8972908",,
+"cn=Dada Dorotheo,cn=Business Camp Party Experts,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5353239",
+"cn=Carlo C. Buena,ou=Miscellaneous,dc=ptcc,dc=design","M-Tech Medical and Diagnostic Clinic 379 Sen. Gil Puyat Ave. cor. Paseo de Roxas, Bel Air Village Makati City Philippines",,,"+63 (2) 7520445","+63 (2) 8966751 /56","+63 (917) 4681567",
+"cn=BST Columbia Photo,ou=Miscellaneous,dc=ptcc,dc=design","Space #164, G/F Glorietta 4, Ayala Center Makati City, Philippines",,,,"+63 (2) 7293934",,
+"cn=Seona Dizon,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (918) 9146297","sdizon@broadbandphilippines.com"
+"cn=Velez\2C Alfredo O.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 8457717","avelez@broadbandphilippines.com"
+"o=Broadband Philippines,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Boni Manlapig II,o=Broadband Philippines,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"bmanlapig@broadbandphilippines.com"
+"cn=Renor Baluga,o=Broadband Philippines,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 915 7010397","rbaluga@broadbandphilippines.com"
+"cn=Gerry Raymundo,o=Broadband Philippines,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"graymundo@broadbandphilippines.com"
+"cn=Michael Morris R. Padilla,o=Broadband Philippines,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (918) 9146349","mpadilla@broadbandphilippines.com"
+"o=Bristol Industries Phils. Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Ralton D. Bancairen,o=Bristol Industries Phils. Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 919 5547320","raltz99@hotmail.com"
+"o=Bernaldo MiradoR  LAW Offices,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 813-6539","+63 2 813-3517|+63 2 813-3539|+63 2 892-4691 to 93",,
+"cn=Atty. Rosario S. Bernaldo,o=Bernaldo MiradoR  LAW Offices,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 813-6539","+63 2 813-3517|+63 2 813-3539|+63 2 892-4691 to 93","+63 912 807-4913","rsbassoc@info.com.ph"
+"cn=Atty. Perfecto Mirador,o=Bernaldo MiradoR  LAW Offices,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8932741","+63 (917) 8355884","jemirador@rsbernaldo.com"
+"cn=Hilario De Leon\2C Jr.,o=Bernaldo MiradoR  LAW Offices,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"legal@rsbernaldo.com"
+"cn=Esperanza V. Bautista,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 7271515","+63 (917) 8161931",
+"cn=Shangrila Hotel,ou=Miscellaneous,dc=ptcc,dc=design","Ayala Avenue, cor. Makati Avenue, Makati City, Philippines",,,"+63 (2) 8135499","+63 (2) 8138888",,
+"cn=Telecoms Specialists\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","9/F VA Rufino Bldg., 6784 Ayala Avenue","Makati City","Metro Manila","+63 (2) 8672810","+63 (2) 5116477",,
+"cn=F.L.E.N. Balai Komputer,ou=Miscellaneous,dc=ptcc,dc=design","38 C Almeda St., Pateros, Metro Manila, Philippines",,,,"+63 (2) 6413726",,
+"cn=Edwin Rosendal,cn=F.L.E.N. Balai Komputer,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (919) 2236599","edss2k@yahoo.com"
+"cn=Makati Shangri-La,ou=Miscellaneous,dc=ptcc,dc=design","Ayala Avenue cor. Makati Avenue, Makati City, Philippines",,,"+63 (2) 8135065","+63 (2) 8138888",,
+"cn=Michelle Mia,cn=Makati Shangri-La,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5328331","momia@shangri-la.com"
+"o=Microcore System Technology,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Irene Rosales,o=Microcore System Technology,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (922) 3624880",
+"o=MLLE Enterprise,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Michelle Lee,o=MLLE Enterprise,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 4381556","michellee8@yahoo.com"
+"o=Instan Access systems\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Bryan Chew,o=Instan Access systems\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (918) 9007638",
+"o=Inceptions\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Shelly Lituco-Kero,o=Inceptions\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","7F PhilCom Bldg., 8755 Paseo de Roxas, Makati City , Philippines",,,,"+63 (2) 6133677","+63 (916) 5915618","shelly.lituco@inceptions.com.ph"
+"cn=Marrku Kero,o=Inceptions\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","7F PhilCom Bldg., 8755 Paseo de Roxas, Makati City, Philippines",,,,"+63 (2) 6133677","+63 (917) 8420944","markku.kero@inceptions.com.ph"
+"cn=Isla Communications Co. Inc.,ou=Miscellaneous,dc=ptcc,dc=design","22/F Trafalgar Plaza, H. V. dela Costa St., Salcedo Village, Makati City, Philippines",,,"+63 (2) 8932921","+63 (2) 8400740 loc 478",,
+"cn=Teovisio\2C Eleazer S.,cn=Isla Communications Co. Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (915) 7005328","E_Teovisio@islacom.com.ph"
+"cn=INNOVATRONIX Incorporated,ou=Miscellaneous,dc=ptcc,dc=design","#10 Rose St., Loudes Subd., Mambugan, Sumulong Highway, Antipolo City, Philippines",,,"+63 (2) 6456124|+63 (2)  6451903","+63 (2) 6451592|+63 (2) 6451598",,"tronix@globe.com.ph|info@innovatronix.com"
+"cn=John Martinez,cn=INNOVATRONIX Incorporated,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (919) 6644932","john@innovatronix.com"
+"o=IntelliKorea Limited,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Suk\2C Tye H.,o=IntelliKorea Limited,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+60 (12) 2335533",,"thsuk@cadian.com"
+"cn=InterCommerce Network Services,ou=Miscellaneous,dc=ptcc,dc=design","Unit 1603, Antel 2000, 121 Valero Street, Salcedo Village, Makati City, Philippines",,,"+63 (2) 8438160","+63 (2) 8438050",,
+"cn=Sulit\2C Frederic E.,cn=InterCommerce Network Services,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8438174","+63 (918) 9024255","eric.sulit@gxs.ge.com"
+"cn=InterneXt Group Inc.,ou=Miscellaneous,dc=ptcc,dc=design","AG Syjuco Building, 446 E. Delos Santos Ave., Makati City, Philippines",,,"+63 (2) 8997544","+63 (2) 8970301",,
+"cn=Marites Ong,cn=InterneXt Group Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"m_ong@i-next.net"
+"cn=Atty. Henry Yusingco,ou=Miscellaneous,dc=ptcc,dc=design","Rooom 304 DM Building, Congressional Avenue cor. Visayas Avenue Quezon City Philippines",,,"+63 (2) 4554125","+63 (2) 4554125|+63 (2) 4553338","+63 917 9127240","yusgalaw@skydsl.com.ph"
+"cn=Sala,ou=Miscellaneous,dc=ptcc,dc=design","610 J. Nakpil, Malate, Manila, Philippines",,,"+63 (2) 5251115","+63 (2) 5246770",,"sala@pacific.net.ph"
+"cn=Santiago A. B. Sibayan,ou=Miscellaneous,dc=ptcc,dc=design","Suite 326, 2 Amorsolo St., Makati City, Philippines",,,"+63 (2) 8928686","+63 (2) 8151316|+63 (2) 8159911 loc. 7326","+63 (916) 3020962","santiagosibayan@yahoo.com"
+"o=Shiipping Economist,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+44 914 232-2293"," +44 914 232-1588",,
+"cn=Phil Rowland,o=Shiipping Economist,ou=Miscellaneous,dc=ptcc,dc=design","255 Todd Rd. Katonah NY 10536 U.S.A.|LLP Limited, 69-77 Paul St., London EC2A 4LQ, United Kingdom",,,"(914) 2322293","(914) 2321588|+44 (0) 171 553 1000",,
+"cn=Stelsen Corporation,ou=Miscellaneous,dc=ptcc,dc=design","Unit 41 Legaspi Suites, 178 Salcedo St. Legaspi Village","Makati City","Metro Manila","+63 (2) 8180768","+63 (2) 8180782|+63 (2) 8182182",,
+"cn=Sunlink Technologies\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","G/F Sunlink Bldg., 5368 General Luna St.","Makati City","Metro Manila","+63 (2) 8975501","+63 (2) 8969359|+63 (2) 8999706",,
+"cn=SunVision Marketing PTE LTD.,ou=Miscellaneous,dc=ptcc,dc=design","48 Serangoon Road, Block B, #02-23 Little India Arcade","Singapore","Singapore","+65 63965591","+65 63965590",,"sunvisioin@pacific.net.sg"
+"cn=S. Sivabaloo,cn=SunVision Marketing PTE LTD.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+65 96905292",
+"cn=Surf Shop,ou=Miscellaneous,dc=ptcc,dc=design","UG-1, Herrera Tower, 98 Herrera cor. Valero St., Salcedo Village","Makati City","Metro Manila","+63 (2) 8450588","+63 (2) 7533217",,
+"cn=Joshua Espiritu,cn=Surf Shop,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"joshua@surfshop.net.ph"
+"cn=King of Travel,ou=Miscellaneous,dc=ptcc,dc=design","G/F Valero Plaza Building, 124 Valero Street, Salcedo Village, Makati City, Philippines",,,"+63 (2) 8195925","+63 (2) 8164411",,
+"cn=Leonette Fernandez-Borlado,cn=King of Travel,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8189793",,"borlado.lf@kingtvl.com.ph"
+"cn=Konrad-Adenauer-Stiftung e. V.,ou=Miscellaneous,dc=ptcc,dc=design","3/F Alpap I Bldg., 140 Leviste St. Salcedo Village, Makati City, Metro Manila, Philippines",,,"+63 (2) 8936199|+63 (2) 7500094","+63 (2) 8943427|+63 (2) 8943737",,
+"cn=Klaus Preschle,cn=Konrad-Adenauer-Stiftung e. V.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"preschle@kaf-mnl.com"
+"cn=Zenaida Agbon,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 915 8078469",
+"cn=Northgate Technologies Inc.,ou=Miscellaneous,dc=ptcc,dc=design","M-VIII, The Gallery Bldg., Amorsolo St., Legaspi Village, Makati City, Philippines",,,"+63 (2) 8932435","+63 (2) 8446477|+63 (2) 8435382|+63 (2) 8156221|+63 (2) 8932434|+63 (2) 8927620",,"sales@northgate.com.ph"
+"cn=Irma Celestial,cn=Northgate Technologies Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8124514",,
+"cn=Ramee Guestline Hotel,ou=Miscellaneous,dc=ptcc,dc=design","462, A. B. Nair Rd., Juhu Mumbai  400 049 India",,,"+91 (22) 26202821","+91 (22) 56905555",,"guestlin@bom3.vsnl.net.in"
+"cn=Mr. Cajetan,cn=Ramee Guestline Hotel,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+91 (22) 56946547",,
+"cn=Royal Palace Hotel,ou=Miscellaneous,dc=ptcc,dc=design","81-1, Sec. 1. Da-An Road, Taipei, Taiwan",,,"+886 (2) 27527388","+886 (2) 27766599",,"royalpal@ms15.hinet.net"
+"cn=Royal Park Hotel,ou=Miscellaneous,dc=ptcc,dc=design","8 Pak Hok Ting Street, Shatin, Hong Kong",,,"+852 26013666","+852 26012111",,
+"cn=Valdez\2C Francis Peter P.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"francis.v@pacific.net.ph"
+"cn=Winison Q. Bagain,ou=Miscellaneous,dc=ptcc,dc=design","15/F Rufino Pacific Tower, 6784 Ayala Avenue, Makati City Philippines",,,,,"+63 912 8041160",
+"cn=Perla P. Abcede,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 9425674",,
+"cn=Ronnie Cruz,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (919) 8348506",
+"cn=Ariel G. Aznar,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (919) 4046334",
+"cn=Erwin Earl M. Abastillas,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 918 9179075","emabastillas@pldt.com.ph"
+"cn=Pocholo Malillin,ou=Miscellaneous,dc=ptcc,dc=design","3/F, 652 Boni Avenue, The Venue Tower, Mandaluyong City, Philippines",,,,"+63 (2) 5357943|+63 (2) 5322826",,
+"cn=David Go,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 5276022",
+"cn=Lang Suan Garden Place,ou=Miscellaneous,dc=ptcc,dc=design","99/10 Soi Lang Suan, 7 Lang Suan Road, Lumpini, Patumwan, Bangkok 10330 Thailand",,,"+66 (2) 2552797","+66 (2) 2552799|+66 (2) 2521232",,
+"cn=Oceanic,ou=Miscellaneous,dc=ptcc,dc=design","2/F Glorietta 1, Ayala Center, Makati City, Philippines",,,,"+63 (2) 8926770",,
+"cn=Rexie Dizon,cn=Oceanic,ou=Miscellaneous,dc=ptcc,dc=design","2/F Glorietta 1, Ayala Center, Makati City, Philippines",,,,"+63 (2) 8926770",,
+"cn=Omni-Orient Marketing Network Inc.,ou=Miscellaneous,dc=ptcc,dc=design","2/F, Fortune Building, 160 Legaspi Street, Legaspi Village, Makati City, Philippines",,,"+63 (2) 8101944","+63 (2) 8101944",,
+"cn=Alicia Dela Cruz,cn=Omni-Orient Marketing Network Inc.,ou=Miscellaneous,dc=ptcc,dc=design","2/F, Fortune Building, 160 Legaspi Street, Legaspi Village, Makati City, Philippines",,,"+63 (2) 8101944","+63 (2) 8101944","+63 (919) 8449046",
+"cn=John Erwin Galang,ou=Miscellaneous,dc=ptcc,dc=design","7th Floor Guada Bldg., No. 31 EDSA, Mandaluyong City, Philippines",,,"+63 (2) 5310227","+63 (2) 5314791 to 4794 loc 111","+63 (917) 8735348","john.galang@orica.com"
+"cn=Valerie May Gumban-Sia,ou=Miscellaneous,dc=ptcc,dc=design","Cathedral Heights Building, Rm. 1502 North Tower, Quezon City, Philippines",,,,"+63 (2) 7230101 loc 5152","+63 (919) 2810822","dvsia@hotmail.com"
+"cn=TicketWorld,ou=Miscellaneous,dc=ptcc,dc=design","Suite 706, V. Madrigal Bldg., 6793 Ayala Avenue","Makati City","Metro Manila","+63 (2) 8915634","+63 (2) 8915610",,
+"o=Arabian Desert Rent A Car L.L.C.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"04 335-0088","04-335-3332",,
+"cn=Shan,o=Arabian Desert Rent A Car L.L.C.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"04 -335-0088","04 335-3332",,"desertab@emirates.net.ae"
+"cn=Copycare,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8998301|+63 (2) 8998283",,
+"ou=Elinon Yu EDP Services\2C International Corporation,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Elinon Yu EDP Services\2C International Corporation,ou=Elinon Yu EDP Services\2C International Corporation,ou=Miscellaneous,dc=ptcc,dc=design","387 Boni Serrano Avenue, Libis, Quezon City, Philippines",,,,"+63 (2) 9123152",,"eyes@surfshop.net.ph"
+"o=IT GROUP INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"Telefax: +63 2 636-0576 loc 1106|Telefax: +63 2 439-5745 loc 1106|Telefax: +63 2 415-5024 loc 1106|Telefax: +63 2 437-3583 loc 1106|Telefax: +63 2 635-6739 loc 1106",,,
+"cn=JR Mercado,o=IT GROUP INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"Telefax: +63 2 636-0576 loc 1106|Telefax: +63 2 415-5024 loc 1106|Telefax: +63 2 437-3583 loc 1106|Telefax: +63 2 439-5745 loc 1106|Telefax: +63 2 635-6739 loc 1106",,,"jr.mercado@itgroup.com.ph"
+"o=BUSS MURTON LLP,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+44 1892 512-021","Direct: +44 1892 502-369|Switchboard: +44 1892 510-222",,
+"cn=Katie Gotterson,o=BUSS MURTON LLP,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+44 1892 512-02","Direct: +44 1892 502-369|Switchboard: +44 1892 510-222",,"kgotterson@bussmurton.co.uk"
+"cn=Nicole Tovey,o=BUSS MURTON LLP,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+44 1892 512-021","Switchboard: +44 1892 510-222",,"ntovey@bussmurton.co.uk"
+"o=FAR TRAVEL INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 815-6230","Direct: +63 2 751-1432|Trunkline: +63 2 751-1425",,
+"cn=Mary Ann Conde,o=FAR TRAVEL INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 815-6230","+63 2 817-4960|+63 2 817-0175 loc 102","+63 2 917 500-7513","maryanne_conde@yahoo.com"
+"o=BANK OF THE PHILIPPINE ISLANDS,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 845-5089","+63 2 816-9071",,
+"cn=Mhelvin F. Abajon,o=BANK OF THE PHILIPPINE ISLANDS,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 845-5089","+63 2 816-9071",,"mfabajon@bpi.com.ph"
+"o=HSBC INSURANCE BROKERS (PHILIPPINES) INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 830-5176","General Line: +63 2 830-5788|Direct Line: +63 2 830-5176",,
+"cn=Bruce D. Anisco,o=HSBC INSURANCE BROKERS (PHILIPPINES) INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 830-5176","Direct Line: +63 2 830-5176|General Line: +63 2 830-5788","+63 2 920 962-3274","chebruceanisco@hsbc.com.ph"
+"o=SECURITY BANK CORPORATION,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 893-2563","+63 2 888-7286",,
+"cn=Louie I. Evangelista,o=SECURITY BANK CORPORATION,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 893-2563","+63 2 888-7286",,"fevangelista@securitybank.com.ph"
+"o=AUSTEN MORRIS ASSOCIATES LIMITED,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"ou=AUSTEN MORRIS ASSOCIATES PHILIPPINES,o=AUSTEN MORRIS ASSOCIATES LIMITED,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 729-5015","+63 2 729-5133|Direct (Medical Team): +63 2 729-9347",,
+"cn=Gareth Cookson,ou=AUSTEN MORRIS ASSOCIATES PHILIPPINES,o=AUSTEN MORRIS ASSOCIATES LIMITED,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 729-5015","+63 2 729-5133|Direct - Medical Team: +63 2 729-9347","+63 2 920 925-2448","gareth.c@austenmorris.com"
+"o=ELIXIR FINANCIAL,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+65 6438-2060","+65 6557-4051",,
+"cn=Rex Chan,o=ELIXIR FINANCIAL,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+65 6438-2060","+65 6557-4051","+65 9679-6754","rex@elixirfunds.com"
+"o=THE HONG KONG & SHANGHAI BANKING CORP. LIMITED,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+852 2148-6931","+852 3663-3478|+852 8121-8934|General Customer Service Enquiry: +852 2748-8288",,
+"cn=Norman W P Lam,o=THE HONG KONG & SHANGHAI BANKING CORP. LIMITED,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+852 2148-6931","+852 3663-3478|+852 8121-8934|General Customer Service Enquiry: +852 2748-8288",,
+"o=TRADEMASTER RESOURCES CORPORATION,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 871-4199","+63 2 872-2222|+63 2 871-1804|+63 2 871-9999|+63 2 871-8983",,
+"cn=Jerry Lan,o=TRADEMASTER RESOURCES CORPORATION,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 871-4199","+63 2 872-2222|+63 2 871-1804|+63 2 871-9999|+63 2 871-8983","+63 2 922 866-4001","tmaster@pldtdsl.net"
+"o=Dusit Thani Manila,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 867-3888|+63 2 892-1177","+63 2 867-3333 ext. 3313",,
+"cn=Tesza T. Cruz,o=Dusit Thani Manila,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 867-3888|+63 2 892-1177","+63 2 867-3333 ext. 3313",,"tesza.cruz@dusit.com"
+"o=TOTAL GAMING TECHNOLOGIES\2C INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 633-9401","+63 2 4900-151 to 53",,
+"cn=Henri Muzzarelli,o=TOTAL GAMING TECHNOLOGIES\2C INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 633-9401","+63 2 4900-151 to 53","+63 917 531-9295","henru_jm@yahoo.com"
+"cn=SSS,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 9206446|+63 (2) 9206401",,
+"o=UNION MOTOR CORPORATION,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 563-5691","+63 2 563-8461 to 67|+63 2 563-8481 to 85",,
+"cn=Emerito Castillo,o=UNION MOTOR CORPORATION,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 563-5691","+63 2 563-8461 to 67|+63 2 563-8481 to 85","+63 917 426-5938",
+"o=R.S. BERNALDO & ASSOCIATES,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 813-6539","DL: +63 2 893-2741|Trunkline: +63 2 812-1718 to 24",,
+"cn=Perfecto E. Mirador\2C Jr.,o=R.S. BERNALDO & ASSOCIATES,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 813-6539","DL: +63 2 893-2741|Trunkline: +63 2 812-1718 to 24","+63 917 835-5884","jemirador@rsbernaldo.com"
+"o=AYALA HOTELS,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 894-1258","+63 2 751-7711",,
+"cn=Mary Jane Cabalo,o=AYALA HOTELS,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 894-1258","+63 2 751-7711",,
+"o=CWC INTERNATIONAL CORP.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 715-6331|Showroom: +63 2 713-5186","+63 2 714-1115|+63 2 715-9320|+63 2 715-9322|Showroom: +63 2 713-6430",,
+"cn=Ida F. Santiago,o=CWC INTERNATIONAL CORP.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 715-6331|Showroom: +63 2 713-5186","+63 2 714-1115|+63 2 715-9320|+63 2 715-9322|Showroom: +63 2 713-6430",,"cwcfab@skyinet.net"
+"cn=A.D.D.J. Trading,ou=Miscellaneous,dc=ptcc,dc=design","4478 C Calhoun St., Pio del Pilar","Makati City","Metro Manila,Philippines","+63 (2) 7502243","+63 (2) 8890892|+63 (2) 8444179|+63 (2) 8450711",,
+"cn=Abacus Microcomputer\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design","Shop 2, BMW Lane, 3/F, Virra Mall Shopping Center, Greenhills","San Juan","Metro Manila,Philippines","+63 (2) 7251381","+63 (2) 7273172|+63 (2) 7250651",,
+"ou=Abacus Microcomputer\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=To Jr.\2C Handy,ou=Abacus Microcomputer\2C Inc.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"handyto@qinet.net"
+"cn=Access Net (Philippines)\2C Inc\2C,ou=Miscellaneous,dc=ptcc,dc=design","Unit 1801 The Taipan Place, Emerald Avenue Ortigas Avenue","Pasig City","Metro Manila,Philippines","+63 (2) 6315813","+63 (2) 6332328",,"info@access.net.ph"
+"cn=Edwin Dawa,cn=Access Net (Philippines)\2C Inc\2C,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"egd@access.net.ph"
+"cn=Virces Enterprises,ou=Miscellaneous,dc=ptcc,dc=design","2522 Medel St., Sta. Ana","Metro Manila","Metro Manila",,"+63 (2) 5633609",,
+"cn=Akko Art Gallery,ou=Miscellaneous,dc=ptcc,dc=design","919/1 Sukhumvit Road, (In front of Soi 49 Bus Stop)",,"Bangkok 10110, Thailand","+66 (2) 6624209","+66 (2) 2591436",,
+"cn=Automatic Centre @ Ayala,ou=Miscellaneous,dc=ptcc,dc=design","6797 Ayala Ave. cor. Herrera St. Makati City,Philippines",,,"+63 (2) 8936542","+63 (2) 8936542 / 43 / 44 / 47",,
+"ou=Blims Fine Furniture,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Blims Fine Furniture,ou=Blims Fine Furniture,ou=Miscellaneous,dc=ptcc,dc=design","6797 Ayala Avenue, Herrera Street Makati City Philippines",,,"+63 (2) 8936556","+63 (2) 8936556|+63 (2) 8936558|+63 (2) 5936559",,"blims@nwave.net"
+"cn=Ericson  Icasas,ou=Miscellaneous,dc=ptcc,dc=design","7616 Guijo St., San Antonio Village, Makati City, Philippines",,,"+63 (2) 729 5184","+63 (2) 728 9740",,"eric@office2k.cjb.net"
+"cn=Jaime Elizaga Jr.,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"jcej@access.net.ph"
+"cn=Kenjo Discount Office Supplies,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 8853724",,
+"cn=Utility Hardware & Electrical Supply,ou=Miscellaneous,dc=ptcc,dc=design","1130 Rizal Ave., Sta. Cruz","Metro Manila","Metro Manila","+63 (2) 7360949|+63 (2) 7351149","+63 (2) 7350404|+63 (2) 7351071",,
+"cn=Pantronics (Photocopier Supplier),ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+63 (2) 7228444|+63 (2) 7253039",,
+"cn=McGraw Hill Bookstore,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"bookstore@mcgraw-hill.com"
+"cn=Office Warehouse,ou=Miscellaneous,dc=ptcc,dc=design","Metropolitan Ave. cor. Vito Cruz Ext., Makati City, Metro Manila, Philippines",,,"+63 (2) 8992143","+63 (2) 8992121",,"owhouse@mailstation.net"
+"cn=Margarita Lorenzana,cn=Office Warehouse,ou=Miscellaneous,dc=ptcc,dc=design","Metropolitan Ave. corner Vito Cruz Ext., Makati City, Metro Manila, Philippines",,,,,,"owhouse@mailstation.net"
+"cn=Regilda Noel,ou=Miscellaneous,dc=ptcc,dc=design","S-116 The CK Business Ctr. 3rd Flr., Mile Long Bldg., Amorsolo St., Makati City, Philippines",,,"+63 (2) 890 2107","+63 (2) 890 2211","+63 (919) 4924439","gildanoel@hotmail.com"
+"cn=Rodel Santos,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (917) 3699013",
+"ou=Micro Image,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Micro Image,ou=Micro Image,ou=Miscellaneous,dc=ptcc,dc=design","Unit 101, 10F Legaspi Suites Building, 178 Salcedo Street, Legaspi Village, 1200 Makati City",,,"+63 (2) 894.2590|+63 (2) 752.4525 local 141","+63 (2) 752.4525 to 29|+63 (2) 840.4050 to 51|+63 (2) 840.4323, 24, 34, 45|+63 (2) 840.4389|+63 (2) 840.4356, 59, 89, 90, 98|+63 (2) 893.6349",,
+"o=COPYLANDIA,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Copylandia Office Systems Corporation,o=COPYLANDIA,ou=Miscellaneous,dc=ptcc,dc=design","G/F Makati Executive Center, 114 L.P. Leviste (formerly Alfaro), cor. Herrera St., Salcedo Village, Makati City, Philippines",,,"+63 (2) 7533888","+63 (2) 7533333",,"inquiry@copylandia.com"
+"cn=Copylandia Printing & Bindery,o=COPYLANDIA,ou=Miscellaneous,dc=ptcc,dc=design","635 Payapa Street, Plainview, Mandaluyong City, Philippines",,,,"+63 (2) 5329393",,
+"cn=Danny Mayo,cn=Copylandia Printing & Bindery,o=COPYLANDIA,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+63 (916) 5165157",
+"o=COPYLANDIA - HEAD OFFICE,o=COPYLANDIA,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 747-6222","+63 2 535-8535|Direct: +63 2 703-8477",,
+"cn=Melly R. Ng,o=COPYLANDIA - HEAD OFFICE,o=COPYLANDIA,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 2 747-6222","+63 2 535-8535|Direct: +63 2 703-8477",,"mng_mla@copylandia.com"
+"o=FUNCTIONAL INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 899-8585","+63 2 899-8741 to 45",,
+"cn=Peter B. Javier\2C Jr.,o=FUNCTIONAL INC.,ou=Miscellaneous,dc=ptcc,dc=design",,,,"+63 899-8585","+63 2 899-8741 to 45",,"indo1125@yahoo.com|oce-sales@functional.com.ph"
+"cn=Job Street,ou=Miscellaneous,dc=ptcc,dc=design","8/F Robinson's Cybergate Center Tower 3, Robinson's Pioneer Complex, Pioneer Street, Mandaluyong City, 1550",,,"+63 2 637-2208","+63 2 637-5627","0922-801-3285","corpcare-ph@jobstreet.com"
+"cn=Angeline Dilim-Sales,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,"+65 979-31427","avdilim@yahoo.com"
+"cn=AAA,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=Jan E. Hansen,ou=Miscellaneous,dc=ptcc,dc=design",,,,,"+45 5230-8888","+63 929 818-1111|+63 949 958-0010|+66 942 08-9275",
+"cn=Alex Fallaguerho,ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,"alexandre.fallaguerho@gmail.com"
