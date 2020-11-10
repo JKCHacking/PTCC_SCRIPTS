@@ -1,6 +1,8 @@
 import os
 import csv
-import openpyxl
+from docx import Document
+from docx.shared import Mm
+from docx.oxml.ns import qn
 from src.util.constants import Constants
 from src.util.watcher import Watcher
 
@@ -20,8 +22,8 @@ class LDAPGenerator:
                     data.sort()
                     filename_ext = os.path.basename(file_full_path)
                     filename = os.path.splitext(filename_ext)[0]
-                    output_dir = os.path.join(Constants.OUTPUT_DIR, filename + '.xlsx')
-                    self.create_workbook(data, output_dir)
+                    output_dir = os.path.join(Constants.OUTPUT_DIR, filename + Constants.DOCX_FILE_EXT)
+                    self.create_document(data, output_dir)
 
     def get_csv_data(self, file_full_path):
         data = []
@@ -53,9 +55,28 @@ class LDAPGenerator:
                     data.append(row_data)
         return data
 
-    def create_workbook(self, data, output_path):
-        wb = openpyxl.workbook.Workbook()
-        ws = None
+    def create_document(self, data, output_path):
+        margin = 20
+        document = Document()
+        section = document.sections[0]
+        section.page_height = Mm(297)
+        section.page_width = Mm(210)
+        section.left_margin = Mm(margin)
+        section.right_margin = Mm(margin)
+        section.top_margin = Mm(margin)
+        section.bottom_margin = Mm(margin)
+        section.header_distance = Mm(12.7)
+        section.footer_distance = Mm(12.7)
+
+        paragraph = document.add_paragraph()
+        paragraph.style = document.styles['Normal']
+
+        # setting the page layout to have 3 columns
+        sectPr = section._sectPr
+        cols = sectPr.xpath('./w:cols')[0]
+        cols.set(qn('w:num'), '3')
+
+        # this represent the starting letter of each names.
         current_char = ''
         for row in data:
             contact_name = row[0]
@@ -67,45 +88,38 @@ class LDAPGenerator:
             mobile = row[6]
             email = row[7]
 
-            # this represent the starting letter of each names.
             watcher = Watcher(current_char)
             current_char = contact_name[0]
             watcher.set_value(current_char)
             if watcher.has_changed():
                 if current_char.isnumeric():
-                    ws_name = "123"
-                else:
-                    ws_name = current_char
-                ws = wb.create_sheet(ws_name)
-                ws.append([ws_name])
-                ws.append([""])
+                    current_char = "123"
+
+                paragraph.add_run(current_char + "\n\n").bold = True
+
             if contact_name:
-                ws.append([contact_name])
+                paragraph.add_run(contact_name + "\n").bold = True
             if street:
-                ws.append([street])
+                paragraph.add_run(street + "\n")
             if city:
-                ws.append([city])
+                paragraph.add_run(city + "\n")
             if country:
-                ws.append([country])
+                paragraph.add_run(country + "\n")
             if fax:
                 fax_list = fax.split("|")
                 fax_text = "/\n".join(fax_list)
-                ws.append([f"Fax: {fax_text}"])
+                paragraph.add_run("Fax: " + fax_text + "\n")
             if tel_num:
                 tel_num_list = tel_num.split("|")
                 tel_num_text = "/\n".join(tel_num_list)
-                ws.append([f"Telephone: {tel_num_text}"])
+                paragraph.add_run("Telephone: " + tel_num_text + "\n")
             if mobile:
                 mobile_list = mobile.split("|")
                 mobile_text = "/\n".join(mobile_list)
-                ws.append([f"Mobile: {mobile_text}"])
+                paragraph.add_run("Mobile: " + mobile_text + "\n")
             if email:
                 email_list = email.split("|")
                 email_text = "/\n".join(email_list)
-                ws.append([f"E-Mail: {email_text}"])
-            ws.append([""])
-
-        if len(wb.worksheets) > 1:
-            default_ws = wb["Sheet"]
-            wb.remove(default_ws)
-            wb.save(output_path)
+                paragraph.add_run("E-Mail: " + email_text + "\n")
+            paragraph.add_run("\n")
+        document.save(output_path)

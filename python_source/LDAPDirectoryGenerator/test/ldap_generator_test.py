@@ -58,3 +58,13 @@ class LdapGeneratorTest(unittest.TestCase):
         script.iter_input()
         self.assertTrue(os.path.exists(test_result_file))
         self.clear_dir(Constants.INPUT_DIR, Constants.CSV_FILE_EXT)
+
+    def test_iter_input_005(self):
+        '''More than 40 row in each column in 1 sheet'''
+        testdata = "testdata005.csv"
+        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + Constants.DOCX_FILE_EXT)
+        self.copy_testdata(testdata)
+        script = LDAPGenerator()
+        script.iter_input()
+        self.assertTrue(os.path.exists(test_result_file))
+        self.clear_dir(Constants.INPUT_DIR, Constants.CSV_FILE_EXT)

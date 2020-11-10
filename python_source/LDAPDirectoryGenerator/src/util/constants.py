@@ -16,3 +16,5 @@ class Constants:
 
     ROUND_PRECISION = 4
     CSV_FILE_EXT = '.csv'
+    EXCEL_FILE_EXT = '.xlsx'
+    DOCX_FILE_EXT = '.docx'
