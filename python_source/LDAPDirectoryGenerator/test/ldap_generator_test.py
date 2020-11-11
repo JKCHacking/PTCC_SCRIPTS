@@ -22,7 +22,7 @@ class LdapGeneratorTest(unittest.TestCase):
     def test_iter_input_001(self):
         '''Complete attribtues'''
         testdata = "testdata001.csv"
-        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + ".xlsx")
+        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + Constants.DOCX_FILE_EXT)
         self.copy_testdata(testdata)
         script = LDAPGenerator()
         script.iter_input()
@@ -32,7 +32,7 @@ class LdapGeneratorTest(unittest.TestCase):
     def test_iter_input_002(self):
         '''Missing attribute'''
         testdata = "testdata002.csv"
-        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + ".xlsx")
+        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + Constants.DOCX_FILE_EXT)
         self.copy_testdata(testdata)
         script = LDAPGenerator()
         script.iter_input()
@@ -42,7 +42,7 @@ class LdapGeneratorTest(unittest.TestCase):
     def test_iter_input_003(self):
         '''No attribute'''
         testdata = "testdata003.csv"
-        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + ".xlsx")
+        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + Constants.DOCX_FILE_EXT)
         self.copy_testdata(testdata)
         script = LDAPGenerator()
         script.iter_input()
@@ -52,7 +52,7 @@ class LdapGeneratorTest(unittest.TestCase):
     def test_iter_input_004(self):
         '''Multiple attribute, Alphabetical Order'''
         testdata = "testdata004.csv"
-        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + ".xlsx")
+        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + Constants.DOCX_FILE_EXT)
         self.copy_testdata(testdata)
         script = LDAPGenerator()
         script.iter_input()
@@ -62,6 +62,16 @@ class LdapGeneratorTest(unittest.TestCase):
     def test_iter_input_005(self):
         '''More than 40 row in each column in 1 sheet'''
         testdata = "testdata005.csv"
+        test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + Constants.DOCX_FILE_EXT)
+        self.copy_testdata(testdata)
+        script = LDAPGenerator()
+        script.iter_input()
+        self.assertTrue(os.path.exists(test_result_file))
+        self.clear_dir(Constants.INPUT_DIR, Constants.CSV_FILE_EXT)
+
+    def test_iter_input_006(self):
+        '''Multiple Name starting with number'''
+        testdata = "testdata006.csv"
         test_result_file = os.path.join(Constants.OUTPUT_DIR, testdata.split(".")[0] + Constants.DOCX_FILE_EXT)
         self.copy_testdata(testdata)
         script = LDAPGenerator()

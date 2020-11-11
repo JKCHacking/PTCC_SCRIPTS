@@ -1,0 +1,6 @@
+dn,street,l,st,facsimileTelephoneNumber,telephoneNumber,mobile,mail
+"ou=Miscellaneous,dc=ptcc,dc=design",,,,,,,
+"cn=1ABC,ou=Miscellaneous,dc=ptcc,dc=design","PAIR PAGS Cargo Center, NAIA, Ninoy Aquino Ave.",Pasay City,Metro Manila,+63 (2) 5517490,+63 (2) 5510918|+63 (2) 813277|+63 (2) 98132790|+63 (2) 5515632,6394512345,test@mail.com
+"cn=2ABC,ou=Miscellaneous,dc=ptcc,dc=design","PAIR PAGS Cargo Center, NAIA, Ninoy Aquino Ave.",Pasay City,Metro Manila,+63 (2) 5517490,+63 (2) 5510918|+63 (2) 813277|+63 (2) 98132790|+63 (2) 5515632,6394512345,test@mail.com
+"cn=3ABC,ou=Miscellaneous,dc=ptcc,dc=design","PAIR PAGS Cargo Center, NAIA, Ninoy Aquino Ave.",Pasay City,Metro Manila,+63 (2) 5517490,+63 (2) 5510918|+63 (2) 813277|+63 (2) 98132790|+63 (2) 5515632,6394512345,test@mail.com
+"cn=ABC,ou=Miscellaneous,dc=ptcc,dc=design","PAIR PAGS Cargo Center, NAIA, Ninoy Aquino Ave.",Pasay City,Metro Manila,+63 (2) 5517490,+63 (2) 5510918|+63 (2) 813277|+63 (2) 98132790|+63 (2) 5515632,6394512345,test@mail.com
