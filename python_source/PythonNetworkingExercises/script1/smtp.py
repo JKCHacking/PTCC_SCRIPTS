@@ -4,9 +4,9 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 
-mail_domain = 'smtp.gmail.com'
-from_email = 'joshnee.kim.cunanan@gmail.com'
-to_email = 'joshnee.kim.cunanan@gmail.com'
+mail_domain = '10.0.30.210'
+from_email = 'joshnee.cunanan@ptcc.design'
+to_email = 'joshnee.cunanan@ptcc.design'
 smtp_port = 465
 
 server = smtplib.SMTP_SSL(mail_domain, smtp_port)
