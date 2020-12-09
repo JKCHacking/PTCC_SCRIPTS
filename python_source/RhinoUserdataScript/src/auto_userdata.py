@@ -33,7 +33,7 @@ def automate_userdata():
             dim = set_dimension(obj)
             name = set_name(obj, layer, count)
             type = set_type(obj, layer)
-            desc = set_description(obj, type)
+            desc = set_description(obj, layer)
 
             rs.SetUserText(obj, "Walltype", walltype)
             rs.SetUserText(obj, "GlassBuildUp", glass_build_up)
@@ -205,7 +205,7 @@ def set_name(obj, material, count):
 def set_type(obj, material):
     type_dict = {
         "stainless_steel": "Sheet",
-        "stainless_steel_bracket": "sheet",
+        "stainless_steel_bracket": "Sheet",
         "alu-profile": "Profile",
         "gasket": "Gasket",
         "insulation": "Insulation"
@@ -218,8 +218,21 @@ def set_type(obj, material):
     return type
 
 
-def set_description(obj, type):
-    return type
+def set_description(obj, material):
+    desc_dict = {
+        "stainless_steel": "3mm thick stainless steel folded sheet",
+        "stainless_steel_bracket": "3mm thick stainless steel folded sheet",
+        "gasket": "EPDM gasket",
+        "al-profile": "aluminum block",
+        "insulation": "50mm thick insulation"
+    }
+
+    if material in desc_dict:
+        desc = desc_dict[material]
+    else:
+        desc = NOT_APPLICABLE
+
+    return desc
 
 
 if __name__ == "__main__":
