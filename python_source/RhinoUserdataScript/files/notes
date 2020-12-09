@@ -1,0 +1,32 @@
+Properties:
+Walltype
+GlassBuildUp - N/A
+MaterialCode
+FinishCode
+CoatingSystem
+ExtrusionCompany - Aluminum only
+DieNumber - Aluminum only
+AlloyTemper - Aluminum only
+UValue - N/A
+AccousticValue - N/A
+Material
+Manufacturer
+Area
+Weight
+Dimension
+Name
+Type
+Description
+
+materials:
+Aluminum
+Brass
+Bronze
+concrete
+
+Density:
+Aluminum = 2712 kg/m^3
+Brass = 8520 kg/m^3
+Bronze = 7400 - 8900 kg/m^3
+stainless steel = 7480 - 8000 kg/m^3
+EDM Gasket = 70 kg/m^3
