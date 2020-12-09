@@ -162,7 +162,8 @@ def set_weight(obj, material):
         "stainless_steel_bracket": 8000,
         "fixing": 8000,
         "alu-profile": 2712,
-        "gasket": 70
+        "gasket": 70,
+        "insulation": 70
     }
 
     s_vol = rs.SurfaceVolume(obj)[0]
