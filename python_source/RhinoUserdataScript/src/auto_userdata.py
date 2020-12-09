@@ -9,7 +9,7 @@ UNIT = rs.UnitSystemName(abbreviate=True)
 def automate_userdata():
     layers = [
         "stainless_steel",
-        "stainless_steel_brackets",
+        "stainless_steel_bracket",
         "alu-profile",
         "gasket",
         "insulation"
