@@ -17,7 +17,8 @@ def automate_userdata():
 
     for layer in layers:
         objs = rs.ObjectsByLayer(layer)
-        for obj in objs:
+        for i, obj in enumerate(objs):
+            count = i + 1
             walltype = set_walltype(obj)
             glass_build_up = set_glass_build_up(obj)
             mat_code = set_material_code(obj, layer)
@@ -30,7 +31,7 @@ def automate_userdata():
             area = set_area(obj)
             weight = set_weight(obj, layer)
             dim = set_dimension(obj)
-            name = set_name(obj, layer)
+            name = set_name(obj, layer, count)
             type = set_type(obj, layer)
             desc = set_description(obj, type)
 
