@@ -185,7 +185,7 @@ def get_dimension(obj):
 
 
 def get_name(obj, material, count):
-    name = "2MR-SEE-POD-EWL-AXX-L06-WT3C-{filename}-R00"
+    name = "2MR-SEE-POD-EWL-F03-L06-WT3C-{filename}-R00"
     filename_temp_dict = {
         "stainless_steel": "SS{count:03d}",
         "stainless_steel_bracket": "BR001",
