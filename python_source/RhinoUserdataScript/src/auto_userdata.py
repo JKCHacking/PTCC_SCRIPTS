@@ -6,7 +6,7 @@ ROUND_PRECISION = rs.UnitDistanceDisplayPrecision()
 UNIT = rs.UnitSystemName(abbreviate=True)
 
 
-def automate_userdata():
+def set_userdata():
     layers = [
         "stainless_steel",
         "stainless_steel_bracket",
@@ -19,21 +19,21 @@ def automate_userdata():
         objs = rs.ObjectsByLayer(layer)
         for i, obj in enumerate(objs):
             count = i + 1
-            walltype = set_walltype(obj)
-            glass_build_up = set_glass_build_up(obj)
-            mat_code = set_material_code(obj, layer)
-            fin_code = set_finish_code(obj, layer)
-            coating_sys = set_coating_system(obj, layer)
-            uval = set_u_value(obj)
-            accval = set_acc_value(obj)
-            mat = set_material(obj, layer)
-            manufacturer = set_manufacturer(obj)
-            area = set_area(obj)
-            weight = set_weight(obj, layer)
-            dim = set_dimension(obj)
-            name = set_name(obj, layer, count)
-            type = set_type(obj, layer)
-            desc = set_description(obj, layer)
+            walltype = get_walltype(obj)
+            glass_build_up = get_glass_build_up(obj)
+            mat_code = get_material_code(obj, layer)
+            fin_code = get_finish_code(obj, layer)
+            coating_sys = get_coating_system(obj, layer)
+            uval = get_u_value(obj)
+            accval = get_acc_value(obj)
+            mat = get_material(obj, layer)
+            manufacturer = get_manufacturer(obj)
+            area = get_area(obj)
+            weight = get_weight(obj, layer)
+            dim = get_dimension(obj)
+            name = get_name(obj, layer, count)
+            type = get_type(obj, layer)
+            desc = get_description(obj, layer)
 
             rs.SetUserText(obj, "Walltype", walltype)
             rs.SetUserText(obj, "GlassBuildUp", glass_build_up)
@@ -52,23 +52,23 @@ def automate_userdata():
             rs.SetUserText(obj, "Description", desc)
 
             if layer == "alu-profile":
-                ext_com = set_extrusion_company(obj)
-                die_num = set_die_number(obj)
-                alloy_temp = set_alloy_temper(obj)
+                ext_com = get_extrusion_company(obj)
+                die_num = get_die_number(obj)
+                alloy_temp = get_alloy_temper(obj)
                 rs.SetUserText(obj, "ExtrusionCompany", ext_com)
                 rs.SetUserText(obj, "DieNumber", die_num)
                 rs.SetUserText(obj, "AlloyTemper", alloy_temp)
 
 
-def set_walltype(obj):
+def get_walltype(obj):
     return "WT3C"
 
 
-def set_glass_build_up(obj):
+def get_glass_build_up(obj):
     return NOT_APPLICABLE
 
 
-def set_material_code(obj, material):
+def get_material_code(obj, material):
     material_codes = {
         "stainless_steel": "204",
         "stainless_steel_bracket": "204",
@@ -83,7 +83,7 @@ def set_material_code(obj, material):
     return mat_code
 
 
-def set_finish_code(obj, material):
+def get_finish_code(obj, material):
     finish_codes = {
         "stainless_steel": "44",
         "alumninum": "51",
@@ -97,7 +97,7 @@ def set_finish_code(obj, material):
     return fin_code
 
 
-def set_coating_system(obj, material):
+def get_coating_system(obj, material):
     coating_system_dict = {
         "stainless_steel": "mirror polished",
         "aluminum": "anodized"
@@ -109,27 +109,27 @@ def set_coating_system(obj, material):
     return coating_system
 
 
-def set_extrusion_company(obj):
+def get_extrusion_company(obj):
     return "to be determined..."
 
 
-def set_die_number(obj):
+def get_die_number(obj):
     return NOT_APPLICABLE
 
 
-def set_alloy_temper(obj):
+def get_alloy_temper(obj):
     return "AA 5005"
 
 
-def set_u_value(obj):
+def get_u_value(obj):
     return NOT_APPLICABLE
 
 
-def set_acc_value(obj):
+def get_acc_value(obj):
     return NOT_APPLICABLE
 
 
-def set_material(obj, material):
+def get_material(obj, material):
     material_names = {
         "stainless_steel": "1.4404 - S235",
         "stainless_steel_bracket": "1.4404 - S235",
@@ -143,11 +143,11 @@ def set_material(obj, material):
     return material_name
 
 
-def set_manufacturer(obj):
+def get_manufacturer(obj):
     return "to be determined..."
 
 
-def set_area(obj):
+def get_area(obj):
     area = rs.SurfaceArea(obj)[0]
     if UNIT == "mm":
         # convert mm^2 to m^2
@@ -155,7 +155,7 @@ def set_area(obj):
     return str(round(area, ROUND_PRECISION)) + " m^2"
 
 
-def set_weight(obj, material):
+def get_weight(obj, material):
     # densities in kg/m^3
     mat_den = {
         "stainless_steel": 8000,
@@ -176,7 +176,7 @@ def set_weight(obj, material):
     return str(round(m, ROUND_PRECISION)) + " kg"
 
 
-def set_dimension(obj):
+def get_dimension(obj):
     bb = rs.BoundingBox(obj)
     length = round(bb[3].DistanceTo(bb[0]), ROUND_PRECISION)  # YL
     width = round(bb[1].DistanceTo(bb[0]), ROUND_PRECISION)  # XL
@@ -184,7 +184,7 @@ def set_dimension(obj):
     return "{}X{}X{} mm".format(length, width, height)
 
 
-def set_name(obj, material, count):
+def get_name(obj, material, count):
     name = "2MR-SEE-POD-EWL-AXX-L06-WT3C-{filename}-R00"
     filename_temp_dict = {
         "stainless_steel": "SS{count:03d}",
@@ -202,7 +202,7 @@ def set_name(obj, material, count):
     return name
 
 
-def set_type(obj, material):
+def get_type(obj, material):
     type_dict = {
         "stainless_steel": "Sheet",
         "stainless_steel_bracket": "Sheet",
@@ -218,7 +218,7 @@ def set_type(obj, material):
     return type
 
 
-def set_description(obj, material):
+def get_description(obj, material):
     desc_dict = {
         "stainless_steel": "3mm thick stainless steel folded sheet",
         "stainless_steel_bracket": "3mm thick stainless steel folded sheet",
@@ -236,4 +236,4 @@ def set_description(obj, material):
 
 
 if __name__ == "__main__":
-    automate_userdata()
+    set_userdata()
