@@ -223,7 +223,7 @@ def get_description(obj, material):
         "stainless_steel": "3mm thick stainless steel folded sheet",
         "stainless_steel_bracket": "3mm thick stainless steel folded sheet",
         "gasket": "EPDM gasket",
-        "al-profile": "aluminum block",
+        "alu-profile": "aluminum block",
         "insulation": "50mm thick insulation"
     }
 
