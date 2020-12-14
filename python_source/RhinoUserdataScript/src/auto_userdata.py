@@ -9,10 +9,10 @@ UNIT = rs.UnitSystemName(abbreviate=True)
 def set_userdata():
     layers = [
         "stainless_steel",
-        "stainless_steel_bracket",
+        "stainless_steel_brackets",
         "alu-profile",
         "gasket",
-        "insulation"
+        # "insulation"
     ]
 
     for layer in layers:
@@ -71,7 +71,7 @@ def get_glass_build_up(obj):
 def get_material_code(obj, material):
     material_codes = {
         "stainless_steel": "204",
-        "stainless_steel_bracket": "204",
+        "stainless_steel_brackets": "204",
         "gasket": "702",
         "alu-profile": "302",
         "insulation": "620"
@@ -132,7 +132,7 @@ def get_acc_value(obj):
 def get_material(obj, material):
     material_names = {
         "stainless_steel": "1.4404 - S235",
-        "stainless_steel_bracket": "1.4404 - S235",
+        "stainless_steel_brackets": "1.4404 - S235",
         "alu-profile": "EN AW 5005 H14"
     }
 
@@ -148,10 +148,23 @@ def get_manufacturer(obj):
 
 
 def get_area(obj):
-    area = rs.SurfaceArea(obj)[0]
-    if UNIT == "mm":
-        # convert mm^2 to m^2
-        area = area * 1e-06
+    area = 0
+    try:
+        if rs.IsPolysurfaceClosed(obj):
+            area = rs.SurfaceArea(obj)[0]
+            if area:
+                if UNIT == "mm":
+                    # convert mm^2 to m^2
+                    area = area * 1e-06
+            else:
+                print("Warning: Cannot obtain surface area!")
+        else:
+            print("Warning: Polysurface is not closed {}".format(obj))
+    except Exception as e:
+        rs.SelectObject(obj)
+        print(e)
+    # else:
+    #     print("Warning: Polysurface is not closed {}".format(obj))
     return str(round(area, ROUND_PRECISION)) + " m^2"
 
 
@@ -159,20 +172,28 @@ def get_weight(obj, material):
     # densities in kg/m^3
     mat_den = {
         "stainless_steel": 8000,
-        "stainless_steel_bracket": 8000,
+        "stainless_steel_brackets": 8000,
         "fixing": 8000,
         "alu-profile": 2712,
         "gasket": 70,
         "insulation": 70
     }
+    m = 0
+    try:
+        if rs.IsPolysurfaceClosed(obj):
+            s_vol = rs.SurfaceVolume(obj)[0]
+            if s_vol:
+                if UNIT == "mm":
+                    s_vol = s_vol * 1e-09
+                m = s_vol * mat_den[material]
+            else:
+                print("Warning: Cannot obtain surface area.")
+        else:
+            print("Warning: Polysurface is not closed {}".format(obj))
+    except Exception as e:
+        rs.SelectObject(obj)
+        print(e)
 
-    s_vol = rs.SurfaceVolume(obj)[0]
-    if s_vol:
-        if UNIT == "mm":
-            s_vol = s_vol * 1e-09
-        m = s_vol * mat_den[material]
-    else:
-        m = 0
     return str(round(m, ROUND_PRECISION)) + " kg"
 
 
@@ -188,7 +209,7 @@ def get_name(obj, material, count):
     name = "2MR-SEE-POD-EWL-F03-L06-WT3C-{filename}-R00"
     filename_temp_dict = {
         "stainless_steel": "SS{count:03d}",
-        "stainless_steel_bracket": "BR001",
+        "stainless_steel_brackets": "BR001",
         "gasket": "EP{count:03d}",
         "alu-profile": "AB{count:03d}",
         "insulation": "MW{count:03d}"
@@ -205,7 +226,7 @@ def get_name(obj, material, count):
 def get_type(obj, material):
     type_dict = {
         "stainless_steel": "Sheet",
-        "stainless_steel_bracket": "Sheet",
+        "stainless_steel_brackets": "Sheet",
         "alu-profile": "Profile",
         "gasket": "Gasket",
         "insulation": "Insulation"
@@ -221,7 +242,7 @@ def get_type(obj, material):
 def get_description(obj, material):
     desc_dict = {
         "stainless_steel": "3mm thick stainless steel folded sheet",
-        "stainless_steel_bracket": "3mm thick stainless steel folded sheet",
+        "stainless_steel_brackets": "3mm thick stainless steel folded sheet",
         "gasket": "EPDM gasket",
         "alu-profile": "aluminum block",
         "insulation": "50mm thick insulation"
