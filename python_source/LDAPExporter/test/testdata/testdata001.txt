@@ -1,0 +1,24 @@
+version: 1
+dn: ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: organizationalUnit
+objectClass: top
+ou: ptcc_industry people
+
+dn: ou=3M Philippines,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: organizationalUnit
+objectClass: top
+ou: 3M Philippines
+
+dn: cn=3M Philippines,ou=3M Philippines,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: 3M Philippines
+facsimileTelephoneNumber: +63 (2) 8145872
+facsimileTelephoneNumber: +63 (2) 8420581
+facsimileTelephoneNumber: +63 (2) 8501157
+givenName: 3M
+sn: Philippines
+telephoneNumber: +63 (2) 8133781 to 95
+telephoneNumber: +63 (2) 8145888
