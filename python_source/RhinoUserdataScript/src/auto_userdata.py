@@ -5,8 +5,14 @@ NOT_APPLICABLE = "N/A"
 ROUND_PRECISION = rs.UnitDistanceDisplayPrecision()
 UNIT = rs.UnitSystemName(abbreviate=True)
 
+BLOCKS = ["D4302-F2013",
+          "D4302-F2014",
+          "D4401-B2001",
+          "D4502-F2013",
+          "D4512-F2014"]
+
 LAYER_COMPONENT_DATA = {
-    "stainless_steel": {
+    "sheet": {
         "mat_code": "204",
         "finish_code": "44",
         "coating_system": "mirror polished",
@@ -14,7 +20,8 @@ LAYER_COMPONENT_DATA = {
         "density": 8000,  # densities in kg/m^3
         "file_name": "SS{count:03d}",
         "type": "Sheet",
-        "desc": "3mm thick stainless steel folded sheet"
+        "desc": "3mm thick stainless steel folded sheet",
+        "obj_name_num": "2"
     },
     "stainless_steel_brackets": {
         "mat_code": "204",
@@ -24,7 +31,8 @@ LAYER_COMPONENT_DATA = {
         "density": 8000,  # densities in kg/m^3
         "file_name": "BR001",
         "type": "Sheet",
-        "desc": "3mm thick stainless steel folded sheet"
+        "desc": "3mm thick stainless steel folded sheet",
+        "obj_name_num": "4"
     },
     "alu-profile": {
         "mat_code": "302",
@@ -34,7 +42,8 @@ LAYER_COMPONENT_DATA = {
         "density": 2712,  # densities in kg/m^3
         "file_name": "AB{count:03d}",
         "type": "Profile",
-        "desc": "aluminum block"
+        "desc": "aluminum block",
+        "obj_name_num": "6"
     },
     "gasket": {
         "mat_code": "702",
@@ -44,7 +53,8 @@ LAYER_COMPONENT_DATA = {
         "density": 70,  # densities in kg/m^3
         "file_name": "EP{count:03d}",
         "type": "Gasket",
-        "desc": "EPDM gasket"
+        "desc": "EPDM gasket",
+        "obj_name_num": "1"
     },
     "insulation": {
         "mat_code": "620",
@@ -54,55 +64,118 @@ LAYER_COMPONENT_DATA = {
         "density": 70,  # densities in kg/m^3
         "file_name": "MW{count:03d}",
         "type": "Insulation",
-        "desc": "50mm thick insulation"
+        "desc": "50mm thick insulation",
+        "obj_name_num": "7"
     },
+    "rib": {
+        "mat_code": "204",
+        "finish_code": "00",
+        "coating_system": "no finish",
+        "material": "1.4404 - S235",
+        "density": 8000,  # densities in kg/m^3
+        "file_name": "RB{count:03d}",
+        "type": "Sheet",
+        "desc": "4mm thick stainless steel sheet",
+        "obj_name_num": "5"
+    },
+    "rib-plate": {
+        "mat_code": "204",
+        "finish_code": "00",
+        "coating_system": "no finish",
+        "material": "1.4404 - S235",
+        "density": 8000,  # densities in kg/m^3
+        "file_name": "RP{count:03d}",
+        "type": "Plate",
+        "desc": "5mm thick stainless steel plate",
+        "obj_name_num": "4"
+    },
+    "splice": {
+        "mat_code": "204",
+        "finish_code": "44",
+        "coating_system": "mirror polished",
+        "material": "1.4404 - S235",
+        "density": 8000,  # densities in kg/m^3
+        "file_name": "SP{count:03d}",
+        "type": "Sheet",
+        "desc": "3mm thick stainless steel folded sheet",
+        "obj_name_num": "3"
+    },
+    "washer": {
+        "mat_code": "204",
+        "finish_code": "00",
+        "coating_system": "no finish",
+        "material": "1.4404 - S235",
+        "density": 8000,  # densities in kg/m^3
+        "file_name": "WS{count:03d}",
+        "type": "Washer",
+        "desc": "3mm thick stainless steel washer",
+        "obj_name_num": "1"
+    }
 }
 
 
 def set_userdata():
-    for layer_name in LAYER_COMPONENT_DATA:
-        objs = rs.ObjectsByLayer(layer_name)
-        for i, obj in enumerate(objs):
-            count = i + 1
-            walltype = get_walltype(obj)
-            glass_build_up = get_glass_build_up(obj)
-            mat_code = get_material_code(obj, layer_name)
-            fin_code = get_finish_code(obj, layer_name)
-            coating_sys = get_coating_system(obj, layer_name)
-            uval = get_u_value(obj)
-            accval = get_acc_value(obj)
-            mat = get_material(obj, layer_name)
-            manufacturer = get_manufacturer(obj)
-            area = get_area(obj)
-            weight = get_weight(obj, layer_name)
-            dim = get_dimension(obj)
-            name = get_name(obj, layer_name, count)
-            type = get_type(obj, layer_name)
-            desc = get_description(obj, layer_name)
+    blk_names = rs.BlockNames(True)
+    for blk_name in blk_names:
+        if blk_name in BLOCKS:
+            blk_obj_ids = rs.BlockObjects(blk_name)
+            for blk_obj_id in blk_obj_ids:
+                count = 1
+                layer_name = rs.ObjectLayer(blk_obj_id)
+                if layer_name in LAYER_COMPONENT_DATA:
+                    print("working on object {} under block name: {}".format(blk_obj_id, blk_name))
+                    # sets the object name according to layer
+                    set_objectname(blk_obj_id, blk_name, layer_name)
+                    walltype = get_walltype(blk_obj_id)
+                    glass_build_up = get_glass_build_up(blk_obj_id)
+                    mat_code = get_material_code(blk_obj_id, layer_name)
+                    fin_code = get_finish_code(blk_obj_id, layer_name)
+                    coating_sys = get_coating_system(blk_obj_id, layer_name)
+                    uval = get_u_value(blk_obj_id)
+                    accval = get_acc_value(blk_obj_id)
+                    mat = get_material(blk_obj_id, layer_name)
+                    manufacturer = get_manufacturer(blk_obj_id)
+                    area = get_area(blk_obj_id)
+                    weight = get_weight(blk_obj_id, layer_name)
+                    dim = get_dimension(blk_obj_id)
+                    name = get_name(blk_obj_id, layer_name, count)
+                    type = get_type(blk_obj_id, layer_name)
+                    desc = get_description(blk_obj_id, layer_name)
 
-            rs.SetUserText(obj, "Walltype", walltype)
-            rs.SetUserText(obj, "GlassBuildUp", glass_build_up)
-            rs.SetUserText(obj, "MaterialCode", mat_code)
-            rs.SetUserText(obj, "FinishCode", fin_code)
-            rs.SetUserText(obj, "CoatingSystem", coating_sys)
-            rs.SetUserText(obj, "UValue", uval)
-            rs.SetUserText(obj, "AccousticValue", accval)
-            rs.SetUserText(obj, "Material", mat)
-            rs.SetUserText(obj, "Manufacturer", manufacturer)
-            rs.SetUserText(obj, "Area", area)
-            rs.SetUserText(obj, "Weight", weight)
-            rs.SetUserText(obj, "Dimension", dim)
-            rs.SetUserText(obj, "Name", name)
-            rs.SetUserText(obj, "Type", type)
-            rs.SetUserText(obj, "Description", desc)
+                    rs.SetUserText(blk_obj_id, "Walltype", walltype)
+                    rs.SetUserText(blk_obj_id, "GlassBuildUp", glass_build_up)
+                    rs.SetUserText(blk_obj_id, "MaterialCode", mat_code)
+                    rs.SetUserText(blk_obj_id, "FinishCode", fin_code)
+                    rs.SetUserText(blk_obj_id, "CoatingSystem", coating_sys)
+                    rs.SetUserText(blk_obj_id, "UValue", uval)
+                    rs.SetUserText(blk_obj_id, "AccousticValue", accval)
+                    rs.SetUserText(blk_obj_id, "Material", mat)
+                    rs.SetUserText(blk_obj_id, "Manufacturer", manufacturer)
+                    rs.SetUserText(blk_obj_id, "Area", area)
+                    rs.SetUserText(blk_obj_id, "Weight", weight)
+                    rs.SetUserText(blk_obj_id, "Dimension", dim)
+                    rs.SetUserText(blk_obj_id, "Name", name)
+                    rs.SetUserText(blk_obj_id, "Type", type)
+                    rs.SetUserText(blk_obj_id, "Description", desc)
 
-            if layer_name == "alu-profile":
-                ext_com = get_extrusion_company(obj)
-                die_num = get_die_number(obj)
-                alloy_temp = get_alloy_temper(obj)
-                rs.SetUserText(obj, "ExtrusionCompany", ext_com)
-                rs.SetUserText(obj, "DieNumber", die_num)
-                rs.SetUserText(obj, "AlloyTemper", alloy_temp)
+                    if layer_name == "alu-profile":
+                        ext_com = get_extrusion_company(blk_obj_id)
+                        die_num = get_die_number(blk_obj_id)
+                        alloy_temp = get_alloy_temper(blk_obj_id)
+                        rs.SetUserText(blk_obj_id, "ExtrusionCompany", ext_com)
+                        rs.SetUserText(blk_obj_id, "DieNumber", die_num)
+                        rs.SetUserText(blk_obj_id, "AlloyTemper", alloy_temp)
+
+
+def set_objectname(obj, block_name, layer_name):
+    block_name_split = block_name.split("-")
+    prefix = "{}{}{}".format(block_name_split[0][0:-2],
+                             LAYER_COMPONENT_DATA[layer_name]["obj_name_num"],
+                             block_name_split[0][-1])
+    block_name_split[0] = prefix
+    object_name = "-".join(block_name_split)
+    rs.ObjectName(obj, object_name)
+    print(object_name)
 
 
 def get_walltype(obj):
