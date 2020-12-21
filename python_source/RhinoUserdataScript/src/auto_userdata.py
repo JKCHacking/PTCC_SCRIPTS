@@ -5,35 +5,80 @@ NOT_APPLICABLE = "N/A"
 ROUND_PRECISION = rs.UnitDistanceDisplayPrecision()
 UNIT = rs.UnitSystemName(abbreviate=True)
 
+LAYER_COMPONENT_DATA = {
+    "stainless_steel": {
+        "mat_code": "204",
+        "finish_code": "44",
+        "coating_system": "mirror polished",
+        "material": "1.4404 - S235",
+        "density": 8000,  # densities in kg/m^3
+        "file_name": "SS{count:03d}",
+        "type": "Sheet",
+        "desc": "3mm thick stainless steel folded sheet"
+    },
+    "stainless_steel_brackets": {
+        "mat_code": "204",
+        "finish_code": "44",
+        "coating_system": "no finish",
+        "material": "1.4404 - S235",
+        "density": 8000,  # densities in kg/m^3
+        "file_name": "BR001",
+        "type": "Sheet",
+        "desc": "3mm thick stainless steel folded sheet"
+    },
+    "alu-profile": {
+        "mat_code": "302",
+        "finish_code": "51",
+        "coating_system": "anodized",
+        "material": "EN AW 5005 H14",
+        "density": 2712,  # densities in kg/m^3
+        "file_name": "AB{count:03d}",
+        "type": "Profile",
+        "desc": "aluminum block"
+    },
+    "gasket": {
+        "mat_code": "702",
+        "finish_code": "00",
+        "coating_system": "no finish",
+        "material": NOT_APPLICABLE,
+        "density": 70,  # densities in kg/m^3
+        "file_name": "EP{count:03d}",
+        "type": "Gasket",
+        "desc": "EPDM gasket"
+    },
+    "insulation": {
+        "mat_code": "620",
+        "finish_code": "00",
+        "coating_system": "no finish",
+        "material": NOT_APPLICABLE,
+        "density": 70,  # densities in kg/m^3
+        "file_name": "MW{count:03d}",
+        "type": "Insulation",
+        "desc": "50mm thick insulation"
+    },
+}
+
 
 def set_userdata():
-    layers = [
-        "stainless_steel",
-        "stainless_steel_brackets",
-        "alu-profile",
-        "gasket",
-        # "insulation"
-    ]
-
-    for layer in layers:
-        objs = rs.ObjectsByLayer(layer)
+    for layer_name in LAYER_COMPONENT_DATA:
+        objs = rs.ObjectsByLayer(layer_name)
         for i, obj in enumerate(objs):
             count = i + 1
             walltype = get_walltype(obj)
             glass_build_up = get_glass_build_up(obj)
-            mat_code = get_material_code(obj, layer)
-            fin_code = get_finish_code(obj, layer)
-            coating_sys = get_coating_system(obj, layer)
+            mat_code = get_material_code(obj, layer_name)
+            fin_code = get_finish_code(obj, layer_name)
+            coating_sys = get_coating_system(obj, layer_name)
             uval = get_u_value(obj)
             accval = get_acc_value(obj)
-            mat = get_material(obj, layer)
+            mat = get_material(obj, layer_name)
             manufacturer = get_manufacturer(obj)
             area = get_area(obj)
-            weight = get_weight(obj, layer)
+            weight = get_weight(obj, layer_name)
             dim = get_dimension(obj)
-            name = get_name(obj, layer, count)
-            type = get_type(obj, layer)
-            desc = get_description(obj, layer)
+            name = get_name(obj, layer_name, count)
+            type = get_type(obj, layer_name)
+            desc = get_description(obj, layer_name)
 
             rs.SetUserText(obj, "Walltype", walltype)
             rs.SetUserText(obj, "GlassBuildUp", glass_build_up)
@@ -51,7 +96,7 @@ def set_userdata():
             rs.SetUserText(obj, "Type", type)
             rs.SetUserText(obj, "Description", desc)
 
-            if layer == "alu-profile":
+            if layer_name == "alu-profile":
                 ext_com = get_extrusion_company(obj)
                 die_num = get_die_number(obj)
                 alloy_temp = get_alloy_temper(obj)
@@ -69,43 +114,17 @@ def get_glass_build_up(obj):
 
 
 def get_material_code(obj, material):
-    material_codes = {
-        "stainless_steel": "204",
-        "stainless_steel_brackets": "204",
-        "gasket": "702",
-        "alu-profile": "302",
-        "insulation": "620"
-    }
-    if material in material_codes:
-        mat_code = material_codes[material]
-    else:
-        mat_code = NOT_APPLICABLE
+    mat_code = LAYER_COMPONENT_DATA[material]["mat_code"]
     return mat_code
 
 
 def get_finish_code(obj, material):
-    finish_codes = {
-        "stainless_steel": "44",
-        "alumninum": "51",
-    }
-
-    if material in finish_codes:
-        fin_code = finish_codes[material]
-    else:
-        fin_code = "00"
-
+    fin_code = LAYER_COMPONENT_DATA[material]["finish_code"]
     return fin_code
 
 
 def get_coating_system(obj, material):
-    coating_system_dict = {
-        "stainless_steel": "mirror polished",
-        "aluminum": "anodized"
-    }
-    if material in coating_system_dict:
-        coating_system = coating_system_dict[material]
-    else:
-        coating_system = "no finish"
+    coating_system = LAYER_COMPONENT_DATA[material]["coating_system"]
     return coating_system
 
 
@@ -130,16 +149,7 @@ def get_acc_value(obj):
 
 
 def get_material(obj, material):
-    material_names = {
-        "stainless_steel": "1.4404 - S235",
-        "stainless_steel_brackets": "1.4404 - S235",
-        "alu-profile": "EN AW 5005 H14"
-    }
-
-    if material in material_names:
-        material_name = material_names[material]
-    else:
-        material_name = NOT_APPLICABLE
+    material_name = LAYER_COMPONENT_DATA[material]["material"]
     return material_name
 
 
@@ -169,15 +179,6 @@ def get_area(obj):
 
 
 def get_weight(obj, material):
-    # densities in kg/m^3
-    mat_den = {
-        "stainless_steel": 8000,
-        "stainless_steel_brackets": 8000,
-        "fixing": 8000,
-        "alu-profile": 2712,
-        "gasket": 70,
-        "insulation": 70
-    }
     m = 0
     try:
         if rs.IsPolysurfaceClosed(obj):
@@ -185,7 +186,7 @@ def get_weight(obj, material):
             if s_vol:
                 if UNIT == "mm":
                     s_vol = s_vol * 1e-09
-                m = s_vol * mat_den[material]
+                m = s_vol * LAYER_COMPONENT_DATA[material]["density"]
             else:
                 print("Warning: Cannot obtain surface area.")
         else:
@@ -206,53 +207,19 @@ def get_dimension(obj):
 
 
 def get_name(obj, material, count):
+    filename = LAYER_COMPONENT_DATA[material]["file_name"].format(count=count)
     name = "2MR-SEE-POD-EWL-F03-L06-WT3C-{filename}-R00"
-    filename_temp_dict = {
-        "stainless_steel": "SS{count:03d}",
-        "stainless_steel_brackets": "BR001",
-        "gasket": "EP{count:03d}",
-        "alu-profile": "AB{count:03d}",
-        "insulation": "MW{count:03d}"
-    }
-
-    if material in filename_temp_dict:
-        filename = filename_temp_dict[material].format(count=count)
-        name = name.format(filename=filename)
-    else:
-        name = NOT_APPLICABLE
+    name = name.format(filename=filename)
     return name
 
 
 def get_type(obj, material):
-    type_dict = {
-        "stainless_steel": "Sheet",
-        "stainless_steel_brackets": "Sheet",
-        "alu-profile": "Profile",
-        "gasket": "Gasket",
-        "insulation": "Insulation"
-    }
-
-    if material in type_dict:
-        type = type_dict[material]
-    else:
-        type = NOT_APPLICABLE
+    type = LAYER_COMPONENT_DATA[material]["type"]
     return type
 
 
 def get_description(obj, material):
-    desc_dict = {
-        "stainless_steel": "3mm thick stainless steel folded sheet",
-        "stainless_steel_brackets": "3mm thick stainless steel folded sheet",
-        "gasket": "EPDM gasket",
-        "alu-profile": "aluminum block",
-        "insulation": "50mm thick insulation"
-    }
-
-    if material in desc_dict:
-        desc = desc_dict[material]
-    else:
-        desc = NOT_APPLICABLE
-
+    desc = LAYER_COMPONENT_DATA[material]["desc"]
     return desc
 
 
