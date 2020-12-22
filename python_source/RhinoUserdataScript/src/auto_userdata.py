@@ -9,7 +9,7 @@ BLOCKS = ["D4302-F2013",
           "D4302-F2014",
           "D4401-B2001",
           "D4502-F2013",
-          "D4512-F2014"]
+          "D4502-F2014"]
 
 LAYER_COMPONENT_DATA = {
     "sheet": {
@@ -32,7 +32,7 @@ LAYER_COMPONENT_DATA = {
         "file_name": "BR001",
         "type": "Sheet",
         "desc": "3mm thick stainless steel folded sheet",
-        "obj_name_num": "4"
+        "obj_name_num": "2"
     },
     "alu-profile": {
         "mat_code": "302",
