@@ -5,13 +5,44 @@ NOT_APPLICABLE = "N/A"
 ROUND_PRECISION = rs.UnitDistanceDisplayPrecision()
 UNIT = rs.UnitSystemName(abbreviate=True)
 
-BLOCKS = ["D4302-F2013",
-          "D4302-F2014",
-          "D4401-B2001",
-          "D4502-F2013",
-          "D4502-F2014"]
+BLOCKS = [
+    "D4301-F2000",
+    "D4301-F2001",
+    "D4301-F2002",
+    "D4301-F2003",
+    "D4301-F2004",
+    "D4301-F2005",
+    "D4301-F2006",
+    "D4301-F2007",
+    "D4301-F2008",
+    "D4301-F2009",
+    "D4301-F2010",
+    "D4301-G2003",
+    "D4301-G2004",
+    "D4301-G2005",
+    "D4301-G2006",
+    "D4301-G2007",
+    "D4301-G2008",
+    "D4301-G2009",
+    "D4301-G2010",
+    "D4301-G2011",
+    "D4302-F2011",
+    "D4302-F2012",
+    "D4302-F2013",
+    "D4302-F2014",
+    "D4302-G2000",
+    "D4302-G2001",
+    "D4302-G2002",
+    "D4322-F2011",
+    "D4322-F2012",
+    "D4322-F2013",
+    "D4322-F2014",
+    "D4322-G2000",
+    "D4322-G2001",
+    "D4322-G2002",
+]
 
-LAYER_COMPONENT_DATA = {
+LAYERS_MATERIAL_DATA = {
     "sheet": {
         "mat_code": "204",
         "finish_code": "44",
@@ -114,7 +145,7 @@ LAYER_COMPONENT_DATA = {
 }
 
 
-def set_userdata():
+def iter_objects():
     blk_names = rs.BlockNames(True)
     for blk_name in blk_names:
         if blk_name in BLOCKS:
@@ -122,55 +153,59 @@ def set_userdata():
             for blk_obj_id in blk_obj_ids:
                 count = 1
                 layer_name = rs.ObjectLayer(blk_obj_id)
-                if layer_name in LAYER_COMPONENT_DATA:
+                if layer_name in LAYERS_MATERIAL_DATA:
                     print("working on object {} under block name: {}".format(blk_obj_id, blk_name))
                     # sets the object name according to layer
                     set_objectname(blk_obj_id, blk_name, layer_name)
-                    walltype = get_walltype(blk_obj_id)
-                    glass_build_up = get_glass_build_up(blk_obj_id)
-                    mat_code = get_material_code(blk_obj_id, layer_name)
-                    fin_code = get_finish_code(blk_obj_id, layer_name)
-                    coating_sys = get_coating_system(blk_obj_id, layer_name)
-                    uval = get_u_value(blk_obj_id)
-                    accval = get_acc_value(blk_obj_id)
-                    mat = get_material(blk_obj_id, layer_name)
-                    manufacturer = get_manufacturer(blk_obj_id)
-                    area = get_area(blk_obj_id)
-                    weight = get_weight(blk_obj_id, layer_name)
-                    dim = get_dimension(blk_obj_id)
-                    name = get_name(blk_obj_id, layer_name, count)
-                    type = get_type(blk_obj_id, layer_name)
-                    desc = get_description(blk_obj_id, layer_name)
+                    set_userdata(blk_obj_id, layer_name, count)
 
-                    rs.SetUserText(blk_obj_id, "Walltype", walltype)
-                    rs.SetUserText(blk_obj_id, "GlassBuildUp", glass_build_up)
-                    rs.SetUserText(blk_obj_id, "MaterialCode", mat_code)
-                    rs.SetUserText(blk_obj_id, "FinishCode", fin_code)
-                    rs.SetUserText(blk_obj_id, "CoatingSystem", coating_sys)
-                    rs.SetUserText(blk_obj_id, "UValue", uval)
-                    rs.SetUserText(blk_obj_id, "AccousticValue", accval)
-                    rs.SetUserText(blk_obj_id, "Material", mat)
-                    rs.SetUserText(blk_obj_id, "Manufacturer", manufacturer)
-                    rs.SetUserText(blk_obj_id, "Area", area)
-                    rs.SetUserText(blk_obj_id, "Weight", weight)
-                    rs.SetUserText(blk_obj_id, "Dimension", dim)
-                    rs.SetUserText(blk_obj_id, "Name", name)
-                    rs.SetUserText(blk_obj_id, "Type", type)
-                    rs.SetUserText(blk_obj_id, "Description", desc)
 
-                    if layer_name == "alu-profile":
-                        ext_com = get_extrusion_company(blk_obj_id)
-                        die_num = get_die_number(blk_obj_id)
-                        alloy_temp = get_alloy_temper(blk_obj_id)
-                        rs.SetUserText(blk_obj_id, "ExtrusionCompany", ext_com)
-                        rs.SetUserText(blk_obj_id, "DieNumber", die_num)
-                        rs.SetUserText(blk_obj_id, "AlloyTemper", alloy_temp)
+def set_userdata(obj_id, layer_name, count):
+    walltype = get_walltype(obj_id)
+    glass_build_up = get_glass_build_up(obj_id)
+    mat_code = get_material_code(obj_id, layer_name)
+    fin_code = get_finish_code(obj_id, layer_name)
+    coating_sys = get_coating_system(obj_id, layer_name)
+    uval = get_u_value(obj_id)
+    accval = get_acc_value(obj_id)
+    mat = get_material(obj_id, layer_name)
+    manufacturer = get_manufacturer(obj_id)
+    area = get_area(obj_id)
+    weight = get_weight(obj_id, layer_name)
+    dim = get_dimension(obj_id)
+    name = get_name(obj_id, layer_name, count)
+    type = get_type(obj_id, layer_name)
+    desc = get_description(obj_id, layer_name)
+
+    rs.SetUserText(obj_id, "Walltype", walltype)
+    rs.SetUserText(obj_id, "GlassBuildUp", glass_build_up)
+    rs.SetUserText(obj_id, "MaterialCode", mat_code)
+    rs.SetUserText(obj_id, "FinishCode", fin_code)
+    rs.SetUserText(obj_id, "CoatingSystem", coating_sys)
+    rs.SetUserText(obj_id, "UValue", uval)
+    rs.SetUserText(obj_id, "AccousticValue", accval)
+    rs.SetUserText(obj_id, "Material", mat)
+    rs.SetUserText(obj_id, "Manufacturer", manufacturer)
+    rs.SetUserText(obj_id, "Area", area)
+    rs.SetUserText(obj_id, "Weight", weight)
+    rs.SetUserText(obj_id, "Dimension", dim)
+    rs.SetUserText(obj_id, "Name", name)
+    rs.SetUserText(obj_id, "Type", type)
+    rs.SetUserText(obj_id, "Description", desc)
+
+    if layer_name == "alu-profile":
+        ext_com = get_extrusion_company(obj_id)
+        die_num = get_die_number(obj_id)
+        alloy_temp = get_alloy_temper(obj_id)
+        rs.SetUserText(obj_id, "ExtrusionCompany", ext_com)
+        rs.SetUserText(obj_id, "DieNumber", die_num)
+        rs.SetUserText(obj_id, "AlloyTemper", alloy_temp)
 
 
 def set_objectname(obj, block_name, layer_name):
     block_name_split = block_name.split("-")
     prefix = "{}{}{}".format(block_name_split[0][0:-2],
-                             LAYER_COMPONENT_DATA[layer_name]["obj_name_num"],
+                             LAYERS_MATERIAL_DATA[layer_name]["obj_name_num"],
                              block_name_split[0][-1])
     block_name_split[0] = prefix
     object_name = "-".join(block_name_split)
@@ -187,17 +222,17 @@ def get_glass_build_up(obj):
 
 
 def get_material_code(obj, material):
-    mat_code = LAYER_COMPONENT_DATA[material]["mat_code"]
+    mat_code = LAYERS_MATERIAL_DATA[material]["mat_code"]
     return mat_code
 
 
 def get_finish_code(obj, material):
-    fin_code = LAYER_COMPONENT_DATA[material]["finish_code"]
+    fin_code = LAYERS_MATERIAL_DATA[material]["finish_code"]
     return fin_code
 
 
 def get_coating_system(obj, material):
-    coating_system = LAYER_COMPONENT_DATA[material]["coating_system"]
+    coating_system = LAYERS_MATERIAL_DATA[material]["coating_system"]
     return coating_system
 
 
@@ -222,7 +257,7 @@ def get_acc_value(obj):
 
 
 def get_material(obj, material):
-    material_name = LAYER_COMPONENT_DATA[material]["material"]
+    material_name = LAYERS_MATERIAL_DATA[material]["material"]
     return material_name
 
 
@@ -244,7 +279,6 @@ def get_area(obj):
         else:
             print("Warning: Polysurface is not closed {}".format(obj))
     except Exception as e:
-        rs.SelectObject(obj)
         print(e)
     # else:
     #     print("Warning: Polysurface is not closed {}".format(obj))
@@ -259,13 +293,12 @@ def get_weight(obj, material):
             if s_vol:
                 if UNIT == "mm":
                     s_vol = s_vol * 1e-09
-                m = s_vol * LAYER_COMPONENT_DATA[material]["density"]
+                m = s_vol * LAYERS_MATERIAL_DATA[material]["density"]
             else:
                 print("Warning: Cannot obtain surface area.")
         else:
             print("Warning: Polysurface is not closed {}".format(obj))
     except Exception as e:
-        rs.SelectObject(obj)
         print(e)
 
     return str(round(m, ROUND_PRECISION)) + " kg"
@@ -280,21 +313,21 @@ def get_dimension(obj):
 
 
 def get_name(obj, material, count):
-    filename = LAYER_COMPONENT_DATA[material]["file_name"].format(count=count)
+    filename = LAYERS_MATERIAL_DATA[material]["file_name"].format(count=count)
     name = "2MR-SEE-POD-EWL-F03-L06-WT3C-{filename}-R00"
     name = name.format(filename=filename)
     return name
 
 
 def get_type(obj, material):
-    type = LAYER_COMPONENT_DATA[material]["type"]
+    type = LAYERS_MATERIAL_DATA[material]["type"]
     return type
 
 
 def get_description(obj, material):
-    desc = LAYER_COMPONENT_DATA[material]["desc"]
+    desc = LAYERS_MATERIAL_DATA[material]["desc"]
     return desc
 
 
 if __name__ == "__main__":
-    set_userdata()
+    iter_objects()
