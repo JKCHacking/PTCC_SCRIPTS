@@ -208,26 +208,24 @@ LAYERS_MATERIAL_DATA = {
 
 
 def iter_objects():
-    blk_names = rs.BlockNames(True)
     # getting the list of block names
-    for blk_name in blk_names:
-        if blk_name in BLOCKS:
-            # getting a block object from a block name
-            child_object_list = rs.BlockObjects(blk_name)
-            block_object = rs.BlockInstances(blk_name)[0]
-            representative_layer = ""
-            # getting list of objects that makes up the block.
-            for child_object in child_object_list:
-                layer_name = rs.ObjectLayer(child_object)
-                if layer_name in LAYERS_MATERIAL_DATA:
-                    print("working on object {} under block name: {}".format(child_object, blk_name))
-                    # sets the object name according to layer
-                    set_objectname(child_object, blk_name, layer_name)
-                    set_userdata(child_object, blk_name, layer_name)
-                if layer_name in BLOCK_REPRESENTATIVES and representative_layer == "":
-                    representative_layer = layer_name
-            set_objectname(block_object, blk_name, representative_layer)
-            set_userdata(block_object, blk_name, representative_layer)
+    for blk_name in BLOCKS:
+        print("BlockName: {}".format(blk_name))
+        # getting a block object from a block name
+        child_object_list = rs.BlockObjects(blk_name)
+        block_object = rs.BlockInstances(blk_name)[0]
+        representative_layer = ""
+        # getting list of objects that makes up the block.
+        for child_object in child_object_list:
+            layer_name = rs.ObjectLayer(child_object)
+            if layer_name in LAYERS_MATERIAL_DATA:
+                # sets the object name according to layer
+                set_objectname(child_object, blk_name, layer_name)
+                set_userdata(child_object, blk_name, layer_name)
+            if layer_name in BLOCK_REPRESENTATIVES and representative_layer == "":
+                representative_layer = layer_name
+        set_objectname(block_object, blk_name, representative_layer)
+        set_userdata(block_object, blk_name, representative_layer)
 
 
 def set_userdata(obj_id, name, layer_name):
@@ -249,37 +247,72 @@ def set_userdata(obj_id, name, layer_name):
     desc = get_description(layer_name)
     apvorlage = get_apvorlage(layer_name)
 
-    rs.SetUserText(obj_id, "Name", name)
-    rs.SetUserText(obj_id, "Weight", weight)
-    rs.SetUserText(obj_id, "UValue", uval)
-    rs.SetUserText(obj_id, "AccousticValue", accval)
-    rs.SetUserText(obj_id, "Area", area)
-    rs.SetUserText(obj_id, "Manufacturer", manufacturer)
-    rs.SetUserText(obj_id, "GlassBuildUp", glass_build_up)
-    rs.SetUserText(obj_id, "Type", type)
-    rs.SetUserText(obj_id, "FinishCode", fin_code)
-    rs.SetUserText(obj_id, "CoatingSystem", coating_sys)
-    rs.SetUserText(obj_id, "Location", location)
-    rs.SetUserText(obj_id, "MaterialCode", mat_code)
-    rs.SetUserText(obj_id, "Material", mat)
-    rs.SetUserText(obj_id, "Code", code)
-    rs.SetUserText(obj_id, "Dimension", dim)
-    rs.SetUserText(obj_id, "Description", desc)
-    rs.SetUserText(obj_id, "APVorlage", apvorlage)
+    if rs.IsBlockInstance(obj_id):
+        blocks = rs.BlockInstances(name)
+        for block in blocks:
+            rs.SetUserText(block, "Name", name)
+            rs.SetUserText(block, "Weight", weight)
+            rs.SetUserText(block, "UValue", uval)
+            rs.SetUserText(block, "AccousticValue", accval)
+            rs.SetUserText(block, "Area", area)
+            rs.SetUserText(block, "Manufacturer", manufacturer)
+            rs.SetUserText(block, "GlassBuildUp", glass_build_up)
+            rs.SetUserText(block, "Type", type)
+            rs.SetUserText(block, "FinishCode", fin_code)
+            rs.SetUserText(block, "CoatingSystem", coating_sys)
+            rs.SetUserText(block, "Location", location)
+            rs.SetUserText(block, "MaterialCode", mat_code)
+            rs.SetUserText(block, "Material", mat)
+            rs.SetUserText(block, "Code", code)
+            rs.SetUserText(block, "Dimension", dim)
+            rs.SetUserText(block, "Description", desc)
+            rs.SetUserText(block, "APVorlage", apvorlage)
 
-    if layer_name == "alu-profile":
-        ext_com = get_extrusion_company()
-        die_num = get_die_number()
-        alloy_temp = get_alloy_temper()
-        rs.SetUserText(obj_id, "ExtrusionCompany", ext_com)
-        rs.SetUserText(obj_id, "DieNumber", die_num)
-        rs.SetUserText(obj_id, "AlloyTemper", alloy_temp)
+            if layer_name == "alu-profile":
+                ext_com = get_extrusion_company()
+                die_num = get_die_number()
+                alloy_temp = get_alloy_temper()
+                rs.SetUserText(block, "ExtrusionCompany", ext_com)
+                rs.SetUserText(block, "DieNumber", die_num)
+                rs.SetUserText(block, "AlloyTemper", alloy_temp)
+    else:
+        rs.SetUserText(obj_id, "Name", name)
+        rs.SetUserText(obj_id, "Weight", weight)
+        rs.SetUserText(obj_id, "UValue", uval)
+        rs.SetUserText(obj_id, "AccousticValue", accval)
+        rs.SetUserText(obj_id, "Area", area)
+        rs.SetUserText(obj_id, "Manufacturer", manufacturer)
+        rs.SetUserText(obj_id, "GlassBuildUp", glass_build_up)
+        rs.SetUserText(obj_id, "Type", type)
+        rs.SetUserText(obj_id, "FinishCode", fin_code)
+        rs.SetUserText(obj_id, "CoatingSystem", coating_sys)
+        rs.SetUserText(obj_id, "Location", location)
+        rs.SetUserText(obj_id, "MaterialCode", mat_code)
+        rs.SetUserText(obj_id, "Material", mat)
+        rs.SetUserText(obj_id, "Code", code)
+        rs.SetUserText(obj_id, "Dimension", dim)
+        rs.SetUserText(obj_id, "Description", desc)
+        rs.SetUserText(obj_id, "APVorlage", apvorlage)
+
+        if layer_name == "alu-profile":
+            ext_com = get_extrusion_company()
+            die_num = get_die_number()
+            alloy_temp = get_alloy_temper()
+            rs.SetUserText(obj_id, "ExtrusionCompany", ext_com)
+            rs.SetUserText(obj_id, "DieNumber", die_num)
+            rs.SetUserText(obj_id, "AlloyTemper", alloy_temp)
 
 
 def set_objectname(obj, block_name, layer_name):
     object_name = get_name(obj, block_name, layer_name)
-    rs.ObjectName(obj, object_name)
-    print(object_name)
+
+    if rs.IsBlockInstance(obj):
+        blocks = rs.BlockInstances(object_name)
+        for block in blocks:
+            rs.ObjectName(block, object_name)
+    else:
+        rs.ObjectName(obj, object_name)
+    print("\tObject Name: {}".format(object_name))
 
 
 def get_name(obj, name, layer_name):
@@ -295,10 +328,13 @@ def get_name(obj, name, layer_name):
 
 
 def get_weight(obj, block_name,  material):
+    print("Getting Weight...")
     if rs.IsBlockInstance(obj):
         m = get_block_weight(block_name)
     else:
         m = get_component_weight(obj, material)
+    if not m:
+        m = 0
     return str(round(m, ROUND_PRECISION)) + " kg"
 
 
@@ -310,28 +346,32 @@ def get_block_weight(block_name):
         child_material_name = rs.ObjectLayer(child_object)
         if rs.IsPolysurface(child_object) and rs.IsPolysurfaceClosed(child_object) and \
                 child_material_name in LAYERS_MATERIAL_DATA:
-            s_vol = rs.SurfaceVolume(child_object)[0]
+            s_vol = rs.SurfaceVolume(child_object)
             if s_vol:
+                s_vol = s_vol[0]
                 if UNIT == "mm":
                     s_vol = s_vol * 1e-09
                 m += s_vol * LAYERS_MATERIAL_DATA[child_material_name]["density"]
             else:
-                print("Warning: Cannot obtain surface area.")
-        # elif rs.IsBlockInstance(child_object):
-        #     m = get_block_weight(child_object)
+                print("Warning: Cannot obtain surface Volume. {}".format(rs.ObjectName(child_object)))
+        else:
+            print("Warning: Object is not Polysurface or not closed. {}".format(rs.ObjectName(child_object)))
     return m
 
 
 def get_component_weight(component_obj, material):
     m = 0
     if rs.IsPolysurface(component_obj) and rs.IsPolysurfaceClosed(component_obj):
-        s_vol = rs.SurfaceVolume(component_obj)[0]
+        s_vol = rs.SurfaceVolume(component_obj)
         if s_vol:
+            s_vol = s_vol[0]
             if UNIT == "mm":
                 s_vol = s_vol * 1e-09
             m = s_vol * LAYERS_MATERIAL_DATA[material]["density"]
         else:
-            print("Warning: Cannot obtain surface area.")
+            print("Warning: Cannot obtain surface Volume. {}".format(rs.ObjectName(component_obj)))
+    else:
+        print("Warning: Object is not Polysurface or not closed. {}".format(rs.ObjectName(component_obj)))
     return m
 
 
@@ -344,10 +384,13 @@ def get_acc_value():
 
 
 def get_area(obj, block_name):
+    print("Getting Area...")
     if rs.IsBlockInstance(obj):
         area = get_block_area(block_name)
     else:
         area = get_component_area(obj)
+    if not area:
+        area = 0
     return str(round(area, ROUND_PRECISION)) + " m^2"
 
 
@@ -355,31 +398,35 @@ def get_block_area(block_name):
     area = 0
     block_obj = rs.BlockObjects(block_name)
     for child_obj in block_obj:
-        if rs.IsPolysurface(child_obj) and rs.IsPolysurfaceClosed(child_obj):
-            area = rs.Area(child_obj)
+        child_material_name = rs.ObjectLayer(child_obj)
+        if rs.IsPolysurface(child_obj) and rs.IsPolysurfaceClosed(child_obj) and \
+                child_material_name in LAYERS_MATERIAL_DATA:
+            area = rs.SurfaceArea(child_obj)
             if area:
+                area = area[0]
                 if UNIT == "mm":
                     # convert mm^2 to m^2
                     area += area * 1e-06
             else:
-                print("Warning: Cannot obtain surface area!")
+                print("Warning: Cannot obtain surface area! {}".format(rs.ObjectName(child_obj)))
         else:
-            print("Warning: Polysurface is not closed {}".format(child_obj))
+            print("Warning: Object is not Polysurface or not closed. {}".format(rs.ObjectName(child_obj)))
     return area
 
 
 def get_component_area(component_obj):
     area = 0
     if rs.IsPolysurface(component_obj) and rs.IsPolysurfaceClosed(component_obj):
-        area = rs.Area(component_obj)
+        area = rs.SurfaceArea(component_obj)
         if area:
+            area = area[0]
             if UNIT == "mm":
                 # convert mm^2 to m^2
                 area = area * 1e-06
         else:
-            print("Warning: Cannot obtain surface area!")
+            print("Warning: Cannot obtain surface area! {}".format(rs.ObjectName(component_obj)))
     else:
-        print("Warning: Polysurface is not closed {}".format(component_obj))
+        print("Warning: Object is not Polysurface or not closed. {}".format(rs.ObjectName(component_obj)))
     return area
 
 
