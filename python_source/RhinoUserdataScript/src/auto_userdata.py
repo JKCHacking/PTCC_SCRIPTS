@@ -6,7 +6,7 @@ TBD = "TBD"
 ROUND_PRECISION = rs.UnitDistanceDisplayPrecision()
 UNIT = rs.UnitSystemName(abbreviate=True)
 
-BLOCK_REPRESENTATIVES = ["sheet", "stainless_steel_brackets", "gasket"]
+BLOCK_REPRESENTATIVES = ["sheet", "stainless_steel_brackets", "gasket", "insulation"]
 
 LAYERS_MATERIAL_DATA = {
     "sheet": {
