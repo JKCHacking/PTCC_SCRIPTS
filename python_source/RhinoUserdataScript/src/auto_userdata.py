@@ -158,7 +158,7 @@ def iter_objects():
         representative_layer = ""
         # getting list of objects that makes up the block.
         for child_object in child_object_list:
-            layer_name = rs.ObjectLayer(child_object)
+            layer_name = rs.ObjectLayer(child_object).split("::")[-1]
             if layer_name in LAYERS_MATERIAL_DATA:
                 # sets the object name according to layer
                 set_objectname(child_object, blk_name, layer_name)
@@ -251,7 +251,7 @@ def get_block_weight(block_name):
     # get all the child object within the block instance
     block_object = rs.BlockObjects(block_name)
     for child_object in block_object:
-        child_material_name = rs.ObjectLayer(child_object)
+        child_material_name = rs.ObjectLayer(child_object).split("::")[-1]
         if rs.IsPolysurface(child_object) and rs.IsPolysurfaceClosed(child_object) and \
                 child_material_name in LAYERS_MATERIAL_DATA:
             s_vol = rs.SurfaceVolume(child_object)
@@ -306,7 +306,7 @@ def get_block_area(block_name):
     area = 0
     block_obj = rs.BlockObjects(block_name)
     for child_obj in block_obj:
-        child_material_name = rs.ObjectLayer(child_obj)
+        child_material_name = rs.ObjectLayer(child_obj).split("::")[-1]
         if rs.IsPolysurface(child_obj) and rs.IsPolysurfaceClosed(child_obj) and \
                 child_material_name in LAYERS_MATERIAL_DATA:
             area = rs.SurfaceArea(child_obj)
