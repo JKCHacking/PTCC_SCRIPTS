@@ -75,7 +75,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "204",
         "finish_code": "44",
         "coating_system": "mirror polished",
-        "material": "1.4404 - S235",
+        "material": TBD,
         "density": 8000,  # densities in kg/m^3
         "file_name": "SS{count:03d}",
         "type": "SS Sheet",
@@ -87,7 +87,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "204",
         "finish_code": "00",
         "coating_system": "no finish",
-        "material": "1.4404 - S235",
+        "material": TBD,
         "density": 8000,  # densities in kg/m^3
         "file_name": "BR{count:03d}",
         "type": "SS Bracket",
@@ -99,7 +99,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "204",
         "finish_code": "00",
         "coating_system": "no finish",
-        "material": "1.4404 - S235",
+        "material": TBD,
         "density": 8000,  # densities in kg/m^3
         "file_name": "FL{count:03d}",
         "type": "Sheet",
@@ -112,7 +112,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "302",
         "finish_code": "51",
         "coating_system": "anodized",
-        "material": "EN AW 5005 H14",
+        "material": TBD,
         "density": 2712,  # densities in kg/m^3
         "file_name": "AP{count:03d}",
         "type": "AL Profile Cut",
@@ -124,7 +124,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "302",
         "finish_code": "51",
         "coating_system": "anodized",
-        "material": "EN AW 5005 H14",
+        "material": TBD,
         "density": 2712,  # densities in kg/m^3
         "file_name": "AB{count:03d}",
         "type": "AL Profile Cut",
@@ -136,7 +136,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "702",
         "finish_code": "00",
         "coating_system": "no finish",
-        "material": NOT_APPLICABLE,
+        "material": TBD,
         "density": 70,  # densities in kg/m^3
         "file_name": "EP{count:03d}",
         "type": "Gasket Cut",
@@ -148,7 +148,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "620",
         "finish_code": "00",
         "coating_system": "no finish",
-        "material": NOT_APPLICABLE,
+        "material": TBD,
         "density": 70,  # densities in kg/m^3
         "file_name": "MW{count:03d}",
         "type": "Insulation Cut",
@@ -160,7 +160,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "204",
         "finish_code": "00",
         "coating_system": "no finish",
-        "material": "1.4404 - S235",
+        "material": TBD,
         "density": 8000,  # densities in kg/m^3
         "file_name": "RB{count:03d}",
         "type": "SS Sheet",
@@ -172,7 +172,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "204",
         "finish_code": "00",
         "coating_system": "no finish",
-        "material": "1.4404 - S235",
+        "material": TBD,
         "density": 8000,  # densities in kg/m^3
         "file_name": "RP{count:03d}",
         "type": "SS Special Part",
@@ -184,7 +184,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "204",
         "finish_code": "44",
         "coating_system": "mirror polished",
-        "material": "1.4404 - S235",
+        "material": TBD,
         "density": 8000,  # densities in kg/m^3
         "file_name": "SP{count:03d}",
         "type": "SS Sheet",
@@ -196,7 +196,7 @@ LAYERS_MATERIAL_DATA = {
         "mat_code": "204",
         "finish_code": "00",
         "coating_system": "no finish",
-        "material": "1.4404 - S235",
+        "material": TBD,
         "density": 8000,  # densities in kg/m^3
         "file_name": "WS{count:03d}",
         "type": "SS Special Part",
