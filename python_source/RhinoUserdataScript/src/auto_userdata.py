@@ -219,13 +219,7 @@ def set_userdata(obj_id, name, layer_name):
 
 def set_objectname(obj, block_name, layer_name):
     object_name = get_name(obj, block_name, layer_name)
-
-    if rs.IsBlockInstance(obj):
-        blocks = rs.BlockInstances(object_name)
-        for block in blocks:
-            rs.ObjectName(block, object_name)
-    else:
-        rs.ObjectName(obj, object_name)
+    rs.ObjectName(obj, object_name)
     print("\tObject Name: {}".format(object_name))
 
 
