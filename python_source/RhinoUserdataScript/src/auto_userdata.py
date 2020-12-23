@@ -6,68 +6,6 @@ TBD = "TBD"
 ROUND_PRECISION = rs.UnitDistanceDisplayPrecision()
 UNIT = rs.UnitSystemName(abbreviate=True)
 
-BLOCKS = [
-    "D4301-F2000",
-    "D4301-F2001",
-    "D4301-F2002",
-    "D4301-F2003",
-    "D4301-F2004",
-    "D4301-F2005",
-    "D4301-F2006",
-    "D4301-F2007",
-    "D4301-F2008",
-    "D4301-F2009",
-    "D4301-F2010",
-    "D4301-G2003",
-    "D4301-G2004",
-    "D4301-G2005",
-    "D4301-G2006",
-    "D4301-G2007",
-    "D4301-G2008",
-    "D4301-G2009",
-    "D4301-G2010",
-    "D4301-G2011",
-    "D4302-F2011",
-    "D4302-F2012",
-    "D4302-F2013",
-    "D4302-F2014",
-    "D4302-G2000",
-    "D4302-G2001",
-    "D4302-G2002",
-    "D4303-F2000",
-    "D4303-F2001",
-    "D4303-F2002",
-    "D4303-F2003",
-    "D4303-F2004",
-    "D4303-F2005",
-    "D4303-F2006",
-    "D4303-F2007",
-    "D4303-F2008",
-    "D4303-F2009",
-    "D4303-F2010",
-    "D4303-G2003",
-    "D4303-G2004",
-    "D4303-G2005",
-    "D4303-G2006",
-    "D4303-G2007",
-    "D4303-G2008",
-    "D4303-G2009",
-    "D4303-G2010",
-    "D4303-G2011",
-    "D4304-F2011",
-    "D4304-F2012",
-    "D4304-F2013",
-    "D4304-F2014",
-    "D4304-G2000",
-    "D4304-G2001",
-    "D4304-G2002",
-    "D4305-B2000",
-    "D4305-B2001",
-    "D4305-B2002",
-    "D4305-B2003",
-    "D4305-B2004",
-]
-
 BLOCK_REPRESENTATIVES = ["sheet", "stainless_steel_brackets", "gasket"]
 
 LAYERS_MATERIAL_DATA = {
@@ -209,11 +147,14 @@ LAYERS_MATERIAL_DATA = {
 
 def iter_objects():
     # getting the list of block names
-    for blk_name in BLOCKS:
+    block_names = rs.BlockNames(True)
+    # get only the block names that starts with "D"
+    interest_block_names = [block_name for block_name in block_names if block_name.startswith("D")]
+
+    for blk_name in interest_block_names:
         print("BlockName: {}".format(blk_name))
         # getting a block object from a block name
         child_object_list = rs.BlockObjects(blk_name)
-        block_object = rs.BlockInstances(blk_name)[0]
         representative_layer = ""
         # getting list of objects that makes up the block.
         for child_object in child_object_list:
@@ -224,8 +165,10 @@ def iter_objects():
                 set_userdata(child_object, blk_name, layer_name)
             if layer_name in BLOCK_REPRESENTATIVES and representative_layer == "":
                 representative_layer = layer_name
-        set_objectname(block_object, blk_name, representative_layer)
-        set_userdata(block_object, blk_name, representative_layer)
+        block_objects = rs.BlockInstances(blk_name)
+        for block_object in block_objects:
+            set_objectname(block_object, blk_name, representative_layer)
+            set_userdata(block_object, blk_name, representative_layer)
 
 
 def set_userdata(obj_id, name, layer_name):
@@ -247,60 +190,31 @@ def set_userdata(obj_id, name, layer_name):
     desc = get_description(layer_name)
     apvorlage = get_apvorlage(layer_name)
 
-    if rs.IsBlockInstance(obj_id):
-        blocks = rs.BlockInstances(name)
-        for block in blocks:
-            rs.SetUserText(block, "Name", name)
-            rs.SetUserText(block, "Weight", weight)
-            rs.SetUserText(block, "UValue", uval)
-            rs.SetUserText(block, "AccousticValue", accval)
-            rs.SetUserText(block, "Area", area)
-            rs.SetUserText(block, "Manufacturer", manufacturer)
-            rs.SetUserText(block, "GlassBuildUp", glass_build_up)
-            rs.SetUserText(block, "Type", type)
-            rs.SetUserText(block, "FinishCode", fin_code)
-            rs.SetUserText(block, "CoatingSystem", coating_sys)
-            rs.SetUserText(block, "Location", location)
-            rs.SetUserText(block, "MaterialCode", mat_code)
-            rs.SetUserText(block, "Material", mat)
-            rs.SetUserText(block, "Code", code)
-            rs.SetUserText(block, "Dimension", dim)
-            rs.SetUserText(block, "Description", desc)
-            rs.SetUserText(block, "APVorlage", apvorlage)
+    rs.SetUserText(obj_id, "Name", name)
+    rs.SetUserText(obj_id, "Weight", weight)
+    rs.SetUserText(obj_id, "UValue", uval)
+    rs.SetUserText(obj_id, "AccousticValue", accval)
+    rs.SetUserText(obj_id, "Area", area)
+    rs.SetUserText(obj_id, "Manufacturer", manufacturer)
+    rs.SetUserText(obj_id, "GlassBuildUp", glass_build_up)
+    rs.SetUserText(obj_id, "Type", type)
+    rs.SetUserText(obj_id, "FinishCode", fin_code)
+    rs.SetUserText(obj_id, "CoatingSystem", coating_sys)
+    rs.SetUserText(obj_id, "Location", location)
+    rs.SetUserText(obj_id, "MaterialCode", mat_code)
+    rs.SetUserText(obj_id, "Material", mat)
+    rs.SetUserText(obj_id, "Code", code)
+    rs.SetUserText(obj_id, "Dimension", dim)
+    rs.SetUserText(obj_id, "Description", desc)
+    rs.SetUserText(obj_id, "APVorlage", apvorlage)
 
-            if layer_name == "alu-profile":
-                ext_com = get_extrusion_company()
-                die_num = get_die_number()
-                alloy_temp = get_alloy_temper()
-                rs.SetUserText(block, "ExtrusionCompany", ext_com)
-                rs.SetUserText(block, "DieNumber", die_num)
-                rs.SetUserText(block, "AlloyTemper", alloy_temp)
-    else:
-        rs.SetUserText(obj_id, "Name", name)
-        rs.SetUserText(obj_id, "Weight", weight)
-        rs.SetUserText(obj_id, "UValue", uval)
-        rs.SetUserText(obj_id, "AccousticValue", accval)
-        rs.SetUserText(obj_id, "Area", area)
-        rs.SetUserText(obj_id, "Manufacturer", manufacturer)
-        rs.SetUserText(obj_id, "GlassBuildUp", glass_build_up)
-        rs.SetUserText(obj_id, "Type", type)
-        rs.SetUserText(obj_id, "FinishCode", fin_code)
-        rs.SetUserText(obj_id, "CoatingSystem", coating_sys)
-        rs.SetUserText(obj_id, "Location", location)
-        rs.SetUserText(obj_id, "MaterialCode", mat_code)
-        rs.SetUserText(obj_id, "Material", mat)
-        rs.SetUserText(obj_id, "Code", code)
-        rs.SetUserText(obj_id, "Dimension", dim)
-        rs.SetUserText(obj_id, "Description", desc)
-        rs.SetUserText(obj_id, "APVorlage", apvorlage)
-
-        if layer_name == "alu-profile":
-            ext_com = get_extrusion_company()
-            die_num = get_die_number()
-            alloy_temp = get_alloy_temper()
-            rs.SetUserText(obj_id, "ExtrusionCompany", ext_com)
-            rs.SetUserText(obj_id, "DieNumber", die_num)
-            rs.SetUserText(obj_id, "AlloyTemper", alloy_temp)
+    if layer_name == "alu-profile":
+        ext_com = get_extrusion_company()
+        die_num = get_die_number()
+        alloy_temp = get_alloy_temper()
+        rs.SetUserText(obj_id, "ExtrusionCompany", ext_com)
+        rs.SetUserText(obj_id, "DieNumber", die_num)
+        rs.SetUserText(obj_id, "AlloyTemper", alloy_temp)
 
 
 def set_objectname(obj, block_name, layer_name):
