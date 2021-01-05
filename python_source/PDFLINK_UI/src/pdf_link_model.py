@@ -13,7 +13,7 @@ class PDFLinkModel:
             text_coord_list = page.searchFor(self.keyword)
             print("{} found on this page".format(len(text_coord_list)))
             for text_coord in text_coord_list:
-                page.insertLink({"kind": fitz.LINK_GOTO, "page": self.pagenum_dest, "from": text_coord, "border": 1})
+                page.insertLink({"kind": fitz.LINK_GOTO, "page": self.pagenum_dest, "from": text_coord})
 
     def save_document(self, filename):
         self.doc.save(filename)
