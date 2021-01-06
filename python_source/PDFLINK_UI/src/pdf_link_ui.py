@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMessageBox
 
 
 class PDFLinkUI(QMainWindow):
@@ -39,9 +40,9 @@ class PDFLinkUI(QMainWindow):
         file_picker_layout.addWidget(self.browse_button)
 
         form_layout = QFormLayout()
+        form_layout.addRow('PDF File:', file_picker_layout)
         form_layout.addRow('Keyword:', self.keyword_line_edit)
-        form_layout.addRow('Page:', self.page_line_edit)
-        form_layout.addRow('PDF File', file_picker_layout)
+        form_layout.addRow('Page to link:', self.page_line_edit)
         self.general_layout.addLayout(form_layout)
 
         # initializing ok and cancel buttons
@@ -61,3 +62,20 @@ class PDFLinkUI(QMainWindow):
                                                    options=QFileDialog.DontUseNativeDialog)
         self.pdf_file_path = file_path
         self.pdf_fp_line_edit.setText(os.path.basename(file_path))
+
+    def messagebox(self, message, icon):
+        msg = QMessageBox()
+        if icon == "Warning":
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Warning")
+        else:
+            msg.setIcon(QMessageBox.Information)
+            msg.setWindowTitle("Information")
+        msg.setText(message)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
+    def clear(self):
+        self.pdf_fp_line_edit.setText("")
+        self.keyword_line_edit.setText("")
+        self.page_line_edit.setText("")
