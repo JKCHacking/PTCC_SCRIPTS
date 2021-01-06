@@ -26,7 +26,6 @@ class PDFLinkModelTest(unittest.TestCase):
     def test_search_text_002(self):
         '''test case were search algorithm cannot find text'''
         test_file = os.path.join(Constants.TEST_DIR, "testdata", "testdata001.pdf")
-        outfile = os.path.join(Constants.TEST_DIR, "testdata", "testdata001_modified.pdf")
 
         # page must be zero based
         # text to search is not in the pdf file
