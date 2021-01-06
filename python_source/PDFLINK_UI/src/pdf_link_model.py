@@ -27,7 +27,4 @@ class PDFLinkModel:
         self.doc.save(filename)
 
     def get_total_num_page(self):
-        count = 0
-        for page in self.doc.pages():
-            count += 1
-        return count
+        return self.doc.pageCount
