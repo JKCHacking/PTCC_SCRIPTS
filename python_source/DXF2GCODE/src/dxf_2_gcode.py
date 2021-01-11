@@ -15,10 +15,22 @@ class DXF2Gcode:
         dxf_file = ezdxf.readfile(file)
         mod_space = dxf_file.modelspace()
         for ent in mod_space:
-            yield ent
+            if ent.dxftype() == "LWPOLYLINE":
+                for sub_ent in ent.virtual_entities():
+                    yield sub_ent
+            elif ent.dxftype() == "LINE":
+                yield ent
+            elif ent.dxftype() == "CIRCLE":
+                yield ent
+            elif ent.dxftype() == "ARC":
+                yield ent
 
-    def compose_gcode(self, ent):
-        if ent.dxftype() == "LWPOLYLINE":
+    def ent_2_gcode(self, ent):
+        if ent.dxftype() == "LINE":
+            pass
+        elif ent.dxftype() == "CIRCLE":
+            pass
+        elif ent.dxftype() == "ARC":
             pass
 
 
