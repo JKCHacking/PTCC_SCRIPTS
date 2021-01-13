@@ -12,22 +12,37 @@ class LdapExporter:
                     pass
 
     def get_data(self, data_file_path):
-        data_dict = {}
-        attrs = ["facsimileTelephoneNumber", "cn", "st", "street", "email"]
+        data_dict = temp_dict = {}
+        attrs = ["facsimileTelephoneNumber",
+                 "cn",
+                 "st",
+                 "street",
+                 "email",
+                 "mail",
+                 "mobile",
+                 "registeredAddress",
+                 "telephoneNumber"]
+
         with open(data_file_path, "r") as data:
             data_lines = data.readlines()
             for line in data_lines:
                 if line.startswith("dn"):
                     levels = line.split(":")[1].strip()
                     levels_split = levels.split(",")
-                    for level in levels_split:
-                        if level.startswith("ou"):
-                            data_dict.update(
-                                {
-                                    level: {
-                                        "member": []
-                                    }
-                                }
-                            )
-
+                    levels_split_cleaned = list(map(lambda x: x.replace("ou=", "").replace("dc=", "").replace("cn=", ""), levels_split))
+                    for level in reversed(levels_split_cleaned):
+                        try:
+                            _data_dict = data_dict[level]
+                        except KeyError:
+                            temp_dict[level] = {}
+                            temp_dict = temp_dict[level]
         print(data_dict)
+
+    def key_exists(self, d, ks):
+        _d = d
+        for k in ks:
+            try:
+                _d = _d[k]
+            except KeyError:
+                return False
+        return True
