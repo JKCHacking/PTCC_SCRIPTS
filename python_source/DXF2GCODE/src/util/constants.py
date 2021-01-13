@@ -15,9 +15,7 @@ class Constants:
     TEMPL_DIR = os.path.join(ROOT_DIR, 'templates')
 
     ROUND_PRECISION = 4
-    CSV_FILE_EXT = '.csv'
-    EXCEL_FILE_EXT = '.xlsx'
-    DOCX_FILE_EXT = '.docx'
+    DXF_FILE_EXT = '.dxf'
     TXT_FILE_EXT = '.txt'
 
     SAFEHEIGHT = "10"
