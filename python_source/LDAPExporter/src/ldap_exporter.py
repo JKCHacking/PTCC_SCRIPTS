@@ -1,8 +1,6 @@
 import os
-from docx import Document
-from docx.shared import Mm
-from docx.oxml.ns import qn
 from src.util.constants import Constants
+from src.document import WordDocument
 
 
 class LdapExporter:
@@ -62,6 +60,13 @@ class LdapExporter:
                                 _data_dict[key] = value
             return data_dict
 
+    def sort_data(self, raw_data_dict):
+        """
+        sorts a nested dictionary with its key.
+        source: https://gist.github.com/gyli/f60f0374defc383aa098d44cfbd318eb
+        """
+        return {k: self.sort_data(v) if isinstance(v, dict) else v for k, v in sorted(raw_data_dict.items())}
+
     def print_nested_dict(self, d):
         # prints all the keys and values of a dictionary
         for k, v in d.items():
@@ -74,8 +79,10 @@ class LdapExporter:
     def export_data(self, data_dict):
         output_path = os.path.join(Constants.OUTPUT_DIR, os.path.splitext(self.file_name)[0] + ".docx")
         root_data_dict = data_dict['design']['ptcc']
-        doc = self.create_document()
-        par = self.add_paragraph(doc)
+
+        document = WordDocument()
+        doc = document.create_document()
+        par = document.add_paragraph(doc)
         for entry in self.print_nested_dict(root_data_dict):
             if isinstance(entry, tuple):
                 key, value = entry
@@ -88,39 +95,5 @@ class LdapExporter:
             else:
                 text = "\n" + entry + "\n"
                 bold = True
-            self.add_paragraph_text(par, text, bold)
-        self.save_document(doc, output_path)
-
-    # document related methods (SHOULD have been a separate class)
-    def create_document(self):
-        margin = 20
-        document = Document()
-        section = document.sections[0]
-        section.page_height = Mm(297)
-        section.page_width = Mm(210)
-        section.left_margin = Mm(margin)
-        section.right_margin = Mm(margin)
-        section.top_margin = Mm(margin)
-        section.bottom_margin = Mm(margin)
-        section.header_distance = Mm(12.7)
-        section.footer_distance = Mm(12.7)
-
-        # setting the page layout to have 3 columns
-        sectPr = section._sectPr
-        cols = sectPr.xpath('./w:cols')[0]
-        cols.set(qn('w:num'), '2')
-        return document
-
-    def add_paragraph_text(self, paragraph, text, is_bold=False):
-        if is_bold:
-            paragraph.add_run(text).bold = True
-        else:
-            paragraph.add_run(text)
-
-    def add_paragraph(self, document):
-        paragraph = document.add_paragraph()
-        paragraph.style = document.styles['Normal']
-        return paragraph
-
-    def save_document(self, document, output_path):
-        document.save(output_path)
+            document.add_paragraph_text(par, text, bold)
+        document.save_document(doc, output_path)

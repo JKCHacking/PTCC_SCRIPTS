@@ -11,6 +11,7 @@ def iter_input():
             file_full_path = os.path.join(dir_path, file_name)
             if file_full_path.endswith(Constants.TXT_FILE_EXT):
                 ldap_data_dict = le.convert_ldap_data(file_full_path)
+                ldap_data_dict = le.sort_data(ldap_data_dict)
                 le.export_data(ldap_data_dict)
 
 
