@@ -4,7 +4,7 @@ objectClass: organizationalUnit
 objectClass: top
 ou: ptcc_industry people
 
-dn: ou=3M Philippines,ou=ptcc_industry people,dc=ptcc,dc=design
+dn: ou=3M\, Philippines,ou=ptcc_industry people,dc=ptcc,dc=design
 objectClass: organizationalUnit
 objectClass: top
 ou: 3M Philippines

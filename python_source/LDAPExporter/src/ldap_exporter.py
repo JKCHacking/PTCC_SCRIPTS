@@ -25,12 +25,14 @@ class LdapExporter:
             parser = ldif.LDIFRecordList(ldif_file)
             parser.parse()
             for dn, entry in parser.all_records:
-                level = dn.split(',')
-                object_header = level[0]
+                levels = dn.split(',')
+                # level clean up, this will prevent from having erroneous level name
+                levels = [level for level in levels if "=" in level]
+                object_header = levels[0]
                 object_name_index = object_header.split("=")[0]
                 parent_levels = list(
                     map(lambda x: x.replace("ou=", "").replace("dc=", "").replace("cn=", "").replace("o=", ""),
-                        level[1:]))
+                        levels[1:]))
 
                 # we need to get the legit name of the object to be a key in the dictionary from the entry data.
                 # for some reasons the name in the dn sometimes has weird characters in it.
@@ -41,12 +43,12 @@ class LdapExporter:
                 # in the list already exists inside the nested dictionary. if not it adds it
                 # inside the nested dictionary.
                 _data_dict = data_dict
-                for level in reversed(parent_levels):
+                for levels in reversed(parent_levels):
                     try:
-                        _data_dict = _data_dict[level]
+                        _data_dict = _data_dict[levels]
                     except KeyError:
-                        _data_dict[level] = {}
-                        _data_dict = _data_dict[level]
+                        _data_dict[levels] = {}
+                        _data_dict = _data_dict[levels]
                 # add the entry data on the current level
                 for attr in attrs:
                     try:
