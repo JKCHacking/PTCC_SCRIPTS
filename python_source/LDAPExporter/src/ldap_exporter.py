@@ -1,4 +1,5 @@
 import os
+import ldif
 from src.util.constants import Constants
 from src.document import WordDocument
 
@@ -20,47 +21,47 @@ class LdapExporter:
                  "registeredAddress",
                  "telephoneNumber"]
 
-        with open(data_file_path, "r") as data:
-            data_lines = data.readlines()
-            levels_split_cleaned = ""
-            for line in data_lines:
-                if line.startswith("dn"):
-                    levels = line.split(":")[1].strip()
-                    levels_split = levels.split(",")
-                    levels_split_cleaned = list(
-                        map(lambda x: x.replace("ou=", "").replace("dc=", "").replace("cn=", "").replace("o=", ""),
-                            levels_split))
+        with open(data_file_path, "rb") as ldif_file:
+            parser = ldif.LDIFRecordList(ldif_file)
+            parser.parse()
+            for dn, entry in parser.all_records:
+                level = dn.split(',')
+                object_header = level[0]
+                object_name_index = object_header.split("=")[0]
+                parent_levels = list(
+                    map(lambda x: x.replace("ou=", "").replace("dc=", "").replace("cn=", "").replace("o=", ""),
+                        level[1:]))
 
-                    # this will create a dictionary from a list. it checks if the combination of keys
-                    # in the list already exists inside the nested dictionary. if not it adds it
-                    # inside the nested dictionary.
-                    _data_dict = data_dict
-                    for level in reversed(levels_split_cleaned):
-                        try:
-                            _data_dict = _data_dict[level]
-                        except KeyError:
-                            _data_dict[level] = {}
-                            _data_dict = _data_dict[level]
+                # we need to get the legit name of the object to be a key in the dictionary from the entry data.
+                # for some reasons the name in the dn sometimes has weird characters in it.
+                object_name = entry[object_name_index][0].decode('utf-8')
+                parent_levels.insert(0, object_name)
 
-                else:
-                    for attr in attrs:
-                        if line.startswith(attr):
-                            print(line)
-                            value_split = line.split(attr + ":")
-                            value = value_split[len(value_split) - 1]
-                            key = attr.strip()
-                            value = value.strip()
-
-                            _data_dict = data_dict
-                            for level in reversed(levels_split_cleaned):
-                                _data_dict = _data_dict[level]
-                            if key in _data_dict:
-                                if not isinstance(_data_dict[key], list):
-                                    _data_dict[key] = [_data_dict[key]]
-                                _data_dict[key].append(value)
-                            else:
-                                _data_dict[key] = value
-            return data_dict
+                # this will create a dictionary from a list. it checks if the combination of keys
+                # in the list already exists inside the nested dictionary. if not it adds it
+                # inside the nested dictionary.
+                _data_dict = data_dict
+                for level in reversed(parent_levels):
+                    try:
+                        _data_dict = _data_dict[level]
+                    except KeyError:
+                        _data_dict[level] = {}
+                        _data_dict = _data_dict[level]
+                # add the entry data on the current level
+                for attr in attrs:
+                    try:
+                        # check if it has more that one entry, we need to retain the list
+                        # but items must be converted from binary to string.
+                        if len(entry[attr]) > 1:
+                            temp_list = []
+                            for item in entry[attr]:
+                                temp_list.append(item.decode('utf-8'))
+                            _data_dict[attr] = temp_list
+                        else:
+                            _data_dict[attr] = entry[attr][0].decode('utf-8')
+                    except KeyError:
+                        pass
+        return data_dict
 
     def sort_data(self, raw_data_dict):
         """

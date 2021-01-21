@@ -29,7 +29,7 @@ class LdapExporterTest(unittest.TestCase):
           }
         }
 
-        testdata = os.path.join(Constants.TEST_DIR, "testdata", "testdata001.txt")
+        testdata = os.path.join(Constants.TEST_DIR, "testdata", "testdata001.ldif")
         le = LdapExporter()
         actual_data = le.convert_ldap_data(testdata)
         self.assertEqual(expected_data, actual_data)
@@ -73,7 +73,7 @@ class LdapExporterTest(unittest.TestCase):
           }
         }
 
-        testdata = os.path.join(Constants.TEST_DIR, "testdata", "testdata003.txt")
+        testdata = os.path.join(Constants.TEST_DIR, "testdata", "testdata003.ldif")
         le = LdapExporter()
         actual_data = le.convert_ldap_data(testdata)
         self.assertEqual(expected_data, actual_data)

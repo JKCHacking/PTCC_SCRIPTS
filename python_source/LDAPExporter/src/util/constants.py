@@ -19,3 +19,4 @@ class Constants:
     EXCEL_FILE_EXT = '.xlsx'
     DOCX_FILE_EXT = '.docx'
     TXT_FILE_EXT = '.txt'
+    LDIF_FILE_EXT = '.ldif'
