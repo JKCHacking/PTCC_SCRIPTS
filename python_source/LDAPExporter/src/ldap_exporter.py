@@ -36,7 +36,7 @@ class LdapExporter:
 
                 # we need to get the legit name of the object to be a key in the dictionary from the entry data.
                 # for some reasons the name in the dn sometimes has weird characters in it.
-                object_name = entry[object_name_index][0].decode('utf-8')
+                object_name = entry[object_name_index][0].decode('utf-8').strip()
                 parent_levels.insert(0, object_name)
 
                 # this will create a dictionary from a list. it checks if the combination of keys
