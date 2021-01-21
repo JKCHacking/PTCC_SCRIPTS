@@ -1,0 +1,55 @@
+version: 1
+dn: ou=A,dc=ptcc,dc=design
+
+
+dn: ou=E,ou=A,dc=ptcc,dc=design
+
+dn: cn=C,ou=E,ou=A,dc=ptcc,dc=design
+
+dn: cn=B,ou=E,ou=A,dc=ptcc,dc=design
+
+dn: cn=A,ou=E,ou=A,dc=ptcc,dc=design
+
+
+dn: ou=D,ou=A,dc=ptcc,dc=design
+
+dn: cn=F,ou=D,ou=A,dc=ptcc,dc=design
+
+dn: cn=E,ou=D,ou=A,dc=ptcc,dc=design
+
+dn: cn=D,ou=D,ou=A,dc=ptcc,dc=design
+
+
+dn: ou=C,dc=ptcc,dc=design
+
+dn: ou=N,ou=C,dc=ptcc,dc=design
+
+dn: cn=C,ou=N,ou=C,dc=ptcc,dc=design
+
+dn: cn=B,ou=N,ou=C,dc=ptcc,dc=design
+
+dn: cn=A,ou=N,ou=C,dc=ptcc,dc=design
+
+dn: ou=M,ou=C,dc=ptcc,dc=design
+
+dn: cn=C,ou=M,ou=C,dc=ptcc,dc=design
+
+dn: cn=B,ou=M,ou=C,dc=ptcc,dc=design
+
+dn: cn=A,ou=M,ou=C,dc=ptcc,dc=design
+
+dn: ou=L,ou=C,dc=ptcc,dc=design
+
+dn: cn=C,ou=L,ou=C,dc=ptcc,dc=design
+
+dn: cn=B,ou=L,ou=C,dc=ptcc,dc=design
+
+dn: cn=A,ou=L,ou=C,dc=ptcc,dc=design
+
+dn: ou=B,dc=ptcc,dc=design
+
+dn: ou=Z,ou=B,dc=ptcc,dc=design
+
+dn: ou=Y,ou=B,dc=ptcc,dc=design
+
+dn: ou=X,ou=B,dc=ptcc,dc=design
