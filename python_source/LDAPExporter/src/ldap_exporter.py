@@ -45,7 +45,9 @@ class LdapExporter:
                 else:
                     for attr in attrs:
                         if line.startswith(attr):
-                            value = line.split(attr + ":")[1]
+                            print(line)
+                            value_split = line.split(attr + ":")
+                            value = value_split[len(value_split) - 1]
                             key = attr.strip()
                             value = value.strip()
 
