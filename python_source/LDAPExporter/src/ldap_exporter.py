@@ -26,7 +26,7 @@ class LdapExporter:
             parser.parse()
             for dn, entry in parser.all_records:
                 levels = dn.split(',')
-                # level clean up, this will prevent from having erroneous level name
+                # level clean up, this will prevent from having invalid level name
                 levels = [level for level in levels if "=" in level]
                 object_header = levels[0]
                 object_name_index = object_header.split("=")[0]
