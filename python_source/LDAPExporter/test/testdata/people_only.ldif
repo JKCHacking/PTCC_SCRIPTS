@@ -1,0 +1,1534 @@
+version: 1
+dn: ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: organizationalUnit
+objectClass: top
+ou: ptcc_industry people
+
+dn: cn=Agnes Lam,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Agnes Lam
+givenName: Agnes
+mail: agnescylam@hotmail.com
+mobile: +852 60205319
+sn: Lam
+
+dn: cn=Ahmed Abou Sen,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Ahmed Abou Sen
+givenName: Ahmed Abou
+mail: abousen@folcrabeach.com
+sn: Sen
+
+dn: cn=Aladhami Murad,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Aladhami Murad
+facsimileTelephoneNumber: +9661 (480) 0186
+facsimileTelephoneNumber: (416) 6791150
+givenName: Aladhami
+mail: murad@ricaf.com
+mobile: +966 (50) 3512401
+sn: Murad
+street: Riyadh Canadian Fiberglass - RICAF P.O.BOX 59346, RIYADH 11525 KINGDOM OF SAUDI ARABIA 11525 Saudi Arabia
+telephoneNumber: +1 (416) 6791171
+
+dn: cn=Albert Leung,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Albert Leung
+facsimileTelephoneNumber: +852 26900122
+givenName: Albert
+mail: takwin@netvigator.com
+mail: ctschk@netvigator.com
+mail: info@ctschk.com
+sn: Leung
+street: 6a Block 35 City One Shatin, NT, Hong Kong
+telephoneNumber: +852 26481852
+telephoneNumber: +852 26876122
+
+dn: cn=Alexander Carandang,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Alexander Carandang
+givenName: Alexander
+mail: alex.c@pacific.net.ph
+mobile: +63 (917) 8927725
+sn: Carandang
+telephoneNumber: +63 (2) 9180309
+
+dn: cn=Andre Imbrogno,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Andre Imbrogno
+givenName: Andre
+mail: jctextoris83@aol.com
+sn: Imbrogno
+
+dn: cn=Arca Engr. J.  Gregorio D.,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Arca Engr. J.  Gregorio D.
+mobile: +63 973 727227
+sn: Arca Engr. J.  Gregorio D.
+
+dn: cn=Arch. Ramon Isaac,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Arch. Ramon Isaac
+givenName: Arch. Ramon
+mobile: +63 (912) 2026568
+sn: Isaac
+
+dn: cn=Archimedes Agustin,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Archimedes Agustin
+givenName: Archimedes
+l: Quezon City
+mail: archimedes@hotmail.com
+mobile: +971 50 7872-489
+sn: Agustin
+st: Metro Manila,Philippines
+street: 26 B Antonia Street Centerville Homes, Tandang Sora
+telephoneNumber: +63 (2) 9324826
+telephoneNumber: Office: +971 2 551-0888
+
+dn: cn=Architect philip Recto,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Architect philip Recto
+givenName: Architect philip
+sn: Recto
+street: 2nd Floor, Room A-103, State Condo 5, 452 Edsa Guadalupe Makati City Philippines
+telephoneNumber: +63 (2) 8967696
+
+dn: cn=Arthur Carlos,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Arthur Carlos
+givenName: Arthur
+mail: apc@tri-isys.com
+mobile: +63 (917) 8972525
+sn: Carlos
+
+dn: cn=Benjamin H. Pablo,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Benjamin H. Pablo
+givenName: Benjamin H.
+mail: bpablo@fpdsavills.com.ph
+mobile: +63 (918) 9039918
+sn: Pablo
+
+dn: cn=Brenda Cox,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Brenda Cox
+facsimileTelephoneNumber: +44 01494492650
+givenName: Brenda
+mail: brenda.cox@hlsgroup.com
+mail: brenda.cox@optima-group.co.uk
+sn: Cox
+street: Courtyard House, West End Road, High Wycombe, Bucks HP11 2QD United Kingdom
+telephoneNumber: +44 01494492600
+
+dn: cn=Brett Imbrogno,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Brett Imbrogno
+givenName: Brett
+mail: bni@deakin.edu.au
+sn: Imbrogno
+
+dn: cn=CADI Office Systems,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: CADI Office Systems
+facsimileTelephoneNumber: +63 (2) 8151854
+mail: cadipt1@yahoo.com
+sn: CADI Office Systems
+street: G/F Cancio Building 2240 Pasong Tamo 1231 Makati City
+telephoneNumber: +63 (2) 8941612
+
+dn: cn=Cara Camille G. Sy,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Cara Camille G. Sy
+mail: caracamille.sy@gmail.com
+mobile: +63 917 569-0090
+sn: Sy
+
+dn: cn=Chika G. Go,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Chika G. Go
+facsimileTelephoneNumber: +63 2 241-0021
+registeredAddress:: U3VpdGUgUGVudGhvdXNlLTEgUmVnaW5hIEdhcmRlbiBJSSwgUmVpbmEg
+ UmVnZW50ZSBTdHJlZXQuLCBCaW5vbmRvLCBNYW5pbGEg
+sn: Go
+telephoneNumber: +63 2 241-0038 to 43
+title: Councilor, 3rd District of Manila '92-95
+
+dn: cn=Chito Natividad,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Chito Natividad
+sn: NAtividad
+telephoneNumber: +63 2 564-9390
+
+dn: cn=Christine Cleveland,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Christine Cleveland
+givenName: Christine
+mail: christine@cssinfo.com
+sn: Cleveland
+
+dn: cn=Christopher Hoevels,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Christopher Hoevels
+facsimileTelephoneNumber: +44 (0) 20 7497 1175
+givenName: Christopher
+labeledURI: www.kpf.com
+mail: choevels@kpf.com
+o: Kohn Pedersen Fox Associates (International) PA
+sn: Hoevels
+street: 13 Langley Street, London WC2H 9JG, England
+telephoneNumber: +44 (0) 20 7836 6668
+title: Associate Principal
+
+dn: cn=Christopher S.C. Eyers,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Christopher S.C. Eyers
+mail: cseyers@yahoo.com
+mail: hko@heitmannassoc.com
+sn: Christopher S.C.
+
+dn: cn=Cross Simon G. EurIng BSc Ceng MICE MHKIE,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Cross Simon G. EurIng BSc Ceng MICE MHKIE
+givenName: Cross Simon G. EurIng BSc Ceng
+mobile: +63 (917) 8834702
+sn: MICE MHKIE
+
+dn: cn=Daniel Anderson,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Daniel Anderson
+facsimileTelephoneNumber: +44 (0) 2075548106
+givenName: Daniel
+mail: danderson@mace.co.uk
+mobile: +44 (0) 7901524786
+sn: Anderson
+street: Atelier House, 64 Pratt St. London NW1 OLF United Kingdom
+telephoneNumber: +44 (0) 2075548302
+
+dn: cn=Darwin Montemayor,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Darwin Montemayor
+givenName: Darwin
+mail: montemayor.darwin@avidaland.com
+sn: Montemayor
+telephoneNumber: +63 (2) 7531431
+
+dn: cn=David Porgand,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: David Porgand
+givenName: David
+mail: d.porgand@peddlethorp.com.au
+sn: Porgand
+
+dn: cn=David thomas,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: David thomas
+mail: dht.davlyn@gmail.com
+mail: david.facadesplus@gmail.com
+mobile: +63 2 917 551-3592
+sn: Thomas
+
+dn: cn=Derek Bruce,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Derek Bruce
+mobile: +61 457-034541
+sn: Bruce
+
+dn: cn=Dr. J. A. Shillinglaw,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Dr. J. A. Shillinglaw
+givenName: Dr. J. A.
+mail: jashillinglaw@usa.net
+sn: Shillinglaw
+street: Grenaby Farm, Grenaby, Malew, Isle of Man
+
+dn: cn=Dr. Salman Bin Mohd Al-Ghatam,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Dr. Salman Bin Mohd Al-Ghatam
+givenName: Dr. Salman Bin
+mail: salman@gosi.org.bh
+mobile: +973 9455140
+sn: Mohd Al-Ghatam
+
+dn: cn=Edgardo Segismundo,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Edgardo Segismundo
+givenName: Edgardo
+mail: egsegismundo@hotmail.com
+mobile: +63 0917 421-7739
+registeredAddress: Lot 3A-Unit B5, Crispina Avenue, Las Pinas Village, Pamplona 3, 1740  Las Pinas City
+sn: Segismundo
+telephoneNumber: +63 2 872-5925
+title: Architect
+
+dn: cn=Eisa Zamzam Yasser Mohammed,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Eisa Zamzam Yasser Mohammed
+givenName: Eisa Zamzam Yasser
+mail: yasser@saif-zone.com
+sn: Mohammed
+
+dn: cn=Engr. Ali A. Alqudah,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Ali A. Alqudah
+givenName: Engr. Ali A.
+mobile: +971 (50) 6310132
+sn: Alqudah
+
+dn: cn=Engr. Bernardo Ronquillo,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Bernardo Ronquillo
+givenName: Engr. Bernardo
+sn: Ronquillo
+telephoneNumber: +63 (2) 8671895
+
+dn: cn=Engr.Edgar Persia,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr.Edgar Persia
+facsimileTelephoneNumber: +63 (2) 8976945
+givenName: Engr.Edgar
+mail: neptel@pldtdsl.net
+sn: Persia
+street: 1147-C Antipolo St., Rizal Village, Makati City, Philippines
+telephoneNumber: +63 (2) 8991732
+
+dn: cn=Engr. Hazel B. Marin,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Hazel B. Marin
+facsimileTelephoneNumber: +63 2 435-1718
+givenName: Hazel
+mail: hazelmarin@hotmail.com
+mobile: +63 917 849-4066
+sn: Marin
+
+dn: cn=Engr. Joseph de Guzman,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Joseph de Guzman
+givenName: Engr. Joseph
+mobile: +63 (918) 8246394
+sn: de Guzman
+telephoneNumber: +63 (2) 7127894
+telephoneNumber: +63 (2) 7434405
+
+dn: cn=Engr. Monchito Gayos,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Monchito Gayos
+givenName: Engr. Monchito
+mobile: +63 (917) 3764870
+sn: Gayos
+telephoneNumber: +63 (2) 7573531
+
+dn: cn=Engr. Redentor Sazon\, Jr.,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Redentor Sazon, Jr.
+givenName: Engr. Redentor
+mail: rssazon@kepland.com.ph
+sn: Sazon, Jr.
+
+dn: cn=Engr. Roberto Lasam,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Roberto Lasam
+givenName: Engr. Roberto
+mobile: +63 (919) 3533603
+sn: Lasam
+
+dn: cn=Engr. Ruben Ramirez,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Ruben Ramirez
+givenName: Engr. Ruben
+sn: Ramirez
+telephoneNumber: +63 (45) 5992697
+
+dn: cn=Engr. Tony Lisa,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Engr. Tony Lisa
+givenName: Engr. Tony
+mobile: +63 (922) 8206068
+sn: Lisa
+
+dn: cn=Erwin Hidalgo,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Erwin Hidalgo
+givenName: Erwin
+mail: hidalgo@dnbnor.com
+sn: Hidalgo
+telephoneNumber: +852 91679959
+
+dn: cn=Eugene Lim,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Eugene Lim
+facsimileTelephoneNumber: +65 64558535
+facsimileTelephoneNumber: +65 (6459) 0137
+givenName: Eugene
+mail: e_lim@halfen-deha.com.sg
+mail: eugene.lim@dorma.com.sg
+mobile: +65 (9234) 9309
+postalAddress: 31 Gul Lane Singapore, 629425 Singapore
+sn: Lim
+telephoneNumber: +65 64559331
+telephoneNumber: +65 (6415) 1759 (DID)
+
+dn: cn=Eugene Padilla,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Eugene Padilla
+mobile: +63 917 190-1118
+mobile: +63 919 001-4636
+sn: Padilla
+
+dn: cn=Eugen Remenyi,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Eugen Remenyi
+givenName: Eugen
+homePhone: +1 310 477-5671
+mail: e-remenyi@gmx.net
+mail: gmx.net
+mobile: +1 310 775-3862
+registeredAddress: 11440 National Blvd. No. 15, Los Angeles, CA 90064-3857, USA
+sn: Remenyi
+
+dn: cn=Frioud David,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Frioud David
+givenName: Frioud
+mail: dkienlen@rinaldi-structal.fr
+mobile: +33 685946745
+sn: David
+
+dn: cn=Ghazi Al Hammal,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Ghazi Al Hammal
+givenName: Ghazi
+mail: ghazi@mailamind.com
+mail: ghazihammal@hotmail.com
+mail: ghazihammal@yahoo.com
+mobile: +965 6903326
+sn: Al Hammal
+
+dn: cn=Gladice Mae Casidsid-Lopez,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Gladice Mae Casidsid-Lopez
+givenName: Gladice Mae
+mail: Gladice.Casidsid@tnt.com
+mobile: +63 (920) 9210908
+sn: Casidsid-Lopez
+
+dn: cn=Hannu Myrberg,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Hannu Myrberg
+facsimileTelephoneNumber: +63 2 811-2466
+o: KPI Elevators Inc.
+registeredAddress: 2nd Floors, Kings Court 2 Building, 2129 Chino Roces Avenue, Makati 1231, Philippines
+sn: Myrberg
+telephoneNumber: +63 2 811-2929
+title: Country Manager
+
+dn: cn=Harsh Saxxena,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Harsh Saxxena
+facsimileTelephoneNumber: 91 11 24333586
+facsimileTelephoneNumber: 91 11 24316510
+givenName: Harsh
+mail: saxenaharsh@bol.net.in
+mobile: 9899163767
+mobile: 9999366536
+mobile: 9810818189
+sn: Saxxena
+street: K - 16 IInd Floor, Jangpura Extension, New Delhi 110014 India
+telephoneNumber: 91 11 24316510
+telephoneNumber: 91 11 20560225
+
+dn: cn=Henry John Kew,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Henry John Kew
+givenName: Henry John
+mail: henry@pdmigroup.com
+mobile: +86 (139) 16584574
+sn: Kew
+
+dn: cn=Jafar S. Abdul Ghani,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Jafar S. Abdul Ghani
+givenName: Jafar S.
+mail: hok.07@dubaifestivalcity.com
+sn: Abdul Ghani
+
+dn: cn=John Hodkinson,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: John Hodkinson
+givenName: John
+mail: johnh@sotawall.com
+sn: Hodkinson
+
+dn: cn=Johnny Cobankiat,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Johnny Cobankiat
+givenName: Johnny
+mail: jcbk@manila-online.net
+sn: Cobankiat
+
+dn: cn=John O'Brien,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: John O'Brien
+facsimileTelephoneNumber: +61 (2) 94177815
+givenName: John
+mail: john@facadeinnovations.com.au
+mobile: +61 0409 745 887
+sn: O'Brien
+street: 74-76 Alleyne St., Chatswood NSW 2067 Australia
+telephoneNumber: +61 (2) 94170817
+
+dn: cn=Joseph Alfonso Y. Alovera,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Joseph Alfonso Y. Alovera
+givenName: Joseph Alfonso Y.
+mail: joseph_a@csarchitecture.com
+sn: Alovera
+
+dn: cn=Joseph Dee,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Joseph Dee
+sn: Dee
+telephoneNumber: HK: +852 5395-6300
+telephoneNumber: CHINA: +86 1521 795-6300
+
+dn: cn=Joven Ignacio,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Joven Ignacio
+mail: jbrfi.arch@gmail.com
+mail: architects.architecture@gmail.com
+mobile: +63 916 344-2558
+registeredAddress: Celodonio Salvador Street, Loyola Heights, Quezon City 1108
+sn: Ignacio
+telephoneNumber: +63 2 518-8390
+title: Architect
+
+dn: cn=Jun Baticados,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Jun Baticados
+givenName: Jun
+mail: junbaticados@yahoo.com
+sn: Baticados
+
+dn: cn=Jun Melicano,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Jun Melicano
+givenName: Jun
+mail: jun.melicano@jgc.com.ph
+sn: Melicano
+telephoneNumber: +63 (2) 8076868
+
+dn: cn=Kate Nightingale,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Kate Nightingale
+givenName: Kate
+mail: k.nightingale@femsys.co.uk
+sn: Nightingale
+
+dn: cn=Keith Davies,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: labeledURIObject
+objectClass: person
+objectClass: top
+cn: Keith Davies
+mail: keith.davies@jetco-ltd.com
+mobile: +63 917 896-0657
+registeredAddress: 2c Ponte Salcedo, 120 Valero Street, Salcedo Village, Makati City, Philippines 1227
+sn: Davies
+
+dn: cn=Komkrit Limruangvutikul,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Komkrit Limruangvutikul
+givenName: Komkrit
+mobile: +66 (1) 6156683
+sn: Limruangvutikul
+
+dn: cn=Lawrence Martin,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Lawrence Martin
+givenName: Lawrence
+mail: lm@pitstopit.com
+sn: Martin
+
+dn: cn=Lee George (UK),ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Lee George (UK)
+givenName: Lee George
+mail: george@shillinglaw.com
+sn: (UK)
+street: 92 Dunsham Lane, Aylesbury Buckinghamshire England HP20 2DG United Kingdom
+telephoneNumber: +44 (12) 9688828
+
+dn: cn=Lee Meng Kong,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Lee Meng Kong
+givenName: Lee Meng
+mobile: +63 (917) 5261782
+sn: Kong
+telephoneNumber: +63 (2) 8913657
+
+dn: cn=Leith Dixon,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Leith Dixon
+givenName: Leith
+mail: leith.dixon@jml.com.au
+mail: leithdixon@bigpond.com
+sn: Dixon
+
+dn: cn=Leslie Lau,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Leslie Lau
+givenName: Leslie
+mail: leslau@shillinglaw.com
+mobile: +852 90902200
+sn: Lau
+
+dn: cn=Loren Nelson,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Loren Nelson
+facsimileTelephoneNumber: +1 4254867878
+givenName: Loren
+mail: lorenn@pacalum.com
+sn: Nelson
+street: 7533 W. Bostian Road, Woodinville WA. 98072
+telephoneNumber: +1 4254836226 x 1514
+
+dn: cn=Maggie Pan,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Maggie Pan
+givenName: Maggie
+mail: maggiepan@citiz.net
+sn: Pan
+street: Huaihuai Ticketing Office, No. 200 Tai Cang Road, Shanghai 200020 China
+telephoneNumber: 86 63558171
+
+dn: cn=Magno Salde Jr.,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Magno Salde Jr.
+facsimileTelephoneNumber: +63 (2) 8404384
+givenName: Magno
+mail: info@recio-casas.com
+mail: jsank@netvigator.com
+postalCode: 1229
+sn: Salde Jr.
+street: Penthouse Paseo Center, 8757 Paseo De Roxas Avenue, Makati City, Philippines
+telephoneNumber: +63 (2) 8678615
+telephoneNumber: +852 28661333 (Hong Kong)
+
+dn: cn=Manuelito Langcauon,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Manuelito Langcauon
+givenName: Manuelito
+mail: manuelito.langcauon@hertford.com.ph
+mobile: +63 (917) 8916110
+sn: Langcauon
+
+dn: cn=Marcelina Dulos,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Marcelina Dulos
+givenName: Marcelina
+mail: mvdulos@reynoldsph.com
+mobile: +63 (917) 3685072
+sn: Dulos
+
+dn: cn=Maricar Leyva,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Maricar Leyva
+givenName: Maricar
+mail: cmatela@af2100.com
+mail: matela/carlotta@emc.fedex.com
+mobile: +63 (917) 7920437
+sn: Leyva
+telephoneNumber: +63 (2) 8545311
+
+dn: cn=Mark Aung,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Mark Aung
+givenName: Mark
+mail: mark.aung@yamatoasiapacific.com
+sn: Aung
+telephoneNumber: +852 60709401
+
+dn: cn=Marlon Richard Hoffman,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Marlon Richard Hoffman
+givenName: Marlon Richard
+mobile: +63 (919) 4093800
+sn: Hoffman
+street: Unit 1025 Cityland Condominium, Calle Estacion St., Pasong Tamo, Makati City, Philippines
+
+dn: cn=Masae Okamoto,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Masae Okamoto
+givenName: Masae
+mail: masae.okamoto@yamatoasiapacific.com
+mail: masae_okamoto@msn.com
+mobile: +852 96207352
+sn: Okamoto
+telephoneNumber: +852 26604507
+
+dn: cn=Masanori Kurachi,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Masanori Kurachi
+givenName: Masanori
+mail: kurachi@ebuilding.ph
+sn: Kurachi
+
+dn: cn=Matthew Gordon,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Matthew Gordon
+facsimileTelephoneNumber: +1 (914) 9345992
+givenName: Matthew
+mail: matthew@gordon-intl.com
+sn: Gordon
+street: 200 William St., Suite 306, Port Chester NY 10573
+telephoneNumber: +1 (914) 9345991
+
+dn: cn=Melanio Lara - Civil Sanitary Engr.,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Melanio Lara - Civil Sanitary Engr.
+facsimileTelephoneNumber: +63 (2) 7135720
+givenName: Melanio
+mail: MPL@PWorld.net.ph
+sn: Lara - Civil Sanitary Engr.
+street: No. 1 Puray cor. Santol Sts., Quezon City, Philippines
+telephoneNumber: +63 (2) 7135722
+
+dn: cn=Melencia Mamac-Jumonong,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Melencia Mamac-Jumonong
+givenName: Melencia
+mail: mmjumonong@primary.com.ph
+mobile: +63 (917) 3254807
+sn: Mamac-Jumonong
+
+dn: cn=Mitchie delos Reyes,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Mitchie delos Reyes
+givenName: Mitchie
+mobile: +1 8473439932
+sn: delos Reyes
+street: 430 Lake Cook Road, Suite C, Deerfield, Illinois 60015-5219
+
+dn: cn=Mohammad Aslam,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Mohammad Aslam
+givenName: Mohammad
+mail: aslam@alicoalum.net
+mobile: +971 (50) 4818074
+sn: Aslam
+
+dn: cn=Mr. Amado (Dannie) R. Alvarez,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Mr. Amado (Dannie) R. Alvarez
+mail: aralvarez@pacific.net.ph
+sn: Mr. Amado (Dannie) R. Alvarez
+
+dn: cn=Muhammad Sajad Nadeem,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Muhammad Sajad Nadeem
+facsimileTelephoneNumber: +44 (0208) 8059665
+givenName: Muhammad Sajad
+mail: Muhammad-Nadeem@mprice.co.uk
+sn: Nadeem
+street: Number 1 Haslemere Business Centre, Lincoln Way Enfield Middlesex EN1 1DX, United Kingdom
+telephoneNumber: +44 (0208) 4434343
+
+dn: cn=N. R. Gandevia,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: N. R. Gandevia
+facsimileTelephoneNumber: +91 (22) 2493-8112
+givenName: N. R.
+mail: tparch@vsnl.com
+sn: Gandevia
+street: 6/F Shree Niketan, Shiv Sagar Estate, Dr. Annie Besant Road, Worli, Mumbai  400 018, India
+telephoneNumber: +91 (22) 24938113 to 8118
+
+dn: cn=Nael A. Afieh,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Nael A. Afieh
+facsimileTelephoneNumber: +971 (6) 5330750
+givenName: Nael A.
+mail: nael@alicoalum.net
+mail: nael@shueco.ae
+sn: Afieh
+
+dn: cn=Natasha C. Aniceto,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Natasha C. Aniceto
+facsimileTelephoneNumber: +63 (2) 8420581
+givenName: Natasha C.
+mail: tanicetoI@mmm.com
+mail: taniceto@mmm.com
+mobile: +63 917 8441412 /9084/9101/9102
+sn: Aniceto
+street: Km. 20 East Service Road, South Super Highway Muntinlupa City 1700 Philippines
+telephoneNumber: +63 (2) 8073548
+
+dn: cn=Neil Clarke,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Neil Clarke
+facsimileTelephoneNumber: +66 53495554
+givenName: Neil
+mail: facadesolutionsth@gmail.com
+mail: nfclarke@gmail.com
+mobile: +66 858712106
+mobile: +63 (918) 9135244
+mobile: UAE: +971 509 567-588
+sn: Clarke
+street: 109 M6 Baan Phar Yark Noi, Tambon San Barbon, Amphoe San Sai Chiang Mai 50210 Thailand
+telephoneNumber: +66 27140113
+telephoneNumber: +61 398576778
+telephoneNumber: +66 53 868 314
+telephoneNumber: +971 50 224 1745
+telephoneNumber: +66 (9) 1100744
+telephoneNumber: +61 404765694
+telephoneNumber: +852 91770273
+telephoneNumber: 62815 58151050
+telephoneNumber: +661 929 3154
+telephoneNumber: +667 0674915
+
+dn: cn=Neo Poh Heng Raymond,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Neo Poh Heng Raymond
+givenName: Neo Poh Heng
+mail: raymond.neo@glavermas.com.sg
+sn: Raymond
+
+dn: cn=Nicolas Borit,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Nicolas Borit
+givenName: Nicolas
+mail: nbo@bouyguesasia.com
+mobile: +852 96336399
+sn: Borit
+
+dn: cn=Noel D. Bersabe,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Noel D. Bersabe
+givenName: Noel D.
+mobile: +63 (918) 4812269
+sn: Bersabe
+
+dn: cn=Norman Richardson,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Norman Richardson
+givenName: Norman
+mail: nricha@home.com
+mobile: +1 (416) 917 6814
+sn: Richardson
+
+dn: cn=Omar Shegem,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Omar Shegem
+givenName: Omar
+mail: omar@petralu.com
+mail: petragulf@petragulf.com
+mobile: +962 (79) 5822228
+mobile: +971 (50) 5523911
+sn: Shegem
+
+dn: cn=Owen Colin,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Owen Colin
+givenName: Owen
+mobile: +852 90323165
+sn: Colin
+telephoneNumber: +852 29879632
+
+dn: cn=Patrick Donley,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Patrick Donley
+givenName: Patrick
+mail: pdonley@walshgroup.com
+sn: Donley
+
+dn: cn=Paul Lau,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Paul Lau
+givenName: Paul
+sn: Lau
+telephoneNumber: +65 6375186
+
+dn: cn=Paul Schafer,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Paul Schafer
+givenName: Paul
+mobile: +63 (917) 8424736
+sn: Schafer
+
+dn: cn=Peter Brueggner,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Peter Brueggner
+givenName: Peter
+mail: peter@josefgartner-uae.com
+mobile: +971 (50) 6150623
+sn: Brueggner
+
+dn: cn=Peter Emmanuel  Yatco Buendia,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Peter Emmanuel  Yatco Buendia
+facsimileTelephoneNumber: (632) 920.1193
+givenName: Peter Emmanuel
+mail: arch.sbdi@gmail.com
+mobile: (0917) 892.0041
+o: Siapno+Buendia Design Inc.
+sn: Yatco Buendia
+street: Unit 302 S & F Condominium, 137-B Panay Avenue, Quezon City 1100, Philippines
+telephoneNumber: (632) 929.3578
+title: Principal
+
+dn: cn=Peter Fung,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Peter Fung
+givenName: Peter
+mail: peterfung@picoworld.com
+mobile: +852 93059596
+sn: Fung
+telephoneNumber: +852 26604567
+
+dn: cn=Peter Gardiner,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Peter Gardiner
+givenName: Peter
+mail: p.gardiner@ptgc.peddlethorp.com.au
+sn: Gardiner
+
+dn: cn=Peter Heilveil,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Peter Heilveil
+givenName: Peter
+mobile: +63 (917) 5210789
+sn: Heilveil
+
+dn: cn=Petrus Coetzee,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Petrus Coetzee
+givenName: Petrus
+mail: petus@bharbour.com
+mobile: +973 9449358
+sn: Coetzee
+
+dn: cn=Petula Masako Suzuki Davies,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Petula Masako Suzuki Davies
+givenName: Petula Masako
+mail: petula@mail.goo.ne.jp
+sn: Suzuki Davies
+
+dn: cn=Philip Keeley,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Philip Keeley
+givenName: Philip
+mobile: +63 (919) 3707639
+sn: Keeley
+
+dn: cn=Philippe Raff,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Philippe Raff
+givenName: Philippe
+mail: praff@bouyguesasia.com
+sn: Raff
+
+dn: cn=Philip Wilkinson,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Philip Wilkinson
+givenName: Philip
+mail: Philip.Wilkinson@whitbybird.com
+sn: Wilkinson
+
+dn: cn=Phil Naughton,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Phil Naughton
+givenName: Phil
+mail: phil.naughton@leighton.com.ph
+sn: Naughton
+
+dn: cn=Phinma,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Phinma
+facsimileTelephoneNumber: +63 (2) 8128413
+sn: Phinma
+street: 6th Floor, Phinma Building, 166 Salcedo St., Legaspi Village, Makati City, Philippines
+telephoneNumber: +63 (2) 8109526 loc 619
+
+dn: cn=Poosarla Ganesh,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Poosarla Ganesh
+facsimileTelephoneNumber: +965 (326) 2691
+facsimileTelephoneNumber: +965 (326) 3867
+givenName: Poosarla
+mail: ganish@alicokuwait.com
+sn: Ganesh
+street: P.O. Box 15613 - Daiya, State Of, Kuwait, Kuwait
+telephoneNumber: +965 (326) 0009
+
+dn: cn=Pt. Sinar Rasa Kencana,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Pt. Sinar Rasa Kencana
+facsimileTelephoneNumber: +62 (21) 5494023
+facsimileTelephoneNumber: +62 (21) 5362254
+givenName: Pt. Sinar Rasa
+mail: sinarasa@cbn.net.id
+sn: Kencana
+street: Jl Palmerah Utara No. 72, Jakarta 11480 Indonesia
+telephoneNumber: +62 (21) 5480156
+
+dn: cn=Rania Missoumi,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Rania Missoumi
+givenName: Rania
+mail: r.missoumi@Eastgategroup.com
+sn: Missoumi
+
+dn: cn=Reynaldo Dela Cruz,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Reynaldo Dela Cruz
+givenName: Reynaldo
+mobile: +63 (917) 5338969
+sn: Dela Cruz
+
+dn: cn=Rie Honda,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Rie Honda
+givenName: Rie
+mail: t_yoshino@asianet.co.th
+mail: r_honda@asianet.co.th
+mobile: +66 (7) 1040203
+sn: Honda
+
+dn: cn=Roger Bakes,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Roger Bakes
+givenName: Roger
+mail: rbakes@bensonglobal.com
+sn: Bakes
+
+dn: cn=Roger Clark (Belgium),ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Roger Clark (Belgium)
+facsimileTelephoneNumber: +32 (58) 315834
+givenName: Roger
+sn: Clark (Belgium)
+telephoneNumber: +32 (58) 315743
+
+dn: cn=Rohan  Kahatapitiya,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Rohan  Kahatapitiya
+facsimileTelephoneNumber: +61 3 963.99556
+givenName: Rohan
+mail: RohanKahatapitiya@grocon.com.au
+o: Grocon Contructors Pty. Ltd.
+sn: Kahatapitiya
+street: P.O. Box 338, Flinders Lane, Melbourne, Vic Australia 8009
+telephoneNumber: +61 3 963.18833
+
+dn: cn=Rommel Celestial,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Rommel Celestial
+mobile: +63 2 939 472-3927
+sn: Celestial
+
+dn: cn=Roupen Robin Naltchayan,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Roupen Robin Naltchayan
+givenName: Roupen Robin
+mobile: +61 (409) 768736
+sn: Naltchayan
+street: I Yerevan Place, Belrose  NSW 2085 Australia
+telephoneNumber: +61 (2) 94521237
+
+dn: cn=Shillinglaw (Andrew),ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Shillinglaw (Andrew)
+facsimileTelephoneNumber: +44 1624825140
+givenName: Shillinglaw
+mail: j.a.shillinglaw@enterprise.net
+sn: (Andrew)
+street: Isle of Man, United Kingdom
+telephoneNumber: +44 1624825139
+
+dn: cn=Stuart Orr,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Stuart Orr
+givenName: Stuart
+mail: stuart@permasteelisa.com.sg
+sn: Orr
+
+dn: cn=Stutley\, Alexander,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Stutley, Alexander
+givenName: Stutley,
+mail: alex@cyber-dynamics.net
+sn: Alexander
+
+dn: cn=Takaaki Kita,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Takaaki Kita
+givenName: Takaaki
+mail: t_kita@asianet.co.th
+mail: t_kita@arrk.co.th
+mobile: +66 (1) 90776303
+mobile: +852 90776303
+sn: Kita
+
+dn: cn=Ted Mirasol,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Ted Mirasol
+givenName: Ted
+mobile: +63 917 903-4571
+sn: Mirasol
+
+dn: cn=Tito Jandoc,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Tito Jandoc
+facsimileTelephoneNumber: +63 (2) 849-2592
+givenName: Tito
+mail: tito.jandoc@db.com
+mobile: +63 (919) 576-0042
+o:: RGV1dHNjaGUgS25vd2xlZGdlIFNlcnZpY2VzIFB0ZS4gTHRkLiAg
+postalCode: 1226
+sn: Jandoc
+street: 38/F Tower 1, The Enterprise Center, 6766 Ayala Avenue corner Paseo de Roxas, Makati City, Philippines
+telephoneNumber: +63 (2) 849-4852
+title: Project Manager
+
+dn: cn=Tom Leach,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Tom Leach
+givenName: Tom
+mail: tom_leach@kawneer.com
+sn: Leach
+
+dn: cn=Troy Mendoza,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Troy Mendoza
+givenName: Troy
+sn: Mendoza
+telephoneNumber: +63 (2) 7409520 to 25
+
+dn: cn=Uy\, Arch. Kenneth C.,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Uy, Arch. Kenneth C.
+givenName: Uy,
+mail: gw_spd@mindgate.com.ph
+sn: Arch. Kenneth C.
+
+dn: cn=Vanessa Goulding,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Vanessa Goulding
+facsimileTelephoneNumber: +61 3 96399556
+givenName: Vanessa
+mail: VanessaGoulding@grocon.com.au
+mobile: 0419755569
+o: Grocon Constructors Pty Limited
+sn: Goulding
+street: PO Box 338, Flinders Lane, Melbourne, Vic 8009 Australia
+telephoneNumber: +61 3 96318833
+title: Roof - Steelwork and Facade Manager
+
+dn: cn=Volberg\, Alexander PE,ou=ptcc_industry people,dc=ptcc,dc=design
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Volberg, Alexander PE
+givenName: Volberg,
+mail: volbalex@aol.com
+mobile: +61 (401) 224421
+sn: Alexander PE
+

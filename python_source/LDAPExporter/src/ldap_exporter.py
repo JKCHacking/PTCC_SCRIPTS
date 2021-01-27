@@ -90,11 +90,12 @@ class LdapExporter:
         doc = document.create_document()
         par = document.add_paragraph(doc)
         for entry in self.print_nested_dict(root_data_dict):
+            text = ''
             if isinstance(entry, tuple):
                 key, value = entry
                 if isinstance(value, list):
-                    value = "/\n".join(value)
-                    text = "{}:\n{}\n".format(key, value)
+                    for item in value:
+                        text += "{}: {}\n".format(key, item)
                 else:
                     text = "{}: {}\n".format(key, value)
                 bold = False
