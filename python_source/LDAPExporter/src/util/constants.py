@@ -20,3 +20,5 @@ class Constants:
     DOCX_FILE_EXT = '.docx'
     TXT_FILE_EXT = '.txt'
     LDIF_FILE_EXT = '.ldif'
+
+    ATTRIBUTE_KEY = " attributes"

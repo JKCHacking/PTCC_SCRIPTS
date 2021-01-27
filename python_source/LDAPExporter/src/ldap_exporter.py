@@ -43,12 +43,12 @@ class LdapExporter:
                 # in the list already exists inside the nested dictionary. if not it adds it
                 # inside the nested dictionary.
                 _data_dict = data_dict
-                for levels in reversed(parent_levels):
+                for level in reversed(parent_levels):
                     try:
-                        _data_dict = _data_dict[levels]
+                        _data_dict = _data_dict[level]
                     except KeyError:
-                        _data_dict[levels] = {}
-                        _data_dict = _data_dict[levels]
+                        _data_dict[level] = {Constants.ATTRIBUTE_KEY: {}}
+                        _data_dict = _data_dict[level]
                 # add the entry data on the current level
                 for attr in attrs:
                     try:
@@ -58,9 +58,9 @@ class LdapExporter:
                             temp_list = []
                             for item in entry[attr]:
                                 temp_list.append(item.decode('utf-8'))
-                            _data_dict[attr] = temp_list
+                            _data_dict[Constants.ATTRIBUTE_KEY].update({attr: temp_list})
                         else:
-                            _data_dict[attr] = entry[attr][0].decode('utf-8')
+                            _data_dict[Constants.ATTRIBUTE_KEY].update({attr: entry[attr][0].decode('utf-8')})
                     except KeyError:
                         pass
         return data_dict
@@ -76,7 +76,8 @@ class LdapExporter:
         # prints all the keys and values of a dictionary
         for k, v in d.items():
             if isinstance(v, dict):
-                yield k
+                if k != Constants.ATTRIBUTE_KEY:
+                    yield k
                 yield from self.print_nested_dict(v)
             else:
                 yield k, v
