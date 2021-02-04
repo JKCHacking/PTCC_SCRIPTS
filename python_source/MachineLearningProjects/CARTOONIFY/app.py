@@ -8,10 +8,11 @@ from controller import Controller
 class App(QApplication):
     def __init__(self, argv):
         super(App, self).__init__(argv)
-        self.model = Cartoonify
+        self.model = Cartoonify()
         self.view = CartoonifyUI()
         self.view.show()
         self.controller = Controller(self.model, self.view)
+        self.controller.connect_signals()
 
 
 if __name__ == "__main__":
