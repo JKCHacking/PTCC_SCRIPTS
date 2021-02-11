@@ -19,7 +19,8 @@ class LdapExporter:
                  "mail",
                  "mobile",
                  "registeredAddress",
-                 "telephoneNumber"]
+                 "telephoneNumber",
+                 "objectClass"]
 
         with open(data_file_path, "rb") as ldif_file:
             parser = ldif.LDIFRecordList(ldif_file)
@@ -75,32 +76,43 @@ class LdapExporter:
     def print_nested_dict(self, d):
         # prints all the keys and values of a dictionary
         for k, v in d.items():
+            yield k, v
             if isinstance(v, dict):
-                if k != Constants.ATTRIBUTE_KEY:
-                    yield k
                 yield from self.print_nested_dict(v)
-            else:
-                yield k, v
 
     def export_data(self, data_dict):
-        output_path = os.path.join(Constants.OUTPUT_DIR, os.path.splitext(self.file_name)[0] + ".docx")
+        output_path = os.path.join(Constants.OUTPUT_DIR, os.path.splitext(self.file_name)[0] + Constants.DOCX_FILE_EXT)
         root_data_dict = data_dict['design']['ptcc']
 
         document = WordDocument()
         doc = document.create_document()
         par = document.add_paragraph(doc)
+
         for entry in self.print_nested_dict(root_data_dict):
             text = ''
-            if isinstance(entry, tuple):
-                key, value = entry
-                if isinstance(value, list):
-                    for item in value:
-                        text += "{}: {}\n".format(key, item)
-                else:
-                    text = "{}: {}\n".format(key, value)
-                bold = False
-            else:
-                text = "\n" + entry + "\n"
+            font_size = Constants.NORMAL_FONTSIZE
+            key, value = entry
+
+            if isinstance(value, dict):
+                # determine if organization or person.
+                # and use corresponding font size
+                try:
+                    object_class_list = value[Constants.ATTRIBUTE_KEY]['objectClass']
+                    if "organization" in object_class_list:
+                        font_size = Constants.ORG_FONTSIZE
+                except KeyError:
+                    pass
+                if key != Constants.ATTRIBUTE_KEY:
+                    text = "\n" + key + "\n"
                 bold = True
-            document.add_paragraph_text(par, text, bold)
+            else:
+                if key != Constants.OBJECT_CLASS_KEY:
+                    if isinstance(value, list):
+                        for item in value:
+                            text += "{}: {}\n".format(key, item)
+                    else:
+                        text = "{}: {}\n".format(key, value)
+                bold = False
+            if text:
+                document.add_paragraph_text(par, text, bold, font_size)
         document.save_document(doc, output_path)

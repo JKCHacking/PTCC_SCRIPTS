@@ -22,3 +22,6 @@ class Constants:
     LDIF_FILE_EXT = '.ldif'
 
     ATTRIBUTE_KEY = " attributes"
+    OBJECT_CLASS_KEY = "objectClass"
+    ORG_FONTSIZE = 14
+    NORMAL_FONTSIZE = 10

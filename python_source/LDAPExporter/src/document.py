@@ -1,6 +1,7 @@
 from docx import Document
 from docx.shared import Mm
 from docx.oxml.ns import qn
+from docx.shared import Pt
 
 
 class WordDocument:
@@ -25,11 +26,12 @@ class WordDocument:
     def create_document(self):
         return self.document
 
-    def add_paragraph_text(self, paragraph, text, is_bold=False):
+    def add_paragraph_text(self, paragraph, text, is_bold=False, font_size=12):
+        run = paragraph.add_run(text)
+        font = run.font
+        font.size = Pt(font_size)
         if is_bold:
-            paragraph.add_run(text).bold = True
-        else:
-            paragraph.add_run(text)
+            font.bold = True
 
     def add_paragraph(self, document):
         paragraph = document.add_paragraph()
