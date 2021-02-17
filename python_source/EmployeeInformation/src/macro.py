@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import uno, unohelper
-# import msgbox as util
-from apso_utils import msgbox
+import msgbox as util
+# from apso_utils import msgbox
 from com.sun.star.awt import XActionListener
 
 
@@ -25,7 +25,7 @@ class AddEmployeeButtonListener(unohelper.Base, XActionListener):
 
         # setting Surname, Firstname, Middle name format
         name = "{}, {} {}".format(surname, firstname, middlename)
-        if id_num and name and position:
+        if self.add_emp_controller.check_input(id_num, name, position):
             self.add_emp_controller.add_to_master(id_num, name, position)
             self.add_emp_controller.create_new_employee_sheet(id_num, name, position)
             self.add_emp_dialog.dialog.endExecute()
@@ -146,10 +146,10 @@ class AddEmployeeController(unohelper.Base):
         idnum_cell.setString(id_num)
         position_cell.setString(position)
 
-    # def MsgBox(self, txt):
-    #     mb = util.MsgBox(uno.getComponentContext())
-    #     mb.addButton("OK")
-    #     mb.show(txt, 0, "Python")
+    def MsgBox(self, txt):
+        mb = util.MsgBox(uno.getComponentContext())
+        mb.addButton("OK")
+        mb.show(txt, 0, "Message")
 
     def get_last_used_row_by_col(self, sheet, start_row, col):
         # detect last used row
@@ -161,6 +161,37 @@ class AddEmployeeController(unohelper.Base):
             row += 1
         return row
 
+    def check_id_exists(self, id_num):
+        # get the master sheet
+        doc = XSCRIPTCONTEXT.getDocument()
+        master_sheet = doc.Sheets[0]
+        id_num_col = 0
+        id_num_row = 4
+        found = False
+        while True:
+            cell = master_sheet.getCellByPosition(id_num_col, id_num_row)
+            if id_num == cell.getString():
+                found = True
+                break
+            elif not cell.getString():
+                break
+            id_num_row += 1
+        return found
+
+    def check_input(self, id_num, name, position):
+        ok = True
+        # check if id_num already exists
+        if not id_num or not name or not position:
+            self.MsgBox("Please input all fields.")
+            ok = False
+        elif not id_num.isnumeric():
+            self.MsgBox("ID Number must be numbers.")
+            ok = False
+        elif self.check_id_exists(id_num):
+            self.MsgBox("ID Number already exists.")
+            ok = False
+        return ok
+
 
 def add_employee(*args):
     ctx = uno.getComponentContext()
@@ -169,7 +200,16 @@ def add_employee(*args):
     add_emp_ctlr.show()
 
 
-g_exportedScripts = (add_employee,)
+def save_employee(*args):
+    update_employee()
 
-if __name__ == "__main__":
-    add_employee()
+
+def update_employee(*args):
+    pass
+
+
+def delete_employee(*args):
+    pass
+
+
+g_exportedScripts = (add_employee,)
