@@ -12,13 +12,18 @@ class AddEmployeeButtonListener(unohelper.Base, XActionListener):
 
     def actionPerformed(self, actionEvent):
         id_num_text_model = self.add_emp_dialog.dialog.getModel().getByName("id_num_text")
-        name_text_model = self.add_emp_dialog.dialog.getModel().getByName("name_text")
+        surname_text_model = self.add_emp_dialog.dialog.getModel().getByName("surname_text")
+        firstname_text_model = self.add_emp_dialog.dialog.getModel().getByName("firstname_text")
+        middlename_text_model = self.add_emp_dialog.dialog.getModel().getByName("middlename_text")
         position_text_model = self.add_emp_dialog.dialog.getModel().getByName("position_text")
 
         id_num = id_num_text_model.Text
-        name = name_text_model.Text
+        surname = surname_text_model.Text
+        firstname = firstname_text_model.Text
+        middlename = middlename_text_model.Text
         position = position_text_model.Text
 
+        name = "{}, {} {}".format(surname, firstname, middlename)
         if id_num and name and position:
             self.add_emp_controller.add_to_master(id_num, name, position)
             self.add_emp_controller.create_new_employee_sheet()
@@ -31,78 +36,58 @@ class AddEmployeeDlg(unohelper.Base):
         self.dialog = None
 
     def create_dialog(self):
+        label_width = 40
+        label_height = 10
+        text_height = 15
+        text_width = 125
+        label_x = 5  # start x
+        label_y = 20  # start y
+        label_text_margin = (text_height - label_height) / 2
+        label_label_margin = 20
+        label_labelnames = ["ID Number:", "Surname:", "First Name:", "Middle Name:", "Position"]
+        label_idnames = ["id_number_label", "surname_label", "firstname_label", "middlename_label", "position_label"]
+        text_idnames = ["id_num_text", "surname_text", "firstname_text", "middlename_text", "position_text"]
+
         smgr = self.ctx.ServiceManager
         self.dialog = smgr.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", self.ctx)
         dialog_model = smgr.createInstanceWithContext('com.sun.star.awt.UnoControlDialogModel', self.ctx)
-        dialog_model.PositionX = 100
-        dialog_model.PositionY = 100
-        dialog_model.Width = 200
-        dialog_model.Height = 150
+        dialog_model.PositionX = 400
+        dialog_model.PositionY = 200
+        dialog_model.Width = 190
+        dialog_model.Height = 200
         dialog_model.Title = "Add Employee"
-
-        # labels
-        id_num_label = dialog_model.createInstance("com.sun.star.awt.UnoControlFixedTextModel")
-        id_num_label.PositionX = 6
-        id_num_label.PositionY = 19
-        id_num_label.Width = 32
-        id_num_label.Height = 10
-        id_num_label.Name = "id_num_label"
-        id_num_label.Label = "ID Number:"
-
-        name_label = dialog_model.createInstance("com.sun.star.awt.UnoControlFixedTextModel")
-        name_label.PositionX = 20
-        name_label.PositionY = 46
-        name_label.Width = 17
-        name_label.Height = 12
-        name_label.Name = "name_label"
-        name_label.Label = "Name:"
-
-        position_label = dialog_model.createInstance("com.sun.star.awt.UnoControlFixedTextModel")
-        position_label.PositionX = 14
-        position_label.PositionY = 74
-        position_label.Width = 27
-        position_label.Height = 12
-        position_label.Name = "position_label"
-        position_label.Label = "Position:"
-
-        # edit texts
-        id_num_text = dialog_model.createInstance("com.sun.star.awt.UnoControlEditModel")
-        id_num_text.PositionX = 46
-        id_num_text.PositionY = 15
-        id_num_text.Width = 125
-        id_num_text.Height = 17
-        id_num_text.Name = "id_num_text"
-
-        name_text = dialog_model.createInstance("com.sun.star.awt.UnoControlEditModel")
-        name_text.PositionX = 46
-        name_text.PositionY = 42
-        name_text.Width = 125
-        name_text.Height = 17
-        name_text.Name = "name_text"
-
-        position_text = dialog_model.createInstance("com.sun.star.awt.UnoControlEditModel")
-        position_text.PositionX = 46
-        position_text.PositionY = 68
-        position_text.Width = 125
-        position_text.Height = 17
-        position_text.Name = "position_text"
-
+        # creating labels and edit texts
+        for index, (label_name, text_idname, label_idname) in enumerate(
+                zip(label_labelnames, text_idnames, label_idnames)):
+            # create label
+            label = dialog_model.createInstance("com.sun.star.awt.UnoControlFixedTextModel")
+            label.PositionX = label_x
+            label_position_y = label_y + (label_height + label_label_margin) * index
+            label.PositionY = label_position_y
+            label.Width = label_width
+            label.Height = label_height
+            label.Name = label_idname
+            label.Label = label_name
+            # create edit text
+            edit_text = dialog_model.createInstance("com.sun.star.awt.UnoControlEditModel")
+            text_position_x = label.PositionX + label_width + label_text_margin
+            text_position_y = label.PositionY - label_text_margin
+            edit_text.PositionX = text_position_x
+            edit_text.PositionY = text_position_y
+            edit_text.Width = text_width
+            edit_text.Height = text_height
+            edit_text.Name = text_idname
+            # insert control models into the dialog model
+            dialog_model.insertByName(label_idname, label)
+            dialog_model.insertByName(text_idname, edit_text)
         # button
         add_button = dialog_model.createInstance("com.sun.star.awt.UnoControlButtonModel")
-        add_button.PositionX = 63
-        add_button.PositionY = 110
-        add_button.Width = 53
-        add_button.Height = 17
+        add_button.PositionX = 65
+        add_button.PositionY = 165
+        add_button.Width = 60
+        add_button.Height = 20
         add_button.Label = "Add"
         add_button.Name = "add_button"
-
-        # insert control models into the dialog model
-        dialog_model.insertByName("id_num_label", id_num_label)
-        dialog_model.insertByName("name_label", name_label)
-        dialog_model.insertByName("position_label", position_label)
-        dialog_model.insertByName("id_num_text", id_num_text)
-        dialog_model.insertByName("name_text", name_text)
-        dialog_model.insertByName("position_text", position_text)
         dialog_model.insertByName("add_button", add_button)
 
         # set the dialog model
