@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import uno, unohelper
 # import msgbox as util
-# from apso_utils import msgbox
+from apso_utils import msgbox
 from com.sun.star.awt import XActionListener
 
 
@@ -23,10 +23,11 @@ class AddEmployeeButtonListener(unohelper.Base, XActionListener):
         middlename = middlename_text_model.Text
         position = position_text_model.Text
 
+        # setting Surname, Firstname, Middle name format
         name = "{}, {} {}".format(surname, firstname, middlename)
         if id_num and name and position:
             self.add_emp_controller.add_to_master(id_num, name, position)
-            self.add_emp_controller.create_new_employee_sheet()
+            self.add_emp_controller.create_new_employee_sheet(id_num, name, position)
             self.add_emp_dialog.dialog.endExecute()
 
 
@@ -127,8 +128,23 @@ class AddEmployeeController(unohelper.Base):
         cell = master_sheet.getCellByPosition(2, row)
         cell.setString(position)
 
-    def create_new_employee_sheet(self):
-        pass
+    def create_new_employee_sheet(self, id_num, name, position):
+        # copy template sheet
+        doc = XSCRIPTCONTEXT.getDocument()
+        new_employee_sheet_name = "{}_{}".format(name, id_num)
+        all_sheets = doc.Sheets
+        sheet_count = all_sheets.Count
+        # copy new sheet to the end
+        doc.Sheets.copyByName('Employee Information Template', new_employee_sheet_name, sheet_count)
+        new_sheet = all_sheets[sheet_count]
+
+        name_cell = new_sheet.getCellByPosition(1, 1)
+        idnum_cell = new_sheet.getCellByPosition(1, 2)
+        position_cell = new_sheet.getCellByPosition(1, 3)
+
+        name_cell.setString(name)
+        idnum_cell.setString(id_num)
+        position_cell.setString(position)
 
     # def MsgBox(self, txt):
     #     mb = util.MsgBox(uno.getComponentContext())
