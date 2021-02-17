@@ -140,16 +140,13 @@ class AddEmployeeController(unohelper.Base):
 
         name_cell = new_sheet.getCellByPosition(1, 1)
         idnum_cell = new_sheet.getCellByPosition(1, 2)
+        tempidnum_cell = new_sheet.getCellByPosition(13, 6)
         position_cell = new_sheet.getCellByPosition(1, 3)
 
         name_cell.setString(name)
         idnum_cell.setString(id_num)
+        tempidnum_cell.setString(id_num)
         position_cell.setString(position)
-
-    def MsgBox(self, txt):
-        mb = util.MsgBox(uno.getComponentContext())
-        mb.addButton("OK")
-        mb.show(txt, 0, "Message")
 
     def get_last_used_row_by_col(self, sheet, start_row, col):
         # detect last used row
@@ -182,15 +179,81 @@ class AddEmployeeController(unohelper.Base):
         ok = True
         # check if id_num already exists
         if not id_num or not name or not position:
-            self.MsgBox("Please input all fields.")
+            MsgBox("Please input all fields.")
             ok = False
         elif not id_num.isnumeric():
-            self.MsgBox("ID Number must be numbers.")
+            MsgBox("ID Number must be numbers.")
             ok = False
         elif self.check_id_exists(id_num):
-            self.MsgBox("ID Number already exists.")
+            MsgBox("ID Number already exists.")
             ok = False
         return ok
+
+
+class SaveEmployee(unohelper.Base):
+
+    def update(self):
+        doc = XSCRIPTCONTEXT.getDocument()
+        current_sheet = doc.getCurrentController().getActiveSheet()
+        master_sheet = doc.Sheets["Master List"]
+
+        name_cell_curr = current_sheet.getCellByPosition(1, 1)
+        idnum_cell_curr = current_sheet.getCellByPosition(1, 2)
+        tempidnum_cell_curr = current_sheet.getCellByPosition(13, 6)
+        position_cell_curr = current_sheet.getCellByPosition(1, 3)
+
+        new_name = name_cell_curr.getString()
+        new_idnum = idnum_cell_curr.getString()
+        temp_idnum = tempidnum_cell_curr.getString()
+        new_position = position_cell_curr.getString()
+
+        found_tempid, id_num_row_temp = self.search_id_num(temp_idnum)
+        if found_tempid:
+            found_newid, id_num_row_new = self.search_id_num(new_idnum)
+            # check if the new id number exists
+            if not found_newid:
+                idnum_cell_master = master_sheet.getCellByPosition(0, id_num_row_temp)
+                name_cell_master = master_sheet.getCellByPosition(1, id_num_row_temp)
+                position_cell_master = master_sheet.getCellByPosition(2, id_num_row_temp)
+
+                idnum_cell_master.setString(new_idnum)
+                tempidnum_cell_curr.setString(new_idnum)
+                name_cell_master.setString(new_name)
+                position_cell_master.setString(new_position)
+                new_sheet_name = "{}_{}".format(new_name, new_idnum)
+                current_sheet.Name = new_sheet_name
+                ret = 1
+            else:
+                MsgBox("The new ID Number already exists in the Master List")
+                # set it back to the previous value.
+                idnum_cell_curr.setString(temp_idnum)
+                ret = -1
+        else:
+            MsgBox("Employee does not exists in the Master list.")
+            ret = -1
+        return ret
+
+    def search_id_num(self, id_num):
+        # get the master sheet
+        doc = XSCRIPTCONTEXT.getDocument()
+        master_sheet = doc.Sheets[0]
+        id_num_col = 0
+        id_num_row = 4
+        found = False
+        while True:
+            cell = master_sheet.getCellByPosition(id_num_col, id_num_row)
+            if id_num == cell.getString():
+                found = True
+                break
+            elif not cell.getString():
+                break
+            id_num_row += 1
+        return found, id_num_row
+
+    def save(self):
+        doc = XSCRIPTCONTEXT.getDocument()
+        doc.storeToURL(doc.URL, ())
+        MsgBox("Successfully saved and updated.")
 
 
 def add_employee(*args):
@@ -201,15 +264,20 @@ def add_employee(*args):
 
 
 def save_employee(*args):
-    update_employee()
-
-
-def update_employee(*args):
-    pass
+    save_emp_ctrl = SaveEmployee()
+    ret = save_emp_ctrl.update()
+    if ret == 1:
+        save_emp_ctrl.save()
 
 
 def delete_employee(*args):
     pass
 
 
-g_exportedScripts = (add_employee,)
+def MsgBox(txt):
+    mb = util.MsgBox(uno.getComponentContext())
+    mb.addButton("OK")
+    mb.show(txt, 0, "Message")
+
+
+g_exportedScripts = (add_employee, save_employee, delete_employee)
