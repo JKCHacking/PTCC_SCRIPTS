@@ -277,6 +277,85 @@ class SaveEmployee(unohelper.Base):
         return found, id_num_row
 
 
+class DeleteEmployeeDlg(unohelper.Base):
+    def __init__(self, context):
+        self.ctx = context
+        self.dialog = None
+
+    def create_dialog(self):
+        smgr = self.ctx.ServiceManager
+        self.dialog = smgr.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", self.ctx)
+        dialog_model = smgr.createInstanceWithContext('com.sun.star.awt.UnoControlDialogModel', self.ctx)
+        dialog_model.PositionX = 400
+        dialog_model.PositionY = 200
+        dialog_model.Width = 150
+        dialog_model.Height = 45
+        dialog_model.Title = "Delete Employee"
+
+        label = dialog_model.createInstance("com.sun.star.awt.UnoControlFixedTextModel")
+        label.PositionX = 25
+        label.PositionY = 10
+        label.Width = 100
+        label.Height = 10
+        label.Name = "confirmation_label"
+        label.Label = "Are you sure you want to delete?"
+
+        yes_btn = dialog_model.createInstance("com.sun.star.awt.UnoControlButtonModel")
+        yes_btn.PositionX = 25
+        yes_btn.PositionY = 25
+        yes_btn.Width = 25
+        yes_btn.Height = 15
+        yes_btn.Name = "yes_btn"
+        yes_btn.Label = "YES"
+
+        no_btn = dialog_model.createInstance("com.sun.star.awt.UnoControlButtonModel")
+        no_btn.PositionX = 100
+        no_btn.PositionY = 25
+        no_btn.Width = 25
+        no_btn.Height = 15
+        no_btn.Name = "no_btn"
+        no_btn.Label = "NO"
+
+        dialog_model.insertByName("confirmation_label", label)
+        dialog_model.insertByName("yes_btn", yes_btn)
+        dialog_model.insertByName("no_btn", no_btn)
+
+        # set the dialog model
+        self.dialog.setModel(dialog_model)
+        # create a peer
+        toolkit = smgr.createInstanceWithContext("com.sun.star.awt.ExtToolkit", self.ctx)
+        self.dialog.createPeer(toolkit, None)
+
+
+class DeleteEmployeeBtnListener(unohelper.Base, XActionListener):
+    def __init__(self, dialog, controller):
+        self.delete_emp_dialog = dialog
+        self.delete_emp_controller = controller
+
+    def actionPerformed(self, actionEvent):
+        pass
+
+
+class DeleteEmployeeController(unohelper.Base):
+    def __init__(self, dialog):
+        self.delete_emp_dialog = dialog
+
+    def show(self):
+        # create GUI
+        self.delete_emp_dialog.create_dialog()
+        self.__add_listeners()
+        self.delete_emp_dialog.dialog.execute()
+        self.delete_emp_dialog.dialog.dispose()
+
+    def __add_listeners(self):
+        control = self.delete_emp_dialog.dialog.getControl('yes_btn')
+        listener = DeleteEmployeeBtnListener(self.delete_emp_dialog, self)
+        control.addActionListener(listener)
+        control = self.delete_emp_dialog.dialog.getControl('no_btn')
+        listener = DeleteEmployeeBtnListener(self.delete_emp_dialog, self)
+        control.addActionListener(listener)
+
+
 def add_employee(*args):
     ctx = uno.getComponentContext()
     add_emp_dlg = AddEmployeeDlg(ctx)
@@ -292,7 +371,10 @@ def save_employee(*args):
 
 
 def delete_employee(*args):
-    pass
+    ctx = uno.getComponentContext()
+    delete_emp_dlg = DeleteEmployeeDlg(ctx)
+    delete_emp_ctlr = DeleteEmployeeController(delete_emp_dlg)
+    delete_emp_ctlr.show()
 
 
 def MsgBox(txt):
