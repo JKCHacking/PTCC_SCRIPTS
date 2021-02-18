@@ -15,19 +15,17 @@ class AddEmployeeButtonListener(unohelper.Base, XActionListener):
         surname_text_model = self.add_emp_dialog.dialog.getModel().getByName("surname_text")
         firstname_text_model = self.add_emp_dialog.dialog.getModel().getByName("firstname_text")
         middlename_text_model = self.add_emp_dialog.dialog.getModel().getByName("middlename_text")
-        position_text_model = self.add_emp_dialog.dialog.getModel().getByName("position_text")
 
         id_num = id_num_text_model.Text
         surname = surname_text_model.Text
         firstname = firstname_text_model.Text
         middlename = middlename_text_model.Text
-        position = position_text_model.Text
 
         # setting Surname, Firstname, Middle name format
         name = "{}, {} {}".format(surname, firstname, middlename)
-        if self.add_emp_controller.check_input(id_num, name, position):
-            self.add_emp_controller.add_to_master(id_num, name, position)
-            self.add_emp_controller.create_new_employee_sheet(id_num, name, position)
+        if self.add_emp_controller.check_input(id_num, surname, firstname, middlename):
+            self.add_emp_controller.add_to_master(id_num, name)
+            self.add_emp_controller.create_new_employee_sheet(id_num, name)
             self.add_emp_dialog.dialog.endExecute()
 
 
@@ -45,9 +43,9 @@ class AddEmployeeDlg(unohelper.Base):
         label_y = 20  # start y
         label_text_margin = (text_height - label_height) / 2
         label_label_margin = 20
-        label_labelnames = ["ID Number:", "Surname:", "First Name:", "Middle Name:", "Position"]
-        label_idnames = ["id_number_label", "surname_label", "firstname_label", "middlename_label", "position_label"]
-        text_idnames = ["id_num_text", "surname_text", "firstname_text", "middlename_text", "position_text"]
+        label_labelnames = ["ID Number:", "Surname:", "First Name:", "Middle Name:"]
+        label_idnames = ["id_number_label", "surname_label", "firstname_label", "middlename_label"]
+        text_idnames = ["id_num_text", "surname_text", "firstname_text", "middlename_text"]
 
         smgr = self.ctx.ServiceManager
         self.dialog = smgr.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", self.ctx)
@@ -114,7 +112,7 @@ class AddEmployeeController(unohelper.Base):
         listener = AddEmployeeButtonListener(self.add_emp_dialog, self)
         control.addActionListener(listener)
 
-    def add_to_master(self, id_num, name, position):
+    def add_to_master(self, id_num, name):
         # assuming input data are valid.
         doc = XSCRIPTCONTEXT.getDocument()
         master_sheet = doc.Sheets['Master List']
@@ -125,10 +123,8 @@ class AddEmployeeController(unohelper.Base):
         cell.setString(id_num)
         cell = master_sheet.getCellByPosition(1, row)
         cell.setString(name)
-        cell = master_sheet.getCellByPosition(2, row)
-        cell.setString(position)
 
-    def create_new_employee_sheet(self, id_num, name, position):
+    def create_new_employee_sheet(self, id_num, name):
         # copy template sheet
         doc = XSCRIPTCONTEXT.getDocument()
         new_employee_sheet_name = "{}_{}".format(name, id_num)
@@ -139,15 +135,13 @@ class AddEmployeeController(unohelper.Base):
         new_sheet = all_sheets[new_employee_sheet_name]
         cache_sheet = all_sheets["Cache"]
 
-        name_cell = new_sheet.getCellByPosition(1, 1)
-        idnum_cell = new_sheet.getCellByPosition(1, 2)
+        idnum_cell = new_sheet.getCellByPosition(1, 1)
         tempidnum_cell = cache_sheet.getCellByPosition(0, 0)
-        position_cell = new_sheet.getCellByPosition(1, 3)
+        name_cell = new_sheet.getCellByPosition(1, 2)
 
         name_cell.setString(name)
         idnum_cell.setString(id_num)
         tempidnum_cell.setString(id_num)
-        position_cell.setString(position)
         self.__add_event_macro(new_employee_sheet_name)
 
     def __add_event_macro(self, sheet_name):
@@ -194,10 +188,10 @@ class AddEmployeeController(unohelper.Base):
             id_num_row += 1
         return found
 
-    def check_input(self, id_num, name, position):
+    def check_input(self, id_num, surname, firstname, middlename):
         ok = True
         # check if id_num already exists
-        if not id_num or not name or not position:
+        if not id_num or not surname or not firstname or not middlename:
             MsgBox("Please input all fields.")
             ok = False
         elif not id_num.isnumeric():
