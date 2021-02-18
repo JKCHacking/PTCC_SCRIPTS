@@ -20,7 +20,8 @@ class LdapExporter:
                  "mobile",
                  "registeredAddress",
                  "telephoneNumber",
-                 "objectClass"]
+                 "objectClass",
+                 "postalAddress"]
 
         with open(data_file_path, "rb") as ldif_file:
             parser = ldif.LDIFRecordList(ldif_file)
