@@ -135,9 +135,9 @@ class AddEmployeeController(unohelper.Base):
         new_sheet = all_sheets[new_employee_sheet_name]
         cache_sheet = all_sheets["Cache"]
 
-        idnum_cell = new_sheet.getCellByPosition(1, 1)
+        idnum_cell = new_sheet.getCellByPosition(1, 2)
         tempidnum_cell = cache_sheet.getCellByPosition(0, 0)
-        name_cell = new_sheet.getCellByPosition(1, 2)
+        name_cell = new_sheet.getCellByPosition(1, 3)
 
         name_cell.setString(name)
         idnum_cell.setString(id_num)
@@ -211,15 +211,13 @@ class SaveEmployee(unohelper.Base):
         master_sheet = doc.Sheets["Master List"]
         cache_sheet = doc.Sheets["Cache"]
 
-        name_cell_curr = current_sheet.getCellByPosition(1, 1)
         idnum_cell_curr = current_sheet.getCellByPosition(1, 2)
         tempidnum_cell_curr = cache_sheet.getCellByPosition(0, 0)  # A1
-        position_cell_curr = current_sheet.getCellByPosition(1, 3)
+        name_cell_curr = current_sheet.getCellByPosition(1, 3)
 
         new_name = name_cell_curr.getString()
         new_idnum = idnum_cell_curr.getString()
         temp_idnum = tempidnum_cell_curr.getString()
-        new_position = position_cell_curr.getString()
 
         # check look for the current temp id in the masterlist
         found_tempid, id_num_row_temp = self.__search_id_num(temp_idnum)
@@ -229,12 +227,11 @@ class SaveEmployee(unohelper.Base):
             if not found_newid:
                 idnum_cell_master = master_sheet.getCellByPosition(0, id_num_row_temp)
                 name_cell_master = master_sheet.getCellByPosition(1, id_num_row_temp)
-                position_cell_master = master_sheet.getCellByPosition(2, id_num_row_temp)
 
                 idnum_cell_master.setString(new_idnum)
                 tempidnum_cell_curr.setString(new_idnum)
                 name_cell_master.setString(new_name)
-                position_cell_master.setString(new_position)
+
                 new_sheet_name = "{}_{}".format(new_name, new_idnum)
                 current_sheet.Name = new_sheet_name
                 ret = 1
