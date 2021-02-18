@@ -53,7 +53,7 @@ class AddEmployeeDlg(unohelper.Base):
         dialog_model.PositionX = 400
         dialog_model.PositionY = 200
         dialog_model.Width = 190
-        dialog_model.Height = 200
+        dialog_model.Height = 170
         dialog_model.Title = "Add Employee"
         # creating labels and edit texts
         for index, (label_name, text_idname, label_idname) in enumerate(
@@ -82,7 +82,7 @@ class AddEmployeeDlg(unohelper.Base):
         # button
         add_button = dialog_model.createInstance("com.sun.star.awt.UnoControlButtonModel")
         add_button.PositionX = 65
-        add_button.PositionY = 165
+        add_button.PositionY = 140
         add_button.Width = 60
         add_button.Height = 20
         add_button.Label = "Add"
