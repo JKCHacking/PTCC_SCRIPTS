@@ -105,11 +105,11 @@ class AddEmployeeController(unohelper.Base):
     def show(self):
         # create GUI
         self.add_emp_dialog.create_dialog()
-        self.add_listeners()
+        self.__add_listeners()
         self.add_emp_dialog.dialog.execute()
         self.add_emp_dialog.dialog.dispose()
 
-    def add_listeners(self):
+    def __add_listeners(self):
         control = self.add_emp_dialog.dialog.getControl('add_button')
         listener = AddEmployeeButtonListener(self.add_emp_dialog, self)
         control.addActionListener(listener)
@@ -117,8 +117,8 @@ class AddEmployeeController(unohelper.Base):
     def add_to_master(self, id_num, name, position):
         # assuming input data are valid.
         doc = XSCRIPTCONTEXT.getDocument()
-        master_sheet = doc.Sheets[0]
-        row = self.get_last_used_row_by_col(master_sheet, 4, 0)
+        master_sheet = doc.Sheets['Master List']
+        row = self.__get_last_used_row_by_col(master_sheet, 4, 0)
 
         # setting cell values
         cell = master_sheet.getCellByPosition(0, row)
@@ -134,22 +134,41 @@ class AddEmployeeController(unohelper.Base):
         new_employee_sheet_name = "{}_{}".format(name, id_num)
         all_sheets = doc.Sheets
         sheet_count = all_sheets.Count
-        # copy new sheet to the end
+        # create a new sheet based on the template sheet.
         doc.Sheets.copyByName('Employee Information Template', new_employee_sheet_name, sheet_count)
-        new_sheet = all_sheets[sheet_count]
+        new_sheet = all_sheets[new_employee_sheet_name]
+        cache_sheet = all_sheets["Cache"]
 
         name_cell = new_sheet.getCellByPosition(1, 1)
         idnum_cell = new_sheet.getCellByPosition(1, 2)
-        tempidnum_cell = new_sheet.getCellByPosition(13, 6)
+        tempidnum_cell = cache_sheet.getCellByPosition(0, 0)
         position_cell = new_sheet.getCellByPosition(1, 3)
 
         name_cell.setString(name)
         idnum_cell.setString(id_num)
         tempidnum_cell.setString(id_num)
         position_cell.setString(position)
+        self.__add_event_macro(new_employee_sheet_name)
 
-    def get_last_used_row_by_col(self, sheet, start_row, col):
-        # detect last used row
+    def __add_event_macro(self, sheet_name):
+        event_properties = list(range(2))
+        event_properties[0] = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
+        event_properties[0].Name = "EventType"
+        event_properties[0].Value = "Script"
+        event_properties[1] = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
+        event_properties[1].Name = "Script"
+        event_properties[1].Value = "vnd.sun.star.script:macro.py$add_data_to_cache?language=Python&location=user"
+
+        doc = XSCRIPTCONTEXT.getDocument()
+        all_sheets = doc.Sheets
+        new_sheet = all_sheets[sheet_name]
+        uno.invoke(
+            new_sheet.Events,
+            "replaceByName",
+            ("OnFocus", uno.Any("[]com.sun.star.beans.PropertyValue", tuple(event_properties))))
+
+    def __get_last_used_row_by_col(self, sheet, start_row, col):
+        # detect last used row in a specific column.
         row = start_row
         while True:
             cell = sheet.getCellByPosition(col, row)
@@ -158,10 +177,10 @@ class AddEmployeeController(unohelper.Base):
             row += 1
         return row
 
-    def check_id_exists(self, id_num):
+    def __check_id_exists(self, id_num):
         # get the master sheet
         doc = XSCRIPTCONTEXT.getDocument()
-        master_sheet = doc.Sheets[0]
+        master_sheet = doc.Sheets["Master List"]
         id_num_col = 0
         id_num_row = 4
         found = False
@@ -184,7 +203,7 @@ class AddEmployeeController(unohelper.Base):
         elif not id_num.isnumeric():
             MsgBox("ID Number must be numbers.")
             ok = False
-        elif self.check_id_exists(id_num):
+        elif self.__check_id_exists(id_num):
             MsgBox("ID Number already exists.")
             ok = False
         return ok
@@ -196,10 +215,11 @@ class SaveEmployee(unohelper.Base):
         doc = XSCRIPTCONTEXT.getDocument()
         current_sheet = doc.getCurrentController().getActiveSheet()
         master_sheet = doc.Sheets["Master List"]
+        cache_sheet = doc.Sheets["Cache"]
 
         name_cell_curr = current_sheet.getCellByPosition(1, 1)
         idnum_cell_curr = current_sheet.getCellByPosition(1, 2)
-        tempidnum_cell_curr = current_sheet.getCellByPosition(13, 6)
+        tempidnum_cell_curr = cache_sheet.getCellByPosition(0, 0)  # A1
         position_cell_curr = current_sheet.getCellByPosition(1, 3)
 
         new_name = name_cell_curr.getString()
@@ -207,10 +227,11 @@ class SaveEmployee(unohelper.Base):
         temp_idnum = tempidnum_cell_curr.getString()
         new_position = position_cell_curr.getString()
 
-        found_tempid, id_num_row_temp = self.search_id_num(temp_idnum)
+        # check look for the current temp id in the masterlist
+        found_tempid, id_num_row_temp = self.__search_id_num(temp_idnum)
         if found_tempid:
-            found_newid, id_num_row_new = self.search_id_num(new_idnum)
             # check if the new id number exists
+            found_newid, id_num_row_new = self.__search_id_num(new_idnum)
             if not found_newid:
                 idnum_cell_master = master_sheet.getCellByPosition(0, id_num_row_temp)
                 name_cell_master = master_sheet.getCellByPosition(1, id_num_row_temp)
@@ -233,10 +254,15 @@ class SaveEmployee(unohelper.Base):
             ret = -1
         return ret
 
-    def search_id_num(self, id_num):
+    def save(self):
+        doc = XSCRIPTCONTEXT.getDocument()
+        doc.storeToURL(doc.URL, ())
+        MsgBox("Successfully saved and updated.")
+
+    def __search_id_num(self, id_num):
         # get the master sheet
         doc = XSCRIPTCONTEXT.getDocument()
-        master_sheet = doc.Sheets[0]
+        master_sheet = doc.Sheets["Master List"]
         id_num_col = 0
         id_num_row = 4
         found = False
@@ -249,11 +275,6 @@ class SaveEmployee(unohelper.Base):
                 break
             id_num_row += 1
         return found, id_num_row
-
-    def save(self):
-        doc = XSCRIPTCONTEXT.getDocument()
-        doc.storeToURL(doc.URL, ())
-        MsgBox("Successfully saved and updated.")
 
 
 def add_employee(*args):
@@ -280,4 +301,13 @@ def MsgBox(txt):
     mb.show(txt, 0, "Message")
 
 
-g_exportedScripts = (add_employee, save_employee, delete_employee)
+def add_data_to_cache(*args):
+    doc = XSCRIPTCONTEXT.getDocument()
+    current_sheet = doc.getCurrentController().getActiveSheet()
+    cache_sheet = doc.Sheets["Cache"]
+    id_number_cell = current_sheet.getCellByPosition(1, 2)
+    cell_cache = cache_sheet.getCellByPosition(0, 0)
+    cell_cache.setString(id_number_cell.getString())
+
+
+g_exportedScripts = (add_employee, save_employee, delete_employee, add_data_to_cache)
