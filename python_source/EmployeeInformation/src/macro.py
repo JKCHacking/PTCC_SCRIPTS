@@ -324,7 +324,11 @@ class DeleteEmployeeBtnListener(unohelper.Base, XActionListener):
         self.delete_emp_controller = controller
 
     def actionPerformed(self, actionEvent):
-        pass
+        if actionEvent.Source.Model.Name == "yes_btn":
+            self.delete_emp_controller.delete()
+            self.delete_emp_dialog.dialog.endExecute()
+        elif actionEvent.Source.Model.Name == "no_btn":
+            self.delete_emp_dialog.dialog.endExecute()
 
 
 class DeleteEmployeeController(unohelper.Base):
@@ -339,12 +343,92 @@ class DeleteEmployeeController(unohelper.Base):
         self.delete_emp_dialog.dialog.dispose()
 
     def __add_listeners(self):
+        # add yes button listener
         control = self.delete_emp_dialog.dialog.getControl('yes_btn')
         listener = DeleteEmployeeBtnListener(self.delete_emp_dialog, self)
         control.addActionListener(listener)
+        # add no button listener
         control = self.delete_emp_dialog.dialog.getControl('no_btn')
         listener = DeleteEmployeeBtnListener(self.delete_emp_dialog, self)
         control.addActionListener(listener)
+
+    def __get_last_used_row_by_col(self, sheet, start_row, col):
+        # detect last used row in a specific column.
+        row = start_row
+        while True:
+            cell = sheet.getCellByPosition(col, row)
+            if not cell.getString():
+                break
+            row += 1
+        return row
+
+    def __search_id_num(self, id_num):
+        # get the master sheet
+        doc = XSCRIPTCONTEXT.getDocument()
+        master_sheet = doc.Sheets["Master List"]
+        id_num_col = 0
+        id_num_row = 4
+        found = False
+        while True:
+            cell = master_sheet.getCellByPosition(id_num_col, id_num_row)
+            if id_num == cell.getString():
+                found = True
+                break
+            elif not cell.getString():
+                break
+            id_num_row += 1
+        return found, id_num_row
+
+    def delete(self):
+        # copy all the employee data
+        doc = XSCRIPTCONTEXT.getDocument()
+        current_sheet = doc.getCurrentController().getActiveSheet()
+        # employee data
+        id_num = current_sheet.getCellByPosition(1, 2).getString()
+        name = current_sheet.getCellByPosition(1, 3).getString()
+        address = current_sheet.getCellByPosition(1, 4).getString()
+        contact = current_sheet.getCellByPosition(1, 5).getString()
+        birthday = current_sheet.getCellByPosition(1, 6).getString()
+        position = current_sheet.getCellByPosition(1, 7).getString()
+        date_hired = current_sheet.getCellByPosition(1, 8).getString()
+        supervisor = current_sheet.getCellByPosition(1, 9).getString()
+        department = current_sheet.getCellByPosition(1, 10).getString()
+        regularization = current_sheet.getCellByPosition(1, 11).getString()
+        date_of_resignation = current_sheet.getCellByPosition(1, 12).getString()
+        years_of_service = current_sheet.getCellByPosition(1, 13).getString()
+        tin = current_sheet.getCellByPosition(1, 14).getString()
+        sss = current_sheet.getCellByPosition(1, 15).getString()
+        philhealth = current_sheet.getCellByPosition(1, 16).getString()
+        pagibig = current_sheet.getCellByPosition(1, 17).getString()
+
+        # paste in the resigned employee table
+        resigned_sheet = doc.Sheets["Resigned"]
+        row_to_add = self.__get_last_used_row_by_col(resigned_sheet, 4, 0)
+        resigned_sheet.getCellByPosition(0, row_to_add).setString(id_num)
+        resigned_sheet.getCellByPosition(1, row_to_add).setString(name)
+        resigned_sheet.getCellByPosition(2, row_to_add).setString(address)
+        resigned_sheet.getCellByPosition(3, row_to_add).setString(contact)
+        resigned_sheet.getCellByPosition(4, row_to_add).setString(birthday)
+        resigned_sheet.getCellByPosition(5, row_to_add).setString(position)
+        resigned_sheet.getCellByPosition(6, row_to_add).setString(date_hired)
+        resigned_sheet.getCellByPosition(7, row_to_add).setString(supervisor)
+        resigned_sheet.getCellByPosition(8, row_to_add).setString(department)
+        resigned_sheet.getCellByPosition(9, row_to_add).setString(regularization)
+        resigned_sheet.getCellByPosition(10, row_to_add).setString(date_of_resignation)
+        resigned_sheet.getCellByPosition(11, row_to_add).setString(years_of_service)
+        resigned_sheet.getCellByPosition(12, row_to_add).setString(tin)
+        resigned_sheet.getCellByPosition(13, row_to_add).setString(sss)
+        resigned_sheet.getCellByPosition(14, row_to_add).setString(philhealth)
+        resigned_sheet.getCellByPosition(15, row_to_add).setString(pagibig)
+
+        # remove from the master list
+        found, id_num_row = self.__search_id_num(id_num)
+        if found:
+            master_sheet = doc.Sheets["Master List"]
+            rows = master_sheet.getRows()
+            rows.removeByIndex(id_num_row, 1)
+        # delete the sheet
+        doc.Sheets.removeByName(current_sheet.Name)
 
 
 def add_employee(*args):
