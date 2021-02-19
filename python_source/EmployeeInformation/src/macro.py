@@ -151,6 +151,7 @@ class AddEmployeeController(unohelper.Base):
         event_properties[0].Value = "Script"
         event_properties[1] = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
         event_properties[1].Name = "Script"
+        # TODO: CHANGE LOCATION TO "document"
         event_properties[1].Value = "vnd.sun.star.script:macro.py$add_data_to_cache?language=Python&location=user"
 
         doc = XSCRIPTCONTEXT.getDocument()
@@ -452,6 +453,44 @@ def delete_employee(*args):
     delete_emp_ctlr.show()
 
 
+def filter_employee_info(event):
+    column_list = ["ADDRESS",
+                   "CONTACT",
+                   "BIRTHDAY",
+                   "POSITION",
+                   "DATE HIRED",
+                   "SUPERVISOR",
+                   "DEPARTMENT",
+                   "REGULARIZATION",
+                   "DATE OF RESIGNATION",
+                   "YEARS OF SERVICE",
+                   "TIN",
+                   "SSS",
+                   "PHILHEALTH",
+                   "PAG-IBIG"]
+
+    doc = XSCRIPTCONTEXT.getDocument()
+    master_sheet = doc.Sheets["Master List"]
+    # set the empty column to the current selected info
+    selected_info = event.Source.Model.CurrentValue
+    master_sheet.getCellByPosition(2, 3).setString(selected_info)
+
+    # loop through each id and name and get their respective value in their corresponding sheets.
+    row = 4
+    while True:
+        id = master_sheet.getCellByPosition(0, row).getString()
+        name = master_sheet.getCellByPosition(1, row).getString()
+        if not id:
+            break
+        sheet_name = "{}_{}".format(name, id)
+        sheet = doc.Sheets[sheet_name]
+        info_row = column_list.index(selected_info) + 4  # add offset for title, id number and name.
+        info_value = sheet.getCellByPosition(1, info_row).getString()
+        # put it to the respective row
+        master_sheet.getCellByPosition(2, row).setString(info_value)
+        row += 1
+
+
 def MsgBox(txt):
     mb = util.MsgBox(uno.getComponentContext())
     mb.addButton("OK")
@@ -467,4 +506,4 @@ def add_data_to_cache(*args):
     cell_cache.setString(id_number_cell.getString())
 
 
-g_exportedScripts = (add_employee, save_employee, delete_employee, add_data_to_cache)
+g_exportedScripts = (add_employee, save_employee, delete_employee, add_data_to_cache, filter_employee_info)
