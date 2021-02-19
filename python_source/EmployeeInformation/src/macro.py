@@ -395,11 +395,8 @@ class DeleteEmployeeController(unohelper.Base):
         birthday = current_sheet.getCellByPosition(1, 6).getString()
         position = current_sheet.getCellByPosition(1, 7).getString()
         date_hired = current_sheet.getCellByPosition(1, 8).getString()
-        supervisor = current_sheet.getCellByPosition(1, 9).getString()
         department = current_sheet.getCellByPosition(1, 10).getString()
-        regularization = current_sheet.getCellByPosition(1, 11).getString()
         date_of_resignation = current_sheet.getCellByPosition(1, 12).getString()
-        years_of_service = current_sheet.getCellByPosition(1, 13).getString()
         tin = current_sheet.getCellByPosition(1, 14).getString()
         sss = current_sheet.getCellByPosition(1, 15).getString()
         philhealth = current_sheet.getCellByPosition(1, 16).getString()
@@ -415,11 +412,8 @@ class DeleteEmployeeController(unohelper.Base):
         resigned_sheet.getCellByPosition(4, row_to_add).setString(birthday)
         resigned_sheet.getCellByPosition(5, row_to_add).setString(position)
         resigned_sheet.getCellByPosition(6, row_to_add).setString(date_hired)
-        resigned_sheet.getCellByPosition(7, row_to_add).setString(supervisor)
         resigned_sheet.getCellByPosition(8, row_to_add).setString(department)
-        resigned_sheet.getCellByPosition(9, row_to_add).setString(regularization)
         resigned_sheet.getCellByPosition(10, row_to_add).setString(date_of_resignation)
-        resigned_sheet.getCellByPosition(11, row_to_add).setString(years_of_service)
         resigned_sheet.getCellByPosition(12, row_to_add).setString(tin)
         resigned_sheet.getCellByPosition(13, row_to_add).setString(sss)
         resigned_sheet.getCellByPosition(14, row_to_add).setString(philhealth)
@@ -462,11 +456,8 @@ def filter_employee_info(event):
                    "BIRTHDAY",
                    "POSITION",
                    "DATE HIRED",
-                   "SUPERVISOR",
                    "DEPARTMENT",
-                   "REGULARIZATION",
                    "DATE OF RESIGNATION",
-                   "YEARS OF SERVICE",
                    "TIN",
                    "SSS",
                    "PHILHEALTH",
