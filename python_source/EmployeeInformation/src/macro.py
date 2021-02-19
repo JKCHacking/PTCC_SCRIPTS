@@ -220,30 +220,33 @@ class SaveEmployee(unohelper.Base):
         new_idnum = idnum_cell_curr.getString()
         temp_idnum = tempidnum_cell_curr.getString()
 
-        # check look for the current temp id in the masterlist
-        found_tempid, id_num_row_temp = self.__search_id_num(temp_idnum)
-        if found_tempid:
-            # check if the new id number exists
-            found_newid, id_num_row_new = self.__search_id_num(new_idnum)
-            if not found_newid:
-                idnum_cell_master = master_sheet.getCellByPosition(0, id_num_row_temp)
-                name_cell_master = master_sheet.getCellByPosition(1, id_num_row_temp)
-
-                idnum_cell_master.setString(new_idnum)
-                tempidnum_cell_curr.setString(new_idnum)
-                name_cell_master.setString(new_name)
-
-                new_sheet_name = "{}_{}".format(new_name, new_idnum)
-                current_sheet.Name = new_sheet_name
-                ret = 1
-            else:
-                MsgBox("The new ID Number already exists in the Master List")
-                # set it back to the previous value.
-                idnum_cell_curr.setString(temp_idnum)
-                ret = -1
+        if temp_idnum == new_idnum:
+            ret = 1
         else:
-            MsgBox("Employee does not exists in the Master list.")
-            ret = -1
+            # check look for the current temp id in the masterlist
+            found_tempid, id_num_row_temp = self.__search_id_num(temp_idnum)
+            if found_tempid:
+                # check if the new id number exists
+                found_newid, id_num_row_new = self.__search_id_num(new_idnum)
+                if not found_newid:
+                    idnum_cell_master = master_sheet.getCellByPosition(0, id_num_row_temp)
+                    name_cell_master = master_sheet.getCellByPosition(1, id_num_row_temp)
+
+                    idnum_cell_master.setString(new_idnum)
+                    tempidnum_cell_curr.setString(new_idnum)
+                    name_cell_master.setString(new_name)
+
+                    new_sheet_name = "{}_{}".format(new_name, new_idnum)
+                    current_sheet.Name = new_sheet_name
+                    ret = 1
+                else:
+                    MsgBox("The new ID Number already exists in the Master List")
+                    # set it back to the previous value.
+                    idnum_cell_curr.setString(temp_idnum)
+                    ret = -1
+            else:
+                MsgBox("Employee does not exists in the Master list.")
+                ret = -1
         return ret
 
     def save(self):
