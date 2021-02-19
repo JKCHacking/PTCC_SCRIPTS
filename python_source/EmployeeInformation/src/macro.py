@@ -152,7 +152,7 @@ class AddEmployeeController(unohelper.Base):
         event_properties[1] = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
         event_properties[1].Name = "Script"
         # TODO: CHANGE LOCATION TO "document"
-        event_properties[1].Value = "vnd.sun.star.script:macro.py$add_data_to_cache?language=Python&location=user"
+        event_properties[1].Value = "vnd.sun.star.script:macro.py$add_data_to_cache?language=Python&location=document"
 
         doc = XSCRIPTCONTEXT.getDocument()
         all_sheets = doc.Sheets
@@ -485,12 +485,15 @@ def filter_employee_info(event):
         name = master_sheet.getCellByPosition(1, row).getString()
         if not id:
             break
-        sheet_name = "{}_{}".format(name, id)
-        sheet = doc.Sheets[sheet_name]
-        info_row = column_list.index(selected_info) + 4  # add offset for title, id number and name.
-        info_value = sheet.getCellByPosition(1, info_row).getString()
-        # put it to the respective row
-        master_sheet.getCellByPosition(2, row).setString(info_value)
+        if selected_info != "":
+            sheet_name = "{}_{}".format(name, id)
+            sheet = doc.Sheets[sheet_name]
+            info_row = column_list.index(selected_info) + 4  # add offset for title, id number and name.
+            info_value = sheet.getCellByPosition(1, info_row).getString()
+            # put it to the respective row
+            master_sheet.getCellByPosition(2, row).setString(info_value)
+        else:
+            master_sheet.getCellByPosition(2, row).setString("")
         row += 1
 
 
