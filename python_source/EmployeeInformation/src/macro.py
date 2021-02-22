@@ -406,12 +406,12 @@ class DeleteEmployeeController(unohelper.Base):
         birthday = current_sheet.getCellByPosition(1, 6).getString()
         position = current_sheet.getCellByPosition(1, 7).getString()
         date_hired = current_sheet.getCellByPosition(1, 8).getString()
-        department = current_sheet.getCellByPosition(1, 10).getString()
-        date_of_resignation = current_sheet.getCellByPosition(1, 12).getString()
-        tin = current_sheet.getCellByPosition(1, 14).getString()
-        sss = current_sheet.getCellByPosition(1, 15).getString()
-        philhealth = current_sheet.getCellByPosition(1, 16).getString()
-        pagibig = current_sheet.getCellByPosition(1, 17).getString()
+        department = current_sheet.getCellByPosition(1, 9).getString()
+        date_of_resignation = current_sheet.getCellByPosition(1, 10).getString()
+        tin = current_sheet.getCellByPosition(1, 11).getString()
+        sss = current_sheet.getCellByPosition(1, 12).getString()
+        philhealth = current_sheet.getCellByPosition(1, 13).getString()
+        pagibig = current_sheet.getCellByPosition(1, 14).getString()
 
         # paste in the resigned employee table
         resigned_sheet = doc.Sheets["Resigned"]
@@ -423,12 +423,12 @@ class DeleteEmployeeController(unohelper.Base):
         resigned_sheet.getCellByPosition(4, row_to_add).setString(birthday)
         resigned_sheet.getCellByPosition(5, row_to_add).setString(position)
         resigned_sheet.getCellByPosition(6, row_to_add).setString(date_hired)
-        resigned_sheet.getCellByPosition(8, row_to_add).setString(department)
-        resigned_sheet.getCellByPosition(10, row_to_add).setString(date_of_resignation)
-        resigned_sheet.getCellByPosition(12, row_to_add).setString(tin)
-        resigned_sheet.getCellByPosition(13, row_to_add).setString(sss)
-        resigned_sheet.getCellByPosition(14, row_to_add).setString(philhealth)
-        resigned_sheet.getCellByPosition(15, row_to_add).setString(pagibig)
+        resigned_sheet.getCellByPosition(7, row_to_add).setString(department)
+        resigned_sheet.getCellByPosition(8, row_to_add).setString(date_of_resignation)
+        resigned_sheet.getCellByPosition(9, row_to_add).setString(tin)
+        resigned_sheet.getCellByPosition(10, row_to_add).setString(sss)
+        resigned_sheet.getCellByPosition(11, row_to_add).setString(philhealth)
+        resigned_sheet.getCellByPosition(12, row_to_add).setString(pagibig)
 
         # remove from the master list
         found, id_num_row = self.__search_id_num(id_num)
