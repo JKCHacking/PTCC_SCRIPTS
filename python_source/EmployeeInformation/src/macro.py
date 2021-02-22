@@ -429,25 +429,177 @@ class DeleteEmployeeController(unohelper.Base):
         doc.Sheets.removeByName(current_sheet.Name)
 
 
-def add_employee(*args):
+class RestoreEmployeeDlg(unohelper.Base):
+    def __init__(self, context):
+        self.ctx = context
+        self.dialog = None
+
+    def create_dialog(self):
+        smgr = self.ctx.ServiceManager
+        self.dialog = smgr.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", self.ctx)
+        dialog_model = smgr.createInstanceWithContext('com.sun.star.awt.UnoControlDialogModel', self.ctx)
+        dialog_model.PositionX = 400
+        dialog_model.PositionY = 200
+        dialog_model.Width = 200
+        dialog_model.Height = 70
+        dialog_model.Title = "Restore Employee"
+
+        label = dialog_model.createInstance("com.sun.star.awt.UnoControlFixedTextModel")
+        label.PositionX = 15
+        label.PositionY = 20
+        label.Width = 30
+        label.Height = 10
+        label.Name = "idnum_label"
+        label.Label = "ID Number:"
+
+        idnum_text = dialog_model.createInstance("com.sun.star.awt.UnoControlEditModel")
+        idnum_text.PositionX = label.PositionX + label.Width + 2.5
+        idnum_text.PositionY = label.PositionY - 2.5
+        idnum_text.Width = 125
+        idnum_text.Height = 15
+        idnum_text.Name = "idnum_text"
+
+        ok_btn = dialog_model.createInstance("com.sun.star.awt.UnoControlButtonModel")
+        ok_btn.PositionX = idnum_text.PositionX + (idnum_text.Width / 4)
+        ok_btn.PositionY = idnum_text.PositionY + idnum_text.Height + 10
+        ok_btn.Width = 50
+        ok_btn.Height = 15
+        ok_btn.Name = "ok_btn"
+        ok_btn.Label = "OK"
+
+        dialog_model.insertByName("idnum_label", label)
+        dialog_model.insertByName("idnum_text", idnum_text)
+        dialog_model.insertByName("ok_btn", ok_btn)
+        # set the dialog model
+        self.dialog.setModel(dialog_model)
+        # create a peer
+        toolkit = smgr.createInstanceWithContext("com.sun.star.awt.ExtToolkit", self.ctx)
+        self.dialog.createPeer(toolkit, None)
+
+
+class RestoreEmployeeBtnListener(unohelper.Base, XActionListener):
+    def __init__(self, dialog, controller):
+        self.restore_emp_dialog = dialog
+        self.restore_emp_controller = controller
+
+    def actionPerformed(self, event):
+        idnum = self.restore_emp_dialog.dialog.getModel().getByName("idnum_text").Text
+        self.restore_emp_controller.restore(idnum)
+        self.restore_emp_dialog.dialog.endExecute()
+
+
+class RestoreEmployeeController(unohelper.Base):
+    def __init__(self, dialog):
+        self.restore_emp_dialog = dialog
+
+    def show(self):
+        # create GUI
+        self.restore_emp_dialog.create_dialog()
+        self.__add_listeners()
+        self.restore_emp_dialog.dialog.execute()
+        self.restore_emp_dialog.dialog.dispose()
+
+    def __add_listeners(self):
+        # add yes button listener
+        control = self.restore_emp_dialog.dialog.getControl('ok_btn')
+        listener = RestoreEmployeeBtnListener(self.restore_emp_dialog, self)
+        control.addActionListener(listener)
+
+    def __search_id_num(self, id_num):
+        # get the master sheet
+        doc = XSCRIPTCONTEXT.getDocument()
+        resigned_sheet = doc.Sheets["Resigned"]
+        id_num_col = 0
+        id_num_row = 4
+        found = False
+        while True:
+            cell = resigned_sheet.getCellByPosition(id_num_col, id_num_row)
+            if id_num == cell.getString():
+                found = True
+                break
+            elif not cell.getString():
+                break
+            id_num_row += 1
+        return found, id_num_row
+
+    def restore(self, idnum):
+        # locate employee using id number
+        found, row = self.__search_id_num(idnum)
+        if found:
+            # copy data
+            doc = XSCRIPTCONTEXT.getDocument()
+            resigned_sheet = doc.Sheets["Resigned"]
+            id_number = idnum
+            name = resigned_sheet.getCellByPosition(1, row).getString()
+            address = resigned_sheet.getCellByPosition(2, row).getString()
+            contact = resigned_sheet.getCellByPosition(3, row).getString()
+            birthday = resigned_sheet.getCellByPosition(4, row).getString()
+            position = resigned_sheet.getCellByPosition(5, row).getString()
+            date_hired = resigned_sheet.getCellByPosition(6, row).getString()
+            department = resigned_sheet.getCellByPosition(7, row).getString()
+            date_of_resignation = resigned_sheet.getCellByPosition(8, row).getString()
+            tin = resigned_sheet.getCellByPosition(9, row).getString()
+            sss = resigned_sheet.getCellByPosition(10, row).getString()
+            philhealth = resigned_sheet.getCellByPosition(11, row).getString()
+            pagibig = resigned_sheet.getCellByPosition(12, row).getString()
+
+            add_employee_controller = AddEmployeeController(None)
+            # create new employee sheet
+            add_employee_controller.create_new_employee_sheet(id_number, name)
+            # add data to sheet
+            new_sheet_name = "{}_{}".format(name, id_number)
+            new_sheet = doc.Sheets[new_sheet_name]
+            new_sheet.getCellByPosition(1, 2).setString(id_number)
+            new_sheet.getCellByPosition(1, 3).setString(name)
+            new_sheet.getCellByPosition(1, 4).setString(address)
+            new_sheet.getCellByPosition(1, 5).setString(contact)
+            new_sheet.getCellByPosition(1, 6).setString(birthday)
+            new_sheet.getCellByPosition(1, 7).setString(position)
+            new_sheet.getCellByPosition(1, 8).setString(date_hired)
+            new_sheet.getCellByPosition(1, 9).setString(department)
+            new_sheet.getCellByPosition(1, 10).setString(date_of_resignation)
+            new_sheet.getCellByPosition(1, 11).setString(tin)
+            new_sheet.getCellByPosition(1, 12).setString(sss)
+            new_sheet.getCellByPosition(1, 13).setString(philhealth)
+            new_sheet.getCellByPosition(1, 14).setString(pagibig)
+            # add data to masterlist
+            add_employee_controller.add_to_master(idnum, name)
+            # delete entry in resigned sheet
+            rows = resigned_sheet.getRows()
+            rows.removeByIndex(row, 1)
+            # TODO: sort all employee sheet tab
+        else:
+            MsgBox("Cannot find ID Number.")
+
+# ============================= FUNCTIONS ===========================================
+
+
+def add_employee():
     ctx = uno.getComponentContext()
     add_emp_dlg = AddEmployeeDlg(ctx)
     add_emp_ctlr = AddEmployeeController(add_emp_dlg)
     add_emp_ctlr.show()
 
 
-def save_employee(*args):
+def save_employee():
     save_emp_ctrl = SaveEmployee()
     ret = save_emp_ctrl.update()
     if ret == 1:
         save_emp_ctrl.save()
 
 
-def delete_employee(*args):
+def delete_employee():
     ctx = uno.getComponentContext()
     delete_emp_dlg = DeleteEmployeeDlg(ctx)
     delete_emp_ctlr = DeleteEmployeeController(delete_emp_dlg)
     delete_emp_ctlr.show()
+
+
+def restore_employee():
+    ctx = uno.getComponentContext()
+    restore_emp_dlg = RestoreEmployeeDlg(ctx)
+    restore_emp_ctlr = RestoreEmployeeController(restore_emp_dlg)
+    restore_emp_ctlr.show()
 
 
 def filter_employee_info(event):
@@ -503,4 +655,5 @@ def add_data_to_cache(*args):
     cell_cache.setString(id_number_cell.getString())
 
 
-g_exportedScripts = (add_employee, save_employee, delete_employee, add_data_to_cache, filter_employee_info)
+g_exportedScripts = (add_employee, save_employee, delete_employee, add_data_to_cache, filter_employee_info,
+                     restore_employee)
