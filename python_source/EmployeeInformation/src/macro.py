@@ -153,7 +153,6 @@ class AddEmployeeController(unohelper.Base):
         event_properties[0].Value = "Script"
         event_properties[1] = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
         event_properties[1].Name = "Script"
-        # TODO: CHANGE LOCATION TO "document"
         event_properties[1].Value = "vnd.sun.star.script:macro.py$add_data_to_cache?language=Python&location=document"
 
         doc = XSCRIPTCONTEXT.getDocument()
@@ -496,8 +495,13 @@ class RestoreEmployeeBtnListener(unohelper.Base, XActionListener):
 
     def actionPerformed(self, event):
         idnum = self.restore_emp_dialog.dialog.getModel().getByName("idnum_text").Text
-        self.restore_emp_controller.restore(idnum)
-        self.restore_emp_dialog.dialog.endExecute()
+        # locate employee using id number
+        found, row = self.__search_id_num(idnum)
+        if found:
+            self.restore_emp_controller.restore(idnum, row)
+            self.restore_emp_dialog.dialog.endExecute()
+        else:
+            MsgBox("Cannot find ID Number.")
 
 
 class RestoreEmployeeController(unohelper.Base):
@@ -534,54 +538,48 @@ class RestoreEmployeeController(unohelper.Base):
             id_num_row += 1
         return found, id_num_row
 
-    def restore(self, idnum):
-        # locate employee using id number
-        found, row = self.__search_id_num(idnum)
-        if found:
-            # copy data
-            doc = XSCRIPTCONTEXT.getDocument()
-            resigned_sheet = doc.Sheets["Resigned"]
-            id_number = idnum
-            name = resigned_sheet.getCellByPosition(1, row).getString()
-            address = resigned_sheet.getCellByPosition(2, row).getString()
-            contact = resigned_sheet.getCellByPosition(3, row).getString()
-            birthday = resigned_sheet.getCellByPosition(4, row).getString()
-            position = resigned_sheet.getCellByPosition(5, row).getString()
-            date_hired = resigned_sheet.getCellByPosition(6, row).getString()
-            department = resigned_sheet.getCellByPosition(7, row).getString()
-            date_of_resignation = resigned_sheet.getCellByPosition(8, row).getString()
-            tin = resigned_sheet.getCellByPosition(9, row).getString()
-            sss = resigned_sheet.getCellByPosition(10, row).getString()
-            philhealth = resigned_sheet.getCellByPosition(11, row).getString()
-            pagibig = resigned_sheet.getCellByPosition(12, row).getString()
+    def restore(self, idnum, row):
+        # copy data
+        doc = XSCRIPTCONTEXT.getDocument()
+        resigned_sheet = doc.Sheets["Resigned"]
+        id_number = idnum
+        name = resigned_sheet.getCellByPosition(1, row).getString()
+        address = resigned_sheet.getCellByPosition(2, row).getString()
+        contact = resigned_sheet.getCellByPosition(3, row).getString()
+        birthday = resigned_sheet.getCellByPosition(4, row).getString()
+        position = resigned_sheet.getCellByPosition(5, row).getString()
+        date_hired = resigned_sheet.getCellByPosition(6, row).getString()
+        department = resigned_sheet.getCellByPosition(7, row).getString()
+        date_of_resignation = resigned_sheet.getCellByPosition(8, row).getString()
+        tin = resigned_sheet.getCellByPosition(9, row).getString()
+        sss = resigned_sheet.getCellByPosition(10, row).getString()
+        philhealth = resigned_sheet.getCellByPosition(11, row).getString()
+        pagibig = resigned_sheet.getCellByPosition(12, row).getString()
 
-            add_employee_controller = AddEmployeeController(None)
-            # create new employee sheet
-            add_employee_controller.create_new_employee_sheet(id_number, name)
-            # add data to sheet
-            new_sheet_name = "{}_{}".format(name, id_number)
-            new_sheet = doc.Sheets[new_sheet_name]
-            new_sheet.getCellByPosition(1, 2).setString(id_number)
-            new_sheet.getCellByPosition(1, 3).setString(name)
-            new_sheet.getCellByPosition(1, 4).setString(address)
-            new_sheet.getCellByPosition(1, 5).setString(contact)
-            new_sheet.getCellByPosition(1, 6).setString(birthday)
-            new_sheet.getCellByPosition(1, 7).setString(position)
-            new_sheet.getCellByPosition(1, 8).setString(date_hired)
-            new_sheet.getCellByPosition(1, 9).setString(department)
-            new_sheet.getCellByPosition(1, 10).setString(date_of_resignation)
-            new_sheet.getCellByPosition(1, 11).setString(tin)
-            new_sheet.getCellByPosition(1, 12).setString(sss)
-            new_sheet.getCellByPosition(1, 13).setString(philhealth)
-            new_sheet.getCellByPosition(1, 14).setString(pagibig)
-            # add data to masterlist
-            add_employee_controller.add_to_master(idnum, name)
-            # delete entry in resigned sheet
-            rows = resigned_sheet.getRows()
-            rows.removeByIndex(row, 1)
-            # TODO: sort all employee sheet tab
-        else:
-            MsgBox("Cannot find ID Number.")
+        add_employee_controller = AddEmployeeController(None)
+        # create new employee sheet
+        add_employee_controller.create_new_employee_sheet(id_number, name)
+        # add data to sheet
+        new_sheet_name = "{}_{}".format(name, id_number)
+        new_sheet = doc.Sheets[new_sheet_name]
+        new_sheet.getCellByPosition(1, 2).setString(id_number)
+        new_sheet.getCellByPosition(1, 3).setString(name)
+        new_sheet.getCellByPosition(1, 4).setString(address)
+        new_sheet.getCellByPosition(1, 5).setString(contact)
+        new_sheet.getCellByPosition(1, 6).setString(birthday)
+        new_sheet.getCellByPosition(1, 7).setString(position)
+        new_sheet.getCellByPosition(1, 8).setString(date_hired)
+        new_sheet.getCellByPosition(1, 9).setString(department)
+        new_sheet.getCellByPosition(1, 10).setString(date_of_resignation)
+        new_sheet.getCellByPosition(1, 11).setString(tin)
+        new_sheet.getCellByPosition(1, 12).setString(sss)
+        new_sheet.getCellByPosition(1, 13).setString(philhealth)
+        new_sheet.getCellByPosition(1, 14).setString(pagibig)
+        # add data to masterlist
+        add_employee_controller.add_to_master(idnum, name)
+        # delete entry in resigned sheet
+        rows = resigned_sheet.getRows()
+        rows.removeByIndex(row, 1)
 
 # ============================= FUNCTIONS ===========================================
 
