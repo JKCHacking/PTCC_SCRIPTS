@@ -496,7 +496,7 @@ class RestoreEmployeeBtnListener(unohelper.Base, XActionListener):
     def actionPerformed(self, event):
         idnum = self.restore_emp_dialog.dialog.getModel().getByName("idnum_text").Text
         # locate employee using id number
-        found, row = self.__search_id_num(idnum)
+        found, row = self.restore_emp_controller.search_id_num(idnum)
         if found:
             self.restore_emp_controller.restore(idnum, row)
             self.restore_emp_dialog.dialog.endExecute()
@@ -521,7 +521,7 @@ class RestoreEmployeeController(unohelper.Base):
         listener = RestoreEmployeeBtnListener(self.restore_emp_dialog, self)
         control.addActionListener(listener)
 
-    def __search_id_num(self, id_num):
+    def search_id_num(self, id_num):
         # get the master sheet
         doc = XSCRIPTCONTEXT.getDocument()
         resigned_sheet = doc.Sheets["Resigned"]
