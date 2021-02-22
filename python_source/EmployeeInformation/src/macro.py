@@ -130,8 +130,10 @@ class AddEmployeeController(unohelper.Base):
         new_employee_sheet_name = "{}_{}".format(name, id_num)
         all_sheets = doc.Sheets
         sheet_count = all_sheets.Count
+        # get the alphabetical position of the new sheet created
+        position = self.__get_sheet_index(new_employee_sheet_name, all_sheets) + 4  # 4 permanent sheets
         # create a new sheet based on the template sheet.
-        doc.Sheets.copyByName('Employee Information Template', new_employee_sheet_name, sheet_count)
+        doc.Sheets.copyByName('Employee Information Template', new_employee_sheet_name, position)
         new_sheet = all_sheets[new_employee_sheet_name]
         cache_sheet = all_sheets["Cache"]
 
@@ -202,6 +204,16 @@ class AddEmployeeController(unohelper.Base):
             MsgBox("ID Number already exists.")
             ok = False
         return ok
+
+    def __get_sheet_index(self, sheet_name, all_sheets):
+        employee_sheet_name_list = []
+        for sheet in all_sheets:
+            if sheet.Name != "Resigned" and sheet.Name != "Master List" \
+                    and sheet.Name != "Employee Information Template" and sheet.Name != "Cache":
+                employee_sheet_name_list.append(sheet.Name)
+        employee_sheet_name_list.append(sheet_name)
+        sorted_sheet_name_list = sorted(employee_sheet_name_list)
+        return sorted_sheet_name_list.index(sheet_name)
 
 
 class SaveEmployee(unohelper.Base):
@@ -574,28 +586,28 @@ class RestoreEmployeeController(unohelper.Base):
 # ============================= FUNCTIONS ===========================================
 
 
-def add_employee():
+def add_employee(*args):
     ctx = uno.getComponentContext()
     add_emp_dlg = AddEmployeeDlg(ctx)
     add_emp_ctlr = AddEmployeeController(add_emp_dlg)
     add_emp_ctlr.show()
 
 
-def save_employee():
+def save_employee(*args):
     save_emp_ctrl = SaveEmployee()
     ret = save_emp_ctrl.update()
     if ret == 1:
         save_emp_ctrl.save()
 
 
-def delete_employee():
+def delete_employee(*args):
     ctx = uno.getComponentContext()
     delete_emp_dlg = DeleteEmployeeDlg(ctx)
     delete_emp_ctlr = DeleteEmployeeController(delete_emp_dlg)
     delete_emp_ctlr.show()
 
 
-def restore_employee():
+def restore_employee(*args):
     ctx = uno.getComponentContext()
     restore_emp_dlg = RestoreEmployeeDlg(ctx)
     restore_emp_ctlr = RestoreEmployeeController(restore_emp_dlg)
