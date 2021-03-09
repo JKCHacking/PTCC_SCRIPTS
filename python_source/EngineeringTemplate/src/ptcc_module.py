@@ -1,5 +1,6 @@
 from sympy import *
-from IPython.display import display, Latex, Markdown
+import sympy.physics.units as u
+from IPython.display import display, Markdown
 import pint
 
 
@@ -17,14 +18,23 @@ class EquationWriter:
         self.font_size = font_size
         self.equation_namespace = {}
 
-    def define(self, equation, evaluate=False, num_decimal=2, inline=False):
-        out_latex = ""
+    def define(self, equation, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
         # annotation, pref_units, decimals, printout, inline
         left_expr, right_expr = equation.split("=")
         left_expr = left_expr.strip()
         right_expr = right_expr.strip()
+
+        if pref_unit != "dimensionless":
+            unit_obj = self.__unitstr2unitsympy(pref_unit)
+            if unit_obj is None:
+                return
+        else:
+            unit_obj = 1
+
         # convert a string equation to a sympy equation
-        sym_eq = Eq(parse_expr(left_expr), parse_expr(right_expr))
+        parse_lhs = parse_expr(left_expr)
+        parse_rhs = parse_expr(right_expr) * unit_obj
+        sym_eq = Eq(parse_lhs, parse_rhs)
 
         # convert sympy equation to latex equation.
         eq_latex = self.__convert_to_latex(sym_eq)
@@ -54,9 +64,25 @@ class EquationWriter:
         for sym_var in var_list:
             sym_var_str = str(sym_var)
             var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
-        res = equation.subs(var_sub_dict).evalf()
-        res = self.__round_expr(res, num_decimal)
-        return res
+        res_equation = equation.subs(var_sub_dict).evalf()
+        res_equation = self.__round_expr(res_equation, num_decimal)
+        if len(res_equation.rhs.atoms(Number)) == 1:  # this means its a y = x * unit
+            # simplify it more using pint
+            # convert sym eq to pint eq
+            pint_eq = UNIT(str(res_equation.rhs)).to_compact().to_reduced_units()
+            # convert back to sym_eq
+            sym_unit = self.__unitstr2unitsympy(str(pint_eq.units))
+            res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)) * sym_unit)
+        return res_equation
+
+    def __unitstr2unitsympy(self, str_unit):
+        unit_obj = None
+        try:
+            # converting string unit input to a Sympy unit object
+            unit_obj = eval("u.{}".format(str_unit))
+        except (AttributeError, SyntaxError):
+            print("You have entered an invalid unit. Units are case-sensitive.")
+        return unit_obj
 
     def __round_expr(self, expr, num_digits):
         return expr.xreplace({n: round(n, num_digits) for n in expr.atoms(Number)})
