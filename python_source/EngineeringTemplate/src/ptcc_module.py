@@ -14,7 +14,7 @@ class EquationWriter:
     def __init__(self, h_space, font_name, font_size):
         self.h_space = str(h_space) + "in"
         self.font_name = font_name
-        self.font_size = font_size + "pt"
+        self.font_size = str(font_size) + "pt"
         self.equation_namespace = {}
         self.output = "<table>"
 
