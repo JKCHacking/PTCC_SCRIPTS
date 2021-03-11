@@ -8,18 +8,23 @@ UNIT = pint.UnitRegistry()
 UNIT.default_system = 'SI'   # setting default unit system
                              # choices are ['Planck', 'SI', 'US',
                              # 'atomic', 'cgs', 'imperial', 'mks']
-# LATEX_CONTENT = ["\\begin{align}", "\\end{align}"]
 
 
 class EquationWriter:
     def __init__(self, h_space, font_style, font_size):
-        self.h_space = h_space
+        self.h_space = str(h_space) + "in"
         self.font_style = font_style
         self.font_size = font_size
         self.equation_namespace = {}
+        self.output = "<table style='background-color:#ffffff'>"
 
-    def define(self, equation, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
-        # annotation, pref_units, decimals, printout, inline
+    def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
+        primary_annotation = ""
+        secondary_annotations = ""
+        if annots:
+            primary_annotation = annots[0]
+            secondary_annotations = "<br>".join(annots[1:])
+
         left_expr, right_expr = equation.split("=")
         left_expr = left_expr.strip()
         right_expr = right_expr.strip()
@@ -45,17 +50,31 @@ class EquationWriter:
             self.__add_eq_to_namespace(res_eq)
             res_eq_latex = self.__convert_to_latex(res_eq)
             if inline:
-                res_eq = res_eq_latex.split("$")[1]
-                eq = eq_latex.split("$")[1]
                 res_eq_rhs = res_eq.split("=")[1].strip()
-                out_latex = "${} = {}$".format(eq, res_eq_rhs)
+                out_latex = "{} = {}".format(eq_latex, res_eq_rhs)
+                output_local = self.__create_markdown(out_latex,
+                                                      self.h_space,
+                                                      primary_annotation,
+                                                      secondary_annotations)
             else:
-                out_latex = "{}<br>{}".format(eq_latex, res_eq_latex)
+                output_local = self.__create_markdown(eq_latex,
+                                                      self.h_space,
+                                                      primary_annotation,
+                                                      secondary_annotations)
+                output_local += self.__create_markdown(res_eq_latex, self.h_space)
         else:
             # add the equation to the namespace
             self.__add_eq_to_namespace(sym_eq)
-            out_latex = eq_latex
-        display(Markdown(out_latex))
+            output_local = self.__create_markdown(eq_latex,
+                                                  self.h_space,
+                                                  primary_annotation,
+                                                  secondary_annotations)
+        self.output += output_local
+
+    def show(self):
+        self.output += "</table>"
+        display(Markdown(self.output))
+        self.output = "<table>"
 
     def __evaluate(self, equation, num_decimal):
         # get only the needed variables for substitution
@@ -66,9 +85,9 @@ class EquationWriter:
             var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
         res_equation = equation.subs(var_sub_dict).evalf()
         res_equation = self.__round_expr(res_equation, num_decimal)
-        if len(res_equation.rhs.atoms(Number)) == 1:  # this means its a y = x * unit
-            # simplify it more using pint
-            # convert sym eq to pint eq
+        # this means its a y = x * unit
+        if len(res_equation.rhs.atoms(Number)) == 1 and len(res_equation.rhs.atoms(Symbol)) == 2:
+            # simplify it more using pint, convert sym eq to pint eq
             pint_eq = UNIT(str(res_equation.rhs)).to_compact().to_reduced_units()
             # convert back to sym_eq
             sym_unit = self.__unitstr2unitsympy(str(pint_eq.units))
@@ -99,7 +118,7 @@ class EquationWriter:
         =======
             res_latex:latex - equation in latex
         '''
-        res_latex = "${}$".format(latex(s, mul_symbol='dot'))
+        res_latex = "{}".format(latex(s, mul_symbol='dot'))
         return res_latex
 
     def __add_eq_to_namespace(self, equation):
@@ -115,6 +134,14 @@ class EquationWriter:
             None
         '''
         self.equation_namespace.update({str(equation.lhs): equation.rhs})
+
+    def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot=""):
+        eq_markdown = "<tr style='background-color:#ffffff;'>"\
+                        "<td style='vertical-align:top;text-align:left;'>${}$</td>"\
+                        "<td>$\\hspace{{{}}}$</td>"\
+                        "<td style='text-align:left;'>{} <br> {}</td>"\
+                      "</tr>".format(eq_str, hspace, primary_annot, secondary_annot)
+        return eq_markdown
 
 
 class HeaderWriter:
