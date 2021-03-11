@@ -16,7 +16,7 @@ class EquationWriter:
         self.font_style = font_style
         self.font_size = font_size
         self.equation_namespace = {}
-        self.output = "<table style='background-color:#ffffff'>"
+        self.output = "<table>"
 
     def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
         primary_annotation = ""
