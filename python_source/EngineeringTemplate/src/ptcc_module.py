@@ -11,10 +11,10 @@ UNIT.default_system = 'SI'   # setting default unit system
 
 
 class EquationWriter:
-    def __init__(self, h_space, font_style, font_size):
+    def __init__(self, h_space, font_name, font_size):
         self.h_space = str(h_space) + "in"
-        self.font_style = font_style
-        self.font_size = font_size
+        self.font_name = font_name
+        self.font_size = font_size + "pt"
         self.equation_namespace = {}
         self.output = "<table>"
 
@@ -137,10 +137,18 @@ class EquationWriter:
 
     def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot=""):
         eq_markdown = "<tr style='background-color:#ffffff;'>"\
-                        "<td style='vertical-align:top;text-align:left;'>${}$</td>"\
-                        "<td>$\\hspace{{{}}}$</td>"\
-                        "<td style='text-align:left;'>{} <br> {}</td>"\
-                      "</tr>".format(eq_str, hspace, primary_annot, secondary_annot)
+                            "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial; font-size:{font_size}'>" \
+                                "${eq_str}$" \
+                            "</td>"\
+                            "<td>" \
+                                "$\\hspace{{{hspace}}}$" \
+                            "</td>"\
+                            "<td style='text-align:left;font-family:{font_name}, Arial;'>" \
+                                "<div style='font-size:{font_size};'>{p_annot}</div>" \
+                                "<div style='font-size:{font_size}; font-style:italic;'>{s_annots}</div>" \
+                            "</td>"\
+                      "</tr>".format(eq_str=eq_str, hspace=hspace, p_annot=primary_annot, s_annots=secondary_annot,
+                                     font_name=self.font_name, font_size=self.font_size)
         return eq_markdown
 
 
