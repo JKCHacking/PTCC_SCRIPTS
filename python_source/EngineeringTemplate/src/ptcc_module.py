@@ -137,7 +137,7 @@ class EquationWriter:
 
     def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot=""):
         eq_markdown = "<tr style='background-color:#ffffff;'>"\
-                            "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial; font-size:{font_size}'>" \
+                            "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial;'>" \
                                 "${eq_str}$" \
                             "</td>"\
                             "<td>" \
