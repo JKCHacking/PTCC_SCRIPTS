@@ -41,7 +41,7 @@ class EquationWriter:
         parse_rhs = parse_expr(right_expr) * unit_obj
         sym_eq = Eq(parse_lhs, parse_rhs)
 
-        # convert sympy equation to latex equation.
+        # convert sympy equation to latex string.
         eq_latex = self.__convert_to_latex(sym_eq)
 
         if evaluate:
@@ -84,6 +84,7 @@ class EquationWriter:
             sym_var_str = str(sym_var)
             var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
         res_equation = equation.subs(var_sub_dict).evalf()
+        res_equation = res_equation.doit()
         res_equation = self.__round_expr(res_equation, num_decimal)
         # this means its a y = x * unit
         if len(res_equation.rhs.atoms(Number)) == 1 and len(res_equation.rhs.atoms(Symbol)) == 2:
@@ -100,7 +101,7 @@ class EquationWriter:
             # converting string unit input to a Sympy unit object
             unit_obj = eval("u.{}".format(str_unit))
         except (AttributeError, SyntaxError):
-            print("You have entered an invalid unit. Units are case-sensitive.")
+            print("You have entered an invalid unit: {}. Note: Units are case-sensitive.".format(str_unit))
         return unit_obj
 
     def __round_expr(self, expr, num_digits):
@@ -116,7 +117,7 @@ class EquationWriter:
             s:sympy equation - equation in sympy.
         returns
         =======
-            res_latex:latex - equation in latex
+            res_latex:string - equation in latex
         '''
         res_latex = "{}".format(latex(s, mul_symbol='dot'))
         return res_latex
