@@ -2,6 +2,7 @@ from sympy import *
 import sympy.physics.units as u
 from IPython.display import display, Markdown
 import pint
+from pint.errors import UndefinedUnitError
 
 
 UNIT = pint.UnitRegistry()
@@ -19,6 +20,10 @@ class EquationWriter:
         self.output = "<table>"
 
     def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
+        if equation.count("=") != 1:
+            print("You entered an invalid Equation.")
+            return
+
         primary_annotation = ""
         secondary_annotations = ""
         if annots:
@@ -37,15 +42,20 @@ class EquationWriter:
             unit_obj = 1
 
         # convert a string equation to a sympy equation
-        parse_lhs = parse_expr(left_expr)
-        parse_rhs = parse_expr(right_expr) * unit_obj
-        sym_eq = Eq(parse_lhs, parse_rhs)
+        try:
+            parse_lhs = parse_expr(left_expr)
+            parse_rhs = parse_expr(right_expr) * unit_obj
+        except SyntaxError:
+            print("You have entered an invalid equation.")
+            return
 
+        sym_eq = Eq(parse_lhs, parse_rhs)
         # convert sympy equation to latex string.
         eq_latex = self.__convert_to_latex(sym_eq)
 
         if evaluate:
-            res_eq = self.__evaluate(sym_eq, num_decimal)
+            res_eq = self.__evaluate(sym_eq)
+            res_eq = self.__round_expr(res_eq, num_decimal)
             # update the equation namespace
             self.__add_eq_to_namespace(res_eq)
             res_eq_latex = self.__convert_to_latex(res_eq)
@@ -63,6 +73,7 @@ class EquationWriter:
                                                       secondary_annotations)
                 output_local += self.__create_markdown(res_eq_latex, self.h_space)
         else:
+            sym_eq = self.__round_expr(sym_eq, num_decimal)
             # add the equation to the namespace
             self.__add_eq_to_namespace(sym_eq)
             output_local = self.__create_markdown(eq_latex,
@@ -76,23 +87,32 @@ class EquationWriter:
         display(Markdown(self.output))
         self.output = "<table>"
 
-    def __evaluate(self, equation, num_decimal):
+    def __evaluate(self, equation):
         # get only the needed variables for substitution
         var_list = list(equation.rhs.atoms(Symbol))
         var_sub_dict = {}
         for sym_var in var_list:
-            sym_var_str = str(sym_var)
-            var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
+            try:
+                sym_var_str = str(sym_var)
+                var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
+            except KeyError:
+                pass
         res_equation = equation.subs(var_sub_dict).evalf()
+        # added redundancy for integral, derivatives, etc.
         res_equation = res_equation.doit()
-        res_equation = self.__round_expr(res_equation, num_decimal)
-        # this means its a y = x * unit
-        if len(res_equation.rhs.atoms(Number)) == 1 and len(res_equation.rhs.atoms(Symbol)) == 2:
-            # simplify it more using pint, convert sym eq to pint eq
-            pint_eq = UNIT(str(res_equation.rhs)).to_compact().to_reduced_units()
-            # convert back to sym_eq
-            sym_unit = self.__unitstr2unitsympy(str(pint_eq.units))
-            res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)) * sym_unit)
+        if len(res_equation.rhs.atoms(u.Quantity)) != 0:
+            try:
+                # simplify it more using pint, convert sym eq to pint eq
+                pint_eq = UNIT(str(res_equation.rhs)).to_compact().to_reduced_units()
+
+                # convert back to sym_eq
+                if str(pint_eq.units) != "dimensionless":
+                    sym_unit = self.__unitstr2unitsympy(str(pint_eq.units))
+                    res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)) * sym_unit)
+                else:
+                    res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)))
+            except UndefinedUnitError:
+                pass
         return res_equation
 
     def __unitstr2unitsympy(self, str_unit):
@@ -104,8 +124,8 @@ class EquationWriter:
             print("You have entered an invalid unit: {}. Note: Units are case-sensitive.".format(str_unit))
         return unit_obj
 
-    def __round_expr(self, expr, num_digits):
-        return expr.xreplace({n: round(n, num_digits) for n in expr.atoms(Number)})
+    def __round_expr(self, equation, num_digits):
+        return equation.xreplace({n: round(n, num_digits) for n in equation.atoms(Number)})
 
     def __convert_to_latex(self, s):
         '''
@@ -138,7 +158,7 @@ class EquationWriter:
 
     def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot=""):
         eq_markdown = "<tr style='background-color:#ffffff;'>"\
-                            "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial;'>" \
+                            "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial; font-size: {font_size};'>" \
                                 "${eq_str}$" \
                             "</td>"\
                             "<td>" \
