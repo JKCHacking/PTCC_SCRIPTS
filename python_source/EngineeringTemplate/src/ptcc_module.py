@@ -20,6 +20,30 @@ class EquationWriter:
         self.output = "<table>"
 
     def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
+        """
+            Desc
+            ====
+            Interface method for defining and simplifying equations.
+
+            Parameters
+            ==========
+            :param equation:str - Equation in string form. example: "y = m * x + b"
+            :param annots:list - List of strings to use for annotating the equation. the first item in the list will be the
+                                 primary annotation and the other items will be the secondary annotations.
+            :param pref_unit:str - Unit to use for the equation. Please check Sympy Documentation for all the supported
+                                   units.
+            :param evaluate:bool - If True, the variables in the equation will be substitute by values defined and
+                                   simplify the equation.
+            :param num_decimal:int - number of decimal places to be displayed in the result. This will only work if evaluate
+                                     is True.
+            :param inline:bool - If True, the resulting equation will be in the same line with the original equation.
+                                 If False, the resulting equation will be in the new line from the original equation.
+                                 This will only work if evaluate is True.
+
+            Returns
+            =======
+            :return: None
+        """
         if equation.count("=") != 1:
             print("You entered an invalid Equation.")
             return
@@ -83,11 +107,40 @@ class EquationWriter:
         self.output += output_local
 
     def show(self):
+        """
+            Desc
+            ====
+            An Interface Method that displays the markdown result of all equations accumulated in the equation
+            namespace. every succeeding call of this method will clear all the equations in the equation namespace.
+
+            Parameters
+            ==========
+            None
+
+            Returns
+            =======
+            :return: None
+        """
         self.output += "</table>"
         display(Markdown(self.output))
         self.output = "<table>"
 
     def __evaluate(self, equation):
+        """
+            Desc
+            ====
+            This method will evaluate the equation, that is will substitute all the variables in the equation
+            with their corresponding values previously defined in the equation namespace. It will also simplify the
+            final result by using the base unit of its dimension.
+
+            Parameters
+            ==========
+            :param equation:Sympy.Equality - Sympy Equation.
+
+            Returns
+            =======
+            :return: res_equation:Sympy.Equality - The resulting equation after evaluation.
+        """
         # get only the needed variables for substitution
         var_list = list(equation.rhs.atoms(Symbol))
         var_sub_dict = {}
@@ -116,6 +169,19 @@ class EquationWriter:
         return res_equation
 
     def __unitstr2unitsympy(self, str_unit):
+        """
+            Desc
+            ====
+            Method to convert unit in string to sympy unit.
+
+            Parameters
+            ==========
+            :param str_unit: str - Unit name in string.
+
+            Returns
+            =======
+            :return: unit_obj:sympyunit - Sympy unit
+        """
         unit_obj = None
         try:
             # converting string unit input to a Sympy unit object
@@ -125,38 +191,68 @@ class EquationWriter:
         return unit_obj
 
     def __round_expr(self, equation, num_digits):
+        """
+            Desc
+            ====
+            Method for rounding all the number in the equation.
+
+            Parameters
+            ==========
+            :param equation:sympy equation - Sympy Equation to be rounded off.
+            :param num_digits:int - number of decimal places to be rounded off in each number in the equation.
+
+            Returns
+            =======
+            :return:sympy equation - Equation with rounded Numbers.
+        """
         return equation.xreplace({n: round(n, num_digits) for n in equation.atoms(Number)})
 
     def __convert_to_latex(self, s):
-        '''
-        Desc
-        ====
-            Converts sympy equation to latex equation
-        parameters
-        ==========
-            s:sympy equation - equation in sympy.
-        returns
-        =======
-            res_latex:string - equation in latex
-        '''
+        """
+            Desc
+            ====
+                Converts sympy equation to latex equation
+            parameters
+            ==========
+                s:sympy equation - equation in sympy.
+            returns
+            =======
+                res_latex:string - equation in latex
+        """
         res_latex = "{}".format(latex(s, mul_symbol='dot'))
         return res_latex
 
     def __add_eq_to_namespace(self, equation):
-        '''
-        Desc
-        ====
-            Adds sympy equation to namespace list
-        parameters
-        ==========
-            equation:sympy equation - equation in sympy
-        returns
-        =======
-            None
-        '''
+        """
+            Desc
+            ====
+                Adds sympy equation to namespace list
+            parameters
+            ==========
+                equation:sympy equation - equation in sympy
+            returns
+            =======
+                None
+        """
         self.equation_namespace.update({str(equation.lhs): equation.rhs})
 
     def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot=""):
+        """
+            Desc
+            ====
+            Method that creates a markdown for displaying result in jupyter notebook.
+
+            Parameters
+            ==========
+            :param eq_str:str - Equation string in latex format.
+            :param hspace:str - Measured in Inches, length of the horizontal space between the equation and the annotations.
+            :param primary_annot: The primary annotation (annotation inline with the equation).
+            :param secondary_annot: The secondary annotations (annotations under the primary annotation).
+
+            Returns
+            =======
+            :return: None
+        """
         eq_markdown = "<tr style='background-color:#ffffff;'>"\
                             "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial; font-size: {font_size};'>" \
                                 "${eq_str}$" \
