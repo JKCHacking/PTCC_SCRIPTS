@@ -251,7 +251,7 @@ class EquationWriter:
 
             Returns
             =======
-            :return: None
+            :return: eq_markdown:str - Markdown to be displayed in jupyter notebook.
         """
         eq_markdown = "<tr style='background-color:#ffffff;'>"\
                             "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial; font-size: {font_size};'>" \
