@@ -1,23 +1,93 @@
-from sympy import *
 import sympy.physics.units as u
-from IPython.display import display, Markdown
 import pint
+from sympy import *
+from IPython.display import display, Markdown, HTML
 from pint.errors import UndefinedUnitError
+from abc import ABC, abstractmethod
 
 
-UNIT = pint.UnitRegistry()
-UNIT.default_system = 'SI'   # setting default unit system
-                             # choices are ['Planck', 'SI', 'US',
-                             # 'atomic', 'cgs', 'imperial', 'mks']
+class Writer(ABC):
+    @abstractmethod
+    def get_output(self):
+        pass
+
+    @abstractmethod
+    def set_output(self, output):
+        pass
 
 
-class EquationWriter:
+class CustomDisplay:
+    def __init__(self, *kwargs):
+        self.global_output = ""
+        self.args = kwargs
+
+    def show(self):
+        for writer in self.args:
+            if isinstance(writer, Writer):
+                writer_output = writer.get_output()
+                if writer_output:
+                    self.global_output += writer_output
+
+        display(Markdown(self.global_output))
+        self.global_output = ""
+        for writer in self.args:
+            if isinstance(writer, Writer):
+                writer.set_output("")
+
+
+class EquationWriter(Writer):
     def __init__(self, h_space, font_name, font_size):
         self.h_space = str(h_space) + "in"
         self.font_name = font_name
         self.font_size = str(font_size) + "pt"
         self.equation_namespace = {}
-        self.output = "<table>"
+        self.output = ""
+
+        self.UNIT = pint.UnitRegistry()
+        # setting default unit system
+        self.UNIT.default_system = 'SI'  # choices are ['Planck', 'SI', 'US', 'atomic', 'cgs', 'imperial', 'mks']
+
+    def setup_css(self):
+        """
+            Desc
+            ====
+            Method to initialize all custom css for jupyter notebook.
+
+            Parameters
+            ==========
+            None
+
+            Returns
+            =======
+            :return: None
+        """
+        css = "<style>"\
+                ".eq_cell {{"\
+                    "vertical-align:top;"\
+                    "text-align:left;"\
+                    "font-family:{font_name}, Arial;"\
+                    "font-size: {font_size};"\
+                "}}"\
+                ".annot_cell {{" \
+                    "text-align:left;"\
+                    "font-family:{font_name}, Arial;"\
+                "}}"\
+                ".primary_annot {{" \
+                    "font-size: {font_size};"\
+                "}}"\
+                ".secondary_annot {{" \
+                    "font-size: {font_size};"\
+                    "font-style: italic;"\
+                "}}" \
+                ".tbl_eq_row {{" \
+                    "display: table-row;" \
+                "}}"\
+                ".tbl_eq_cell {{" \
+                    "display: table-cell;" \
+                "}}"\
+              "</style>".format(font_name=self.font_name,
+                                font_size=self.font_size)
+        display(HTML(css))
 
     def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
         """
@@ -106,24 +176,37 @@ class EquationWriter:
                                                   secondary_annotations)
         self.output += output_local
 
-    def show(self):
+    def get_output(self):
         """
             Desc
             ====
-            An Interface Method that displays the markdown result of all equations accumulated in the equation
-            namespace. every succeeding call of this method will clear all the equations in the equation namespace.
+            Interface method for getting the output of the equation writer.
 
             Parameters
-            ==========
+            =========
             None
 
             Returns
             =======
             :return: None
         """
-        self.output += "</table>"
-        display(Markdown(self.output))
-        self.output = "<table>"
+        return self.output
+
+    def set_output(self, output):
+        """
+            Desc
+            ====
+            Method for setting the output
+
+            Parameters
+            ==========
+            output:str - string to set for the output
+
+            Returns
+            =======
+            :return: None
+        """
+        self.output = output
 
     def __evaluate(self, equation):
         """
@@ -156,7 +239,7 @@ class EquationWriter:
         if len(res_equation.rhs.atoms(u.Quantity)) != 0:
             try:
                 # simplify it more using pint, convert sym eq to pint eq
-                pint_eq = UNIT(str(res_equation.rhs)).to_compact().to_reduced_units()
+                pint_eq = self.UNIT(str(res_equation.rhs)).to_compact().to_reduced_units()
 
                 # convert back to sym_eq
                 if str(pint_eq.units) != "dimensionless":
@@ -240,7 +323,7 @@ class EquationWriter:
         """
             Desc
             ====
-            Method that creates a markdown for displaying result in jupyter notebook.
+            Method that creates a markdown for displaying result in jupyter notebook. Uses HTML to create the output.
 
             Parameters
             ==========
@@ -253,29 +336,47 @@ class EquationWriter:
             =======
             :return: eq_markdown:str - Markdown to be displayed in jupyter notebook.
         """
-        eq_markdown = "<tr style='background-color:#ffffff;'>"\
-                            "<td style='vertical-align:top; text-align:left; font-family:{font_name}, Arial; font-size: {font_size};'>" \
-                                "${eq_str}$" \
-                            "</td>"\
-                            "<td>" \
-                                "$\\hspace{{{hspace}}}$" \
-                            "</td>"\
-                            "<td style='text-align:left;font-family:{font_name}, Arial;'>" \
-                                "<div style='font-size:{font_size};'>{p_annot}</div>" \
-                                "<div style='font-size:{font_size}; font-style:italic;'>{s_annots}</div>" \
-                            "</td>"\
-                      "</tr>".format(eq_str=eq_str, hspace=hspace, p_annot=primary_annot, s_annots=secondary_annot,
-                                     font_name=self.font_name, font_size=self.font_size)
+        eq_markdown = "<div class='tbl_eq_row'>" \
+                        "<div class='tbl_eq_cell eq_cell'>" \
+                            "${eq_str}$" \
+                        "</div>" \
+                        "<div class='tbl_eq_cell'>" \
+                            "$\\hspace{{{hspace}}}$" \
+                        "</div>" \
+                        "<div class='tbl_eq_cell annot_cell'>" \
+                          "<div class='primary_annot'>{p_annot}</div>" \
+                          "<div class='secondary_annot'>{s_annots}</div>" \
+                        "</div>" \
+                      "</div>".format(eq_str=eq_str,
+                                      hspace=hspace,
+                                      p_annot=primary_annot,
+                                      s_annots=secondary_annot)
         return eq_markdown
 
 
-class HeaderWriter:
-    def write(self):
+class TextWriter(Writer):
+    def __init__(self, font_name, font_size):
+        self.font_name = font_name
+        self.font_size = font_size
+        self.output = ""
+
+    def define(self, text, font_style, text_position):
+        output = self.__create_markdown(text, font_style, text_position)
+        self.output += output
+
+    def __create_markdown(self, text, font_style, text_position):
+        output_markdown = "<div style='font-family:{font_name}, Arial; font-size:{font_size}; font-style:{font_style};'>" \
+                            "{text}"\
+                          "</div>".format(font_name=self.font_name,
+                                          font_size=self.font_size,
+                                          text=text,
+                                          font_style=font_style)
+        return output_markdown
+
+    def get_output(self):
         pass
 
-
-class TitleWriter:
-    def write(self):
+    def set_output(self, output):
         pass
 
 
