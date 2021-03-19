@@ -1,3 +1,4 @@
+import os
 import sympy.physics.units as u
 import pint
 from sympy import *
@@ -328,7 +329,8 @@ class EquationWriter(Writer):
             Parameters
             ==========
             :param eq_str:str - Equation string in latex format.
-            :param hspace:str - Measured in Inches, length of the horizontal space between the equation and the annotations.
+            :param hspace:str - Measured in Inches, length of the horizontal space between the equation and the
+            annotations.
             :param primary_annot: The primary annotation (annotation inline with the equation).
             :param secondary_annot: The secondary annotations (annotations under the primary annotation).
 
@@ -337,16 +339,16 @@ class EquationWriter(Writer):
             :return: eq_markdown:str - Markdown to be displayed in jupyter notebook.
         """
         eq_markdown = "<div class='tbl_eq_row'>" \
-                        "<div class='tbl_eq_cell eq_cell'>" \
-                            "${eq_str}$" \
-                        "</div>" \
-                        "<div class='tbl_eq_cell'>" \
-                            "$\\hspace{{{hspace}}}$" \
-                        "</div>" \
-                        "<div class='tbl_eq_cell annot_cell'>" \
-                          "<div class='primary_annot'>{p_annot}</div>" \
-                          "<div class='secondary_annot'>{s_annots}</div>" \
-                        "</div>" \
+                      "<div class='tbl_eq_cell eq_cell'>" \
+                      "${eq_str}$" \
+                      "</div>" \
+                      "<div class='tbl_eq_cell'>" \
+                      "$\\hspace{{{hspace}}}$" \
+                      "</div>" \
+                      "<div class='tbl_eq_cell annot_cell'>" \
+                      "<div class='primary_annot'>{p_annot}</div>" \
+                      "<div class='secondary_annot'>{s_annots}</div>" \
+                      "</div>" \
                       "</div>".format(eq_str=eq_str,
                                       hspace=hspace,
                                       p_annot=primary_annot,
@@ -357,32 +359,99 @@ class EquationWriter(Writer):
 class TextWriter(Writer):
     def __init__(self, font_name, font_size):
         self.font_name = font_name
-        self.font_size = font_size
+        self.font_size = str(font_size) + "pt"
         self.output = ""
 
-    def define(self, text, font_style, text_position):
-        output = self.__create_markdown(text, font_style, text_position)
+    def define(self, text,  bold=False, underline=False, italic=False, text_position="left"):
+        font_weight = "bold" if bold else "normal"
+        font_style = "italic" if italic else "normal"
+        font_decor = "underline" if underline else "normal"
+
+        output = self.__create_markdown(text, font_weight, font_style, font_decor,  text_position)
         self.output += output
 
-    def __create_markdown(self, text, font_style, text_position):
-        output_markdown = "<div style='font-family:{font_name}, Arial; font-size:{font_size}; font-style:{font_style};'>" \
-                            "{text}"\
+    def create_hspace(self, width):
+        width = str(width)
+        hspace_markdown = "<div style='float:left;overflow:hidden;height:1px;width:{width}in;'></div>".format(
+            width=width)
+        self.output += hspace_markdown
+
+    def create_vspace(self, height):
+        height = str(height)
+        vspace_markdown = "<div style='float:left;overflow:hidden;height:{height}in;width:100%;'></div>".format(
+            height=height)
+        self.output += vspace_markdown
+
+    def __create_markdown(self, text, font_weight, font_style, font_decor, text_position):
+        output_markdown = "<div style='font-family:{font_name}, Arial; " \
+                                       "font-size:{font_size}; " \
+                                       "font-style:{font_style};" \
+                                       "font-weight:{font_weight};"\
+                                       "text-decoration:{font_decor};"\
+                                       "text-align:{text_position};'> " \
+                          "{text}"\
                           "</div>".format(font_name=self.font_name,
                                           font_size=self.font_size,
                                           text=text,
-                                          font_style=font_style)
+                                          font_style=font_style,
+                                          font_weight=font_weight,
+                                          font_decor=font_decor,
+                                          text_position=text_position)
         return output_markdown
 
     def get_output(self):
-        pass
+        return self.output
 
     def set_output(self, output):
-        pass
+        self.output = output
 
 
-class ImageWriter:
-    def write(self):
-        pass
+class ImageWriter(Writer):
+    def __init__(self, image_folder):
+        self.output = ""
+        self.image_folder = image_folder
+        self.img_folder_abs_path = os.path.join(os.getcwd(), image_folder)
+        if not os.path.exists(self.img_folder_abs_path):
+            print("image folder does not exists.")
+
+    def setup_css(self):
+        css = "<style>.horizontal {display:inline-block; padding-right:6px} .vertical{padding-bottom:6px;}</style>"
+        display(HTML(css))
+
+    def define(self, image_names, captions, width=500, height=300, layout="horizontal"):
+        output = ""
+        if isinstance(image_names, list) and isinstance(captions, list):
+            if len(image_names) == len(captions):
+                for i, (image_name, caption) in enumerate(zip(image_names, captions)):
+                    image_path = os.path.join(self.image_folder, image_name)
+                    if os.path.exists(image_path):
+                        figure_html = "<figure><img src='{s}' width='{w}px' height='{h}px' alt='missing jpg'>" \
+                                  "<figcaption>{c}</figcaption></figure>".format(
+                                    s=image_path,
+                                    w=width,
+                                    h=height,
+                                    c=caption
+                                    )
+                        if layout == "horizontal":
+                            output += "<div class='horizontal'>{}</div>".format(figure_html)
+                        elif layout == "vertical":
+                            output += "<div class='vertical'>{}</div>".format(figure_html)
+                        else:
+                            print("Invalid layout!")
+                            break
+                    else:
+                        print("Image {} does not exists".format(image_name))
+                self.output += output
+            else:
+                print("number of image names and caption names does not match.")
+        else:
+            print("Please pass a list of image name or list of caption.")
+
+    def get_output(self):
+        return self.output
+
+    def set_output(self, output):
+        self.output = output
 
 
 class TableWriter:
