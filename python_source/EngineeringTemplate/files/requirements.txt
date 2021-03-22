@@ -1,0 +1,75 @@
+Create library code for the jupyter notebook. (PTCC Module)
+
+Requirements:
+
+Functional Requirements:
+1. Engineers can define an equation with annotation.
+2. Engineers can create headers
+3. Engineers can define font style and font name for all their text.
+4. Engineers can add an image.
+5. Engineers can create table and add their own data, cells can be merged.
+6. Engineers can add graphs.
+7. Engineers can export the jupyter notebook to pdf.
+8. Engineers can add notes (should implement as add text).
+
+Non-Functional Requirements:
+1. Equation can be evaluated or not.
+2. Can handle unit evaluation.
+2. Can add headers or caption in the Image
+3. Can add information in a graph.
+4. Can add headers or caption in the table
+
+
+Task:
+Defining Equations:
+	1. converting expression in string to expression in latex (output to jupyter notebook).------------- DONE
+	2. evaluating sympy expression. (results can be inline or next line)-------------------------------- DONE
+	3. rounding sympy expression from num_decimal user input.------------------------------------------- DONE
+	4. evaluating sympy expressions with units.--------------------------------------------------------- DONE
+	5. adding inline annotations.----------------------------------------------------------------------- DONE
+		** Primary Annotation
+		** Secondary Annotation
+	6. add implementation for adjusting font size and font name when defining equation------------------ DONE
+	7. appearance improvements ------------------------------------------------------------------------- DONE
+		** horizontal and vertical spacings.
+	8. testing ----------------------------------------------------------------------------------------- DONE
+		1. Fraction --------------------------------------------------------------------------- DONE
+		2. Fraction with units ---------------------------------------------------------------- DONE
+		3. Integration ------------------------------------------------------------------------ DONE
+		4. Differentiation -------------------------------------------------------------------- DONE
+		5. Summation -------------------------------------------------------------------------- DONE
+		6. Annotation ------------------------------------------------------------------------- DONE
+			* inline annotation
+			* Multiple annotation (primary and secondary)
+		7. Decimal places --------------------------------------------------------------------- DONE
+		8. Non Equation Strings --------------------------------------------------------------- DONE
+		9. Double equation string (x = y = z) ------------------------------------------------- DONE
+		10. simplifying equations
+			* result is unitless ---------------------------------------------------------- DONE
+			* mixed with different units. ------------------------------------------------- DONE
+		11. very long equation ---------------------------------------------------------------- DONE
+	9. Document ---------------------------------------------------------------------------------------- DONE
+
+Defining Text:
+	1. Define text ------------------------------------------------------------------------------------- DONE
+	2. Adding support for Font Styles (Italic, Bold, underline) ---------------------------------------- DONE
+		2.1 Add support for combinations of font styles -------------------------------------------- DONE
+	3. Adding support for Font Name (default is Arial) ------------------------------------------------- DONE
+	4. Adding support for Font Size -------------------------------------------------------------------- DONE
+	5. Adding support for Text Position (CENTER, LEFT, RIGHT) ------------------------------------------ DONE
+	6. Adding support for horizontal and vertical spaces ----------------------------------------------- DONE
+	7. Testing ----------------------------------------------------------------------------------------- DONE
+	8. Document ---------------------------------------------------------------------------------------- NOT STARTED
+
+Defining Image:
+	1. Add support for defining multiple images with captions. ----------------------------------------- DONE
+	2. add support for horizontal and vertical layouting ----------------------------------------------- DONE
+	3. add support for width and height adjustment ----------------------------------------------------- DONE
+	4. Testing ----------------------------------------------------------------------------------------- DONE
+	5. Document ---------------------------------------------------------------------------------------- NOT STARTED
+Defining Table:
+	1. create table from list of string. -> list of rows:string
+	2. Add support for adding header of the table.
+	3. Add support for adding table body
+	4. Able to support spanning of rows and columns for each cell in the table.
+Defining Graph:
