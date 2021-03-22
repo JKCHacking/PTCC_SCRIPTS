@@ -455,8 +455,26 @@ class ImageWriter(Writer):
 
 
 class TableWriter:
-    def write(self):
-        pass
+    def __init__(self):
+        self.output = ""
+
+    def define(self, caption, column_names, rows):
+        output = "<table>{}</table>"
+        caption = "<caption>{}</caption>".format(caption)
+        headers_data = "<thead>{}</thead>"
+        body_data = "<tbody></tbody>"
+        columns_data = ""
+        rows_data = ""
+        for column_name in column_names:
+            for data in column_name:
+                data, span = data.split("|")
+                span, num = span
+                columns_data += "<th>{}</th>"
+
+
+        for row in rows:
+            for data in row:
+                rows_data += "<tr><tr>"
 
 
 class GraphWriter:
