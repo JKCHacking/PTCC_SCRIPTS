@@ -1,6 +1,7 @@
 import os
 import sympy.physics.units as u
 import pint
+import random
 from sympy import *
 from IPython.display import display, Markdown, HTML
 from pint.errors import UndefinedUnitError
@@ -34,6 +35,40 @@ class CustomDisplay:
         for writer in self.args:
             if isinstance(writer, Writer):
                 writer.set_output("")
+
+    def hide_toggle(self, for_next=False):
+        this_cell = """$('div.cell.code_cell.rendered.selected')"""
+        next_cell = this_cell + '.next()'
+
+        toggle_text = 'Toggle show/hide'  # text shown on toggle link
+        target_cell = this_cell  # target cell to control with toggle
+        js_hide_current = ''  # bit of JS to permanently hide code in current cell (only when toggling next cell)
+
+        if for_next:
+            target_cell = next_cell
+            toggle_text += ' next cell'
+            js_hide_current = this_cell + '.find("div.input").hide();'
+
+        js_f_name = 'code_toggle_{}'.format(str(random.randint(1, 2 ** 64)))
+
+        html = """
+            <script>
+                function {f_name}() {{
+                    {cell_selector}.find('div.input').toggle();
+                }}
+
+                {js_hide_current}
+            </script>
+
+            <a href="javascript:{f_name}()">{toggle_text}</a>
+        """.format(
+            f_name=js_f_name,
+            cell_selector=target_cell,
+            js_hide_current=js_hide_current,
+            toggle_text=toggle_text
+        )
+
+        return HTML(html)
 
 
 class EquationWriter(Writer):
@@ -363,6 +398,24 @@ class TextWriter(Writer):
         self.output = ""
 
     def define(self, text,  bold=False, underline=False, italic=False, text_position="left"):
+        """
+            Desc
+            ====
+            Method that defines Text. Uses HTML to create texts.
+
+            Parameters
+            ==========
+            text:str - The text you want to display.
+            bold:bool - If True, makes the text bold. (text with higher weight)
+            underline:bool - If True, adds an underline to the text.
+            italic:bool - If True, makes the text italic.
+            text_position:str - (left, right, center) position the text to be either at the left, right or center of the
+            output screen.
+
+            Returns
+            =======
+            None
+        """
         font_weight = "bold" if bold else "normal"
         font_style = "italic" if italic else "normal"
         font_decor = "underline" if underline else "normal"
@@ -371,38 +424,111 @@ class TextWriter(Writer):
         self.output += output
 
     def create_hspace(self, width):
+        """
+            Desc
+            ====
+            Method that display horizontal space.
+
+            Parameters
+            ==========
+            width:str/int - width of the horizontal space in inches.
+
+            Returns
+            =======
+            None
+        """
         width = str(width)
         hspace_markdown = "<div style='float:left;overflow:hidden;height:1px;width:{width}in;'></div>".format(
             width=width)
         self.output += hspace_markdown
 
     def create_vspace(self, height):
+        """
+            Desc
+            ====
+            Method that display vertical space.
+
+            Parameters
+            ==========
+            width:str/int - width of the vertical space in inches.
+
+            Returns
+            =======
+            None
+        """
         height = str(height)
         vspace_markdown = "<div style='float:left;overflow:hidden;height:{height}in;width:100%;'></div>".format(
             height=height)
         self.output += vspace_markdown
 
     def __create_markdown(self, text, font_weight, font_style, font_decor, text_position):
-        output_markdown = "<div style='font-family:{font_name}, Arial; " \
-                                       "font-size:{font_size}; " \
-                                       "font-style:{font_style};" \
-                                       "font-weight:{font_weight};"\
-                                       "text-decoration:{font_decor};"\
-                                       "text-align:{text_position};'> " \
-                          "{text}"\
-                          "</div>".format(font_name=self.font_name,
-                                          font_size=self.font_size,
-                                          text=text,
-                                          font_style=font_style,
-                                          font_weight=font_weight,
-                                          font_decor=font_decor,
-                                          text_position=text_position)
+        """
+        Desc
+        ====
+        method for creating the markdown (HTML) output of the text writer.
+
+        Parameters
+        ==========
+        text:str - The text to be displayed.
+        font_weight:str - the weight of the font. (Bold, bolder)
+        font_style:str - the font style of the text (italic)
+        font_decor:str - text modifiers, (underline)
+        text_position:str - position of the text to be placed within the output (right, left, center).
+
+        Returns
+        =======
+        None
+        """
+        output_markdown = ""
+        if text_position in ("left", "right", "center"):
+            output_markdown = "<div style='font-family:{font_name}, Arial; " \
+                                           "font-size:{font_size}; " \
+                                           "font-style:{font_style};" \
+                                           "font-weight:{font_weight};"\
+                                           "text-decoration:{font_decor};"\
+                                           "text-align:{text_position};'> " \
+                              "{text}"\
+                              "</div>".format(font_name=self.font_name,
+                                              font_size=self.font_size,
+                                              text=text,
+                                              font_style=font_style,
+                                              font_weight=font_weight,
+                                              font_decor=font_decor,
+                                              text_position=text_position)
+        else:
+            print("wrong text position value.")
         return output_markdown
 
     def get_output(self):
+        """
+            Desc
+            ====
+            Interface method for getting the output of the text writer.
+
+            Parameters
+            =========
+            None
+
+            Returns
+            =======
+            None
+        """
         return self.output
 
     def set_output(self, output):
+        """
+            Desc
+            ====
+            Interface method for setting the output of the text writer
+
+            Parameters
+            ==========
+            output:str - string to set to the output.
+
+            Returns
+            =======
+            None
+        """
         self.output = output
 
 
@@ -415,10 +541,41 @@ class ImageWriter(Writer):
             print("image folder does not exists.")
 
     def setup_css(self):
+        """
+            Desc
+            ====
+            Method for setting up CSS layouts.
+
+            Parameters
+            ==========
+            None
+
+            Returns
+            =======
+            None
+        """
         css = "<style>.horizontal {display:inline-block; padding-right:6px} .vertical{padding-bottom:6px;}</style>"
         display(HTML(css))
 
     def define(self, image_names, captions, width=500, height=300, layout="horizontal"):
+        """
+        Desc
+        ====
+        Method for defining an Image.
+
+        Parameters
+        ==========
+        image_names:list of str - The image file path to be displayed.
+        captions:str - the caption to be displayed under the image.
+        width:str/int - the width of the image in pixels
+        height:str/int - the height of the image in pixels
+        layout:str (vertical, horizontal) - if there 1 or more images, it will either display the image
+        horizontally or vertically.
+
+        Returns
+        =======
+        None
+        """
         output = ""
         if isinstance(image_names, list) and isinstance(captions, list):
             if len(image_names) == len(captions):
@@ -448,33 +605,99 @@ class ImageWriter(Writer):
             print("Please pass a list of image name or list of caption.")
 
     def get_output(self):
+        """
+            Desc
+            ====
+            Interface method for getting the output of the Image writer.
+
+            Parameters
+            =========
+            None
+
+            Returns
+            =======
+            None
+        """
+        return self.output
+
+    def set_output(self, output):
+        """
+            Desc
+            ====
+            Interface method for setting the output of the Image writer
+
+            Parameters
+            ==========
+            output:str - string to set to the output.
+
+            Returns
+            =======
+            None
+        """
+        self.output = output
+
+
+class TableWriter(Writer):
+    def __init__(self):
+        self.output = ""
+        self.table = "<table>" \
+                      "<caption>{caption}</caption>" \
+                      "<thead>{head}</thead>" \
+                      "<tbody>{body}</tbody>" \
+                      "</table>"
+        self.caption = ""
+        self.head = ""
+        self.body = ""
+
+    def setup_css(self):
+        css = "<style> " \
+              ".rendered_html td, .rendered_html th {" \
+              "text-align:center;}" \
+              "</style>"
+        display(HTML(css))
+
+    def data_cell(self, value, row_span=1, col_span=1):
+        return "<td rowspan={row_span} colspan={col_span}>{value}</td>".format(value=value,
+                                                                               row_span=row_span,
+                                                                               col_span=col_span)
+
+    def header_cell(self, value, row_span=1, col_span=1):
+        return "<th rowspan={row_span} colspan={col_span}>{value}</th>".format(value=value,
+                                                                               row_span=row_span,
+                                                                               col_span=col_span)
+
+    def define_caption(self, caption):
+        self.caption += caption
+
+    def __create_row(self, cell_list):
+        data = ""
+        for cell in cell_list:
+            data += cell
+        row = "<tr>{}</tr>".format(data)
+        return row
+
+    def define_column(self, cell_list):
+        row = self.__create_row(cell_list)
+        self.head += row
+
+    def define_data(self, cell_list):
+        row = self.__create_row(cell_list)
+        self.body += row
+
+    def get_output(self):
+        self.output = self.table.format(caption=self.caption, head=self.head, body=self.body)
         return self.output
 
     def set_output(self, output):
         self.output = output
-
-
-class TableWriter:
-    def __init__(self):
-        self.output = ""
-
-    def define(self, caption, column_names, rows):
-        output = "<table>{}</table>"
-        caption = "<caption>{}</caption>".format(caption)
-        headers_data = "<thead>{}</thead>"
-        body_data = "<tbody></tbody>"
-        columns_data = ""
-        rows_data = ""
-        for column_name in column_names:
-            for data in column_name:
-                data, span = data.split("|")
-                span, num = span
-                columns_data += "<th>{}</th>"
-
-
-        for row in rows:
-            for data in row:
-                rows_data += "<tr><tr>"
+        self.table = "<table>" \
+                     "<caption>{caption}</caption>" \
+                     "<thead>{head}</thead>" \
+                     "<tbody>{body}</tbody>" \
+                     "</table>"
+        self.caption = output
+        self.head = output
+        self.body = output
 
 
 class GraphWriter:

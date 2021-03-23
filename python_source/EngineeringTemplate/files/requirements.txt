@@ -59,7 +59,7 @@ Defining Text:
 	5. Adding support for Text Position (CENTER, LEFT, RIGHT) ------------------------------------------ DONE
 	6. Adding support for horizontal and vertical spaces ----------------------------------------------- DONE
 	7. Testing ----------------------------------------------------------------------------------------- DONE
-	8. Document ---------------------------------------------------------------------------------------- NOT STARTED
+	8. Document ---------------------------------------------------------------------------------------- DONE
 
 Defining Image:
 	1. Add support for defining multiple images with captions. ----------------------------------------- DONE
@@ -67,9 +67,20 @@ Defining Image:
 	3. add support for width and height adjustment ----------------------------------------------------- DONE
 	4. Testing ----------------------------------------------------------------------------------------- DONE
 	5. Document ---------------------------------------------------------------------------------------- NOT STARTED
+
 Defining Table:
-	1. create table from list of string. -> list of rows:string
-	2. Add support for adding header of the table.
-	3. Add support for adding table body
-	4. Able to support spanning of rows and columns for each cell in the table.
+	1. create table from list of string. -> list of rows:string ---------------------------------------- DONE
+	2. Add support for adding header of the table. ----------------------------------------------------- DONE
+	3. Add support for adding table body --------------------------------------------------------------- DONE
+	4. Able to support spanning of rows and columns for each cell in the table. ------------------------ DONE
+	5. Testing ----------------------------------------------------------------------------------------- DONE
+	6. Document ---------------------------------------------------------------------------------------- NOT STARTED
+
 Defining Graph:
+
+
+Other tasks:
+	1. Custom Display ---------------------------------------------------------------------------------- DONE
+		1.1 create show method for all Writer Class. ----------------------------------------------- DONE
+		1.2 create toggle method for hiding cells in jupyter notebook. ----------------------------- DONE
+	2. Writer Base Class ------------------------------------------------------------------------------- DONE
