@@ -24,6 +24,19 @@ class CustomDisplay:
         self.args = kwargs
 
     def show(self):
+        """
+            Desc
+            ====
+            Method for showing all the output of every Writers inside self.args
+
+            Parameters
+            ==========
+            None
+
+            Returns
+            =======
+            None
+        """
         for writer in self.args:
             if isinstance(writer, Writer):
                 writer_output = writer.get_output()
@@ -37,6 +50,20 @@ class CustomDisplay:
                 writer.set_output("")
 
     def hide_toggle(self, for_next=False):
+        """
+            Desc
+            ====
+            Method for hiding cell in jupyter notebook
+
+            Parameters
+            ==========
+            for_next:bool - If True, will hide the next cell of the cell that called this function.
+            if False, will hide the cell that called this function.
+
+            Returns
+            =======
+            Returns the HTML object to be added in the jupyter HTML.
+        """
         this_cell = """$('div.cell.code_cell.rendered.selected')"""
         next_cell = this_cell + '.next()'
 
@@ -95,7 +122,7 @@ class EquationWriter(Writer):
 
             Returns
             =======
-            :return: None
+            None
         """
         css = "<style>"\
                 ".eq_cell {{"\
@@ -133,22 +160,22 @@ class EquationWriter(Writer):
 
             Parameters
             ==========
-            :param equation:str - Equation in string form. example: "y = m * x + b"
-            :param annots:list - List of strings to use for annotating the equation. the first item in the list will be the
+            equation:str - Equation in string form. example: "y = m * x + b"
+            annots:list - List of strings to use for annotating the equation. the first item in the list will be the
                                  primary annotation and the other items will be the secondary annotations.
-            :param pref_unit:str - Unit to use for the equation. Please check Sympy Documentation for all the supported
+            pref_unit:str - Unit to use for the equation. Please check Sympy Documentation for all the supported
                                    units.
-            :param evaluate:bool - If True, the variables in the equation will be substitute by values defined and
+            evaluate:bool - If True, the variables in the equation will be substitute by values defined and
                                    simplify the equation.
-            :param num_decimal:int - number of decimal places to be displayed in the result. This will only work if evaluate
+            num_decimal:int - number of decimal places to be displayed in the result. This will only work if evaluate
                                      is True.
-            :param inline:bool - If True, the resulting equation will be in the same line with the original equation.
+            inline:bool - If True, the resulting equation will be in the same line with the original equation.
                                  If False, the resulting equation will be in the new line from the original equation.
                                  This will only work if evaluate is True.
 
             Returns
             =======
-            :return: None
+            None
         """
         if equation.count("=") != 1:
             print("You entered an invalid Equation.")
@@ -224,7 +251,7 @@ class EquationWriter(Writer):
 
             Returns
             =======
-            :return: None
+            None
         """
         return self.output
 
@@ -240,7 +267,7 @@ class EquationWriter(Writer):
 
             Returns
             =======
-            :return: None
+            None
         """
         self.output = output
 
@@ -254,11 +281,11 @@ class EquationWriter(Writer):
 
             Parameters
             ==========
-            :param equation:Sympy.Equality - Sympy Equation.
+            equation:Sympy.Equality - Sympy Equation.
 
             Returns
             =======
-            :return: res_equation:Sympy.Equality - The resulting equation after evaluation.
+            res_equation:Sympy.Equality - The resulting equation after evaluation.
         """
         # get only the needed variables for substitution
         var_list = list(equation.rhs.atoms(Symbol))
@@ -295,11 +322,11 @@ class EquationWriter(Writer):
 
             Parameters
             ==========
-            :param str_unit: str - Unit name in string.
+            str_unit: str - Unit name in string.
 
             Returns
             =======
-            :return: unit_obj:sympyunit - Sympy unit
+            unit_obj:sympyunit - Sympy unit
         """
         unit_obj = None
         try:
@@ -317,12 +344,12 @@ class EquationWriter(Writer):
 
             Parameters
             ==========
-            :param equation:sympy equation - Sympy Equation to be rounded off.
-            :param num_digits:int - number of decimal places to be rounded off in each number in the equation.
+            equation:sympy equation - Sympy Equation to be rounded off.
+            num_digits:int - number of decimal places to be rounded off in each number in the equation.
 
             Returns
             =======
-            :return:sympy equation - Equation with rounded Numbers.
+            sympy equation - Equation with rounded Numbers.
         """
         return equation.xreplace({n: round(n, num_digits) for n in equation.atoms(Number)})
 
@@ -363,15 +390,15 @@ class EquationWriter(Writer):
 
             Parameters
             ==========
-            :param eq_str:str - Equation string in latex format.
-            :param hspace:str - Measured in Inches, length of the horizontal space between the equation and the
+            eq_str:str - Equation string in latex format.
+            hspace:str - Measured in Inches, length of the horizontal space between the equation and the
             annotations.
-            :param primary_annot: The primary annotation (annotation inline with the equation).
-            :param secondary_annot: The secondary annotations (annotations under the primary annotation).
+            primary_annot: The primary annotation (annotation inline with the equation).
+            secondary_annot: The secondary annotations (annotations under the primary annotation).
 
             Returns
             =======
-            :return: eq_markdown:str - Markdown to be displayed in jupyter notebook.
+            eq_markdown:str - Markdown to be displayed in jupyter notebook.
         """
         eq_markdown = "<div class='tbl_eq_row'>" \
                       "<div class='tbl_eq_cell eq_cell'>" \
@@ -450,7 +477,7 @@ class TextWriter(Writer):
 
             Parameters
             ==========
-            width:str/int - width of the vertical space in inches.
+            height:str/int - height of the vertical space in inches.
 
             Returns
             =======
@@ -463,21 +490,21 @@ class TextWriter(Writer):
 
     def __create_markdown(self, text, font_weight, font_style, font_decor, text_position):
         """
-        Desc
-        ====
-        method for creating the markdown (HTML) output of the text writer.
+            Desc
+            ====
+            method for creating the markdown (HTML) output of the text writer.
 
-        Parameters
-        ==========
-        text:str - The text to be displayed.
-        font_weight:str - the weight of the font. (Bold, bolder)
-        font_style:str - the font style of the text (italic)
-        font_decor:str - text modifiers, (underline)
-        text_position:str - position of the text to be placed within the output (right, left, center).
+            Parameters
+            ==========
+            text:str - The text to be displayed.
+            font_weight:str - the weight of the font. (Bold, bolder)
+            font_style:str - the font style of the text (italic)
+            font_decor:str - text modifiers, (underline)
+            text_position:str - position of the text to be placed within the output (right, left, center).
 
-        Returns
-        =======
-        None
+            Returns
+            =======
+            output_markdown:str - Text HTML output
         """
         output_markdown = ""
         if text_position in ("left", "right", "center"):
@@ -559,22 +586,22 @@ class ImageWriter(Writer):
 
     def define(self, image_names, captions, width=500, height=300, layout="horizontal"):
         """
-        Desc
-        ====
-        Method for defining an Image.
+            Desc
+            ====
+            Method for defining an Image.
 
-        Parameters
-        ==========
-        image_names:list of str - The image file path to be displayed.
-        captions:str - the caption to be displayed under the image.
-        width:str/int - the width of the image in pixels
-        height:str/int - the height of the image in pixels
-        layout:str (vertical, horizontal) - if there 1 or more images, it will either display the image
-        horizontally or vertically.
+            Parameters
+            ==========
+            image_names:list of str - The image file path to be displayed.
+            captions:str - the caption to be displayed under the image.
+            width:str/int - the width of the image in pixels
+            height:str/int - the height of the image in pixels
+            layout:str (vertical, horizontal) - if there 1 or more images, it will either display the image
+            horizontally or vertically.
 
-        Returns
-        =======
-        None
+            Returns
+            =======
+            None
         """
         output = ""
         if isinstance(image_names, list) and isinstance(captions, list):
@@ -650,6 +677,19 @@ class TableWriter(Writer):
         self.body = ""
 
     def setup_css(self):
+        """
+            Desc
+            ====
+            Method that sets up the CSS layouts related to the tables created.
+
+            Parameters
+            ==========
+            None
+
+            Returns
+            =======
+            None
+        """
         css = "<style> " \
               ".rendered_html td, .rendered_html th {" \
               "text-align:center;}" \
@@ -657,19 +697,75 @@ class TableWriter(Writer):
         display(HTML(css))
 
     def data_cell(self, value, row_span=1, col_span=1):
+        """
+            Desc
+            ====
+            Method that creates an HTML based data cell.
+
+            Parameters
+            ===========
+            value:str - text to be displayed inside the cell
+            row_span:str/int - number of rows the cell will merge.
+            col_span:str/int - number of columns the cell will merge.
+
+            Returns
+            =======
+            None
+        """
         return "<td rowspan={row_span} colspan={col_span}>{value}</td>".format(value=value,
                                                                                row_span=row_span,
                                                                                col_span=col_span)
 
     def header_cell(self, value, row_span=1, col_span=1):
+        """
+            Desc
+            ====
+            Method that creates an HTML based data cell.
+
+            Parameters
+            ===========
+            value:str - text to be displayed inside the cell
+            row_span:str/int - number of rows the cell will merge.
+            col_span:str/int - number of columns the cell will merge.
+
+            Returns
+            =======
+            None
+        """
         return "<th rowspan={row_span} colspan={col_span}>{value}</th>".format(value=value,
                                                                                row_span=row_span,
                                                                                col_span=col_span)
 
     def define_caption(self, caption):
+        """
+            Desc
+            ====
+            Method for adding caption
+
+            Parameters
+            ==========
+            caption:str - text to display in the caption of a table.
+
+            Returns
+            =======
+            None
+        """
         self.caption += caption
 
     def __create_row(self, cell_list):
+        """
+            Desc
+            ====
+            Private method for creating row of a table in HTML.
+
+            Parameters
+            ==========
+            cell_list:list of string - list of HTML cell strings that returned from data_cell or header_cell methods.
+
+            Returns
+            =======
+            row:str - HTML cells within HTML row.
+        """
         data = ""
         for cell in cell_list:
             data += cell
@@ -677,18 +773,70 @@ class TableWriter(Writer):
         return row
 
     def define_column(self, cell_list):
+        """
+            Desc
+            ====
+            Method for defining column data. this will update self.head which collects all HTML for a table head.
+
+            Parameters
+            ==========
+            cell_list:list of string - list of HTML cell strings that returned from data_cell or header_cell methods.
+
+            Returns
+            =======
+            None
+        """
         row = self.__create_row(cell_list)
         self.head += row
 
     def define_data(self, cell_list):
+        """
+            Desc
+            ====
+            Method for defining body data. this will update self.body which collects all HTML for a table body.
+
+            Parameters
+            ==========
+            cell_list:list of string - list of HTML cell strings that returned from data_cell or header_cell methods.
+
+            Returns
+            =======
+            None
+        """
         row = self.__create_row(cell_list)
         self.body += row
 
     def get_output(self):
+        """
+            Desc
+            ====
+            Interface method for getting the output of the Table writer.
+
+            Parameters
+            =========
+            None
+
+            Returns
+            =======
+            None
+        """
         self.output = self.table.format(caption=self.caption, head=self.head, body=self.body)
         return self.output
 
     def set_output(self, output):
+        """
+            Desc
+            ====
+            Interface method for setting the output of the Table writer
+
+            Parameters
+            ==========
+            output:str - string to set to the output.
+
+            Returns
+            =======
+            None
+        """
         self.output = output
         self.table = "<table>" \
                      "<caption>{caption}</caption>" \
