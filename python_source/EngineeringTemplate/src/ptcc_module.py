@@ -2,6 +2,7 @@ import os
 import sympy.physics.units as u
 import pint
 import random
+import matplotlib.pyplot as plt
 from sympy import *
 from IPython.display import display, Markdown, HTML
 from pint.errors import UndefinedUnitError
@@ -849,9 +850,27 @@ class TableWriter(Writer):
 
 
 class GraphWriter:
-    def setup(self):
-        pass
+    def __init__(self):
+        self.fig = None
 
-    def write(self):
-        pass
+    def create_subplots(self, nrows=1, ncolumns=1):
+        fig, axs = plt.subplots(nrows, ncolumns)
+        self.fig = fig
+        return axs
 
+    def create_plot(self, ax, x, y, label="", color="b", marker="", line_style="-"):
+        """
+        for possible values of color, marker, line_style
+        see: https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot
+        """
+        ax.plot(x, y, label=label, color=color, marker=marker, linestyle=line_style)
+
+    def set_axis(self, ax, xlabel, ylabel, title, legend=False, grid=False):
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.set_title(title)
+
+        if legend:
+            ax.legend()
+        if grid:
+            ax.grid(grid)
