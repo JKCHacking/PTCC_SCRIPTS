@@ -222,3 +222,12 @@ class EquationWriterTest(unittest.TestCase):
         eq_writer.define("var_z = 5")
         eq_writer.define("var_a = var_w * (var_v + var_x - var_y) / (var_z * 3)", evaluate=True)
         self.assertEqual("5.47", str(eq_writer.equation_namespace["var_a"]))
+
+    def test_define_022(self):
+        """
+        Test for simplifying equation to expression.
+        """
+        eq_writer = self.typical_settings()
+        eq_writer.define("x = 10", pref_unit="cm")
+        eq_writer.define("W_max = x + 2", evaluate=True)
+        self.assertEqual("10.0*centimeter + 2.0", str(eq_writer.equation_namespace["W_max"]))

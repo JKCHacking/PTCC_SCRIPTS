@@ -5,7 +5,7 @@ import random
 import matplotlib.pyplot as plt
 from sympy import *
 from IPython.display import display, Markdown, HTML
-from pint.errors import UndefinedUnitError
+from pint.errors import UndefinedUnitError, DimensionalityError
 from abc import ABC, abstractmethod
 
 
@@ -152,6 +152,12 @@ class EquationWriter(Writer):
               "</style>".format(font_name=self.font_name,
                                 font_size=self.font_size)
         display(HTML(css))
+
+    def conclude(self):
+        pass
+
+    def assert_components(self):
+        pass
 
     def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
         """
@@ -311,7 +317,7 @@ class EquationWriter(Writer):
                     res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)) * sym_unit)
                 else:
                     res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)))
-            except UndefinedUnitError:
+            except (UndefinedUnitError, DimensionalityError):
                 pass
         return res_equation
 
