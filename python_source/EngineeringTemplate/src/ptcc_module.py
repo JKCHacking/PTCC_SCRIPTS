@@ -10,6 +10,9 @@ from abc import ABC, abstractmethod
 
 
 class Writer(ABC):
+    """
+    Abstract class for Writer Classes
+    """
     @abstractmethod
     def get_output(self):
         pass
@@ -372,9 +375,12 @@ class EquationWriter(Writer):
                 var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
             except KeyError:
                 pass
+        # substitute all variables in the equation
         res_equation = equation.subs(var_sub_dict).evalf()
-        # added redundancy for integral, derivatives, etc.
+        # simplify any special operations ( integral, derivative etc.)
         res_equation = res_equation.doit()
+        # simplify any unit specific operations
+        res_equation = Eq(res_equation.lhs, simplify(res_equation.rhs))
         if len(res_equation.rhs.atoms(u.Quantity)) != 0:
             try:
                 # simplify it more using pint, convert sym eq to pint eq
