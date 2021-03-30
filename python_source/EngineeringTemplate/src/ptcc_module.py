@@ -157,9 +157,9 @@ class EquationWriter(Writer):
     def conclude(self, component, affirmative):
         negative = ""
         if self.is_structadeq:
-            negative = " NOT "
+            negative = "NOT "
         output_string = "<div style='font-family:{font_name}, Arial; font-size:{font_size}'><u><b>THUS THE " \
-                        "{component}{negative}{affirmative}</b></u></div>".format(
+                        "{component} IS {negative}{affirmative}</b></u></div>".format(
                             font_name=self.font_name,
                             font_size=self.font_size,
                             component=component.upper(),
@@ -202,7 +202,7 @@ class EquationWriter(Writer):
             if expected == actual:
                 negative = ""
             else:
-                negative = " NOT "
+                negative = "NOT "
                 self.is_structadeq = False
 
             lhs_latex = self.__convert_to_latex(Eq(parse_expr(lhs_var_str), lhs))
@@ -210,7 +210,7 @@ class EquationWriter(Writer):
             output_string = "<div style='font-family:{font_name}, Arial; font-size:{font_size}'>Comparing, " \
                             "<div>${lhs_expr} {op} {rhs_expr}$</div>" \
                             "<div>Since the {descr_lhs} is {operation_word} the {descr_rhs}, <br> <u><b>" \
-                            "THE {component} IS{negative}{statement}</u></b></div>" \
+                            "THE {component} IS {negative}{statement}</u></b></div>" \
                             "</div>".format(
                                 lhs_expr=lhs_latex,
                                 rhs_expr=rhs_latex,
