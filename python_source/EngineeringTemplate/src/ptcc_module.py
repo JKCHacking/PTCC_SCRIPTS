@@ -106,6 +106,7 @@ class EquationWriter(Writer):
         self.font_size = str(font_size) + "pt"
         self.equation_namespace = {}
         self.output = ""
+        self.is_structadeq = True
 
         self.UNIT = pint.UnitRegistry()
         # setting default unit system
@@ -153,11 +154,79 @@ class EquationWriter(Writer):
                                 font_size=self.font_size)
         display(HTML(css))
 
-    def conclude(self):
-        pass
+    def conclude(self, component, affirmative):
+        negative = ""
+        if self.is_structadeq:
+            negative = " NOT "
+        output_string = "<div style='font-family:{font_name}, Arial; font-size:{font_size}'><u><b>THUS THE " \
+                        "{component}{negative}{affirmative}</b></u></div>".format(
+                            font_name=self.font_name,
+                            font_size=self.font_size,
+                            component=component.upper(),
+                            negative=negative,
+                            affirmative=affirmative.upper()
+                        )
+        self.output += output_string
 
-    def assert_components(self):
-        pass
+    def assert_components(self, lhs_var_str, rhs_var_str, expected, descr_lhs, descr_rhs, component, statement):
+        try:
+            lhs = self.equation_namespace[lhs_var_str]
+            rhs = self.equation_namespace[rhs_var_str]
+        except KeyError:
+            print("Variable does not exists.")
+            return
+
+        # check if expression is in the form [N * unit]
+        if len(lhs.atoms(Number)) == 1 and len(lhs.atoms(Symbol)) == 2 and len(lhs.atoms(u.Quantity)) == 1 and \
+                len(rhs.atoms(Number)) == 1 and len(rhs.atoms(Symbol)) == 2 and len(rhs.atoms(u.Quantity)) == 1:
+            operation_word = ""
+            actual = ""
+            # check if they have the same unit
+            lhs_unit = list(lhs.atoms(u.Quantity))[0]
+            rhs_unit = list(rhs.atoms(u.Quantity))[0]
+            if lhs_unit != rhs_unit:
+                lhs = u.convert_to(lhs, rhs_unit)
+
+            mag_lhs = list(lhs.atoms(Number))[0]
+            mag_rhs = list(rhs.atoms(Number))[0]
+            if mag_lhs < mag_rhs:
+                operation_word = "less than"
+                actual = "<"
+            elif mag_lhs > mag_rhs:
+                operation_word = "greater than"
+                actual = ">"
+            elif mag_lhs == mag_rhs:
+                operation_word = "equal to"
+                actual = "="
+
+            if expected == actual:
+                negative = ""
+            else:
+                negative = " NOT "
+                self.is_structadeq = False
+
+            lhs_latex = self.__convert_to_latex(Eq(parse_expr(lhs_var_str), lhs))
+            rhs_latex = self.__convert_to_latex(Eq(parse_expr(rhs_var_str), rhs))
+            output_string = "<div style='font-family:{font_name}, Arial; font-size:{font_size}'>Comparing, " \
+                            "<div>${lhs_expr} {op} {rhs_expr}$</div>" \
+                            "<div>Since the {descr_lhs} is {operation_word} the {descr_rhs}, <br> <u><b>" \
+                            "THE {component} IS{negative}{statement}</u></b></div>" \
+                            "</div>".format(
+                                lhs_expr=lhs_latex,
+                                rhs_expr=rhs_latex,
+                                op=actual,
+                                descr_lhs=descr_lhs,
+                                descr_rhs=descr_rhs,
+                                operation_word=operation_word,
+                                component=component.upper(),
+                                statement=statement.upper(),
+                                negative=negative.upper(),
+                                font_name=self.font_name,
+                                font_size=self.font_size
+                            )
+            self.output += output_string
+        else:
+            print("Expression should be in the form [N * unit] (e.g 3 * mm)")
 
     def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
         """
