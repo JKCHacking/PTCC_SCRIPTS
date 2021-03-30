@@ -207,8 +207,8 @@ class EquationWriterTest(unittest.TestCase):
         eq_writer.define("x = 10", pref_unit="cm")
         eq_writer.define("w = 5", pref_unit="mm")
         eq_writer.define("y = x + w + z", evaluate=True)
-        self.assertEqual(2, len(eq_writer.equation_namespace["y"].atoms(u.Quantity)))
-        self.assertEqual("10.0*centimeter + 5.0*millimeter + z", str(eq_writer.equation_namespace["y"]))
+        self.assertEqual(1, len(eq_writer.equation_namespace["y"].atoms(u.Quantity)))
+        self.assertEqual("10.5*centimeter + z", str(eq_writer.equation_namespace["y"]))
 
     def test_define_021(self):
         """
