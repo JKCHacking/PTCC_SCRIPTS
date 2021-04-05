@@ -321,12 +321,17 @@ class EquationWriter:
             res_eq = self.__simplify(sym_eq, pint_unit)
             res_eq = self.__round_expr(res_eq, num_decimal)
             self.__add_eq_to_namespace(res_eq)
+
+            # temporary hack for bug non inline printing
+            s_unit = self.__unit_pint_2_unit_sympy(pint_unit)
+            sym_eq = Eq(parse_lhs, parse_rhs * s_unit)
+            sym_eq = self.__round_expr(sym_eq, num_decimal)
         else:
             s_unit = self.__unit_pint_2_unit_sympy(pint_unit)
             sym_eq = Eq(parse_lhs, parse_rhs * s_unit)
             sym_eq = self.__round_expr(sym_eq, num_decimal)
-            res_eq = None
             self.__add_eq_to_namespace(sym_eq)
+            res_eq = None
         # ================= display =======================================
         primary_annotation = ""
         secondary_annotations = ""
@@ -373,7 +378,7 @@ class EquationWriter:
             =======
             res_equation:Sympy.Equality - The resulting equation after evaluation.
         """
-        if unit_pint == "dimensionless":
+        if str(unit_pint) == "dimensionless":
             unit_pint = 1
 
         # get only the needed variables for substitution
@@ -422,7 +427,7 @@ class EquationWriter:
 
     def __unit_str_2_unit_pint(self, unit_str):
         try:
-            pint_unit = str(self.UNIT(unit_str).units)
+            pint_unit = self.UNIT(unit_str).units
         except UndefinedUnitError:
             pint_unit = None
         return pint_unit
@@ -432,7 +437,7 @@ class EquationWriter:
             unit_pint = "dimensionless"
 
         try:
-            unit_sympy = self.ptcc_units[unit_pint]
+            unit_sympy = self.ptcc_units[str(unit_pint)]
         except KeyError:
             unit_sympy = None
         return unit_sympy

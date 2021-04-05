@@ -232,3 +232,8 @@ class EquationWriterTest(unittest.TestCase):
         eq_writer.define("x = 10", unit="cm")
         eq_writer.define("W_max = x + 2", simplify=True)
         self.assertEqual("10.0*centimeter + 2.0", str(eq_writer.equation_namespace["W_max"]))
+
+    def test_define_023(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("x = 1000", unit="MPa", simplify=True)
+        self.assertEqual("1.0*gigapascal", str(eq_writer.equation_namespace["x"]))
