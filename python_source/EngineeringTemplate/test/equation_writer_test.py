@@ -19,7 +19,7 @@ class EquationWriterTest(unittest.TestCase):
         """
         eq_writer = self.typical_settings()
         eq_writer.define("y = x/2")
-        self.assertEqual("0.5*x", str(eq_writer.equation_namespace["y"]))
+        self.assertEqual("x/2", str(eq_writer.equation_namespace["y"]))
 
     def test_define_002(self):
         """

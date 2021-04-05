@@ -247,8 +247,8 @@ class EquationWriter:
             lhs_latex = self.__convert_to_latex(Eq(parse_expr(lhs_var_str), lhs))
             rhs_latex = self.__convert_to_latex(Eq(parse_expr(rhs_var_str), rhs))
             output_string = "<div style='font-family:{font_name}, Arial; font-size:{font_size}'>Comparing, " \
-                            "<div>${lhs_expr} {op} {rhs_expr}$</div>" \
-                            "<div>Since the {descr_lhs} is {operation_word} the {descr_rhs}, <br> <u><b>" \
+                            "<div><br>${lhs_expr} {op} {rhs_expr}$</div>" \
+                            "<div><br>Since the {descr_lhs} is {operation_word} the {descr_rhs}, <br> <u><b>" \
                             "THE {component} IS {negative}{statement}</u></b></div>" \
                             "</div>".format(
                                 lhs_expr=lhs_latex,
@@ -325,11 +325,9 @@ class EquationWriter:
             # temporary hack for bug non inline printing
             s_unit = self.__unit_pint_2_unit_sympy(pint_unit)
             sym_eq = Eq(parse_lhs, parse_rhs * s_unit)
-            sym_eq = self.__round_expr(sym_eq, num_decimal)
         else:
             s_unit = self.__unit_pint_2_unit_sympy(pint_unit)
             sym_eq = Eq(parse_lhs, parse_rhs * s_unit)
-            sym_eq = self.__round_expr(sym_eq, num_decimal)
             self.__add_eq_to_namespace(sym_eq)
             res_eq = None
         # ================= display =======================================
