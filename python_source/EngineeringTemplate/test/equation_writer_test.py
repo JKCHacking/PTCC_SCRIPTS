@@ -1,5 +1,5 @@
 import unittest
-from src.ptcc_module import EquationWriter
+from src.ptcc_module import EquationWriter, CustomDisplay
 from sympy import *
 import sympy.physics.units as u
 
@@ -9,7 +9,8 @@ class EquationWriterTest(unittest.TestCase):
         hspace = 2
         font_name = "Times New Roman"
         font_size = 12
-        eq_writer = EquationWriter(hspace, font_name, font_size)
+        self.c_display = CustomDisplay()
+        eq_writer = EquationWriter(hspace, font_name, font_size, self.c_display)
         return eq_writer
 
     def test_define_001(self):
@@ -25,7 +26,7 @@ class EquationWriterTest(unittest.TestCase):
         Test equation with fraction and units.
         """
         eq_writer = self.typical_settings()
-        eq_writer.define("y = x/z", pref_unit="m")
+        eq_writer.define("y = x/z", unit="m")
         self.assertEqual("meter*x/z", str(eq_writer.equation_namespace["y"]))
 
     def test_define_003(self):
@@ -41,8 +42,8 @@ class EquationWriterTest(unittest.TestCase):
         Test simplifying integral equation
         """
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 2", pref_unit="m")
-        eq_writer.define("y = Integral(x**2)", evaluate=True)
+        eq_writer.define("x = 2", unit="m")
+        eq_writer.define("y = Integral(x**2)", simplify=True)
         self.assertEqual("2.67*meter**3", str(eq_writer.equation_namespace["y"]))
 
     def test_define_005(self):
@@ -58,8 +59,8 @@ class EquationWriterTest(unittest.TestCase):
         Test simplifying Derivatives
         """
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 2", pref_unit="m")
-        eq_writer.define("y = Derivative(x**2)", evaluate=True)
+        eq_writer.define("x = 2", unit="m")
+        eq_writer.define("y = Derivative(x**2)", simplify=True)
         self.assertEqual("4*meter", str(eq_writer.equation_namespace["y"]))
 
     def test_define_007(self):
@@ -76,7 +77,7 @@ class EquationWriterTest(unittest.TestCase):
         """
         eq_writer = self.typical_settings()
         eq_writer.define("x = 5")
-        eq_writer.define("y = Sum(x*i, (i, 0, 5))", evaluate=True)
+        eq_writer.define("y = Sum(x*i, (i, 0, 5))", simplify=True)
         self.assertEqual("75", str(eq_writer.equation_namespace["y"]))
 
     def test_define_009(self):
@@ -86,10 +87,10 @@ class EquationWriterTest(unittest.TestCase):
         annots = ["Primary Annotation Test", "Secondary Annotation Test1", "Secondary Annotation Test2"]
         eq_writer = self.typical_settings()
         eq_writer.define("y = x**2", annots=annots)
-        self.assertTrue("Annotation Test" in eq_writer.output)
-        self.assertTrue("Secondary Annotation Test1" in eq_writer.output)
-        self.assertTrue("Secondary Annotation Test2" in eq_writer.output)
-        self.assertTrue("<br>" in eq_writer.output)
+        self.assertTrue("Annotation Test" in self.c_display.writer_output)
+        self.assertTrue("Secondary Annotation Test1" in self.c_display.writer_output)
+        self.assertTrue("Secondary Annotation Test2" in self.c_display.writer_output)
+        self.assertTrue("<br>" in self.c_display.writer_output)
 
     def test_define_010(self):
         """
@@ -98,9 +99,9 @@ class EquationWriterTest(unittest.TestCase):
         annots = ["Primary Annotation Test", "Secondary Annotation Test1"]
         eq_writer = self.typical_settings()
         eq_writer.define("y = x**2", annots=annots)
-        self.assertTrue("Annotation Test" in eq_writer.output)
-        self.assertTrue("Secondary Annotation Test1" in eq_writer.output)
-        self.assertTrue("<br>" not in eq_writer.output)
+        self.assertTrue("Annotation Test" in self.c_display.writer_output)
+        self.assertTrue("Secondary Annotation Test1" in self.c_display.writer_output)
+        self.assertTrue("<br>" not in self.c_display.writer_output)
 
     def test_define_011(self):
         """
@@ -108,7 +109,7 @@ class EquationWriterTest(unittest.TestCase):
         """
         num_decimal = 10
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 3 * pi", evaluate=True, num_decimal=num_decimal)
+        eq_writer.define("x = 3 * pi", simplify=True, num_decimal=num_decimal)
         self.assertEqual(num_decimal, len(str(eq_writer.equation_namespace["x"]).split(".")[1]))
 
     def test_define_012(self):
@@ -117,7 +118,7 @@ class EquationWriterTest(unittest.TestCase):
         """
         num_decimal = 2
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 2 * 1.223491823091283012983", evaluate=True)
+        eq_writer.define("x = 2 * 1.223491823091283012983", simplify=True)
         self.assertEqual(num_decimal, len(str(eq_writer.equation_namespace["x"]).split(".")[1]))
 
     def test_define_013(self):
@@ -153,9 +154,9 @@ class EquationWriterTest(unittest.TestCase):
         result is a b = a * unit
         """
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 1", pref_unit="m")
-        eq_writer.define("w = 1", pref_unit="m")
-        eq_writer.define("y = x + w", evaluate=True)
+        eq_writer.define("x = 1", unit="m")
+        eq_writer.define("w = 1", unit="m")
+        eq_writer.define("y = x + w", simplify=True)
         self.assertEqual("2.0*meter", str(eq_writer.equation_namespace["y"]))
 
     def test_define_017(self):
@@ -165,9 +166,9 @@ class EquationWriterTest(unittest.TestCase):
         """
 
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 10", pref_unit="m")
-        eq_writer.define("w = 5", pref_unit="m")
-        eq_writer.define("y = x / w", evaluate=True)
+        eq_writer.define("x = 10", unit="m")
+        eq_writer.define("w = 5", unit="m")
+        eq_writer.define("y = x / w", simplify=True)
         self.assertEqual(0, len(eq_writer.equation_namespace["y"].atoms(u.Quantity)))
         self.assertEqual(parse_expr("2"), eq_writer.equation_namespace["y"])
 
@@ -178,9 +179,9 @@ class EquationWriterTest(unittest.TestCase):
         """
 
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 10", pref_unit="cm")
-        eq_writer.define("w = 5", pref_unit="mm")
-        eq_writer.define("y = x / w", evaluate=True)
+        eq_writer.define("x = 10", unit="cm")
+        eq_writer.define("w = 5", unit="mm")
+        eq_writer.define("y = x / w", simplify=True)
         self.assertEqual(0, len(eq_writer.equation_namespace["y"].atoms(u.Quantity)))
         self.assertEqual(parse_expr("20"), eq_writer.equation_namespace["y"])
 
@@ -191,11 +192,11 @@ class EquationWriterTest(unittest.TestCase):
         """
 
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 10", pref_unit="cm")
-        eq_writer.define("w = 5", pref_unit="mm")
-        eq_writer.define("y = x + w", evaluate=True)
+        eq_writer.define("x = 10", unit="cm")
+        eq_writer.define("w = 5", unit="mm")
+        eq_writer.define("y = x + w", simplify=True)
         self.assertEqual(1, len(eq_writer.equation_namespace["y"].atoms(u.Quantity)))
-        self.assertEqual("105.0*millimeter", str(eq_writer.equation_namespace["y"]))
+        self.assertEqual("10.5*centimeter", str(eq_writer.equation_namespace["y"]))
 
     def test_define_020(self):
         """
@@ -204,9 +205,9 @@ class EquationWriterTest(unittest.TestCase):
         """
 
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 10", pref_unit="cm")
-        eq_writer.define("w = 5", pref_unit="mm")
-        eq_writer.define("y = x + w + z", evaluate=True)
+        eq_writer.define("x = 10", unit="cm")
+        eq_writer.define("w = 5", unit="mm")
+        eq_writer.define("y = x + w + z", simplify=True)
         self.assertEqual(1, len(eq_writer.equation_namespace["y"].atoms(u.Quantity)))
         self.assertEqual("10.5*centimeter + z", str(eq_writer.equation_namespace["y"]))
 
@@ -220,7 +221,7 @@ class EquationWriterTest(unittest.TestCase):
         eq_writer.define("var_x = 30")
         eq_writer.define("var_y = 4")
         eq_writer.define("var_z = 5")
-        eq_writer.define("var_a = var_w * (var_v + var_x - var_y) / (var_z * 3)", evaluate=True)
+        eq_writer.define("var_a = var_w * (var_v + var_x - var_y) / (var_z * 3)", simplify=True)
         self.assertEqual("5.47", str(eq_writer.equation_namespace["var_a"]))
 
     def test_define_022(self):
@@ -228,6 +229,6 @@ class EquationWriterTest(unittest.TestCase):
         Test for simplifying equation to expression.
         """
         eq_writer = self.typical_settings()
-        eq_writer.define("x = 10", pref_unit="cm")
-        eq_writer.define("W_max = x + 2", evaluate=True)
+        eq_writer.define("x = 10", unit="cm")
+        eq_writer.define("W_max = x + 2", simplify=True)
         self.assertEqual("10.0*centimeter + 2.0", str(eq_writer.equation_namespace["W_max"]))

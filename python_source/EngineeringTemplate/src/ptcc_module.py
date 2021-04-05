@@ -5,27 +5,12 @@ import random
 import matplotlib.pyplot as plt
 from sympy import *
 from IPython.display import display, Markdown, HTML
-from pint.errors import UndefinedUnitError, DimensionalityError
-from abc import ABC, abstractmethod
-
-
-class Writer(ABC):
-    """
-    Abstract class for Writer Classes
-    """
-    @abstractmethod
-    def get_output(self):
-        pass
-
-    @abstractmethod
-    def set_output(self, output):
-        pass
+from pint.errors import UndefinedUnitError
 
 
 class CustomDisplay:
-    def __init__(self, *kwargs):
-        self.global_output = ""
-        self.args = kwargs
+    def __init__(self):
+        self.writer_output = ""
 
     def show(self):
         """
@@ -41,17 +26,8 @@ class CustomDisplay:
             =======
             None
         """
-        for writer in self.args:
-            if isinstance(writer, Writer):
-                writer_output = writer.get_output()
-                if writer_output:
-                    self.global_output += writer_output
-
-        display(Markdown(self.global_output))
-        self.global_output = ""
-        for writer in self.args:
-            if isinstance(writer, Writer):
-                writer.set_output("")
+        display(Markdown(self.writer_output))
+        self.writer_output = ""
 
     def hide_toggle(self, for_next=False):
         """
@@ -71,7 +47,7 @@ class CustomDisplay:
         this_cell = """$('div.cell.code_cell.rendered.selected')"""
         next_cell = this_cell + '.next()'
 
-        toggle_text = 'Toggle show/hide'  # text shown on toggle link
+        toggle_text = 'MODULES INITIALIZATION show/hide'  # text shown on toggle link
         target_cell = this_cell  # target cell to control with toggle
         js_hide_current = ''  # bit of JS to permanently hide code in current cell (only when toggling next cell)
 
@@ -102,18 +78,78 @@ class CustomDisplay:
         return HTML(html)
 
 
-class EquationWriter(Writer):
-    def __init__(self, h_space, font_name, font_size):
+class EquationWriter:
+    def __init__(self, h_space, font_name, font_size, c_display):
         self.h_space = str(h_space) + "in"
         self.font_name = font_name
         self.font_size = str(font_size) + "pt"
         self.equation_namespace = {}
-        self.output = ""
         self.is_structadeq = True
+        self.c_display = c_display
 
+        # initializing units
         self.UNIT = pint.UnitRegistry()
         # setting default unit system
         self.UNIT.default_system = 'SI'  # choices are ['Planck', 'SI', 'US', 'atomic', 'cgs', 'imperial', 'mks']
+
+        # define all units that will be used by PTCC
+        # +-------------------------------------------
+        Pa = u.Pa
+        kPa = u.kPa
+        MPa = u.Quantity("megapascal", abbrev="MPa")
+        MPa.set_global_relative_scale_factor(u.mega, u.Pa)
+        GPa = u.Quantity("gigapascal", abbrev="GPa")
+        GPa.set_global_relative_scale_factor(u.giga, u.Pa)
+        # +--------------------------------------------
+        m = u.m
+        km = u.km
+        cm = u.cm
+        mm = u.mm
+        dm = u.dm
+        um = u.um
+        nm = u.nm
+        pm = u.pm
+        # +--------------------------------------------
+        N = u.N
+        kN = u.Quantity("kilonewton", abbrev="kN")
+        kN.set_global_relative_scale_factor(u.kilo, u.N)
+        # +--------------------------------------------
+        g = u.g
+        kg = u.kg
+        mg = u.mg
+        # +--------------------------------------------
+        s = u.seconds
+        ms = u.milliseconds
+        # +--------------------------------------------
+        K = u.kelvin
+        J = u.joules
+        W = u.watts
+        # +--------------------------------------------
+        self.ptcc_units = {
+            "dimensionless": 1,
+            "pascal": Pa,
+            "kilopascal": kPa,
+            "megapascal": MPa,
+            "gigapascal": GPa,
+            "meter": m,
+            "kilometer": km,
+            "centimeter": cm,
+            "millimeter": mm,
+            "decimeter": dm,
+            "micrometer": um,
+            "nanometer": nm,
+            "picometer": pm,
+            "newton": N,
+            "kilonewton": kN,
+            "gram": g,
+            "kilogram": kg,
+            "milligram": mg,
+            "second": s,
+            "millisecond": ms,
+            "kelvin": K,
+            "joule": J,
+            "watt": W
+        }
 
     def setup_css(self):
         """
@@ -169,7 +205,7 @@ class EquationWriter(Writer):
                             negative=negative,
                             affirmative=affirmative.upper()
                         )
-        self.output += output_string
+        self.c_display.writer_output += output_string
 
     def assert_components(self, lhs_var_str, rhs_var_str, expected, descr_lhs, descr_rhs, component, statement):
         try:
@@ -227,11 +263,11 @@ class EquationWriter(Writer):
                                 font_name=self.font_name,
                                 font_size=self.font_size
                             )
-            self.output += output_string
+            self.c_display.writer_output += output_string
         else:
             print("Expression should be in the form [N * unit] (e.g 3 * mm)")
 
-    def define(self, equation, annots=None, pref_unit="dimensionless", evaluate=False, num_decimal=2, inline=False):
+    def define(self, equation, annots=None, unit="dimensionless", simplify=False, num_decimal=2, inline=False):
         """
             Desc
             ====
@@ -242,9 +278,9 @@ class EquationWriter(Writer):
             equation:str - Equation in string form. example: "y = m * x + b"
             annots:list - List of strings to use for annotating the equation. the first item in the list will be the
                                  primary annotation and the other items will be the secondary annotations.
-            pref_unit:str - Unit to use for the equation. Please check Sympy Documentation for all the supported
+            unit:str - Unit to use for the equation. Please check Sympy Documentation for all the supported
                                    units.
-            evaluate:bool - If True, the variables in the equation will be substitute by values defined and
+            simplify:bool - If True, the variables in the equation will be substitute by values defined and
                                    simplify the equation.
             num_decimal:int - number of decimal places to be displayed in the result. This will only work if evaluate
                                      is True.
@@ -256,105 +292,76 @@ class EquationWriter(Writer):
             =======
             None
         """
+        # ========================== parsing ===========================
         if equation.count("=") != 1:
             print("You entered an invalid Equation.")
             return
 
+        left_expr, right_expr = equation.split("=")
+        left_expr = left_expr.strip()
+        right_expr = right_expr.strip()
+
+        # convert a string equation to a sympy equation
+        try:
+            parse_lhs = parse_expr(left_expr)
+            parse_rhs = parse_expr(right_expr)
+        except SyntaxError:
+            print("You have entered an invalid equation.")
+            return
+
+        # convert  unit string pint unit.
+        pint_unit = self.__unit_str_2_unit_pint(unit)
+        if pint_unit is None:
+            print("Unit cannot be found")
+            return
+
+        # ================= processing and simplifications ==============
+        if simplify:
+            sym_eq = Eq(parse_lhs, parse_rhs)
+            res_eq = self.__simplify(sym_eq, pint_unit)
+            res_eq = self.__round_expr(res_eq, num_decimal)
+            self.__add_eq_to_namespace(res_eq)
+        else:
+            s_unit = self.__unit_pint_2_unit_sympy(pint_unit)
+            sym_eq = Eq(parse_lhs, parse_rhs * s_unit)
+            sym_eq = self.__round_expr(sym_eq, num_decimal)
+            res_eq = None
+            self.__add_eq_to_namespace(sym_eq)
+        # ================= display =======================================
         primary_annotation = ""
         secondary_annotations = ""
         if annots:
             primary_annotation = annots[0]
             secondary_annotations = "<br>".join(annots[1:])
 
-        left_expr, right_expr = equation.split("=")
-        left_expr = left_expr.strip()
-        right_expr = right_expr.strip()
-
-        if pref_unit != "dimensionless":
-            unit_obj = self.__unitstr2unitsympy(pref_unit)
-            if unit_obj is None:
-                return
-        else:
-            unit_obj = 1
-
-        # convert a string equation to a sympy equation
-        try:
-            parse_lhs = parse_expr(left_expr)
-            parse_rhs = parse_expr(right_expr) * unit_obj
-        except SyntaxError:
-            print("You have entered an invalid equation.")
-            return
-
-        sym_eq = Eq(parse_lhs, parse_rhs)
-        # convert sympy equation to latex string.
-        eq_latex = self.__convert_to_latex(sym_eq)
-
-        if evaluate:
-            res_eq = self.__evaluate(sym_eq)
-            res_eq = self.__round_expr(res_eq, num_decimal)
-            # update the equation namespace
-            self.__add_eq_to_namespace(res_eq)
-            res_eq_latex = self.__convert_to_latex(res_eq)
+        sym_eq_latex = self.__convert_to_latex(sym_eq)
+        if simplify:
             if inline:
-                res_eq_rhs = res_eq.split("=")[1].strip()
-                out_latex = "{} = {}".format(eq_latex, res_eq_rhs)
-                output_local = self.__create_markdown(out_latex,
+                res_eq_rhs_latex = self.__convert_to_latex(res_eq.rhs)
+                out_latex = "{} = {}".format(sym_eq_latex, res_eq_rhs_latex)
+                out_markdown = self.__create_markdown(out_latex,
                                                       self.h_space,
                                                       primary_annotation,
                                                       secondary_annotations)
             else:
-                output_local = self.__create_markdown(eq_latex,
+                res_eq_latex = self.__convert_to_latex(res_eq)
+                out_markdown = self.__create_markdown(sym_eq_latex,
                                                       self.h_space,
                                                       primary_annotation,
                                                       secondary_annotations)
-                output_local += self.__create_markdown(res_eq_latex, self.h_space)
+                out_markdown += self.__create_markdown(res_eq_latex, self.h_space)
         else:
-            sym_eq = self.__round_expr(sym_eq, num_decimal)
-            # add the equation to the namespace
-            self.__add_eq_to_namespace(sym_eq)
-            output_local = self.__create_markdown(eq_latex,
+            out_markdown = self.__create_markdown(sym_eq_latex,
                                                   self.h_space,
                                                   primary_annotation,
                                                   secondary_annotations)
-        self.output += output_local
+        self.c_display.writer_output += out_markdown
 
-    def get_output(self):
+    def __simplify(self, equation, unit_pint):
         """
             Desc
             ====
-            Interface method for getting the output of the equation writer.
-
-            Parameters
-            =========
-            None
-
-            Returns
-            =======
-            None
-        """
-        return self.output
-
-    def set_output(self, output):
-        """
-            Desc
-            ====
-            Method for setting the output
-
-            Parameters
-            ==========
-            output:str - string to set for the output
-
-            Returns
-            =======
-            None
-        """
-        self.output = output
-
-    def __evaluate(self, equation):
-        """
-            Desc
-            ====
-            This method will evaluate the equation, that is will substitute all the variables in the equation
+            This method will simplify the equation, that is will substitute all the variables in the equation
             with their corresponding values previously defined in the equation namespace. It will also simplify the
             final result by using the base unit of its dimension.
 
@@ -366,6 +373,9 @@ class EquationWriter(Writer):
             =======
             res_equation:Sympy.Equality - The resulting equation after evaluation.
         """
+        if unit_pint == "dimensionless":
+            unit_pint = 1
+
         # get only the needed variables for substitution
         var_list = list(equation.rhs.atoms(Symbol))
         var_sub_dict = {}
@@ -381,42 +391,51 @@ class EquationWriter(Writer):
         res_equation = res_equation.doit()
         # simplify any unit specific operations
         res_equation = Eq(res_equation.lhs, simplify(res_equation.rhs))
-        if len(res_equation.rhs.atoms(u.Quantity)) != 0:
-            try:
-                # simplify it more using pint, convert sym eq to pint eq
-                pint_eq = self.UNIT(str(res_equation.rhs)).to_compact().to_reduced_units()
 
-                # convert back to sym_eq
-                if str(pint_eq.units) != "dimensionless":
-                    sym_unit = self.__unitstr2unitsympy(str(pint_eq.units))
-                    res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)) * sym_unit)
+        # if magnitude is a number
+        if len(res_equation.rhs.atoms(Symbol)) == 0 and len(res_equation.rhs.atoms(Number)) == 1:
+            if unit_pint != 1:
+                # create pint expression
+                pint_expr = self.UNIT(str(res_equation.rhs * unit_pint))
+                # simplify pint expression using pint functions
+                pint_expr = pint_expr.to_compact().to_reduced_units()
+                # get magnitude and unit from pint expression
+                mag = pint_expr.magnitude
+                p_unit = str(pint_expr.units)
+                s_unit = self.__unit_pint_2_unit_sympy(p_unit)
+                if s_unit:
+                    # create new sympy equation (lhs = magnitude * unit:sympy)
+                    res_equation = Eq(res_equation.lhs, mag * s_unit)
                 else:
-                    res_equation = Eq(res_equation.lhs, parse_expr(str(pint_eq.magnitude)))
-            except (UndefinedUnitError, DimensionalityError):
-                pass
+                    print("Unit cannot be found")
+                    res_equation = None
+            else:
+                res_equation = Eq(res_equation.lhs, res_equation.rhs)
+        else:  # if magnitude has variables
+            s_unit = self.__unit_pint_2_unit_sympy(unit_pint)
+            if s_unit:
+                res_equation = Eq(res_equation.lhs, res_equation.rhs * s_unit)
+            else:
+                print("Unit cannot be found")
+                res_equation = None
         return res_equation
 
-    def __unitstr2unitsympy(self, str_unit):
-        """
-            Desc
-            ====
-            Method to convert unit in string to sympy unit.
-
-            Parameters
-            ==========
-            str_unit: str - Unit name in string.
-
-            Returns
-            =======
-            unit_obj:sympyunit - Sympy unit
-        """
-        unit_obj = None
+    def __unit_str_2_unit_pint(self, unit_str):
         try:
-            # converting string unit input to a Sympy unit object
-            unit_obj = eval("u.{}".format(str_unit))
-        except (AttributeError, SyntaxError):
-            print("You have entered an invalid unit: {}. Note: Units are case-sensitive.".format(str_unit))
-        return unit_obj
+            pint_unit = str(self.UNIT(unit_str).units)
+        except UndefinedUnitError:
+            pint_unit = None
+        return pint_unit
+
+    def __unit_pint_2_unit_sympy(self, unit_pint):
+        if unit_pint == 1:
+            unit_pint = "dimensionless"
+
+        try:
+            unit_sympy = self.ptcc_units[unit_pint]
+        except KeyError:
+            unit_sympy = None
+        return unit_sympy
 
     def __round_expr(self, equation, num_digits):
         """
@@ -500,11 +519,11 @@ class EquationWriter(Writer):
         return eq_markdown
 
 
-class TextWriter(Writer):
-    def __init__(self, font_name, font_size):
+class TextWriter:
+    def __init__(self, font_name, font_size, c_display):
         self.font_name = font_name
         self.font_size = str(font_size) + "pt"
-        self.output = ""
+        self.c_display = c_display
 
     def define(self, text,  bold=False, underline=False, italic=False, text_position="left"):
         """
@@ -530,7 +549,7 @@ class TextWriter(Writer):
         font_decor = "underline" if underline else "normal"
 
         output = self.__create_markdown(text, font_weight, font_style, font_decor,  text_position)
-        self.output += output
+        self.c_display.writer_output += output
 
     def create_hspace(self, width):
         """
@@ -549,7 +568,7 @@ class TextWriter(Writer):
         width = str(width)
         hspace_markdown = "<div style='float:left;overflow:hidden;height:1px;width:{width}in;'></div>".format(
             width=width)
-        self.output += hspace_markdown
+        self.c_display.writer_output += hspace_markdown
 
     def create_vspace(self, height):
         """
@@ -568,7 +587,7 @@ class TextWriter(Writer):
         height = str(height)
         vspace_markdown = "<div style='float:left;overflow:hidden;height:{height}in;width:100%;'></div>".format(
             height=height)
-        self.output += vspace_markdown
+        self.c_display.writer_output += vspace_markdown
 
     def __create_markdown(self, text, font_weight, font_style, font_decor, text_position):
         """
@@ -608,41 +627,10 @@ class TextWriter(Writer):
             print("wrong text position value.")
         return output_markdown
 
-    def get_output(self):
-        """
-            Desc
-            ====
-            Interface method for getting the output of the text writer.
 
-            Parameters
-            =========
-            None
-
-            Returns
-            =======
-            None
-        """
-        return self.output
-
-    def set_output(self, output):
-        """
-            Desc
-            ====
-            Interface method for setting the output of the text writer
-
-            Parameters
-            ==========
-            output:str - string to set to the output.
-
-            Returns
-            =======
-            None
-        """
-        self.output = output
-
-
-class ImageWriter(Writer):
-    def __init__(self, image_folder):
+class ImageWriter:
+    def __init__(self, image_folder, c_display):
+        self.c_display = c_display
         self.output = ""
         self.image_folder = image_folder
         self.img_folder_abs_path = os.path.join(os.getcwd(), image_folder)
@@ -663,7 +651,8 @@ class ImageWriter(Writer):
             =======
             None
         """
-        css = "<style>.horizontal {display:inline-block; padding-right:6px} .vertical{padding-bottom:6px;}</style>"
+        css = "<style>.horizontal {display:inline-block; padding-right:6px} .vertical{padding-bottom:6px;}" \
+              ".template-image {border-width:1px; border-style:solid;}</style>"
         display(HTML(css))
 
     def define(self, image_names, captions, width=500, height=300, layout="horizontal"):
@@ -691,7 +680,8 @@ class ImageWriter(Writer):
                 for i, (image_name, caption) in enumerate(zip(image_names, captions)):
                     image_path = os.path.join(self.image_folder, image_name)
                     if os.path.exists(image_path):
-                        figure_html = "<figure><img src='{s}' width='{w}px' height='{h}px' alt='missing jpg'>" \
+                        figure_html = "<figure><img class='template-image' src='{s}' width='{w}px' height='{h}px' " \
+                                      "alt='missing jpg'>" \
                                   "<figcaption>{c}</figcaption></figure>".format(
                                     s=image_path,
                                     w=width,
@@ -707,56 +697,33 @@ class ImageWriter(Writer):
                             break
                     else:
                         print("Image {} does not exists".format(image_name))
-                self.output += output
+                self.c_display.writer_output += output
             else:
                 print("number of image names and caption names does not match.")
         else:
             print("Please pass a list of image name or list of caption.")
 
-    def get_output(self):
-        """
-            Desc
-            ====
-            Interface method for getting the output of the Image writer.
 
-            Parameters
-            =========
-            None
-
-            Returns
-            =======
-            None
-        """
-        return self.output
-
-    def set_output(self, output):
-        """
-            Desc
-            ====
-            Interface method for setting the output of the Image writer
-
-            Parameters
-            ==========
-            output:str - string to set to the output.
-
-            Returns
-            =======
-            None
-        """
-        self.output = output
-
-
-class TableWriter(Writer):
-    def __init__(self):
-        self.output = ""
-        self.table = "<table>" \
-                      "<caption>{caption}</caption>" \
-                      "<thead>{head}</thead>" \
-                      "<tbody>{body}</tbody>" \
-                      "</table>"
+class TableWriter:
+    def __init__(self, c_display):
+        self.c_display = c_display
+        self.table = ""
         self.caption = ""
         self.head = ""
         self.body = ""
+
+    def start(self):
+        self.table = "<table>" \
+                     "<caption>{caption}</caption>" \
+                     "<thead>{head}</thead>" \
+                     "<tbody>{body}</tbody>" \
+                     "</table>"
+        self.caption = ""
+        self.head = ""
+        self.body = ""
+
+    def end(self):
+        self.c_display.writer_output += self.table.format(caption=self.caption, head=self.head, body=self.body)
 
     def setup_css(self):
         """
@@ -778,7 +745,7 @@ class TableWriter(Writer):
               "</style>"
         display(HTML(css))
 
-    def data_cell(self, value, row_span=1, col_span=1):
+    def create_data_cell(self, value, row_span=1, col_span=1):
         """
             Desc
             ====
@@ -798,7 +765,7 @@ class TableWriter(Writer):
                                                                                row_span=row_span,
                                                                                col_span=col_span)
 
-    def header_cell(self, value, row_span=1, col_span=1):
+    def create_header_cell(self, value, row_span=1, col_span=1):
         """
             Desc
             ====
@@ -887,47 +854,6 @@ class TableWriter(Writer):
         """
         row = self.__create_row(cell_list)
         self.body += row
-
-    def get_output(self):
-        """
-            Desc
-            ====
-            Interface method for getting the output of the Table writer.
-
-            Parameters
-            =========
-            None
-
-            Returns
-            =======
-            None
-        """
-        self.output = self.table.format(caption=self.caption, head=self.head, body=self.body)
-        return self.output
-
-    def set_output(self, output):
-        """
-            Desc
-            ====
-            Interface method for setting the output of the Table writer
-
-            Parameters
-            ==========
-            output:str - string to set to the output.
-
-            Returns
-            =======
-            None
-        """
-        self.output = output
-        self.table = "<table>" \
-                     "<caption>{caption}</caption>" \
-                     "<thead>{head}</thead>" \
-                     "<tbody>{body}</tbody>" \
-                     "</table>"
-        self.caption = output
-        self.head = output
-        self.body = output
 
 
 class GraphWriter:
