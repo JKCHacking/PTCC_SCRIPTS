@@ -195,9 +195,9 @@ class EquationWriter:
 
     def conclude(self, component, affirmative):
         negative = ""
-        if self.is_structadeq:
+        if not self.is_structadeq:
             negative = "NOT "
-        output_string = "<div style='font-family:{font_name}, Arial; font-size:{font_size}'><u><b>THUS THE " \
+        output_string = "<div style='font-family:{font_name}, Arial; font-size:{font_size}'><u><b>THUS, THE " \
                         "{component} IS {negative}{affirmative}</b></u></div>".format(
                             font_name=self.font_name,
                             font_size=self.font_size,
@@ -266,6 +266,29 @@ class EquationWriter:
             self.c_display.writer_output += output_string
         else:
             print("Expression should be in the form [N * unit] (e.g 3 * mm)")
+
+    def convert(self, var_name, unit_to=""):
+        res_expr = None
+        expression = None
+        try:
+            expression = self.equation_namespace[var_name]
+        except KeyError:
+            print("Variable does not exists")
+
+        if expression:
+            if unit_to == "":
+                print("Please input a unit to convert to.")
+            elif len(expression.atoms(Symbol)) > 2:
+                print("Convert only accepts N * unit expression. where N is any number.")
+            else:
+                unit_symp = self.__unit_str_2_sympy_unit(unit_to)
+                if not unit_symp:
+                    print("Cannot find unit.")
+                else:
+                    res_expr = u.convert_to(expression, unit_symp)
+                    # update
+                    self.__add_eq_to_namespace(Eq(parse_expr(var_name), res_expr))
+        return res_expr
 
     def define(self, equation, annots=None, unit="dimensionless", simplify=False, num_decimal=2, inline=False):
         """
@@ -439,6 +462,13 @@ class EquationWriter:
         except KeyError:
             unit_sympy = None
         return unit_sympy
+
+    def __unit_str_2_sympy_unit(self, unit_str):
+        try:
+            unit_symp = self.ptcc_units[unit_str]
+        except KeyError:
+            unit_symp = None
+        return unit_symp
 
     def __round_expr(self, equation, num_digits):
         """
