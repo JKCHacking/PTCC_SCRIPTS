@@ -194,6 +194,21 @@ class EquationWriter:
         display(HTML(css))
 
     def conclude(self, component, affirmative):
+        """
+        Desc
+        ====
+        This method is used for creating concluding statement. It will generate positive conclusion if there are no
+        failed comparison in Compare() method.
+
+        Parameters
+        ==========
+        component:str - The name of the component to be checked
+        affirmative:str - affirmative statement if structurally adequate.
+
+        Return
+        ======
+        None
+        """
         negative = ""
         if not self.is_structadeq:
             negative = "NOT "
@@ -208,6 +223,26 @@ class EquationWriter:
         self.c_display.writer_output += output_string
 
     def assert_components(self, lhs_var_str, rhs_var_str, expected, descr_lhs, descr_rhs, component, statement):
+        """
+        Desc
+        ====
+        Function that generates a comparison block.
+        Compares computed values to allowable values.
+
+        Parameters
+        ==========
+        lhs_var_str:str - the left hand side variable.
+        rhs_var_str:str - the right hand side variable.
+        expected:str - the expected comparison symbol that the two variables should be used to compared. (= , <, >)
+        descr_lhs:str - left hand side variable description.
+        descr_rhs:str - right hand side variable description.
+        component:str - component name to be checked.
+        statement:str - the statement if the component is structurally adequate.
+
+        Return
+        ======
+        None
+        """
         try:
             lhs = self.equation_namespace[lhs_var_str]
             rhs = self.equation_namespace[rhs_var_str]
@@ -268,6 +303,31 @@ class EquationWriter:
             print("Expression should be in the form [N * unit] (e.g 3 * mm)")
 
     def convert(self, var_name, unit_to=""):
+        """
+        Desc
+        ====
+        Helper method for converting variable stored in EquationNamespace to the desired unit.
+        This method only receives [y = N * unit] equation. this method will overwrite the current value of the
+        variable in the EquationNamespace.
+
+        Parameters
+        ==========
+        var_name:str - variable name in string stored in the EquationNamespace.
+
+        unit_to:str - the unit name that you want to convert to. Note that shortcut name of the unit will not work.
+        you should input the full name of the unit.
+        e.g.,
+            millimeter instead of mm.
+
+        Return
+        ======
+        res_expr:sympy equation - the result equation after conversion.
+        returns None if:
+            * var_name does not exists as key in the EquationNamespace.
+            * unit_to is an empty string.
+            * right hand side of the Equation is not [N * unit] form.
+            * unit_to does not exist in the ptcc_unit dictionary.
+        """
         res_expr = None
         expression = None
         try:
@@ -299,17 +359,22 @@ class EquationWriter:
             Parameters
             ==========
             equation:str - Equation in string form. example: "y = m * x + b"
+
             annots:list - List of strings to use for annotating the equation. the first item in the list will be the
-                                 primary annotation and the other items will be the secondary annotations.
+            primary annotation and the other items will be the secondary annotations.
+
             unit:str - Unit to use for the equation. Please check Sympy Documentation for all the supported
-                                   units.
-            simplify:bool - If True, the variables in the equation will be substitute by values defined and
-                                   simplify the equation.
+            units.
+
+            simplify:bool - If True, the variables in the equation will be substituted by values defined in the
+            Equation Namespace and simplify the equation.
+
             num_decimal:int - number of decimal places to be displayed in the result. This will only work if evaluate
-                                     is True.
+            is True.
+
             inline:bool - If True, the resulting equation will be in the same line with the original equation.
-                                 If False, the resulting equation will be in the new line from the original equation.
-                                 This will only work if evaluate is True.
+            If False, the resulting equation will be in the new line from the original equation.
+            This will only work if simplify is True.
 
             Returns
             =======
@@ -387,7 +452,7 @@ class EquationWriter:
         """
             Desc
             ====
-            This method will simplify the equation, that is will substitute all the variables in the equation
+            This method will simplify the equation, that is, it will substitute all the variables in the equation
             with their corresponding values previously defined in the equation namespace. It will also simplify the
             final result by using the base unit of its dimension.
 
@@ -909,8 +974,7 @@ class GraphWriter:
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
         ax.set_title(title)
+        ax.grid(grid)
 
         if legend:
             ax.legend()
-        if grid:
-            ax.grid(grid)
