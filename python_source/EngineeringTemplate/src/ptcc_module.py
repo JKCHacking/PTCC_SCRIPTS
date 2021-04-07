@@ -749,7 +749,7 @@ class ImageWriter:
             =======
             None
         """
-        css = "<style>.horizontal {display:inline-block; padding-right:6px} .vertical{padding-bottom:6px;}" \
+        css = "<style>.horizontal {display:inline-block; padding:6px;} .vertical{padding:6px;}" \
               ".template-image {border-width:1px; border-style:solid;}</style>"
         display(HTML(css))
 
