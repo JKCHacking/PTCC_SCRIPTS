@@ -61,7 +61,7 @@ class EquationWriterTest(unittest.TestCase):
         eq_writer = self.typical_settings()
         eq_writer.define("x = 2", unit="m")
         eq_writer.define("y = Derivative(x**2)", simplify=True)
-        self.assertEqual("4*meter", str(eq_writer.equation_namespace["y"]))
+        self.assertEqual("4.0*meter", str(eq_writer.equation_namespace["y"]))
 
     def test_define_007(self):
         """
@@ -78,7 +78,7 @@ class EquationWriterTest(unittest.TestCase):
         eq_writer = self.typical_settings()
         eq_writer.define("x = 5")
         eq_writer.define("y = Sum(x*i, (i, 0, 5))", simplify=True)
-        self.assertEqual("75", str(eq_writer.equation_namespace["y"]))
+        self.assertEqual(75, int(eq_writer.equation_namespace["y"]))
 
     def test_define_009(self):
         """
@@ -183,7 +183,7 @@ class EquationWriterTest(unittest.TestCase):
         eq_writer.define("w = 5", unit="mm")
         eq_writer.define("y = x / w", simplify=True)
         self.assertEqual(0, len(eq_writer.equation_namespace["y"].atoms(u.Quantity)))
-        self.assertEqual(parse_expr("20"), eq_writer.equation_namespace["y"])
+        self.assertEqual(20, int(eq_writer.equation_namespace["y"]))
 
     def test_define_019(self):
         """
@@ -236,4 +236,48 @@ class EquationWriterTest(unittest.TestCase):
     def test_define_023(self):
         eq_writer = self.typical_settings()
         eq_writer.define("x = 1000", unit="MPa", simplify=True)
-        self.assertEqual("1.0*gigapascal", str(eq_writer.equation_namespace["x"]))
+        self.assertEqual("1000.0*megapascal", str(eq_writer.equation_namespace["x"]))
+
+    def test_define_024(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("x = 4", unit="N")
+        eq_writer.define("w = 2", unit="mm ** 2")
+        eq_writer.define("y = x / w", unit="MPa", simplify=True)
+        self.assertEqual("2.0*megapascal", str(eq_writer.equation_namespace["y"]))
+
+    def test_define_025(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("x = 2", unit="N/mm ** 2")
+        self.assertEqual("2*newton/millimeter**2", str(eq_writer.equation_namespace["x"]))
+
+    def test_define_026(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("x = 4", unit="N")
+        eq_writer.define("y = 3", unit="mm")
+        eq_writer.define("z = x + y", simplify=True)
+        eq_writer.define("w = x / y ** 2", unit="MPa", simplify=True)
+        self.assertEqual("0.44*megapascal", str(eq_writer.equation_namespace["w"]))
+
+    def test_define_027(self):
+        eq_writer = self.typical_settings()
+        unit_list = ["pascal",
+                     "megapascal",
+                     "kilopascal",
+                     "gigapascal",
+                     "meter",
+                     "kilometer",
+                     "millimeter",
+                     "newton",
+                     "kilonewton",
+                     "gram",
+                     "kilogram",
+                     "milligram",
+                     "second",
+                     "millisecond",
+                     "microsecond",
+                     "kelvin"]
+
+        for i, unit in enumerate(unit_list):
+            eq_writer.define("x{} = 1".format(i), unit=unit)
+        for i, unit in enumerate(unit_list):
+            self.assertEqual(unit, str(eq_writer.equation_namespace["x{}".format(i)]))

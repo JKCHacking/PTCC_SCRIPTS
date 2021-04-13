@@ -84,6 +84,7 @@ class EquationWriter:
         self.font_name = font_name
         self.font_size = str(font_size) + "pt"
         self.equation_namespace = {}
+        self.annotations = {}
         self.is_structadeq = True
         self.c_display = c_display
 
@@ -92,64 +93,14 @@ class EquationWriter:
         # setting default unit system
         self.UNIT.default_system = 'SI'  # choices are ['Planck', 'SI', 'US', 'atomic', 'cgs', 'imperial', 'mks']
 
-        # define all units that will be used by PTCC
-        # +-------------------------------------------
-        Pa = u.Pa
-        kPa = u.kPa
-        MPa = u.Quantity("megapascal", abbrev="MPa")
-        MPa.set_global_relative_scale_factor(u.mega, u.Pa)
-        GPa = u.Quantity("gigapascal", abbrev="GPa")
-        GPa.set_global_relative_scale_factor(u.giga, u.Pa)
-        # +--------------------------------------------
-        m = u.m
-        km = u.km
-        cm = u.cm
-        mm = u.mm
-        dm = u.dm
-        um = u.um
-        nm = u.nm
-        pm = u.pm
-        # +--------------------------------------------
-        N = u.N
-        kN = u.Quantity("kilonewton", abbrev="kN")
-        kN.set_global_relative_scale_factor(u.kilo, u.N)
-        # +--------------------------------------------
-        g = u.g
-        kg = u.kg
-        mg = u.mg
-        # +--------------------------------------------
-        s = u.seconds
-        ms = u.milliseconds
-        # +--------------------------------------------
-        K = u.kelvin
-        J = u.joules
-        W = u.watts
-        # +--------------------------------------------
-        self.ptcc_units = {
-            "dimensionless": 1,
-            "pascal": Pa,
-            "kilopascal": kPa,
-            "megapascal": MPa,
-            "gigapascal": GPa,
-            "meter": m,
-            "kilometer": km,
-            "centimeter": cm,
-            "millimeter": mm,
-            "decimeter": dm,
-            "micrometer": um,
-            "nanometer": nm,
-            "picometer": pm,
-            "newton": N,
-            "kilonewton": kN,
-            "gram": g,
-            "kilogram": kg,
-            "milligram": mg,
-            "second": s,
-            "millisecond": ms,
-            "kelvin": K,
-            "joule": J,
-            "watt": W
-        }
+        # define all units that is not supported by Sympy but needed by PTCC
+        u.megapascal = u.Quantity("megapascal", abbrev="MPa")
+        u.megapascal.set_global_relative_scale_factor(u.mega, u.Pa)
+        u.gigapascal = u.Quantity("gigapascal", abbrev="GPa")
+        u.gigapascal.set_global_relative_scale_factor(u.giga, u.Pa)
+        u.kilonewton = u.Quantity("kilonewton", abbrev="kN")
+        u.kilonewton.set_global_relative_scale_factor(u.kilo, u.N)
+        u.kilopascal = u.kPa
 
     def setup_css(self):
         """
@@ -314,10 +265,7 @@ class EquationWriter:
         ==========
         var_name:str - variable name in string stored in the EquationNamespace.
 
-        unit_to:str - the unit name that you want to convert to. Note that shortcut name of the unit will not work.
-        you should input the full name of the unit.
-        e.g.,
-            millimeter instead of mm.
+        unit_to:str - the unit name that you want to convert to.
 
         Return
         ======
@@ -325,8 +273,6 @@ class EquationWriter:
         returns None if:
             * var_name does not exists as key in the EquationNamespace.
             * unit_to is an empty string.
-            * right hand side of the Equation is not [N * unit] form.
-            * unit_to does not exist in the ptcc_unit dictionary.
         """
         res_expr = None
         expression = None
@@ -338,19 +284,17 @@ class EquationWriter:
         if expression:
             if unit_to == "":
                 print("Please input a unit to convert to.")
-            elif len(expression.atoms(Symbol)) > 2:
-                print("Convert only accepts N * unit expression. where N is any number.")
             else:
-                unit_symp = self.__unit_str_2_sympy_unit(unit_to)
+                unit_symp = self.__unit_str_2_unit_sympy(unit_to)
                 if not unit_symp:
-                    print("Cannot find unit.")
+                    print("Cannot find unit {}.".format(unit_to))
                 else:
                     res_expr = u.convert_to(expression, unit_symp)
                     # update
                     self.__add_eq_to_namespace(Eq(parse_expr(var_name), res_expr))
         return res_expr
 
-    def define(self, equation, annots=None, unit="dimensionless", simplify=False, num_decimal=2, inline=False):
+    def define(self, equation, unit="dimensionless", annots=None,  simplify=False, num_decimal=2, inline=False):
         """
             Desc
             ====
@@ -397,26 +341,23 @@ class EquationWriter:
             print("You have entered an invalid equation.")
             return
 
-        # convert  unit string pint unit.
-        pint_unit = self.__unit_str_2_unit_pint(unit)
-        if pint_unit is None:
-            print("Unit cannot be found")
-            return
-
         # ================= processing and simplifications ==============
-        if simplify:
-            sym_eq = Eq(parse_lhs, parse_rhs)
-            res_eq = self.__simplify(sym_eq, pint_unit)
-            res_eq = self.__round_expr(res_eq, num_decimal)
-            self.__add_eq_to_namespace(res_eq)
-
-            # temporary hack for bug non inline printing
-            s_unit = self.__unit_pint_2_unit_sympy(pint_unit)
-            sym_eq = Eq(parse_lhs, parse_rhs * s_unit)
+        sympy_unit = self.__unit_str_2_unit_sympy(unit)
+        if not sympy_unit:
+            print("Cannot find unit {}".format(unit))
+            return
+        if len(parse_rhs.atoms(u.Quantity)) == 0:
+            sym_eq = Eq(parse_lhs, parse_rhs * sympy_unit)
         else:
-            s_unit = self.__unit_pint_2_unit_sympy(pint_unit)
-            sym_eq = Eq(parse_lhs, parse_rhs * s_unit)
-            self.__add_eq_to_namespace(sym_eq)
+            sym_eq = Eq(parse_lhs, u.convert_to(parse_rhs, sympy_unit))
+        self.__add_eq_to_namespace(sym_eq)
+
+        if simplify:
+            parse_res_rhs = self.__simplify(parse_rhs, unit)
+            parse_res_rhs = self.__round_expr(parse_res_rhs, num_decimal)
+            res_eq = Eq(parse_lhs, parse_res_rhs)
+            self.__add_eq_to_namespace(res_eq)
+        else:
             res_eq = None
         # ================= display =======================================
         primary_annotation = ""
@@ -448,7 +389,7 @@ class EquationWriter:
                                                   secondary_annotations)
         self.c_display.writer_output += out_markdown
 
-    def __simplify(self, equation, unit_pint):
+    def __simplify(self, rhs_expr, unit_str):
         """
             Desc
             ====
@@ -464,78 +405,85 @@ class EquationWriter:
             =======
             res_equation:Sympy.Equality - The resulting equation after evaluation.
         """
-        if str(unit_pint) == "dimensionless":
-            unit_pint = 1
-
-        # get only the needed variables for substitution
-        var_list = list(equation.rhs.atoms(Symbol))
-        var_sub_dict = {}
-        for sym_var in var_list:
-            try:
-                sym_var_str = str(sym_var)
-                var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
-            except KeyError:
-                pass
-        # substitute all variables in the equation
-        res_equation = equation.subs(var_sub_dict).evalf()
-        # simplify any special operations ( integral, derivative etc.)
-        res_equation = res_equation.doit()
-        # simplify any unit specific operations
-        res_equation = Eq(res_equation.lhs, simplify(res_equation.rhs))
-
-        # if magnitude is a number
-        if len(res_equation.rhs.atoms(Symbol)) == 0 and len(res_equation.rhs.atoms(Number)) == 1:
-            if unit_pint != 1:
-                # create pint expression
-                pint_expr = self.UNIT(str(res_equation.rhs * unit_pint))
-                # simplify pint expression using pint functions
-                pint_expr = pint_expr.to_compact().to_reduced_units()
-                # get magnitude and unit from pint expression
-                mag = pint_expr.magnitude
-                p_unit = str(pint_expr.units)
-                s_unit = self.__unit_pint_2_unit_sympy(p_unit)
-                if s_unit:
-                    # create new sympy equation (lhs = magnitude * unit:sympy)
-                    res_equation = Eq(res_equation.lhs, mag * s_unit)
-                else:
-                    print("Unit cannot be found")
-                    res_equation = None
+        sympy_unit = self.__unit_str_2_unit_sympy(unit_str)
+        pint_unit = self.__unit_str_2_unit_pint(unit_str)
+        res_rhs_expr = None
+        if sympy_unit is None or pint_unit is None:
+            print("Cannot find unit {}".format(unit_str))
+        else:
+            # get only the needed variables for substitution
+            var_list = list(rhs_expr.atoms(Symbol))
+            var_sub_dict = {}
+            for sym_var in var_list:
+                try:
+                    sym_var_str = str(sym_var)
+                    var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
+                except KeyError:
+                    pass
+            # substitute all variables in the equation
+            res_rhs_expr = rhs_expr.subs(var_sub_dict).evalf()
+            # simplify any special operations ( integral, derivative etc.)
+            res_rhs_expr = res_rhs_expr.doit()
+            # simplify any unit specific operations
+            res_rhs_expr = simplify(res_rhs_expr)
+            # as much as possible convert the units in the expression to the units defined.
+            if len(res_rhs_expr.atoms(u.Quantity)) == 0:
+                res_rhs_expr = res_rhs_expr * sympy_unit
             else:
-                res_equation = Eq(res_equation.lhs, res_equation.rhs)
-        else:  # if magnitude has variables
-            s_unit = self.__unit_pint_2_unit_sympy(unit_pint)
-            if s_unit:
-                res_equation = Eq(res_equation.lhs, res_equation.rhs * s_unit)
-            else:
-                print("Unit cannot be found")
-                res_equation = None
-        return res_equation
+                res_rhs_expr = u.convert_to(res_rhs_expr, sympy_unit)
+
+            # make output more readable using Pint functions.
+            # if magnitude is a number
+            if len(res_rhs_expr.atoms(u.Quantity)) == 1 and len(res_rhs_expr.atoms(Number)) == 1:
+                if unit_str != "dimensionless":
+                    # create pint expression
+                    pint_expr = self.UNIT(str(res_rhs_expr))
+                    # simplify pint expression using pint functions
+                    # pint_expr = pint_expr.to_compact().to_reduced_units()
+                    pint_expr = pint_expr.to_reduced_units()
+                    # get magnitude and unit from pint expression
+                    mag = pint_expr.magnitude
+                    p_unit = pint_expr.units
+                    s_unit = self.__unit_pint_2_unit_sympy(p_unit)
+                    if s_unit:
+                        # create new sympy equation (lhs = magnitude * unit:sympy)
+                        res_rhs_expr = mag * s_unit
+                    else:
+                        print("Unit {} cannot be found".format(unit_str))
+                        res_rhs_expr = None
+        return res_rhs_expr
 
     def __unit_str_2_unit_pint(self, unit_str):
         try:
-            pint_unit = self.UNIT(unit_str).units
+            if unit_str == "dimensionless":
+                pint_unit = 1
+            else:
+                pint_unit = self.UNIT(unit_str).units
         except UndefinedUnitError:
             pint_unit = None
         return pint_unit
 
-    def __unit_pint_2_unit_sympy(self, unit_pint):
-        if unit_pint == 1:
-            unit_pint = "dimensionless"
-
-        try:
-            unit_sympy = self.ptcc_units[str(unit_pint)]
-        except KeyError:
-            unit_sympy = None
+    def __unit_str_2_unit_sympy(self, unit_str):
+        unit_sympy = None
+        unit_pint = self.__unit_str_2_unit_pint(unit_str)
+        if unit_pint:
+            unit_sympy = self.__unit_pint_2_unit_sympy(unit_pint)
         return unit_sympy
 
-    def __unit_str_2_sympy_unit(self, unit_str):
-        try:
-            unit_symp = self.ptcc_units[unit_str]
-        except KeyError:
-            unit_symp = None
-        return unit_symp
+    def __unit_pint_2_unit_sympy(self, unit_pint):
+        unit_str = str(unit_pint)
+        if unit_str == "dimensionless":
+            unit_sympy = 1
+        else:
+            try:
+                expr_sympy = parse_expr(str(unit_pint))
+                unit_sympy = expr_sympy.xreplace({un: eval("u.{}".format(un))
+                                                  for un in expr_sympy.atoms(Symbol)})
+            except AttributeError:
+                unit_sympy = None
+        return unit_sympy
 
-    def __round_expr(self, equation, num_digits):
+    def __round_expr(self, expression, num_digits):
         """
             Desc
             ====
@@ -543,14 +491,14 @@ class EquationWriter:
 
             Parameters
             ==========
-            equation:sympy equation - Sympy Equation to be rounded off.
-            num_digits:int - number of decimal places to be rounded off in each number in the equation.
+            expression:sympy expression - Sympy expression to be rounded off.
+            num_digits:int - number of decimal places to be rounded off in each number in the expression.
 
             Returns
             =======
-            sympy equation - Equation with rounded Numbers.
+            sympy expression - expression with rounded Numbers.
         """
-        return equation.xreplace({n: round(n, num_digits) for n in equation.atoms(Number)})
+        return expression.xreplace({n: round(n, num_digits) for n in expression.atoms(Number)})
 
     def __convert_to_latex(self, s):
         """
