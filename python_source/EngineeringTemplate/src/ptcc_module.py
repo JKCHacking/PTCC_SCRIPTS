@@ -253,13 +253,12 @@ class EquationWriter:
         else:
             print("Expression should be in the form [N * unit] (e.g 3 * mm)")
 
-    def convert(self, var_name, unit_to=""):
+    def convert(self, var_name, unit_to="", num_decimal=2, print_out=False, inline=False):
         """
         Desc
         ====
         Helper method for converting variable stored in EquationNamespace to the desired unit.
-        This method only receives [y = N * unit] equation. this method will overwrite the current value of the
-        variable in the EquationNamespace.
+        this method will overwrite the current value of the variable in the EquationNamespace.
 
         Parameters
         ==========
@@ -267,9 +266,16 @@ class EquationWriter:
 
         unit_to:str - the unit name that you want to convert to.
 
+        num_decimal:int - number of decimals after conversion.
+
+        print_out:bool - if True, will print the old expression and the new expression after conversion
+
+        inline:bool - if True, will print the new expression inline with the old expression.
+        if False, will print in the newline of old expression.
+
         Return
         ======
-        res_expr:sympy equation - the result equation after conversion.
+        res_expr:sympy expression - the result expression after conversion.
         returns None if:
             * var_name does not exists as key in the EquationNamespace.
             * unit_to is an empty string.
@@ -290,11 +296,31 @@ class EquationWriter:
                     print("Cannot find unit {}.".format(unit_to))
                 else:
                     res_expr = u.convert_to(expression, unit_symp)
+                    res_expr = self.__round_expr(res_expr, num_decimal)
                     # update
                     self.__add_eq_to_namespace(Eq(parse_expr(var_name), res_expr))
+        if print_out:
+            old_equation = Eq(parse_expr(var_name), expression)
+            old_equation_latex = self.__convert_to_latex(old_equation)
+            if inline:
+                new_expression_latex = self.__convert_to_latex(res_expr)
+                out_markdown = "<div style='font-family:{font_name}, Arial;font-size: {font_size};'>" \
+                               "${old_eq} = {new_exp}$</div>".format(font_name=self.font_name,
+                                                                     font_size=self.font_size,
+                                                                     old_eq=old_equation_latex,
+                                                                     new_exp=new_expression_latex)
+            else:
+                new_equation = Eq(parse_expr(var_name), res_expr)
+                new_equation_latex = self.__convert_to_latex(new_equation)
+                out_markdown = "<div style='font-family:{font_name}, Arial;font-size: {font_size};'>" \
+                               "${old_eq}$<br>${new_eq}$</div>".format(font_name=self.font_name,
+                                                                       font_size=self.font_size,
+                                                                       old_eq=old_equation_latex,
+                                                                       new_eq=new_equation_latex)
+            self.c_display.writer_output += out_markdown
         return res_expr
 
-    def define(self, equation, unit="dimensionless", annots=None,  simplify=False, num_decimal=2, inline=False):
+    def define(self, equation, unit="dimensionless", annots=None, simplify=False, num_decimal=2, inline=False):
         """
             Desc
             ====
@@ -326,8 +352,22 @@ class EquationWriter:
         """
         # ========================== parsing ===========================
         if equation.count("=") != 1:
-            print("You entered an invalid Equation.")
-            return
+            if equation in self.equation_namespace:
+                if equation in self.annotations:
+                    p_annots = self.annotations[equation][0]
+                    s_annots = "<br>".join(self.annotations[equation][1:])
+                else:
+                    p_annots = ""
+                    s_annots = ""
+
+                eq = Eq(parse_expr(equation), self.equation_namespace[equation])
+                eq_latex = self.__convert_to_latex(eq)
+                out_markdown = self.__create_markdown(eq_latex, self.h_space, p_annots, s_annots)
+                self.c_display.writer_output += out_markdown
+                return
+            else:
+                print("You entered an invalid Equation.")
+                return
 
         left_expr, right_expr = equation.split("=")
         left_expr = left_expr.strip()
@@ -340,7 +380,8 @@ class EquationWriter:
         except SyntaxError:
             print("You have entered an invalid equation.")
             return
-
+        if annots:
+            self.__add_annotation(parse_lhs, annots)
         # ================= processing and simplifications ==============
         sympy_unit = self.__unit_str_2_unit_sympy(unit)
         if not sympy_unit:
@@ -528,6 +569,9 @@ class EquationWriter:
                 None
         """
         self.equation_namespace.update({str(equation.lhs): equation.rhs})
+
+    def __add_annotation(self, lhs, annotation):
+        self.annotations.update({str(lhs): annotation})
 
     def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot=""):
         """
