@@ -121,17 +121,14 @@ class EquationWriter:
                     "vertical-align:top;"\
                     "text-align:left;"\
                     "font-family:{font_name}, Arial;"\
-                    "font-size: {font_size};"\
                 "}}"\
                 ".annot_cell {{" \
                     "text-align:left;"\
                     "font-family:{font_name}, Arial;"\
                 "}}"\
                 ".primary_annot {{" \
-                    "font-size: {font_size};"\
                 "}}"\
                 ".secondary_annot {{" \
-                    "font-size: {font_size};"\
                     "font-style: italic;"\
                 "}}" \
                 ".tbl_eq_row {{" \
@@ -140,8 +137,7 @@ class EquationWriter:
                 ".tbl_eq_cell {{" \
                     "display: table-cell;" \
                 "}}"\
-              "</style>".format(font_name=self.font_name,
-                                font_size=self.font_size)
+              "</style>".format(font_name=self.font_name)
         display(HTML(css))
 
     def conclude(self, component, affirmative):
@@ -320,7 +316,8 @@ class EquationWriter:
             self.c_display.writer_output += out_markdown
         return res_expr
 
-    def define(self, equation, unit="dimensionless", annots=None, simplify=False, num_decimal=2, inline=False):
+    def define(self, equation, unit="dimensionless", annots=None, simplify=False, num_decimal=2,
+               inline=False, eq_font_size=None, p_font_size=None, s_font_size=None):
         """
             Desc
             ====
@@ -345,6 +342,12 @@ class EquationWriter:
             inline:bool - If True, the resulting equation will be in the same line with the original equation.
             If False, the resulting equation will be in the new line from the original equation.
             This will only work if simplify is True.
+
+            eq_font_size:int - font size of the equation.
+
+            p_font_size:int - font size of the primary annotation
+
+            s_font_size:int - font size of the secondary annotations
 
             Returns
             =======
@@ -415,19 +418,28 @@ class EquationWriter:
                 out_markdown = self.__create_markdown(out_latex,
                                                       self.h_space,
                                                       primary_annotation,
-                                                      secondary_annotations)
+                                                      secondary_annotations,
+                                                      eq_font_size,
+                                                      p_font_size,
+                                                      s_font_size)
             else:
                 res_eq_latex = self.__convert_to_latex(res_eq)
                 out_markdown = self.__create_markdown(sym_eq_latex,
                                                       self.h_space,
                                                       primary_annotation,
-                                                      secondary_annotations)
-                out_markdown += self.__create_markdown(res_eq_latex, self.h_space)
+                                                      secondary_annotations,
+                                                      eq_font_size,
+                                                      p_font_size,
+                                                      s_font_size)
+                out_markdown += self.__create_markdown(res_eq_latex, self.h_space, eq_font_size=eq_font_size)
         else:
             out_markdown = self.__create_markdown(sym_eq_latex,
                                                   self.h_space,
                                                   primary_annotation,
-                                                  secondary_annotations)
+                                                  secondary_annotations,
+                                                  eq_font_size,
+                                                  p_font_size,
+                                                  s_font_size)
         self.c_display.writer_output += out_markdown
 
     def __simplify(self, rhs_expr, unit_str):
@@ -440,11 +452,11 @@ class EquationWriter:
 
             Parameters
             ==========
-            equation:Sympy.Equality - Sympy Equation.
+            rhs_expr:sympy expression - Right hand side expression.
 
             Returns
             =======
-            res_equation:Sympy.Equality - The resulting equation after evaluation.
+            res_rhs_expr:sympy expression - The resulting expression after evaluation.
         """
         sympy_unit = self.__unit_str_2_unit_sympy(unit_str)
         pint_unit = self.__unit_str_2_unit_pint(unit_str)
@@ -573,7 +585,8 @@ class EquationWriter:
     def __add_annotation(self, lhs, annotation):
         self.annotations.update({str(lhs): annotation})
 
-    def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot=""):
+    def __create_markdown(self, eq_str, hspace="0", primary_annot="", secondary_annot="", eq_font_size=None,
+                          p_font_size=None, s_font_size=None):
         """
             Desc
             ====
@@ -582,30 +595,57 @@ class EquationWriter:
             Parameters
             ==========
             eq_str:str - Equation string in latex format.
+
             hspace:str - Measured in Inches, length of the horizontal space between the equation and the
             annotations.
+
             primary_annot: The primary annotation (annotation inline with the equation).
+
             secondary_annot: The secondary annotations (annotations under the primary annotation).
+
+            eq_font_size:int - The local font size of the equation. if None, it will use the global font size.
+
+            p_font_size:int - The font size of the primary annotation. if None, it will use the global font size.
+
+            s_font_size:int - The font size of the secondary annotations. if None, it will use the global font size.
 
             Returns
             =======
             eq_markdown:str - Markdown to be displayed in jupyter notebook.
         """
+        if not eq_font_size:
+            eq_font_size = self.font_size
+        else:
+            eq_font_size = str(eq_font_size) + "pt"
+
+        if not p_font_size:
+            p_font_size = self.font_size
+        else:
+            p_font_size = str(p_font_size) + "pt"
+
+        if not s_font_size:
+            s_font_size = self.font_size
+        else:
+            s_font_size = str(s_font_size) + "pt"
+
         eq_markdown = "<div class='tbl_eq_row'>" \
-                      "<div class='tbl_eq_cell eq_cell'>" \
+                      "<div class='tbl_eq_cell eq_cell' style='font-size:{eq_font_size};'>" \
                       "${eq_str}$" \
                       "</div>" \
                       "<div class='tbl_eq_cell'>" \
                       "$\\hspace{{{hspace}}}$" \
                       "</div>" \
                       "<div class='tbl_eq_cell annot_cell'>" \
-                      "<div class='primary_annot'>{p_annot}</div>" \
-                      "<div class='secondary_annot'>{s_annots}</div>" \
+                      "<div class='primary_annot' style='font-size:{p_font_size};'>{p_annot}</div>" \
+                      "<div class='secondary_annot' style='font-size:{s_font_size};'>{s_annots}</div>" \
                       "</div>" \
                       "</div>".format(eq_str=eq_str,
                                       hspace=hspace,
                                       p_annot=primary_annot,
-                                      s_annots=secondary_annot)
+                                      s_annots=secondary_annot,
+                                      eq_font_size=eq_font_size,
+                                      p_font_size=p_font_size,
+                                      s_font_size=s_font_size)
         return eq_markdown
 
 
@@ -699,8 +739,8 @@ class TextWriter:
         """
         output_markdown = ""
         if text_position in ("left", "right", "center"):
-            output_markdown = "<div style='font-family:{font_name}, Arial; " \
-                                           "font-size:{font_size}; " \
+            output_markdown = "<div style='font-family:{font_name}, Arial;" \
+                                           "font-size:{font_size};" \
                                            "font-style:{font_style};" \
                                            "font-weight:{font_weight};"\
                                            "text-decoration:{font_decor};"\
