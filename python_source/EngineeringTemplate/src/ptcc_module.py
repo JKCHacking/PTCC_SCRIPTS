@@ -101,6 +101,9 @@ class EquationWriter:
         u.kilonewton = u.Quantity("kilonewton", abbrev="kN")
         u.kilonewton.set_global_relative_scale_factor(u.kilo, u.N)
         u.kilopascal = u.kPa
+        u.MPa = u.megapascal
+        u.GPa = u.gigapascal
+        u.kN = u.kilonewton
 
     def setup_css(self):
         """
@@ -376,10 +379,10 @@ class EquationWriter:
         left_expr = left_expr.strip()
         right_expr = right_expr.strip()
 
-        # convert a string equation to a sympy equation
+        # convert a string equation to a sympy equivalent
         try:
-            parse_lhs = parse_expr(left_expr)
-            parse_rhs = parse_expr(right_expr)
+            parse_lhs = parse_expr(left_expr, evaluate=False)
+            parse_rhs = parse_expr(right_expr, evaluate=False)
         except SyntaxError:
             print("You have entered an invalid equation.")
             return
@@ -613,20 +616,20 @@ class EquationWriter:
             =======
             eq_markdown:str - Markdown to be displayed in jupyter notebook.
         """
-        if not eq_font_size:
-            eq_font_size = self.font_size
-        else:
+        if isinstance(eq_font_size, int):
             eq_font_size = str(eq_font_size) + "pt"
-
-        if not p_font_size:
-            p_font_size = self.font_size
         else:
+            eq_font_size = self.font_size
+
+        if isinstance(p_font_size, int):
             p_font_size = str(p_font_size) + "pt"
-
-        if not s_font_size:
-            s_font_size = self.font_size
         else:
+            p_font_size = self.font_size
+
+        if isinstance(s_font_size, int):
             s_font_size = str(s_font_size) + "pt"
+        else:
+            s_font_size = self.font_size
 
         eq_markdown = "<div class='tbl_eq_row'>" \
                       "<div class='tbl_eq_cell eq_cell' style='font-size:{eq_font_size};'>" \
