@@ -658,7 +658,7 @@ class TextWriter:
         self.font_size = str(font_size) + "pt"
         self.c_display = c_display
 
-    def define(self, text,  bold=False, underline=False, italic=False, text_position="left"):
+    def define(self, text,  bold=False, underline=False, italic=False, text_position="left", font_size=None):
         """
             Desc
             ====
@@ -681,7 +681,7 @@ class TextWriter:
         font_style = "italic" if italic else "normal"
         font_decor = "underline" if underline else "normal"
 
-        output = self.__create_markdown(text, font_weight, font_style, font_decor,  text_position)
+        output = self.__create_markdown(text, font_weight, font_style, font_decor,  text_position, font_size)
         self.c_display.writer_output += output
 
     def create_hspace(self, width):
@@ -722,7 +722,7 @@ class TextWriter:
             height=height)
         self.c_display.writer_output += vspace_markdown
 
-    def __create_markdown(self, text, font_weight, font_style, font_decor, text_position):
+    def __create_markdown(self, text, font_weight, font_style, font_decor, text_position, font_size=None):
         """
             Desc
             ====
@@ -740,6 +740,10 @@ class TextWriter:
             =======
             output_markdown:str - Text HTML output
         """
+        if isinstance(font_size, int):
+            font_size = str(font_size) + "pt"
+        else:
+            font_size = self.font_size
         output_markdown = ""
         if text_position in ("left", "right", "center"):
             output_markdown = "<div style='font-family:{font_name}, Arial;" \
@@ -750,7 +754,7 @@ class TextWriter:
                                            "text-align:{text_position};'> " \
                               "{text}"\
                               "</div>".format(font_name=self.font_name,
-                                              font_size=self.font_size,
+                                              font_size=font_size,
                                               text=text,
                                               font_style=font_style,
                                               font_weight=font_weight,
