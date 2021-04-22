@@ -120,7 +120,6 @@ class HulaGenerator:
         self.taken.remove(item)
 
     def generate(self, start, stop):
-        print(self.taken)
         if len(list(range(start, stop + 1))) == len(self.taken):
             rand_guessed = "Nothing To Guess"
         else:
