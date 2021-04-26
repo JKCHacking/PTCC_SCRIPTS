@@ -386,6 +386,10 @@ class EquationWriter:
         except SyntaxError:
             print("You have entered an invalid equation.")
             return
+        # convert symbols to units
+        parse_rhs = parse_rhs.xreplace(
+            {sym: self.__unit_str_2_unit_sympy(str(sym)) for sym in parse_rhs.atoms(Symbol)
+             if self.__unit_str_2_unit_sympy(str(sym)) and str(sym) not in self.equation_namespace})
         if annots:
             self.__add_annotation(parse_lhs, annots)
         # ================= processing and simplifications ==============
@@ -394,9 +398,12 @@ class EquationWriter:
             print("Cannot find unit {}".format(unit))
             return
         if len(parse_rhs.atoms(u.Quantity)) == 0:
-            sym_eq = Eq(parse_lhs, parse_rhs * sympy_unit)
+            rhs = parse_rhs * sympy_unit
+            sym_eq = Eq(parse_lhs, rhs)
         else:
-            sym_eq = Eq(parse_lhs, u.convert_to(parse_rhs, sympy_unit))
+            rhs = u.convert_to(parse_rhs, sympy_unit)
+            sym_eq = Eq(parse_lhs, rhs)
+        lhs = rhs
         self.__add_eq_to_namespace(sym_eq)
 
         if simplify:
@@ -404,6 +411,7 @@ class EquationWriter:
             parse_res_rhs = self.__round_expr(parse_res_rhs, num_decimal)
             res_eq = Eq(parse_lhs, parse_res_rhs)
             self.__add_eq_to_namespace(res_eq)
+            lhs = parse_res_rhs
         else:
             res_eq = None
         # ================= display =======================================
@@ -444,6 +452,7 @@ class EquationWriter:
                                                   p_font_size,
                                                   s_font_size)
         self.c_display.writer_output += out_markdown
+        return lhs
 
     def __simplify(self, rhs_expr, unit_str):
         """
