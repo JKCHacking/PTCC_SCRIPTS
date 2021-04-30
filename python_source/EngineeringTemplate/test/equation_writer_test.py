@@ -281,3 +281,31 @@ class EquationWriterTest(unittest.TestCase):
             eq_writer.define("x{} = 1".format(i), unit=unit)
         for i, unit in enumerate(unit_list):
             self.assertEqual(unit, str(eq_writer.equation_namespace["x{}".format(i)]))
+
+    def test_define_028(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("z = Array([1, 2, 3, 4])")
+        self.assertRaises(TypeError, eq_writer.define, "x = z + 10 * cm", simplify=True)
+
+    def test_define_029(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("x = Array([1, 2, 3, 4])")
+        eq_writer.define("w = Array([4, 5, 6, 7])")
+        actual = eq_writer.define("z = x + w", simplify=True)
+        expected = Array([5, 7, 9, 11])
+        self.assertEqual(expected, actual)
+
+    def test_define_030(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("z = Array([1, 2, 3, 4])")
+        actual = eq_writer.define("x = z * 10 * cm", simplify=True)
+        expected = Array([10 * u.cm, 20 * u.cm, 30 * u.cm, 40 * u.cm])
+        self.assertEqual(expected, actual)
+
+    def test_define_031(self):
+        eq_writer = self.typical_settings()
+        q = eq_writer.define("q = 4.49 * kPa")
+        DoubleQ = 2 * q
+        eq_writer.define("z = DoubleQ * 2", simplify=True)
+        for var in locals():
+            print(var)
