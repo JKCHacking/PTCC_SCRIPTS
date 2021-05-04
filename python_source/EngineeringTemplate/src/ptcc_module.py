@@ -172,6 +172,9 @@ class EquationWriter:
                         )
         self.c_display.writer_output += output_string
 
+    def add_equation(self, **kwargs):
+        self.equation_namespace.update(kwargs)
+
     def assert_components(self, lhs_var_str, rhs_var_str, expected, descr_lhs, descr_rhs, component, statement):
         """
         Desc
@@ -383,12 +386,12 @@ class EquationWriter:
         try:
             parse_lhs = parse_expr(left_expr, evaluate=False)
             parse_rhs = parse_expr(right_expr, evaluate=False)
+            parse_rhs = self.__symbol_to_unit(parse_rhs)
+            if annots:
+                self.__add_annotation(parse_lhs, annots)
         except SyntaxError:
             print("You have entered an invalid equation.")
             return
-
-        if annots:
-            self.__add_annotation(parse_lhs, annots)
         # ================= processing and simplifications ==============
         sympy_unit = self.__unit_str_2_unit_sympy(unit)
         if not sympy_unit:
@@ -404,10 +407,6 @@ class EquationWriter:
         self.__add_eq_to_namespace(sym_eq)
 
         if simplify:
-            # convert symbols to units
-            parse_rhs = parse_rhs.xreplace(
-                {sym: self.__unit_str_2_unit_sympy(str(sym)) for sym in parse_rhs.atoms(Symbol)
-                 if self.__unit_str_2_unit_sympy(str(sym)) and str(sym) not in self.equation_namespace})
             parse_res_rhs = self.__simplify(parse_rhs, unit)
             parse_res_rhs = self.__round_expr(parse_res_rhs, num_decimal)
             res_eq = Eq(parse_lhs, parse_res_rhs)
@@ -487,7 +486,10 @@ class EquationWriter:
                 except KeyError:
                     pass
             # substitute all variables in the equation
-            res_rhs_expr = parse_expr(str(rhs_expr), var_sub_dict)
+            try:
+                res_rhs_expr = rhs_expr.subs(var_sub_dict).evalf()
+            except AttributeError:
+                res_rhs_expr = self.__subs(rhs_expr, var_sub_dict)
             # simplify any special operations ( integral, derivative etc.)
             res_rhs_expr = res_rhs_expr.doit()
             # simplify any unit specific operations
@@ -518,6 +520,17 @@ class EquationWriter:
                         print("Unit {} cannot be found".format(unit_str))
                         res_rhs_expr = None
         return res_rhs_expr
+
+    def __subs(self, expr, var_dict):
+        expr = parse_expr(str(expr), var_dict)
+        expr = self.__symbol_to_unit(expr)
+        return expr
+
+    def __symbol_to_unit(self, expr):
+        # convert symbols to units
+        return expr.xreplace(
+            {sym: self.__unit_str_2_unit_sympy(str(sym)) for sym in expr.atoms(Symbol)
+             if self.__unit_str_2_unit_sympy(str(sym)) and str(sym) not in self.equation_namespace})
 
     def __unit_str_2_unit_pint(self, unit_str):
         try:
