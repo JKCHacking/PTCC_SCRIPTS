@@ -76,12 +76,12 @@ class HulaController:
         row = 0
         col = 0
         for i, num_tick in enumerate(num_ticks):
-            if i % 5 == 0:
+            if i % 10 == 0:
                 row += 1
                 col = 0
             cb = QCheckBox(str(num_tick))
             cb.stateChanged.connect(self.__add_remove_taken)
-            self.view.tickbox_layout.addWidget(cb, row, col)
+            self.view.tickbox_layout.addWidget(cb, col, row)
             col += 1
         self.__clear_taken()
 
