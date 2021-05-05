@@ -1,0 +1,149 @@
+import os
+import numpy as np
+from comtypes import client
+from comtypes import COMError
+from comtypes.client import Constants
+from src.constants import Constants as Local_Const
+
+ROUND_PRECISION = 4
+
+
+class Script:
+    def __init__(self):
+        try:
+            self.cad_application = client.GetActiveObject(Local_Const.APP_NAME, dynamic=True)
+            self.cad_application.Visible = True
+        except(OSError, COMError):
+            self.cad_application = client.CreateObject(Local_Const.APP_NAME, dynamic=True)
+            self.cad_application.Visible = True
+        self.document = None
+
+    def open_document(self, dwg_path):
+        self.cad_application.Documents.Open(dwg_path)
+        self.document = self.cad_application.ActiveDocument
+
+    def get_unit_document(self):
+        unit_dict = {
+            0: "Unspecified(No units)",
+            1: "Inches",
+            2: "Feet",
+            3: "Miles",
+            4: "Millimeters",
+            5: "Centimeters",
+            6: "Meters",
+            7: "Kilometers",
+            8: "Microinches",
+            9: "Mils",
+            10: "Yards",
+            11: "Angstroms",
+            12: "Nanometers",
+            13: "Microns",
+            14: "Decimeters",
+            15: "Dekameters",
+            16: "Hectometers",
+            17: "Gigameters",
+            18: "Astronomical Units",
+            19: "Light Years",
+        }
+
+        unit_num = self.document.GetVariable("INSUNITS")
+        try:
+            unit_name = unit_dict[unit_num]
+        except KeyError:
+            unit_name = unit_dict[0]
+            print("Unsupported Unit number")
+        return unit_name
+
+    def get_total_area(self):
+        total_area = 0
+        modelspace = self.document.ModelSpace
+        for obj1 in modelspace:
+            if obj1.ObjectName == "AcDb3dSolid":
+                area_list = []
+                # explode 3dsolid object using explode command
+                self.document.SendCommand('explode (handent "{}")\n\n'.format(obj1.Handle))
+                for obj2 in modelspace:
+                    if obj2.ObjectName == "AcDbRegion":
+                        # add this area in array_area
+                        area_list.append(round(obj2.Area, ROUND_PRECISION))
+                    elif obj2.ObjectName == "AcDbSurface":
+                        self.document.StartUndoMark()
+                        # explode surface using explode command
+                        self.document.SendCommand('explode (handent "{}")\n\n")'.format(obj2.Handle))
+                        spline_control_pts = []
+                        for obj3 in modelspace:
+                            # loop every spline object
+                            if obj3.ObjectName == "AcDbSpline":
+                                ctrl_points = obj3.ControlPoints
+                                pt1 = (round(ctrl_points[0], ROUND_PRECISION),
+                                       round(ctrl_points[1], ROUND_PRECISION),
+                                       round(ctrl_points[2], ROUND_PRECISION))
+
+                                pt2 = (round(ctrl_points[3], ROUND_PRECISION),
+                                       round(ctrl_points[4], ROUND_PRECISION),
+                                       round(ctrl_points[5], ROUND_PRECISION))
+
+                                # add control points in the list
+                                if pt1 not in spline_control_pts:
+                                    spline_control_pts.append(pt1)
+                                if pt2 not in spline_control_pts:
+                                    spline_control_pts.append(pt2)
+
+                        # get the area from the list of spline control points
+                        area = self.__poly_area(spline_control_pts)
+                        # add this area in area_array
+                        area_list.append(round(area, ROUND_PRECISION))
+                        self.document.EndUndoMark()
+                        # call undo command
+                        self.document.SendCommand("_undo\n\n")
+                # sort in descending order
+                area_list = sorted(area_list, reverse=True)
+                # get the 2 highest area from area_array and
+                # get average of the of two area
+                ave_area = (area_list[0] + area_list[1])/2
+                # add area in the total area
+                total_area += ave_area
+                self.document.EndUndoMark()
+                # call undo command
+                self.document.SendCommand("_undo\n\n")
+        return total_area
+
+    def close_document(self):
+        self.document.Close()
+
+    def __unit_normal(self, a, b, c):
+        x = np.linalg.det([[1, a[1], a[2]],
+                           [1, b[1], b[2]],
+                           [1, c[1], c[2]]])
+        y = np.linalg.det([[a[0], 1, a[2]],
+                           [b[0], 1, b[2]],
+                           [c[0], 1, c[2]]])
+        z = np.linalg.det([[a[0], a[1], 1],
+                           [b[0], b[1], 1],
+                           [c[0], c[1], 1]])
+        magnitude = (x ** 2 + y ** 2 + z ** 2) ** .5
+        return x / magnitude, y / magnitude, z / magnitude
+
+    def __poly_area(self, poly):
+        if len(poly) < 3:  # not a plane - no area
+            return 0
+        total = [0, 0, 0]
+        N = len(poly)
+        for i in range(N):
+            vi1 = poly[i]
+            vi2 = poly[(i + 1) % N]
+            prod = np.cross(vi1, vi2)
+            total[0] += prod[0]
+            total[1] += prod[1]
+            total[2] += prod[2]
+        result = np.dot(total, self.__unit_normal(poly[0], poly[1], poly[2]))
+        return abs(result / 2)
+
+
+if __name__ == "__main__":
+    script = Script()
+    for dir_path, dir_names, file_names in os.walk(Constants.INPUT_DIR):
+        for file_name in file_names:
+            file_full_path = os.path.join(dir_path, file_name)
+            if file_full_path.endswith(Constants.DWG) or file_full_path.endswith(Constants.DXF):
+                script.open_document()
