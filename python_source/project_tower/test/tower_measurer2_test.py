@@ -8,8 +8,27 @@ from src.tower_measurer2 import main
 
 
 class TowerMeasurer2Test(unittest.TestCase):
+    def tearDown(self) -> None:
+        # remove all BAK files in the test directory.
+        self.__remove_files(Constants.TESTDATA_DIR, Constants.BAK_FILES)
+        self.__remove_files(Constants.TEST_DIR, Constants.CSV_FILES)
+        # remove all unnecessary in input folder
+        self.__remove_files(Constants.INPUT_DIR, Constants.DWG_FILES)
+        self.__remove_files(Constants.INPUT_DIR, Constants.DXF_FILES)
+        self.__remove_files(Constants.INPUT_DIR, Constants.BAK_FILES)
+        # remove all unnecessary in output folder
+        self.__remove_files(Constants.OUTPUT_DIR, Constants.CSV_FILES)
+
+    def __remove_files(self, dir_name, file_extension):
+        print("Removing unnecessary files...")
+        for dir_path, dir_names, file_names in os.walk(dir_name):
+            for file_name in file_names:
+                file_full_path = os.path.join(dir_path, file_name)
+                if file_full_path.endswith(file_extension):
+                    os.remove(file_full_path)
+
     def test_single_panel_surface(self):
-        file_path = os.path.join(Constants.TEST_DIR, "single_panel.dwg")
+        file_path = os.path.join(Constants.TESTDATA_DIR, "single_panel.dwg")
         script = Script()
         script.open_document(file_path)
         actual = script.get_total_area()
@@ -20,7 +39,7 @@ class TowerMeasurer2Test(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_single_panel_region(self):
-        file_path = os.path.join(Constants.TEST_DIR, "single_panel_region.dwg")
+        file_path = os.path.join(Constants.TESTDATA_DIR, "single_panel_region.dwg")
         script = Script()
         script.open_document(file_path)
         actual = script.get_total_area()
@@ -31,7 +50,7 @@ class TowerMeasurer2Test(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_5_panel_surface(self):
-        file_path = os.path.join(Constants.TEST_DIR, "5_panel.dwg")
+        file_path = os.path.join(Constants.TESTDATA_DIR, "5_panel.dwg")
         script = Script()
         script.open_document(file_path)
         actual = script.get_total_area()
@@ -60,8 +79,7 @@ class TowerMeasurer2Test(unittest.TestCase):
     def test_main(self):
         output_file_path = os.path.join(Constants.OUTPUT_DIR, "output.csv")
         input_file_path = os.path.join(Constants.INPUT_DIR, "single_panel.dwg")
-        input_file_trash_path = os.path.join(Constants.INPUT_DIR, "single_panel.bak")
-        file_test_path = os.path.join(Constants.TEST_DIR, "single_panel.dwg")
+        file_test_path = os.path.join(Constants.TESTDATA_DIR, "single_panel.dwg")
         copyfile(file_test_path, input_file_path)
         main()
         self.assertTrue(os.path.exists(output_file_path))
@@ -72,6 +90,3 @@ class TowerMeasurer2Test(unittest.TestCase):
             reader = csv.reader(csv_file)
             for row in reader:
                 self.assertTrue(row in expected_list)
-        os.remove(output_file_path)
-        os.remove(input_file_path)
-        os.remove(input_file_trash_path)

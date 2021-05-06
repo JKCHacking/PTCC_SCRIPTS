@@ -12,7 +12,9 @@ class Constants:
     OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
     INPUT_DIR = os.path.join(PROJ_ROOT, "input")
     TEST_DIR = os.path.join(PROJ_ROOT, "test")
+    TESTDATA_DIR = os.path.join(TEST_DIR, "testdata")
 
     BAK_FILES = ".bak"
     DWG_FILES = ".dwg"
     DXF_FILES = ".dxf"
+    CSV_FILES = ".csv"
