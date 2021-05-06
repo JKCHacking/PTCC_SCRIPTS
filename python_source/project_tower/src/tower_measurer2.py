@@ -184,6 +184,7 @@ def main():
     script = Script()
     output_file = os.path.join(Constants.OUTPUT_DIR, "output.csv")
     for dwg_file_path in script.iter_input():
+        print("Working on file {}".format(os.path.basename(dwg_file_path)))
         script.open_document(dwg_file_path)
         area = script.get_total_area()
         file_name = os.path.basename(dwg_file_path)
