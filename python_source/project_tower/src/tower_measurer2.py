@@ -54,62 +54,69 @@ class Script:
             print("Unsupported Unit number")
         return unit_name
 
+    def __get_required_entities(self, object_name):
+        entities = []
+        modelspace = self.document.ModelSpace
+        for obj in modelspace:
+            if obj.ObjectName == object_name:
+                entities.append(obj)
+        return entities
+
     def get_total_area(self):
         total_area = 0
-        modelspace = self.document.ModelSpace
-        num_panels = self.__get_total_panels(modelspace)
+        panels = self.__get_required_entities("AcDb3dSolid")
+        num_panels = len(panels)
         print("Number of Panels in the Drawing: {}".format(num_panels))
         self.__print_progress_bar(0, num_panels, prefix="Progress", suffix="Completed", length=50)
-        for i, obj1 in enumerate(modelspace):
-            if obj1.ObjectName == "AcDb3dSolid" and obj1.Layer == "3-PANEL BOXES-CONCAVE":
-                area_list = []
-                # explode 3dsolid object using explode command
-                self.document.SendCommand('explode (handent "{}")\n\n'.format(obj1.Handle))
-                for obj2 in modelspace:
-                    if obj2.ObjectName == "AcDbRegion":
-                        # add this area in array_area
-                        area_list.append(round(obj2.Area, ROUND_PRECISION))
-                    elif obj2.ObjectName == "AcDbSurface":
-                        self.document.StartUndoMark()
-                        # explode surface using explode command
-                        self.document.SendCommand('explode (handent "{}")\n\n")'.format(obj2.Handle))
-                        spline_control_pts = []
-                        for obj3 in modelspace:
-                            # loop every spline object
-                            if obj3.ObjectName == "AcDbSpline":
-                                ctrl_points = obj3.ControlPoints
-                                pt1 = (round(ctrl_points[0], ROUND_PRECISION),
-                                       round(ctrl_points[1], ROUND_PRECISION),
-                                       round(ctrl_points[2], ROUND_PRECISION))
+        for i, obj1 in enumerate(panels):
+            self.document.StartUndoMark()
+            area_list = []
+            # explode 3dsolid object using explode command
+            self.document.SendCommand('explode (handent "{}")\n\n'.format(obj1.Handle))
+            for obj2 in self.__get_required_entities("AcDbRegion"):
+                # add this area in array_area
+                area_list.append(round(obj2.Area, ROUND_PRECISION))
+            for obj2 in self.__get_required_entities("AcDbSurface"):
+                self.document.StartUndoMark()
+                # explode surface using explode command
+                self.document.SendCommand('explode (handent "{}")\n\n")'.format(obj2.Handle))
+                spline_control_pts = []
+                splines = self.__get_required_entities("AcDbSpline")
+                for obj3 in splines:
+                    # loop every spline object
+                    ctrl_points = obj3.ControlPoints
+                    pt1 = (round(ctrl_points[0], ROUND_PRECISION),
+                           round(ctrl_points[1], ROUND_PRECISION),
+                           round(ctrl_points[2], ROUND_PRECISION))
 
-                                pt2 = (round(ctrl_points[3], ROUND_PRECISION),
-                                       round(ctrl_points[4], ROUND_PRECISION),
-                                       round(ctrl_points[5], ROUND_PRECISION))
+                    pt2 = (round(ctrl_points[3], ROUND_PRECISION),
+                           round(ctrl_points[4], ROUND_PRECISION),
+                           round(ctrl_points[5], ROUND_PRECISION))
 
-                                # add control points in the list
-                                if pt1 not in spline_control_pts:
-                                    spline_control_pts.append(pt1)
-                                if pt2 not in spline_control_pts:
-                                    spline_control_pts.append(pt2)
+                    # add control points in the list
+                    if pt1 not in spline_control_pts:
+                        spline_control_pts.append(pt1)
+                    if pt2 not in spline_control_pts:
+                        spline_control_pts.append(pt2)
 
-                        # get the area from the list of spline control points
-                        area = self.__poly_area(spline_control_pts)
-                        # add this area in area_array
-                        area_list.append(round(area, ROUND_PRECISION))
-                        self.document.EndUndoMark()
-                        # call undo command
-                        self.document.SendCommand("_undo\n\n")
-                # sort in descending order
-                area_list = sorted(area_list, reverse=True)
-                # get the 2 highest area from area_array and
-                # get average of the of two area
-                ave_area = (area_list[0] + area_list[1])/2
-                # add area in the total area
-                total_area += ave_area
+                # get the area from the list of spline control points
+                area = self.__poly_area(spline_control_pts)
+                # add this area in area_array
+                area_list.append(round(area, ROUND_PRECISION))
                 self.document.EndUndoMark()
                 # call undo command
                 self.document.SendCommand("_undo\n\n")
-                self.__print_progress_bar(i + 1, num_panels, prefix="Progress", suffix="Completed", length=50)
+            # sort in descending order
+            area_list = sorted(area_list, reverse=True)
+            # get the 2 highest area from area_array and
+            # get average of the of two area
+            ave_area = (area_list[0] + area_list[1])/2
+            # add area in the total area
+            total_area += ave_area
+            self.document.EndUndoMark()
+            # call undo command
+            self.document.SendCommand("_undo\n\n")
+            self.__print_progress_bar(i + 1, num_panels, prefix="Progress", suffix="Completed", length=50)
         return round(total_area, ROUND_PRECISION)
 
     def close_document(self):
@@ -133,13 +140,6 @@ class Script:
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(Constants.DWG_FILES) or file_full_path.endswith(Constants.DXF_FILES):
                     yield file_full_path
-
-    def __get_total_panels(self, modelspace):
-        total = 0
-        for obj in modelspace:
-            if obj.ObjectName == "AcDb3dSolid" and obj.Layer == "3-PANEL BOXES-CONCAVE":
-                total += 1
-        return total
 
     def __print_progress_bar(self, iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
