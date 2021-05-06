@@ -11,5 +11,8 @@ class Constants:
     PROJ_ROOT = os.path.dirname(SCRIPT_DIR)
     OUTPUT_DIR = os.path.join(PROJ_ROOT, "output")
     INPUT_DIR = os.path.join(PROJ_ROOT, "input")
+    TEST_DIR = os.path.join(PROJ_ROOT, "test")
 
     BAK_FILES = ".bak"
+    DWG_FILES = ".dwg"
+    DXF_FILES = ".dxf"
