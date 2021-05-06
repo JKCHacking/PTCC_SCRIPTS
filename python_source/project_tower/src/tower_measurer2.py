@@ -57,7 +57,9 @@ class Script:
     def get_total_area(self):
         total_area = 0
         modelspace = self.document.ModelSpace
-        for obj1 in modelspace:
+        num_panels = self.__get_total_panels(modelspace)
+        print("Number of Panels in the Drawing: {}".format(num_panels))
+        for i, obj1 in enumerate(modelspace):
             if obj1.ObjectName == "AcDb3dSolid" and obj1.Layer == "3-PANEL BOXES-CONCAVE":
                 area_list = []
                 # explode 3dsolid object using explode command
@@ -106,6 +108,7 @@ class Script:
                 self.document.EndUndoMark()
                 # call undo command
                 self.document.SendCommand("_undo\n\n")
+                self.__print_progress_bar(i + 1, num_panels, length=50)
         return round(total_area, ROUND_PRECISION)
 
     def close_document(self):
@@ -129,6 +132,24 @@ class Script:
                 file_full_path = os.path.join(dir_path, file_name)
                 if file_full_path.endswith(Constants.DWG_FILES) or file_full_path.endswith(Constants.DXF_FILES):
                     yield file_full_path
+
+    def __get_total_panels(self, modelspace):
+        print("Getting number of panels in the drawing...", end='\r', flush=True)
+        total = 0
+        for obj in modelspace:
+            if obj.ObjectName == "AcDb3dSolid" and obj.Layer == "3-PANEL BOXES-CONCAVE":
+                total += 1
+        return total
+
+    def __print_progress_bar(self, iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        to_print = f'\r{prefix} |{bar}| {percent}% {suffix}'
+        print(to_print, end="", flush=True)
+        # Print New Line on Complete
+        if iteration == total:
+            print()
 
     def __unit_normal(self, a, b, c):
         x = np.linalg.det([[1, a[1], a[2]],
