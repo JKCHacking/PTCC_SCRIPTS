@@ -108,7 +108,7 @@ class Script:
                 self.document.EndUndoMark()
                 # call undo command
                 self.document.SendCommand("_undo\n\n")
-                self.__print_progress_bar(i + 1, num_panels, length=50)
+                self.__print_progress_bar(i + 1, num_panels, prefix="Progress", suffix="Completed", length=50)
         return round(total_area, ROUND_PRECISION)
 
     def close_document(self):
@@ -134,7 +134,6 @@ class Script:
                     yield file_full_path
 
     def __get_total_panels(self, modelspace):
-        print("Getting number of panels in the drawing...", end='\r', flush=True)
         total = 0
         for obj in modelspace:
             if obj.ObjectName == "AcDb3dSolid" and obj.Layer == "3-PANEL BOXES-CONCAVE":
@@ -145,7 +144,7 @@ class Script:
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
-        to_print = f'\r{prefix} |{bar}| {percent}% {suffix}'
+        to_print = f'\r{prefix} |{bar}| ({iteration}/{total}) {percent}% {suffix}'
         print(to_print, end="", flush=True)
         # Print New Line on Complete
         if iteration == total:
