@@ -59,6 +59,7 @@ class Script:
         modelspace = self.document.ModelSpace
         num_panels = self.__get_total_panels(modelspace)
         print("Number of Panels in the Drawing: {}".format(num_panels))
+        self.__print_progress_bar(0, num_panels, prefix="Progress", suffix="Completed", length=50)
         for i, obj1 in enumerate(modelspace):
             if obj1.ObjectName == "AcDb3dSolid" and obj1.Layer == "3-PANEL BOXES-CONCAVE":
                 area_list = []
