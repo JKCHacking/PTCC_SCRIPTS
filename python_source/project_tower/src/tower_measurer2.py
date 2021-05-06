@@ -1,9 +1,9 @@
 import os
+import csv
 import numpy as np
 from comtypes import client
 from comtypes import COMError
-from comtypes.client import Constants
-from src.constants import Constants as Local_Const
+from src.constants import Constants
 
 ROUND_PRECISION = 4
 
@@ -11,10 +11,10 @@ ROUND_PRECISION = 4
 class Script:
     def __init__(self):
         try:
-            self.cad_application = client.GetActiveObject(Local_Const.APP_NAME, dynamic=True)
+            self.cad_application = client.GetActiveObject(Constants.APP_NAME, dynamic=True)
             self.cad_application.Visible = True
         except(OSError, COMError):
-            self.cad_application = client.CreateObject(Local_Const.APP_NAME, dynamic=True)
+            self.cad_application = client.CreateObject(Constants.APP_NAME, dynamic=True)
             self.cad_application.Visible = True
         self.document = None
 
@@ -58,7 +58,7 @@ class Script:
         total_area = 0
         modelspace = self.document.ModelSpace
         for obj1 in modelspace:
-            if obj1.ObjectName == "AcDb3dSolid":
+            if obj1.ObjectName == "AcDb3dSolid" and obj1.Layer == "3-PANEL BOXES-CONCAVE":
                 area_list = []
                 # explode 3dsolid object using explode command
                 self.document.SendCommand('explode (handent "{}")\n\n'.format(obj1.Handle))
@@ -106,10 +106,29 @@ class Script:
                 self.document.EndUndoMark()
                 # call undo command
                 self.document.SendCommand("_undo\n\n")
-        return total_area
+        return round(total_area, ROUND_PRECISION)
 
     def close_document(self):
         self.document.Close()
+
+    def write_csv(self, dwg_file_name, total_surface_area, output_path):
+        mode = "w"
+        if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+            mode = "a"
+
+        with open(output_path, mode=mode, newline='') as csv_file:
+            field_names = ["DWG File Name", "Total Surface Area"]
+            csv_writer = csv.DictWriter(csv_file, fieldnames=field_names)
+            if mode == "w":
+                csv_writer.writeheader()
+            csv_writer.writerow({"DWG File Name": dwg_file_name, "Total Surface Area": total_surface_area})
+
+    def iter_input(self):
+        for dir_path, dir_names, file_names in os.walk(Constants.INPUT_DIR):
+            for file_name in file_names:
+                file_full_path = os.path.join(dir_path, file_name)
+                if file_full_path.endswith(Constants.DWG_FILES) or file_full_path.endswith(Constants.DXF_FILES):
+                    yield file_full_path
 
     def __unit_normal(self, a, b, c):
         x = np.linalg.det([[1, a[1], a[2]],
@@ -140,10 +159,16 @@ class Script:
         return abs(result / 2)
 
 
-if __name__ == "__main__":
+def main():
     script = Script()
-    for dir_path, dir_names, file_names in os.walk(Constants.INPUT_DIR):
-        for file_name in file_names:
-            file_full_path = os.path.join(dir_path, file_name)
-            if file_full_path.endswith(Constants.DWG) or file_full_path.endswith(Constants.DXF):
-                script.open_document()
+    output_file = os.path.join(Constants.OUTPUT_DIR, "output.csv")
+    for dwg_file_path in script.iter_input():
+        script.open_document(dwg_file_path)
+        area = script.get_total_area()
+        file_name = os.path.basename(dwg_file_path)
+        script.write_csv(file_name, area, output_file)
+        script.close_document()
+
+
+if __name__ == "__main__":
+    main()
