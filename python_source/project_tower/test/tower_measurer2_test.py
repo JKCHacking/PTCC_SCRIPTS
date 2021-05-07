@@ -11,13 +11,8 @@ class TowerMeasurer2Test(unittest.TestCase):
     def tearDown(self) -> None:
         # remove all BAK files in the test directory.
         self.__remove_files(Constants.TESTDATA_DIR, Constants.BAK_FILES)
-        self.__remove_files(Constants.TEST_DIR, Constants.CSV_FILES)
         # remove all unnecessary in input folder
-        self.__remove_files(Constants.INPUT_DIR, Constants.DWG_FILES)
-        self.__remove_files(Constants.INPUT_DIR, Constants.DXF_FILES)
         self.__remove_files(Constants.INPUT_DIR, Constants.BAK_FILES)
-        # remove all unnecessary in output folder
-        self.__remove_files(Constants.OUTPUT_DIR, Constants.CSV_FILES)
 
     def __remove_files(self, dir_name, file_extension):
         print("Removing unnecessary files...")
@@ -76,6 +71,9 @@ class TowerMeasurer2Test(unittest.TestCase):
             for row in reader:
                 self.assertTrue(row in expected_list)
 
+        # remove all unnecessary in output folder
+        self.__remove_files(Constants.TEST_DIR, Constants.CSV_FILES)
+
     def test_main(self):
         output_file_path = os.path.join(Constants.OUTPUT_DIR, "output.csv")
         input_file_path = os.path.join(Constants.INPUT_DIR, "single_panel.dwg")
@@ -90,3 +88,6 @@ class TowerMeasurer2Test(unittest.TestCase):
             reader = csv.reader(csv_file)
             for row in reader:
                 self.assertTrue(row in expected_list)
+
+        self.__remove_files(Constants.INPUT_DIR, Constants.DWG_FILES)
+        self.__remove_files(Constants.OUTPUT_DIR, Constants.CSV_FILES)
