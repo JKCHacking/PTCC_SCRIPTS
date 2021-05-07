@@ -1,6 +1,7 @@
 import os
 import csv
 import numpy as np
+from math import isnan
 from comtypes import client
 from comtypes import COMError
 from src.constants import Constants
@@ -177,6 +178,8 @@ class Script:
             total[1] += prod[1]
             total[2] += prod[2]
         result = np.dot(total, self.__unit_normal(poly[0], poly[1], poly[2]))
+        if isnan(result):
+            result = 0
         return abs(result / 2)
 
 
