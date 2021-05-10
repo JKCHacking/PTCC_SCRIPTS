@@ -1,4 +1,5 @@
 import os
+import re as regular_expression
 import sympy.physics.units as u
 import pint
 import random
@@ -382,6 +383,10 @@ class EquationWriter:
         left_expr = left_expr.strip()
         right_expr = right_expr.strip()
 
+        # check for I, E, S, N, C, O, Q to avoid creating reserved function in sympy.
+        left_expr = self.__replace_special_functions(left_expr)
+        right_expr = self.__replace_special_functions(right_expr)
+
         # convert a string equation to a sympy equivalent
         try:
             parse_lhs = parse_expr(left_expr, evaluate=False)
@@ -520,6 +525,21 @@ class EquationWriter:
                         print("Unit {} cannot be found".format(unit_str))
                         res_rhs_expr = None
         return res_rhs_expr
+
+    def __replace_special_functions(self, expression):
+        expr = expression
+        special_unit_dict = {
+            "N": "newton",
+            "S": "siemens",
+            "C": "coulomb"
+        }
+        reg_pattern = "(?<=[ +\-/*\(\)])[IESNCOQ](?![a-zA-Z0-9])"
+        pattern = regular_expression.compile(reg_pattern)
+        match = pattern.search(expression)
+        if match:
+            match_string = match.group(0)
+            expr = pattern.sub(special_unit_dict[match_string], expression)
+        return expr
 
     def __subs(self, expr, var_dict):
         expr = parse_expr(str(expr), var_dict)

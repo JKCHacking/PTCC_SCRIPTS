@@ -328,3 +328,39 @@ class EquationWriterTest(unittest.TestCase):
         actual = eq_writer.define("z = DoubleQ * 2", simplify=True)
         expected = 20.0 * u.m
         self.assertEqual(expected, actual)
+
+    def test_define_033(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("x = 5 * N")
+        expected = 5 * u.newton
+        self.assertEqual(actual, expected)
+
+    def test_define_034(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("x = 4*N+2")
+        expected = 4 * u.newton + 2
+        self.assertEqual(actual, expected)
+
+    def test_define_035(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("x = (2 * N + 1) * g")
+        expected = (2 * u.newton + 1) * u.gram
+        self.assertEqual(actual, expected)
+
+    def test_define_036(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("x = (3 + 2 * N)")
+        expected = (3 + 2 * u.newton)
+        self.assertEqual(actual, expected)
+
+    def test_define_037(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("x = (3 + 2 * saN)")
+        expected = (3 + 2 * symbols("saN"))
+        self.assertEqual(actual, expected)
+
+    def test_define_038(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("x = 5 * Newyear")
+        expected = (5 * symbols("Newyear"))
+        self.assertEqual(actual, expected)
