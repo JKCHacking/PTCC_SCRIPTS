@@ -528,17 +528,13 @@ class EquationWriter:
 
     def __replace_special_functions(self, expression):
         expr = expression
-        special_unit_dict = {
-            "N": "newton",
-            "S": "siemens",
-            "C": "coulomb"
-        }
+        rpl = "symbols('{}')"
         reg_pattern = "(?<=[ +\-/*\(\)])[IESNCOQ](?![a-zA-Z0-9])"
         pattern = regular_expression.compile(reg_pattern)
         match = pattern.search(expression)
         if match:
             match_string = match.group(0)
-            expr = pattern.sub(special_unit_dict[match_string], expression)
+            expr = pattern.sub(rpl.format(match_string), expression)
         return expr
 
     def __subs(self, expr, var_dict):

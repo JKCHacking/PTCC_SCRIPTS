@@ -364,3 +364,9 @@ class EquationWriterTest(unittest.TestCase):
         actual = eq_writer.define("x = 5 * Newyear")
         expected = (5 * symbols("Newyear"))
         self.assertEqual(actual, expected)
+
+    def test_define_039(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("x = 5 * Q")
+        expected = (5 * symbols("Q"))
+        self.assertEqual(actual, expected)
