@@ -529,7 +529,7 @@ class EquationWriter:
     def __replace_special_functions(self, expression):
         expr = expression
         rpl = "symbols('{}')"
-        reg_pattern = "(?<=[ +\-/*\(\)])[IESNCOQ](?![a-zA-Z0-9])"
+        reg_pattern = "(?<=[ +\-/*\(\)])[IESNCOQ](?![\w])"
         pattern = regular_expression.compile(reg_pattern)
         match = pattern.search(expression)
         if match:
