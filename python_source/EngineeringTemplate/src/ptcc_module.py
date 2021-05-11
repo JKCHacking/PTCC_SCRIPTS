@@ -672,7 +672,7 @@ class EquationWriter:
 
         eq_markdown = "<div class='tbl_eq_row'>" \
                       "<div class='tbl_eq_cell eq_cell' style='font-size:{eq_font_size};'>" \
-                      "${eq_str}$" \
+                      "$${eq_str}$$" \
                       "</div>" \
                       "<div class='tbl_eq_cell'>" \
                       "$\\hspace{{{hspace}}}$" \
