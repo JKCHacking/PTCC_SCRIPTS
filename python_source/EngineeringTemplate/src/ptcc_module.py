@@ -389,9 +389,10 @@ class EquationWriter:
 
         # convert a string equation to a sympy equivalent
         try:
-            parse_lhs = parse_expr(left_expr, evaluate=False)
-            parse_rhs = parse_expr(right_expr, evaluate=False)
-            parse_rhs = self.__symbol_to_unit(parse_rhs)
+            parse_lhs = parse_expr(left_expr)
+            parse_rhs = parse_expr(right_expr)
+            if len(parse_rhs.atoms(Symbol)) > 0:
+                parse_rhs = self.__symbol_to_unit(parse_rhs)
             if annots:
                 self.__add_annotation(parse_lhs, annots)
         except SyntaxError:
@@ -404,10 +405,9 @@ class EquationWriter:
             return
         if len(parse_rhs.atoms(u.Quantity)) == 0:
             rhs = parse_rhs * sympy_unit
-            sym_eq = Eq(parse_lhs, rhs)
         else:
             rhs = u.convert_to(parse_rhs, sympy_unit)
-            sym_eq = Eq(parse_lhs, rhs)
+        sym_eq = Eq(parse_lhs, rhs)
         lhs = rhs
         self.__add_eq_to_namespace(sym_eq)
 
@@ -481,20 +481,23 @@ class EquationWriter:
         if sympy_unit is None or pint_unit is None:
             print("Cannot find unit {}".format(unit_str))
         else:
-            # get only the needed variables for substitution
-            var_list = list(rhs_expr.atoms(Symbol))
-            var_sub_dict = {}
-            for sym_var in var_list:
+            if len(rhs_expr.atoms(Symbol)) > 0:
+                # get only the needed variables for substitution
+                var_list = list(rhs_expr.atoms(Symbol))
+                var_sub_dict = {}
+                for sym_var in var_list:
+                    try:
+                        sym_var_str = str(sym_var)
+                        var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
+                    except KeyError:
+                        pass
+                # substitute all variables in the equation
                 try:
-                    sym_var_str = str(sym_var)
-                    var_sub_dict.update({sym_var_str: self.equation_namespace[sym_var_str]})
-                except KeyError:
-                    pass
-            # substitute all variables in the equation
-            try:
-                res_rhs_expr = rhs_expr.subs(var_sub_dict).evalf()
-            except AttributeError:
-                res_rhs_expr = self.__subs(rhs_expr, var_sub_dict)
+                    res_rhs_expr = rhs_expr.subs(var_sub_dict).evalf()
+                except AttributeError:
+                    res_rhs_expr = self.__subs(rhs_expr, var_sub_dict)
+            else:
+                res_rhs_expr = rhs_expr
             # simplify any special operations ( integral, derivative etc.)
             res_rhs_expr = res_rhs_expr.doit()
             # simplify any unit specific operations

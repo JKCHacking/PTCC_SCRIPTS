@@ -294,25 +294,13 @@ class EquationWriterTest(unittest.TestCase):
 
     def test_define_028(self):
         eq_writer = self.typical_settings()
-        eq_writer.define("z = Array([1, 2, 3, 4])")
-        self.assertRaises(TypeError, eq_writer.define, "x = z + 10 * cm", simplify=True)
+        q = eq_writer.define("q = 5 * m")
+        eq_writer.add_equation(DoubleQ=2 * q)
+        actual = eq_writer.define("z = DoubleQ * 2", simplify=True)
+        expected = 20.0 * u.m
+        self.assertEqual(expected, actual)
 
     def test_define_029(self):
-        eq_writer = self.typical_settings()
-        eq_writer.define("x = Array([1, 2, 3, 4])")
-        eq_writer.define("w = Array([4, 5, 6, 7])")
-        actual = eq_writer.define("z = x + w", simplify=True)
-        expected = Array([5, 7, 9, 11])
-        self.assertEqual(expected, actual)
-
-    def test_define_030(self):
-        eq_writer = self.typical_settings()
-        eq_writer.define("z = Array([1, 2, 3, 4])")
-        actual = eq_writer.define("x = z * 10 * cm", simplify=True)
-        expected = Array([10 * u.cm, 20 * u.cm, 30 * u.cm, 40 * u.cm])
-        self.assertEqual(expected, actual)
-
-    def test_define_031(self):
         eq_writer = self.typical_settings()
         q = eq_writer.define("q = 5 * m")
         eq_writer.add_equation(DoubleQ=2 * q)
@@ -320,7 +308,7 @@ class EquationWriterTest(unittest.TestCase):
         expected = 20.0 * u.m
         self.assertEqual(expected, actual)
 
-    def test_define_032(self):
+    def test_define_030(self):
         eq_writer = self.typical_settings()
         q = eq_writer.define("q = 5 * m")
         DoubleQ = 2 * q
@@ -329,44 +317,89 @@ class EquationWriterTest(unittest.TestCase):
         expected = 20.0 * u.m
         self.assertEqual(expected, actual)
 
-    def test_define_033(self):
+    def test_define_031(self):
         eq_writer = self.typical_settings()
         actual = eq_writer.define("x = 5 * N")
         expected = 5 * u.newton
         self.assertEqual(actual, expected)
 
-    def test_define_034(self):
+    def test_define_032(self):
         eq_writer = self.typical_settings()
         actual = eq_writer.define("x = 4*N+2")
         expected = 4 * u.newton + 2
         self.assertEqual(actual, expected)
 
-    def test_define_035(self):
+    def test_define_033(self):
         eq_writer = self.typical_settings()
         actual = eq_writer.define("x = (2 * N + 1) * g")
         expected = (2 * u.newton + 1) * u.gram
         self.assertEqual(actual, expected)
 
-    def test_define_036(self):
+    def test_define_034(self):
         eq_writer = self.typical_settings()
         actual = eq_writer.define("x = (3 + 2 * N)")
         expected = (3 + 2 * u.newton)
         self.assertEqual(actual, expected)
 
-    def test_define_037(self):
+    def test_define_035(self):
         eq_writer = self.typical_settings()
         actual = eq_writer.define("x = (3 + 2 * saN)")
         expected = (3 + 2 * symbols("saN"))
         self.assertEqual(actual, expected)
 
-    def test_define_038(self):
+    def test_define_036(self):
         eq_writer = self.typical_settings()
         actual = eq_writer.define("x = 5 * Newyear")
         expected = (5 * symbols("Newyear"))
         self.assertEqual(actual, expected)
 
-    def test_define_039(self):
+    def test_define_037(self):
         eq_writer = self.typical_settings()
         actual = eq_writer.define("x = 5 * Q")
         expected = (5 * symbols("Q"))
         self.assertEqual(actual, expected)
+
+    # =========================================ARRAY TESTS====================================================
+    def test_define_array_01(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("z = Array([1, 2, 3, 4])")
+        self.assertRaises(TypeError, eq_writer.define, "x = z + 10 * cm", simplify=True)
+
+    def test_define_array_02(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("x = Array([1, 2, 3, 4])")
+        eq_writer.define("w = Array([4, 5, 6, 7])")
+        actual = eq_writer.define("z = x + w", simplify=True)
+        expected = Array([5, 7, 9, 11])
+        self.assertEqual(expected, actual)
+
+    def test_define_array_03(self):
+        eq_writer = self.typical_settings()
+        eq_writer.define("z = Array([1, 2, 3, 4])")
+        actual = eq_writer.define("x = z * 10 * cm", simplify=True)
+        expected = Array([10 * u.cm, 20 * u.cm, 30 * u.cm, 40 * u.cm])
+        self.assertEqual(expected, actual)
+
+    def test_define_array_04(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("y = 4 * Array([1, 2, 3, 4])", simplify=True)
+        expected = Array([4, 8, 12, 16])
+        self.assertEqual(expected, actual)
+
+    def test_define_array_05(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("y = 4 * Array([1, 2, 3, 4])")
+        expected = Array([4, 8, 12, 16])
+        self.assertEqual(expected, actual)
+
+    def test_define_array_06(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("y = 4 * Array([1 * N, 2, 3, 4])")
+        expected = Array([4 * u.newton, 8, 12, 16])
+        self.assertEqual(expected, actual)
+
+    def test_define_array_07(self):
+        eq_writer = self.typical_settings()
+        actual = eq_writer.define("y = Array([1 * N, 2 * m, 3, 4])")
+        expected = Array([1 * u.newton, 2 * u.meter, 3, 4])
+        self.assertEqual(expected, actual)
