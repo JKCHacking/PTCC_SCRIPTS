@@ -920,8 +920,18 @@ class TableWriter:
             None
         """
         css = "<style> " \
-              ".rendered_html td, .rendered_html th {" \
-              "text-align:center;}" \
+                  ".rendered_html td, .rendered_html th {" \
+                      "text-align:center;"\
+                      "background: #ffffff; "\
+                      "border-top-width: 1px; "\
+                      "border-top-style: solid; "\
+                      "border-bottom-width: 1px; "\
+                      "border-bottom-style: solid;"\
+                  "}"\
+                  ".rendered_html caption {"\
+                      "text-align: center;" \
+                      "color: black;"\
+                  "}"\
               "</style>"
         display(HTML(css))
 
