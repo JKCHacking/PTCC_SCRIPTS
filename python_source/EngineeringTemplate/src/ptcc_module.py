@@ -610,7 +610,8 @@ class EquationWriter:
             =======
                 res_latex:string - equation in latex
         """
-        res_latex = "{}".format(latex(s, mul_symbol='dot'))
+        new_s = s.xreplace({quan: symbols(str(quan.abbrev)) for quan in s.atoms(u.Quantity)})
+        res_latex = "{}".format(latex(new_s, mul_symbol='dot'))
         return res_latex
 
     def __add_eq_to_namespace(self, equation):
