@@ -82,6 +82,14 @@ class Controller:
         display(Markdown(html))
         return eq_sympy.rhs
 
+    def create_text(self, text_string, bold=False, underline=False, italic=False, text_position="left",
+                    font_size=None, font_name=None):
+        font_size = self.font_size if font_size is None else font_size
+        text_obj = Text(text_string, bold, underline, italic, text_position, font_size, font_name)
+        text_obj.compose()
+        html = text_obj.get_html()
+        display(Markdown(html))
+
     def recall_equation(self, lhs):
         html = EQUATION_HISTORY[lhs]
         display(Markdown(html))
