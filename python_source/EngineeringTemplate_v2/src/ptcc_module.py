@@ -7,6 +7,7 @@ from pint.errors import UndefinedUnitError
 
 EQUATION_NAMESPACE = {}
 ANNOTATIONS = {}
+EQUATION_HISTORY = {}
 
 # initializing units
 PINT_UNIT = pint.UnitRegistry()
@@ -61,7 +62,7 @@ class Controller:
         # Annotation
         annot_div = ""
         if annotations:
-            self.add_annotation(eq_sympy.lhs, annotations)
+            ANNOTATIONS.update({str(eq_sympy.lhs): annotations})
             annot_div = "<div style='display: inline-block;'>"
             for i, annot in enumerate(annotations):
                 if i == 0:
@@ -77,12 +78,14 @@ class Controller:
         self.add_eq_to_namespace(**{eq_str_lhs: eq_sympy.rhs})
         html = "<div>{equation}{space}{annotations}</div>".format(
             equation=eq_obj.get_html(), space=space_obj.get_html(), annotations=annot_div)
-
+        EQUATION_HISTORY.update({str(eq_sympy.lhs): html})
         display(Markdown(html))
         return eq_sympy.rhs
 
-    def redefine_equation(self):
-        pass
+    def recall_equation(self, lhs):
+        html = EQUATION_HISTORY[lhs]
+        display(Markdown(html))
+        return EQUATION_NAMESPACE[lhs]
 
     def add_eq_to_namespace(self, **kwargs):
         """
@@ -97,9 +100,6 @@ class Controller:
                 None
         """
         EQUATION_NAMESPACE.update(kwargs)
-
-    def add_annotation(self, lhs, annotation):
-        ANNOTATIONS.update({str(lhs): annotation})
 
 
 class Equation:
@@ -222,9 +222,8 @@ class Equation:
         else:
             res_eq_latex = self.__convert_to_latex(res_eq_sympy)
             html = "<div style='font_size:{font_size}; display: inline-block; vertical-align:top;'>" \
-                   "<div>$${eq_sympy_latex}$$</div><div>$${res_eq_latex}$$</div></div>".format(font_size=self.font_size,
-                                                                             eq_sympy_latex=eq_sympy_latex,
-                                                                             res_eq_latex=res_eq_latex)
+                   "<div>$${eq_sympy_latex}$$</div><div>$${res_eq_latex}$$</div></div>".format(
+                    font_size=self.font_size, eq_sympy_latex=eq_sympy_latex, res_eq_latex=res_eq_latex)
         self.set_html(html)
         return res_eq_sympy
 
