@@ -48,9 +48,9 @@ class Controller:
         p_font_size = self.font_size if p_font_size_param is None else p_font_size_param
         s_font_size = self.font_size if s_font_size_param is None else s_font_size_param
         # Equation
-        eq_obj = Equation(equation_string, convert_to, eq_font_size, inline, num_decimal)
+        eq_obj = Equation(equation_string, eq_font_size, num_decimal)
         if simplify:
-            eq_obj.simplify()
+            eq_obj.simplify(convert_to, inline)
         if eq_obj.equation is None:
             return
         else:
@@ -161,14 +161,12 @@ class Composite(Component):
 
 
 class Equation(Leaf):
-    def __init__(self, equation_string, convert_to, font_size, inline, num_decimal):
+    def __init__(self, equation_string, font_size, num_decimal):
         self.html = ""
         self.num_decimal = num_decimal
         self.equation_string = equation_string
         self.equation = None
-        self.convert_to = convert_to
         self.font_size = font_size
-        self.inline = inline
         self.num_decimal = num_decimal
         self.compose()
 
@@ -200,7 +198,7 @@ class Equation(Leaf):
                "$${equation_latex}$$</div>".format(font_size=self.font_size, equation_latex=sym_eq_latex)
         self.set_html(html)
 
-    def simplify(self):
+    def simplify(self, convert_to, inline):
         """
             Desc
             ====
@@ -217,10 +215,10 @@ class Equation(Leaf):
             res_rhs_expr:sympy expression - The resulting expression after evaluation.
         """
         old_equation = self.equation
-        sympy_unit = self.__unit_str_2_unit_sympy(self.convert_to)
-        pint_unit = self.__unit_str_2_unit_pint(self.convert_to)
+        sympy_unit = self.__unit_str_2_unit_sympy(convert_to)
+        pint_unit = self.__unit_str_2_unit_pint(convert_to)
         if sympy_unit is None or pint_unit is None:
-            print("Cannot find unit: {}".format(self.convert_to))
+            print("Cannot find unit: {}".format(convert_to))
             return None
         else:
             rhs_expr = old_equation.rhs
@@ -254,7 +252,7 @@ class Equation(Leaf):
             # make output more readable using Pint functions.
             # if magnitude is a number
             if len(res_rhs_expr.atoms(SYMPY_UNIT.Quantity)) == 1 and len(res_rhs_expr.atoms(Number)) == 1:
-                if self.convert_to != "dimensionless":
+                if convert_to != "dimensionless":
                     # create pint expression
                     pint_expr = PINT_UNIT(str(res_rhs_expr))
                     # simplify pint expression using pint functions
@@ -272,7 +270,7 @@ class Equation(Leaf):
         res_rhs_expr = self.__round_expr(res_rhs_expr, self.num_decimal)
         res_eq_sympy = Eq(old_equation.lhs, res_rhs_expr)
         eq_sympy_latex = self.__convert_to_latex(old_equation)
-        if self.inline:
+        if inline:
             res_rhs_latex = self.__convert_to_latex(res_eq_sympy.rhs)
             html = "<div style='font_size:{font_size}; display: inline-block; vertical-align:top;'>" \
                    "$${equation_latex} = {res_rhs_latex}$$</div>".format(font_size=self.font_size,
