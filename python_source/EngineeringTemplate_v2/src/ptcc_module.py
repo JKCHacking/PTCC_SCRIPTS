@@ -4,6 +4,7 @@ import pint
 from IPython.display import display, Markdown, HTML
 from sympy import *
 from pint.errors import UndefinedUnitError
+from abc import ABC, abstractmethod
 
 EQUATION_NAMESPACE = {}
 ANNOTATIONS = {}
@@ -33,10 +34,11 @@ class Controller:
         self.font_size = font_size
         self.equation_spacing = equation_spacing
         self.image_folder_name = image_folder_name
+        self.output = OutputContainer()
 
     @staticmethod
     def edit_jupyter_css():
-        css = "<style> div.output_subarea {padding: 0;}</style>"
+        css = "<style> div.output_subarea {padding: 0; overflow-x: clip;}</style>"
         display(HTML(css))
 
     def create_equation(self, equation_string, convert_to="dimensionless", annotations=None, simplify=False,
@@ -46,80 +48,128 @@ class Controller:
         eq_font_size = self.font_size if eq_font_size_param is None else eq_font_size_param
         p_font_size = self.font_size if p_font_size_param is None else p_font_size_param
         s_font_size = self.font_size if s_font_size_param is None else s_font_size_param
-
-        eq_obj = Equation(equation_string, convert_to, eq_font_size, inline, num_decimal)
         # Equation
-        eq_sympy = eq_obj.compose()
-        if eq_sympy is None:
-            return
+        eq_obj = Equation(equation_string, convert_to, eq_font_size, inline, num_decimal)
         if simplify:
-            eq_sympy = eq_obj.simplify()
-            if eq_sympy is None:
-                return
+            eq_obj.simplify()
+        if eq_obj.equation is None:
+            return
+        else:
+            self.add_eq_to_namespace(**{str(eq_obj.equation.lhs): eq_obj.equation.rhs})
         # Space
         space_obj = Space(space=self.equation_spacing)
-        space_obj.compose()
         # Annotation
-        annot_div = ""
+        annotation_group = TextGroup()
         if annotations:
-            ANNOTATIONS.update({str(eq_sympy.lhs): annotations})
-            annot_div = "<div style='display: inline-block;'>"
+            ANNOTATIONS.update({str(eq_obj.equation.lhs): annotations})
             for i, annot in enumerate(annotations):
                 if i == 0:
                     text_obj = Text(annot, font_size=p_font_size, font_name=self.font_name)
-                    text_obj.compose()
                 else:
                     text_obj = Text(annot, italic=True, font_size=s_font_size, font_name=self.font_name)
-                    text_obj.compose()
-                annot_div += text_obj.get_html()
-            annot_div += "</div>"
-
-        eq_str_lhs = str(eq_sympy.lhs)
-        self.add_eq_to_namespace(**{eq_str_lhs: eq_sympy.rhs})
-        html = "<div>{equation}{space}{annotations}</div>".format(
-            equation=eq_obj.get_html(), space=space_obj.get_html(), annotations=annot_div)
-        EQUATION_HISTORY.update({str(eq_sympy.lhs): html})
-        display(Markdown(html))
-        return eq_sympy.rhs
+                annotation_group.add(text_obj)
+        equation_row = EquationRow()
+        equation_row.add(eq_obj)
+        equation_row.add(space_obj)
+        equation_row.add(annotation_group)
+        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): equation_row})
+        self.output.add(equation_row)
+        return eq_obj.equation.rhs
 
     def create_text(self, text_string, bold=False, underline=False, italic=False, text_position="left",
                     font_size=None, font_name=None):
         font_size = self.font_size if font_size is None else font_size
         text_obj = Text(text_string, bold, underline, italic, text_position, font_size, font_name)
-        text_obj.compose()
-        html = text_obj.get_html()
-        display(Markdown(html))
+        self.output.add(text_obj)
+
+    def create_vertical_space(self, space):
+        space_obj = Space("vertical", space)
+        self.output.add(space_obj)
+
+    def create_horizontal_space(self, space):
+        space_obj = Space("horizontal", space)
+        self.output.add(space_obj)
+
+    def create_header(self):
+        pass
+
+    def create_title(self):
+        pass
+
+    def create_table(self):
+        pass
+
+    def create_image(self):
+        pass
+
+    def create_graph(self):
+        pass
 
     def recall_equation(self, lhs):
-        html = EQUATION_HISTORY[lhs]
-        display(Markdown(html))
+        equation_row = EQUATION_HISTORY[lhs]
+        self.output.add(equation_row)
         return EQUATION_NAMESPACE[lhs]
 
+    def convert(self):
+        pass
+
+    def compare(self):
+        pass
+
+    def conclude(self):
+        pass
+
+    def display(self):
+        html = self.output.get_html()
+        display(Markdown(html))
+        # create new instance to clear the contents
+        self.output = OutputContainer()
+
     def add_eq_to_namespace(self, **kwargs):
-        """
-            Desc
-            ====
-                Adds sympy equation to namespace list
-            parameters
-            ==========
-                equation:sympy equation - equation in sympy
-            returns
-            =======
-                None
-        """
         EQUATION_NAMESPACE.update(kwargs)
 
+# =========================================COMPONENT CLASSES=========================================================
 
-class Equation:
+
+class Component(ABC):
+    pass
+
+
+class Leaf(Component):
+    @abstractmethod
+    def get_html(self):
+        pass
+
+    @abstractmethod
+    def compose(self):
+        pass
+
+
+class Composite(Component):
+    @abstractmethod
+    def add(self, comp_obj):
+        pass
+
+    @abstractmethod
+    def remove(self, comp_obj):
+        pass
+
+    @abstractmethod
+    def get_html(self):
+        pass
+
+
+class Equation(Leaf):
     def __init__(self, equation_string, convert_to, font_size, inline, num_decimal):
         self.html = ""
         self.num_decimal = num_decimal
         self.equation_string = equation_string
-        self.equation_sympy = None
+        self.equation = None
         self.convert_to = convert_to
         self.font_size = font_size
         self.inline = inline
         self.num_decimal = num_decimal
+        self.compose()
 
     def compose(self):
         if self.equation_string.count("=") != 1:
@@ -143,12 +193,11 @@ class Equation:
         if len(parse_rhs.atoms(Symbol)) > 0:
             parse_rhs = self.__symbol_to_unit(parse_rhs)
         # convert given string equation to sympy equation.
-        self.equation_sympy = Eq(parse_lhs, parse_rhs)
-        sym_eq_latex = self.__convert_to_latex(self.equation_sympy)
+        self.equation = Eq(parse_lhs, parse_rhs)
+        sym_eq_latex = self.__convert_to_latex(self.equation)
         html = "<div style='font_size: {font_size}; display: inline-block; vertical-align:top;'>" \
                "$${equation_latex}$$</div>".format(font_size=self.font_size, equation_latex=sym_eq_latex)
         self.set_html(html)
-        return self.equation_sympy
 
     def simplify(self):
         """
@@ -166,13 +215,14 @@ class Equation:
             =======
             res_rhs_expr:sympy expression - The resulting expression after evaluation.
         """
+        old_equation = self.equation
         sympy_unit = self.__unit_str_2_unit_sympy(self.convert_to)
         pint_unit = self.__unit_str_2_unit_pint(self.convert_to)
         if sympy_unit is None or pint_unit is None:
             print("Cannot find unit: {}".format(self.convert_to))
             return None
         else:
-            rhs_expr = self.equation_sympy.rhs
+            rhs_expr = old_equation.rhs
             if len(rhs_expr.atoms(Symbol)) > 0:
                 # get only the needed variables for substitution
                 var_list = list(rhs_expr.atoms(Symbol))
@@ -219,8 +269,8 @@ class Equation:
                     else:
                         return None
         res_rhs_expr = self.__round_expr(res_rhs_expr, self.num_decimal)
-        res_eq_sympy = Eq(self.equation_sympy.lhs, res_rhs_expr)
-        eq_sympy_latex = self.__convert_to_latex(self.equation_sympy)
+        res_eq_sympy = Eq(old_equation.lhs, res_rhs_expr)
+        eq_sympy_latex = self.__convert_to_latex(old_equation)
         if self.inline:
             res_rhs_latex = self.__convert_to_latex(res_eq_sympy.rhs)
             html = "<div style='font_size:{font_size}; display: inline-block; vertical-align:top;'>" \
@@ -233,7 +283,7 @@ class Equation:
                    "<div>$${eq_sympy_latex}$$</div><div>$${res_eq_latex}$$</div></div>".format(
                     font_size=self.font_size, eq_sympy_latex=eq_sympy_latex, res_eq_latex=res_eq_latex)
         self.set_html(html)
-        return res_eq_sympy
+        self.equation = res_eq_sympy
 
     def set_html(self, html):
         self.html = html
@@ -327,7 +377,7 @@ class Equation:
         return unit_sympy
 
 
-class Text:
+class Text(Leaf):
     def __init__(self, text, bold=False, underline=False, italic=False, text_position="left", font_size=None,
                  font_name=None):
         self.html = ""
@@ -338,6 +388,7 @@ class Text:
         self.text_position = text_position
         self.font_size = font_size
         self.font_name = font_name
+        self.compose()
 
     def compose(self):
         """
@@ -363,7 +414,7 @@ class Text:
         font_decor = "underline" if self.underline else "none"
         html = "<div style='font-family:{font_name}, Arial;font-size:{font_size};" \
                "font-style:{font_style};font-weight:{font_weight};text-decoration:{font_decor};" \
-               "text-align:{text_position};'>" \
+               "text-align:{text_position}; display: inline-block;'>" \
                "{text}</div>".format(font_name=self.font_name,
                                      font_size=self.font_size,
                                      font_style=font_style,
@@ -380,18 +431,19 @@ class Text:
         self.html = html
 
 
-class Space:
+class Space(Leaf):
     def __init__(self, direction="horizontal", space="0in"):
         self.html = ""
         self.direction = direction
         self.space = space
+        self.compose()
 
     def compose(self):
         if self.direction == "horizontal":
-            html = "<div style='overflow:hidden;height:1px;width:{space}; display: inline-block;'>" \
+            html = "<div float:left; style='overflow:hidden;height:1px;width:{space}; display: inline-block;'>" \
                    "</div>".format(space=self.space)
         elif self.direction == "vertical":
-            html = "<div style='overflow:hidden;height:{space};width:100%; display: inline-block;'>" \
+            html = "<div style='overflow:hidden;height:{space};width:100%;'>" \
                    "</div>".format(space=self.space)
         else:
             print("Invalid direction, choose [horizontal or vertical]")
@@ -404,3 +456,66 @@ class Space:
     def get_html(self):
         return self.html
 
+
+class TextGroup(Composite):
+    def __init__(self):
+        self.annotations = []
+        self.html = ""
+
+    def add(self, comp_obj):
+        self.annotations.append(comp_obj)
+
+    def remove(self, comp_obj):
+        pass
+
+    def set_html(self, html):
+        self.html = html
+
+    def get_html(self):
+        html = "<div style='display: inline-block;'>{inner_html}</div>"
+        inner_html = ""
+        for annotation_obj in self.annotations:
+            inner_html += annotation_obj.get_html() + "<br>"
+        self.set_html(html.format(inner_html=inner_html))
+        return self.html
+
+
+class EquationRow(Composite):
+    def __init__(self):
+        self.components = []
+        self.html = ""
+
+    def remove(self, comp_obj):
+        pass
+
+    def set_html(self, html):
+        self.html = html
+
+    def get_html(self):
+        html = "<div>{inner_html}</div>"
+        inner_html = ""
+        for comp_obj in self.components:
+            inner_html += comp_obj.get_html()
+        self.set_html(html.format(inner_html=inner_html))
+        return self.html
+
+    def add(self, comp_obj):
+        self.components.append(comp_obj)
+
+
+class OutputContainer(Composite):
+    def __init__(self):
+        self.components = []
+
+    def add(self, comp_obj):
+        self.components.append(comp_obj)
+
+    def remove(self, comp_obj):
+        pass
+
+    def get_html(self):
+        html = "<div>{inner_html}</div>"
+        inner_html = ""
+        for comp_obj in self.components:
+            inner_html += comp_obj.get_html()
+        return html.format(inner_html=inner_html)
