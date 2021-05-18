@@ -7,7 +7,6 @@ from pint.errors import UndefinedUnitError
 from abc import ABC, abstractmethod
 
 EQUATION_NAMESPACE = {}
-ANNOTATIONS = {}
 EQUATION_HISTORY = {}
 
 # initializing units
@@ -61,7 +60,6 @@ class Controller:
         # Annotation
         annotation_group = TextGroup()
         if annotations:
-            ANNOTATIONS.update({str(eq_obj.equation.lhs): annotations})
             for i, annot in enumerate(annotations):
                 if i == 0:
                     text_obj = Text(annot, font_size=p_font_size, font_name=self.font_name)
@@ -72,8 +70,8 @@ class Controller:
         equation_row.add(eq_obj)
         equation_row.add(space_obj)
         equation_row.add(annotation_group)
-        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): equation_row})
         self.output.add(equation_row)
+        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): equation_row})
         return eq_obj.equation.rhs
 
     def create_text(self, text_string, bold=False, underline=False, italic=False,
