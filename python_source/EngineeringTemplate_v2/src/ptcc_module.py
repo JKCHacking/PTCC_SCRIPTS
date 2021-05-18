@@ -76,10 +76,11 @@ class Controller:
         self.output.add(equation_row)
         return eq_obj.equation.rhs
 
-    def create_text(self, text_string, bold=False, underline=False, italic=False, text_position="left",
+    def create_text(self, text_string, bold=False, underline=False, italic=False,
                     font_size=None, font_name=None):
         font_size = self.font_size if font_size is None else font_size
-        text_obj = Text(text_string, bold, underline, italic, text_position, font_size, font_name)
+        font_name = self.font_name if font_name is None else font_name
+        text_obj = Text(text_string, bold, underline, italic, font_size, font_name)
         self.output.add(text_obj)
 
     def create_vertical_space(self, space):
@@ -119,8 +120,10 @@ class Controller:
     def conclude(self):
         pass
 
-    def display(self):
+    def display_output(self, alignment="left"):
+        self.output.set_alignment(alignment)
         html = self.output.get_html()
+        # display html
         display(Markdown(html))
         # create new instance to clear the contents
         self.output = OutputContainer()
@@ -378,14 +381,12 @@ class Equation(Leaf):
 
 
 class Text(Leaf):
-    def __init__(self, text, bold=False, underline=False, italic=False, text_position="left", font_size=None,
-                 font_name=None):
+    def __init__(self, text, bold=False, underline=False, italic=False, font_size=None, font_name=None):
         self.html = ""
         self.text = text
         self.bold = bold
         self.underline = underline
         self.italic = italic
-        self.text_position = text_position
         self.font_size = font_size
         self.font_name = font_name
         self.compose()
@@ -414,13 +415,12 @@ class Text(Leaf):
         font_decor = "underline" if self.underline else "none"
         html = "<div style='font-family:{font_name}, Arial;font-size:{font_size};" \
                "font-style:{font_style};font-weight:{font_weight};text-decoration:{font_decor};" \
-               "text-align:{text_position}; display: inline-block;'>" \
+               "display: inline-block;'>" \
                "{text}</div>".format(font_name=self.font_name,
                                      font_size=self.font_size,
                                      font_style=font_style,
                                      font_weight=font_weight,
                                      font_decor=font_decor,
-                                     text_position=self.text_position,
                                      text=self.text)
         self.set_html(html)
 
@@ -506,6 +506,7 @@ class EquationRow(Composite):
 class OutputContainer(Composite):
     def __init__(self):
         self.components = []
+        self.alignment = ""
 
     def add(self, comp_obj):
         self.components.append(comp_obj)
@@ -514,8 +515,11 @@ class OutputContainer(Composite):
         pass
 
     def get_html(self):
-        html = "<div>{inner_html}</div>"
+        html = "<div style='text-align: {alignment}'>{inner_html}</div>"
         inner_html = ""
         for comp_obj in self.components:
             inner_html += comp_obj.get_html()
-        return html.format(inner_html=inner_html)
+        return html.format(inner_html=inner_html, alignment=self.alignment)
+
+    def set_alignment(self, alignment):
+        self.alignment = alignment
