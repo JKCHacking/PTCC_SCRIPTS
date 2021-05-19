@@ -57,15 +57,17 @@ class Controller:
         else:
             self.add_eq_to_namespace(**{str(eq_obj.equation.lhs): eq_obj.equation.rhs})
         # Space
-        space_obj = Space(space=self.equation_spacing)
+        space_obj = Space("horizontal", space=self.equation_spacing)
         # Annotation
         annotation_group = TextGroup()
         if annotations:
             for i, annot in enumerate(annotations):
                 if i == 0:
-                    text_obj = Text(annot, font_size=p_font_size, font_name=self.font_name)
+                    text_obj = Text(annot, bold=False, underline=False, italic=False, font_size=p_font_size,
+                                    font_name=self.font_name)
                 else:
-                    text_obj = Text(annot, italic=True, font_size=s_font_size, font_name=self.font_name)
+                    text_obj = Text(annot, bold=False, underline=False, italic=True, font_size=s_font_size,
+                                    font_name=self.font_name)
                 annotation_group.add(text_obj)
         equation_row = EquationRow()
         equation_row.add(eq_obj)
@@ -73,12 +75,7 @@ class Controller:
         equation_row.add(annotation_group)
         self.output.add(equation_row)
 
-        new_eq_obj = Equation("{} = {}".format(eq_obj.equation.lhs, eq_obj.equation.rhs), eq_font_size, num_decimal)
-        new_eq_row = EquationRow()
-        new_eq_row.add(new_eq_obj)
-        new_eq_row.add(space_obj)
-        new_eq_row.add(annotation_group)
-        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): new_eq_row})
+        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): equation_row})
         return eq_obj.equation.rhs
 
     def create_text(self, text_string, bold=False, underline=False, italic=False,
@@ -105,7 +102,7 @@ class Controller:
         font_name = self.font_name if font_name is None else font_name
         line_break_obj = LineBreak()
 
-        text_obj = Text(text_string, bold=True, underline=True, font_size=font_size, font_name=font_name)
+        text_obj = Text(text_string, bold=True, underline=True, italic=False, font_size=font_size, font_name=font_name)
         self.output.add(text_obj)
         self.output.add(line_break_obj)
 
@@ -114,18 +111,21 @@ class Controller:
         font_name = self.font_name if font_name is None else font_name
         line_break_obj = LineBreak()
 
-        section_obj = Text(section, bold=True, font_size=font_size, font_name=font_name)
+        section_obj = Text(section, bold=True, underline=False, italic=False, font_size=font_size, font_name=font_name)
         self.output.add(section_obj)
         self.output.add(line_break_obj)
         self.output.add(line_break_obj)
-        main_title_obj = Text(main_title, bold=True, underline=True, font_size=font_size, font_name=font_name)
+        main_title_obj = Text(main_title, bold=True, underline=True, italic=False, font_size=font_size,
+                              font_name=font_name)
         self.output.add(main_title_obj)
         self.output.add(line_break_obj)
         for reference in references:
-            ref_obj = Text(reference, font_size=font_size, font_name=font_name)
+            ref_obj = Text(reference, bold=False, underline=False, italic=False, font_size=font_size,
+                           font_name=font_name)
             self.output.add(ref_obj)
         self.output.add(line_break_obj)
-        proj_name_loc_obj = Text(project_name_location, font_size=font_size, font_name=font_name)
+        proj_name_loc_obj = Text(project_name_location, bold=False, underline=False, italic=False, font_size=font_size,
+                                 font_name=font_name)
         self.output.add(proj_name_loc_obj)
         self.output.add(line_break_obj)
 
@@ -430,7 +430,7 @@ class Equation(Leaf):
 
 
 class Text(Leaf):
-    def __init__(self, text, bold=False, underline=False, italic=False, font_size=None, font_name=None):
+    def __init__(self, text, bold, underline, italic, font_size, font_name):
         self.html = ""
         self.text = text
         self.bold = bold
@@ -481,7 +481,7 @@ class Text(Leaf):
 
 
 class Space(Leaf):
-    def __init__(self, direction="horizontal", space="0in"):
+    def __init__(self, direction, space):
         self.html = ""
         self.direction = direction
         self.space = space
