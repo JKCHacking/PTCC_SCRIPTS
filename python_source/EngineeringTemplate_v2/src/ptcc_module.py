@@ -95,11 +95,38 @@ class Controller:
         space_obj = Space("horizontal", space)
         self.output.add(space_obj)
 
-    def create_header(self):
-        pass
+    def create_line_break(self):
+        line_br_obj = LineBreak()
+        self.output.add(line_br_obj)
 
-    def create_title(self):
-        pass
+    def create_header(self, text_string, font_size=None, font_name=None):
+        font_size = self.font_size if font_size is None else font_size
+        font_name = self.font_name if font_name is None else font_name
+        line_break_obj = LineBreak()
+
+        text_obj = Text(text_string, bold=True, underline=True, font_size=font_size, font_name=font_name)
+        self.output.add(text_obj)
+        self.output.add(line_break_obj)
+
+    def create_title(self, section, main_title, references, project_name_location, font_size=None, font_name=None):
+        font_size = self.font_size if font_size is None else font_size
+        font_name = self.font_name if font_name is None else font_name
+        line_break_obj = LineBreak()
+
+        section_obj = Text(section, bold=True, font_size=font_size, font_name=font_name)
+        self.output.add(section_obj)
+        self.output.add(line_break_obj)
+        self.output.add(line_break_obj)
+        main_title_obj = Text(main_title, bold=True, underline=True, font_size=font_size, font_name=font_name)
+        self.output.add(main_title_obj)
+        self.output.add(line_break_obj)
+        for reference in references:
+            ref_obj = Text(reference, font_size=font_size, font_name=font_name)
+            self.output.add(ref_obj)
+        self.output.add(line_break_obj)
+        proj_name_loc_obj = Text(project_name_location, font_size=font_size, font_name=font_name)
+        self.output.add(proj_name_loc_obj)
+        self.output.add(line_break_obj)
 
     def create_table(self):
         pass
@@ -193,6 +220,7 @@ class Equation(Leaf):
             parse_lhs = parse_expr(left_expr)
             parse_rhs = parse_expr(right_expr)
         except SyntaxError:
+            print("You have entered an invalid expression.")
             return None
 
         if len(parse_rhs.atoms(Symbol)) > 0:
@@ -214,7 +242,8 @@ class Equation(Leaf):
 
             Parameters
             ==========
-            rhs_expr:sympy expression - Right hand side expression.
+            convert_to
+            inline
 
             Returns
             =======
@@ -457,6 +486,22 @@ class Space(Leaf):
 
     def get_html(self):
         return self.html
+
+
+class LineBreak(Leaf):
+    def __init__(self):
+        self.html = ""
+        self.compose()
+
+    def get_html(self):
+        return self.html
+
+    def set_html(self, html):
+        self.html = html
+
+    def compose(self):
+        html = "<br>"
+        self.set_html(html)
 
 
 class TextGroup(Composite):
