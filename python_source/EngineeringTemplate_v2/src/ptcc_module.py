@@ -1,3 +1,4 @@
+import os
 import re as regular_expression
 import sympy.physics.units as SYMPY_UNIT
 import pint
@@ -131,8 +132,25 @@ class Controller:
     def create_table(self):
         pass
 
-    def create_image(self):
-        pass
+    def create_image(self, images, captions, layout="horizontal", width="500px", height="300px"):
+        if isinstance(images, list) and isinstance(captions, list):
+            if len(images) == len(captions):
+                if os.path.exists(os.path.join(".", self.image_folder_name)):
+                    image_group = ImageGroup(layout)
+                    for image_name, caption in zip(images, captions):
+                        image_path = os.path.join(self.image_folder_name, image_name)
+                        if os.path.exists(image_path):
+                            image_obj = Image(image_path, caption, width, height)
+                            image_group.add(image_obj)
+                        else:
+                            print("Image does not exists", image_name)
+                    self.output.add(image_group)
+                else:
+                    print("Image folder does not exists")
+            else:
+                print("Number of images and caption must be equal.")
+        else:
+            print("Please pass a list of image name or list of caption.")
 
     def create_graph(self):
         pass
@@ -502,6 +520,63 @@ class LineBreak(Leaf):
     def compose(self):
         html = "<br>"
         self.set_html(html)
+
+
+class Image(Leaf):
+    def __init__(self, image_path, caption, width, height):
+        self.html = ""
+        self.image_path = image_path
+        self.caption = caption
+        self.width = width
+        self.height = height
+        self.compose()
+
+    def set_html(self, html):
+        self.html = html
+
+    def get_html(self):
+        return self.html
+
+    def compose(self):
+        html = "<figure style='display: inline-block; padding:6px;'>" \
+               "<img style='border-width: 1px; border-style: solid;' src='{source}' width='{width}' height='{height}' "\
+               "alt='missing jpg'>" \
+               "<figcaption>{caption}</figcaption>" \
+               "</figure>".format(source=self.image_path,
+                                  width=self.width,
+                                  height=self.height,
+                                  caption=self.caption)
+        self.set_html(html)
+
+
+class ImageGroup(Composite):
+
+    def __init__(self, layout):
+        self.images = []
+        self.html = ""
+        self.layout = layout
+
+    def add(self, comp_obj):
+        self.images.append(comp_obj)
+
+    def remove(self, comp_obj):
+        pass
+
+    def set_html(self, html):
+        self.html = html
+
+    def get_html(self):
+        if self.layout == "horizontal":
+            newline = ""
+        else:
+            newline = "<br>"
+
+        html = "<div style='display: inline-block;'>{inner_html}</div>"
+        inner_html = ""
+        for image_obj in self.images:
+            inner_html += image_obj.get_html() + newline
+        self.set_html(html.format(inner_html=inner_html))
+        return self.html
 
 
 class TextGroup(Composite):
