@@ -71,7 +71,13 @@ class Controller:
         equation_row.add(space_obj)
         equation_row.add(annotation_group)
         self.output.add(equation_row)
-        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): equation_row})
+
+        new_eq_obj = Equation("{} = {}".format(eq_obj.equation.lhs, eq_obj.equation.rhs), eq_font_size, num_decimal)
+        new_eq_row = EquationRow()
+        new_eq_row.add(new_eq_obj)
+        new_eq_row.add(space_obj)
+        new_eq_row.add(annotation_group)
+        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): new_eq_row})
         return eq_obj.equation.rhs
 
     def create_text(self, text_string, bold=False, underline=False, italic=False,
