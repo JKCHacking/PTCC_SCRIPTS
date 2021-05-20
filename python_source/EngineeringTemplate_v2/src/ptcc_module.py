@@ -8,7 +8,7 @@ from pint.errors import UndefinedUnitError
 from abc import ABC, abstractmethod
 
 EQUATION_NAMESPACE = {}
-EQUATION_HISTORY = {}
+ANNOTATIONS = {}
 
 # initializing units
 PINT_UNIT = pint.UnitRegistry()
@@ -41,7 +41,7 @@ class Controller:
         css = "<style> div.output_subarea {padding: 0; overflow-x: clip;}</style>"
         display(HTML(css))
 
-    def create_equation(self, equation_string, convert_to="dimensionless", annotations=None, simplify=False,
+    def create_equation(self, input_equation, convert_to="dimensionless", annotations=None, simplify=False,
                         num_decimal=2, inline=False, eq_font_size_param=None, p_font_size_param=None,
                         s_font_size_param=None):
         # determining font sizes
@@ -49,18 +49,19 @@ class Controller:
         p_font_size = self.font_size if p_font_size_param is None else p_font_size_param
         s_font_size = self.font_size if s_font_size_param is None else s_font_size_param
         # Equation
-        eq_obj = Equation(equation_string, eq_font_size, num_decimal)
+        eq_obj = Equation(input_equation, eq_font_size, num_decimal)
         if simplify:
             eq_obj.simplify(convert_to, inline)
         if eq_obj.equation is None:
             return
         else:
-            self.add_eq_to_namespace(**{str(eq_obj.equation.lhs): eq_obj.equation.rhs})
+            self.add_eq_to_namespace(**{str(eq_obj.equation.lhs): eq_obj})
         # Space
         space_obj = Space("horizontal", space=self.equation_spacing)
         # Annotation
         annotation_group = TextGroup()
         if annotations:
+            ANNOTATIONS.update({str(eq_obj.equation.lhs): annotations})
             for i, annot in enumerate(annotations):
                 if i == 0:
                     text_obj = Text(annot, bold=False, underline=False, italic=False, font_size=p_font_size,
@@ -74,8 +75,6 @@ class Controller:
         equation_row.add(space_obj)
         equation_row.add(annotation_group)
         self.output.add(equation_row)
-
-        EQUATION_HISTORY.update({str(eq_obj.equation.lhs): equation_row})
         return eq_obj.equation.rhs
 
     def create_text(self, text_string, bold=False, underline=False, italic=False,
@@ -156,11 +155,12 @@ class Controller:
         pass
 
     def recall_equation(self, lhs):
-        equation_row = EQUATION_HISTORY[lhs]
-        self.output.add(equation_row)
-        return EQUATION_NAMESPACE[lhs]
+        equation_obj = EQUATION_NAMESPACE[lhs]
+        annotations = ANNOTATIONS[lhs]
+        res = self.create_equation(equation_obj.equation, annotations=annotations)
+        return res
 
-    def convert(self):
+    def convert(self, lhs, unit_to="", num_decimal=2, print_out=False, inline=False):
         pass
 
     def compare(self):
@@ -178,7 +178,25 @@ class Controller:
         self.output = OutputContainer()
 
     def add_eq_to_namespace(self, **kwargs):
-        EQUATION_NAMESPACE.update(kwargs)
+        """
+        :param kwargs:
+        MUl, Pow, Add, String, Equation Object
+        :return:
+        """
+        lhs = list(kwargs.keys())[0]
+        equation_input = kwargs[lhs]
+        if not isinstance(equation_input, Equation):
+            if isinstance(equation_input, str):
+                equation = "{} = {}".format(lhs, equation_input)
+            elif isinstance(equation_input, (Mul, Add, Pow)):
+                equation = Eq(parse_expr(lhs), equation_input)
+            else:
+                equation = None
+            eq_obj = Equation(equation, font_size=self.font_size, num_decimal=2)
+        else:
+            eq_obj = equation_input
+        eq_dict = {lhs: eq_obj}
+        EQUATION_NAMESPACE.update(eq_dict)
 
 # =========================================COMPONENT CLASSES=========================================================
 
@@ -212,39 +230,45 @@ class Composite(Component):
 
 
 class Equation(Leaf):
-    def __init__(self, equation_string, font_size, num_decimal):
+    def __init__(self, input_equation, font_size, num_decimal):
         self.html = ""
         self.num_decimal = num_decimal
-        self.equation_string = equation_string
+        self.input_equation = input_equation
         self.equation = None
         self.font_size = font_size
         self.num_decimal = num_decimal
         self.compose()
 
     def compose(self):
-        if self.equation_string.count("=") != 1:
-            print("Equation must only have 1 equal sign.")
+        if isinstance(self.input_equation, str):
+            if self.input_equation.count("=") != 1:
+                print("Equation must only have 1 equal sign.")
+                return None
+            left_expr, right_expr = self.input_equation.split("=")
+            left_expr = left_expr.strip()
+            right_expr = right_expr.strip()
+
+            # check for I, E, S, N, C, O, Q to avoid creating reserved function in sympy.
+            left_expr = self.__replace_special_functions(left_expr)
+            right_expr = self.__replace_special_functions(right_expr)
+
+            # convert a string equation to a sympy equivalent
+            try:
+                parse_lhs = parse_expr(left_expr)
+                parse_rhs = parse_expr(right_expr)
+            except SyntaxError:
+                print("You have entered an invalid expression.")
+                return None
+
+            if len(parse_rhs.atoms(Symbol)) > 0:
+                parse_rhs = self.__symbol_to_unit(parse_rhs)
+            # convert given string equation to sympy equation.
+            self.equation = Eq(parse_lhs, parse_rhs)
+        elif isinstance(self.input_equation, Equality):
+            self.equation = self.input_equation
+        else:
+            print("Invalid equation")
             return None
-        left_expr, right_expr = self.equation_string.split("=")
-        left_expr = left_expr.strip()
-        right_expr = right_expr.strip()
-
-        # check for I, E, S, N, C, O, Q to avoid creating reserved function in sympy.
-        left_expr = self.__replace_special_functions(left_expr)
-        right_expr = self.__replace_special_functions(right_expr)
-
-        # convert a string equation to a sympy equivalent
-        try:
-            parse_lhs = parse_expr(left_expr)
-            parse_rhs = parse_expr(right_expr)
-        except SyntaxError:
-            print("You have entered an invalid expression.")
-            return None
-
-        if len(parse_rhs.atoms(Symbol)) > 0:
-            parse_rhs = self.__symbol_to_unit(parse_rhs)
-        # convert given string equation to sympy equation.
-        self.equation = Eq(parse_lhs, parse_rhs)
         sym_eq_latex = self.__convert_to_latex(self.equation)
         html = "<div style='font_size: {font_size}; display: inline-block; vertical-align:top;'>" \
                "$${equation_latex}$$</div>".format(font_size=self.font_size, equation_latex=sym_eq_latex)
@@ -282,7 +306,7 @@ class Equation(Leaf):
                 for sym_var in var_list:
                     try:
                         sym_var_str = str(sym_var)
-                        var_sub_dict.update({sym_var_str: EQUATION_NAMESPACE[sym_var_str]})
+                        var_sub_dict.update({sym_var_str: EQUATION_NAMESPACE[sym_var_str].equation.rhs})
                     except KeyError:
                         pass
                 # substitute all variables in the equation

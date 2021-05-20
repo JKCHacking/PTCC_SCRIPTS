@@ -257,7 +257,7 @@ class CreateEquationTest(unittest.TestCase):
         for i, unit in enumerate(unit_list):
             controller.create_equation("x{} = 1 * {}".format(i, unit))
         for i, unit in enumerate(unit_list):
-            self.assertEqual(unit, str(EQUATION_NAMESPACE["x{}".format(i)]))
+            self.assertEqual(unit, str(EQUATION_NAMESPACE["x{}".format(i)].equation.rhs))
 
     def test_create_equation_025(self):
         controller = self.typical_settings()
