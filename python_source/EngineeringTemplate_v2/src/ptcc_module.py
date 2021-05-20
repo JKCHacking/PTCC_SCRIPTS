@@ -49,9 +49,9 @@ class Controller:
         p_font_size = self.font_size if p_font_size_param is None else p_font_size_param
         s_font_size = self.font_size if s_font_size_param is None else s_font_size_param
         # Equation
-        eq_obj = Equation(input_equation, eq_font_size, num_decimal)
+        eq_obj = Equation(input_equation, eq_font_size)
         if simplify:
-            eq_obj.simplify(convert_to, inline)
+            eq_obj.simplify(convert_to, inline, num_decimal)
         if eq_obj.equation is None:
             return
         else:
@@ -160,8 +160,18 @@ class Controller:
         res = self.create_equation(equation_obj.equation, annotations=annotations)
         return res
 
-    def convert(self, lhs, unit_to="", num_decimal=2, print_out=False, inline=False):
-        pass
+    def convert(self, lhs, unit_to="", num_decimal=2, printout=False, inline=False):
+        eq_obj = EQUATION_NAMESPACE[lhs]
+        # create a new object to avoid side effects
+        new_eq_obj = Equation(eq_obj.equation, eq_obj.font_size)
+        new_eq_obj.convert(unit_to, inline=inline, decimal=num_decimal)
+        if eq_obj.equation is None:
+            return
+        else:
+            self.add_eq_to_namespace(**{str(eq_obj.equation.lhs): new_eq_obj})
+        if printout:
+            self.output.add(new_eq_obj)
+        return new_eq_obj.equation.rhs
 
     def compare(self):
         pass
@@ -192,7 +202,7 @@ class Controller:
                 equation = Eq(parse_expr(lhs), equation_input)
             else:
                 equation = None
-            eq_obj = Equation(equation, font_size=self.font_size, num_decimal=2)
+            eq_obj = Equation(equation, font_size=self.font_size)
         else:
             eq_obj = equation_input
         eq_dict = {lhs: eq_obj}
@@ -230,13 +240,11 @@ class Composite(Component):
 
 
 class Equation(Leaf):
-    def __init__(self, input_equation, font_size, num_decimal):
+    def __init__(self, input_equation, font_size):
         self.html = ""
-        self.num_decimal = num_decimal
         self.input_equation = input_equation
         self.equation = None
         self.font_size = font_size
-        self.num_decimal = num_decimal
         self.compose()
 
     def compose(self):
@@ -274,7 +282,7 @@ class Equation(Leaf):
                "$${equation_latex}$$</div>".format(font_size=self.font_size, equation_latex=sym_eq_latex)
         self.set_html(html)
 
-    def simplify(self, convert_to, inline):
+    def simplify(self, convert_to, inline, num_decimal):
         """
             Desc
             ====
@@ -344,7 +352,7 @@ class Equation(Leaf):
                         res_rhs_expr = mag * s_unit
                     else:
                         return None
-        res_rhs_expr = self.__round_expr(res_rhs_expr, self.num_decimal)
+        res_rhs_expr = self.__round_expr(res_rhs_expr, num_decimal)
         res_eq_sympy = Eq(old_equation.lhs, res_rhs_expr)
         eq_sympy_latex = self.__convert_to_latex(old_equation)
         if inline:
@@ -360,6 +368,9 @@ class Equation(Leaf):
                     font_size=self.font_size, eq_sympy_latex=eq_sympy_latex, res_eq_latex=res_eq_latex)
         self.set_html(html)
         self.equation = res_eq_sympy
+
+    def convert(self, unit_to, decimal, inline):
+        self.simplify(unit_to, inline, decimal)
 
     def set_html(self, html):
         self.html = html

@@ -370,3 +370,10 @@ class CreateEquationTest(unittest.TestCase):
         actual = controller.create_equation("y = Array([1 * N, 2 * m, 3, 4])")
         expected = Array([1 * u.newton, 2 * u.meter, 3, 4])
         self.assertEqual(expected, actual)
+
+    def test_create_equation_042(self):
+        controller = self.typical_settings()
+        controller.create_equation("y = 3000 * m")
+        actual = controller.convert("y", "km")
+        expected = 3.0 * u.km
+        self.assertEqual(expected, actual)
