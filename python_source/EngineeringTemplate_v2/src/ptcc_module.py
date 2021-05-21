@@ -34,6 +34,7 @@ class Controller:
         self.font_size = font_size
         self.equation_spacing = equation_spacing
         self.image_folder_name = image_folder_name
+        self.is_adequate = True
         self.output = OutputContainer()
 
     @staticmethod
@@ -156,7 +157,10 @@ class Controller:
 
     def recall_equation(self, lhs):
         equation_obj = EQUATION_NAMESPACE[lhs]
-        annotations = ANNOTATIONS[lhs]
+        try:
+            annotations = ANNOTATIONS[lhs]
+        except KeyError:
+            annotations = []
         res = self.create_equation(equation_obj.equation, annotations=annotations)
         return res
 
@@ -173,8 +177,62 @@ class Controller:
             self.output.add(new_eq_obj)
         return new_eq_obj.equation.rhs
 
-    def compare(self):
-        pass
+    def compare(self, var1, var2, operation, desc_var1, desc_var2, component, conclusion):
+        try:
+            eq_var1 = EQUATION_NAMESPACE[var1]
+            eq_var2 = EQUATION_NAMESPACE[var2]
+        except KeyError as ke:
+            print(str(ke))
+            return None
+
+        lhs = eq_var1.equation.rhs
+        rhs = eq_var2.equation.rhs
+
+        compared = simplify(lhs - rhs)
+
+        operation_word = ""
+        operation_symbol = ""
+
+        try:
+            if compared == 0:
+                operation_word = "equal"
+                operation_symbol = "="
+            elif compared < 0:
+                operation_word = "less than"
+                operation_symbol = "<"
+            elif compared > 0:
+                operation_word = "greater than"
+                operation_symbol = ">"
+        except TypeError:
+            print("One of the expressions has unknown variables")
+            return None
+
+        if operation == operation_symbol:
+            negative = ""
+        else:
+            negative = "NOT "
+            self.is_adequate = False
+
+        line_break = LineBreak()
+        comparison_block = ComparisonBlock()
+        comparison_block.add(Text("Comparing,", False, False, False, self.font_size, self.font_name))
+        comparison_block.add(line_break)
+        comparison_block.add(line_break)
+        comparison_block.add(eq_var1)
+        comparison_block.add(Space("horizontal", self.font_size))
+        comparison_block.add(Text(operation_symbol, True, False, True, self.font_size, self.font_name))
+        comparison_block.add(Space("horizontal", self.font_size))
+        comparison_block.add(eq_var2)
+        comparison_block.add(line_break)
+        comparison_block.add(Text("Since the {desc_var1} is {operation_word} the {desc_var2}".format(
+            desc_var1=desc_var1, desc_var2=desc_var2, operation_word=operation_word),
+            False, False, False, self.font_size, self.font_name))
+        comparison_block.add(line_break)
+        comparison_block.add(Text("THE {component} IS {negative}{conclusion}".format(component=component.upper(),
+                                                                                     negative=negative,
+                                                                                     conclusion=conclusion.upper()),
+                                  True, True, False, self.font_size, self.font_name))
+        self.output.add(comparison_block)
 
     def conclude(self):
         pass
@@ -638,6 +696,29 @@ class TextGroup(Composite):
 
 
 class EquationRow(Composite):
+    def __init__(self):
+        self.components = []
+        self.html = ""
+
+    def remove(self, comp_obj):
+        pass
+
+    def set_html(self, html):
+        self.html = html
+
+    def get_html(self):
+        html = "<div>{inner_html}</div>"
+        inner_html = ""
+        for comp_obj in self.components:
+            inner_html += comp_obj.get_html()
+        self.set_html(html.format(inner_html=inner_html))
+        return self.html
+
+    def add(self, comp_obj):
+        self.components.append(comp_obj)
+
+
+class ComparisonBlock(Composite):
     def __init__(self):
         self.components = []
         self.html = ""
