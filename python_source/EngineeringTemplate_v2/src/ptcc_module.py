@@ -169,10 +169,10 @@ class Controller:
         # create a new object to avoid side effects
         new_eq_obj = Equation(eq_obj.equation, eq_obj.font_size)
         new_eq_obj.convert(unit_to, inline=inline, decimal=num_decimal)
-        if eq_obj.equation is None:
+        if new_eq_obj.equation is None:
             return
         else:
-            self.add_eq_to_namespace(**{str(eq_obj.equation.lhs): new_eq_obj})
+            self.add_eq_to_namespace(**{str(new_eq_obj.equation.lhs): new_eq_obj})
         if printout:
             self.output.add(new_eq_obj)
         return new_eq_obj.equation.rhs
@@ -284,13 +284,18 @@ class Leaf(Component):
 
 
 class Composite(Component):
-    @abstractmethod
-    def add(self, comp_obj):
-        pass
+    def __init__(self):
+        self.html = ""
+        self.components = []
 
-    @abstractmethod
+    def add(self, comp_obj):
+        self.components.append(comp_obj)
+
     def remove(self, comp_obj):
         pass
+
+    def set_html(self, html):
+        self.html = html
 
     @abstractmethod
     def get_html(self):
@@ -645,18 +650,8 @@ class Image(Leaf):
 class ImageGroup(Composite):
 
     def __init__(self, layout):
-        self.images = []
-        self.html = ""
+        super().__init__()
         self.layout = layout
-
-    def add(self, comp_obj):
-        self.images.append(comp_obj)
-
-    def remove(self, comp_obj):
-        pass
-
-    def set_html(self, html):
-        self.html = html
 
     def get_html(self):
         if self.layout == "horizontal":
@@ -666,7 +661,7 @@ class ImageGroup(Composite):
 
         html = "<div style='display: inline-block;'>{inner_html}</div>"
         inner_html = ""
-        for image_obj in self.images:
+        for image_obj in self.components:
             inner_html += image_obj.get_html() + newline
         self.set_html(html.format(inner_html=inner_html))
         return self.html
@@ -674,22 +669,12 @@ class ImageGroup(Composite):
 
 class TextGroup(Composite):
     def __init__(self):
-        self.annotations = []
-        self.html = ""
-
-    def add(self, comp_obj):
-        self.annotations.append(comp_obj)
-
-    def remove(self, comp_obj):
-        pass
-
-    def set_html(self, html):
-        self.html = html
+        super().__init__()
 
     def get_html(self):
         html = "<div style='display: inline-block;'>{inner_html}</div>"
         inner_html = ""
-        for annotation_obj in self.annotations:
+        for annotation_obj in self.components:
             inner_html += annotation_obj.get_html() + "<br>"
         self.set_html(html.format(inner_html=inner_html))
         return self.html
@@ -697,14 +682,7 @@ class TextGroup(Composite):
 
 class EquationRow(Composite):
     def __init__(self):
-        self.components = []
-        self.html = ""
-
-    def remove(self, comp_obj):
-        pass
-
-    def set_html(self, html):
-        self.html = html
+        super().__init__()
 
     def get_html(self):
         html = "<div>{inner_html}</div>"
@@ -713,21 +691,11 @@ class EquationRow(Composite):
             inner_html += comp_obj.get_html()
         self.set_html(html.format(inner_html=inner_html))
         return self.html
-
-    def add(self, comp_obj):
-        self.components.append(comp_obj)
 
 
 class ComparisonBlock(Composite):
     def __init__(self):
-        self.components = []
-        self.html = ""
-
-    def remove(self, comp_obj):
-        pass
-
-    def set_html(self, html):
-        self.html = html
+        super().__init__()
 
     def get_html(self):
         html = "<div>{inner_html}</div>"
@@ -737,20 +705,11 @@ class ComparisonBlock(Composite):
         self.set_html(html.format(inner_html=inner_html))
         return self.html
 
-    def add(self, comp_obj):
-        self.components.append(comp_obj)
-
 
 class OutputContainer(Composite):
     def __init__(self):
-        self.components = []
+        super().__init__()
         self.alignment = ""
-
-    def add(self, comp_obj):
-        self.components.append(comp_obj)
-
-    def remove(self, comp_obj):
-        pass
 
     def get_html(self):
         html = "<div style='text-align: {alignment}'>{inner_html}</div>"

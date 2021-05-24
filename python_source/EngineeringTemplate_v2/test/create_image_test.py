@@ -28,7 +28,7 @@ class CreateImageTest(unittest.TestCase):
                                      width="300px",
                                      height="300px")
         self.assertEqual(len(test_controller.output.components), 1)
-        self.assertEqual(len(test_controller.output.components[0].images), 2)
+        self.assertEqual(len(test_controller.output.components[0].components), 2)
 
     def test_create_image_unequal(self):
         EQUATION_ANNOTATION_SPACE = "2in"
