@@ -234,8 +234,14 @@ class Controller:
                                   True, True, False, self.font_size, self.font_name))
         self.output.add(comparison_block)
 
-    def conclude(self):
-        pass
+    def conclude(self, component, affirmative):
+        negative = ""
+        if not self.is_adequate:
+            negative = "NOT "
+        conclusion_obj = Text("THUS, THE {component} IS {negative}{affirmative}".format(
+            component=component.upper(), negative=negative, affirmative=affirmative.upper()),
+            bold=True, underline=True, italic=False, font_size=self.font_size, font_name=self.font_name)
+        self.output.add(conclusion_obj)
 
     def display_output(self, alignment="left"):
         self.output.set_alignment(alignment)
