@@ -129,8 +129,20 @@ class Controller:
         self.output.add(proj_name_loc_obj)
         self.output.add(line_break_obj)
 
-    def create_table(self):
-        pass
+    def create_table(self, data_table, caption):
+        table = HTMLTable(caption)
+        for table_row in data_table:
+            tbl_row = TableRow()
+            for data_dict in table_row:
+                data = data_dict["data"]
+                colspan = data_dict["colspan"] if "colspan" in data_dict and isinstance(data_dict["colspan"], int)\
+                    else 1
+                rowspan = data_dict["rowspan"] if "rowspan" in data_dict and isinstance(data_dict["rowspan"], int)\
+                    else 1
+                cell = HTMLCell(data, rowspan=rowspan, colspan=colspan)
+                tbl_row.add(cell)
+            table.add(tbl_row)
+        self.output.add(table)
 
     def create_image(self, images, captions, layout="horizontal", width="500px", height="300px"):
         if isinstance(images, list) and isinstance(captions, list):
@@ -140,7 +152,7 @@ class Controller:
                     for image_name, caption in zip(images, captions):
                         image_path = os.path.join(self.image_folder_name, image_name)
                         if os.path.exists(image_path):
-                            image_obj = Image(image_path, caption, width, height)
+                            image_obj = HTMLImage(image_path, caption, width, height)
                             image_group.add(image_obj)
                         else:
                             print("Image does not exists", image_name)
@@ -280,9 +292,14 @@ class Component(ABC):
 
 
 class Leaf(Component):
-    @abstractmethod
+    def __init__(self):
+        self.html = ""
+
     def get_html(self):
-        pass
+        return self.html
+
+    def set_html(self, html):
+        self.html = html
 
     @abstractmethod
     def compose(self):
@@ -310,7 +327,7 @@ class Composite(Component):
 
 class Equation(Leaf):
     def __init__(self, input_equation, font_size):
-        self.html = ""
+        super().__init__()
         self.input_equation = input_equation
         self.equation = None
         self.font_size = font_size
@@ -441,12 +458,6 @@ class Equation(Leaf):
     def convert(self, unit_to, decimal, inline):
         self.simplify(unit_to, inline, decimal)
 
-    def set_html(self, html):
-        self.html = html
-
-    def get_html(self):
-        return self.html
-
     def __round_expr(self, expression, num_digits):
         """
             Desc
@@ -535,7 +546,7 @@ class Equation(Leaf):
 
 class Text(Leaf):
     def __init__(self, text, bold, underline, italic, font_size, font_name):
-        self.html = ""
+        super().__init__()
         self.text = text
         self.bold = bold
         self.underline = underline
@@ -577,16 +588,10 @@ class Text(Leaf):
                                      text=self.text)
         self.set_html(html)
 
-    def get_html(self):
-        return self.html
-
-    def set_html(self, html):
-        self.html = html
-
 
 class Space(Leaf):
     def __init__(self, direction, space):
-        self.html = ""
+        super().__init__()
         self.direction = direction
         self.space = space
         self.compose()
@@ -603,43 +608,27 @@ class Space(Leaf):
             html = ""
         self.set_html(html)
 
-    def set_html(self, html):
-        self.html = html
-
-    def get_html(self):
-        return self.html
-
 
 class LineBreak(Leaf):
     def __init__(self):
+        super().__init__()
         self.html = ""
         self.compose()
-
-    def get_html(self):
-        return self.html
-
-    def set_html(self, html):
-        self.html = html
 
     def compose(self):
         html = "<br>"
         self.set_html(html)
 
 
-class Image(Leaf):
+class HTMLImage(Leaf):
     def __init__(self, image_path, caption, width, height):
+        super().__init__()
         self.html = ""
         self.image_path = image_path
         self.caption = caption
         self.width = width
         self.height = height
         self.compose()
-
-    def set_html(self, html):
-        self.html = html
-
-    def get_html(self):
-        return self.html
 
     def compose(self):
         html = "<figure style='display: inline-block; padding:6px;'>" \
@@ -651,6 +640,51 @@ class Image(Leaf):
                                   height=self.height,
                                   caption=self.caption)
         self.set_html(html)
+
+
+class HTMLCell(Leaf):
+    def __init__(self, data, rowspan, colspan):
+        super().__init__()
+        self.data = data
+        self.rowspan = rowspan
+        self.colspan = colspan
+        self.compose()
+
+    def compose(self):
+        html = "<td rowspan={rowspan} colspan={colspan} style='text-align: center;" \
+               " background: #ffffff; border-top-width: 1px; border-top-style: solid;" \
+               " border-bottom-width: 1px; border-bottom-style: solid;'>{data}</td>".format(rowspan=self.rowspan,
+                                                                                            colspan=self.colspan,
+                                                                                            data=self.data)
+        self.set_html(html)
+
+
+class TableRow(Composite):
+    def __init__(self):
+        super().__init__()
+
+    def get_html(self):
+        html = "<tr>{inner_html}</tr>"
+        inner_html = ""
+        for cell in self.components:
+            inner_html += cell.get_html()
+        self.set_html(html.format(inner_html=inner_html))
+        return self.html
+
+
+class HTMLTable(Composite):
+    def __init__(self, caption):
+        super().__init__()
+        self.caption = caption
+
+    def get_html(self):
+        html = "<table><caption style='text-align: center; color: black; font-weight: bold;'>{caption}</caption>" \
+               "<tbody>{inner_html}</tbody></table>"
+        inner_html = ""
+        for row in self.components:
+            inner_html += row.get_html()
+        self.set_html(html.format(caption=self.caption, inner_html=inner_html))
+        return self.html
 
 
 class ImageGroup(Composite):
@@ -718,7 +752,7 @@ class OutputContainer(Composite):
         self.alignment = ""
 
     def get_html(self):
-        html = "<div style='text-align: {alignment}'>{inner_html}</div>"
+        html = "<div style='text-align: {alignment};'>{inner_html}</div>"
         inner_html = ""
         for comp_obj in self.components:
             inner_html += comp_obj.get_html()
