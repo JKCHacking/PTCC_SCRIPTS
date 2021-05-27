@@ -18,3 +18,4 @@ class Constants:
     DWG_FILES = ".dwg"
     DXF_FILES = ".dxf"
     CSV_FILES = ".csv"
+    PDF_FILES = ".pdf"
