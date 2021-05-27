@@ -36,12 +36,12 @@ class Astm:
         self.browser = browser
         self.main_page_url = "http://astm/"
         self.sub_directories = [
-            # "A.htm",
-            # "B.htm",
-            # "C.htm",
-            # "D.htm",
-            # "E.htm",
-            # "F.htm",
+            "A.htm",
+            "B.htm",
+            "C.htm",
+            "D.htm",
+            "E.htm",
+            "F.htm",
             "G.htm"
         ]
 
@@ -107,6 +107,7 @@ def main():
         for link in astm.get_standard_links():
             # click the link to download
             link.click()
+            time.sleep(1)
             # wait until we get the file name
             file_name = dl_mngr.get_downloaded_file_name(10)
             name_of_standard = "{}.pdf".format(link.get_attribute("innerHTML"))
@@ -118,7 +119,7 @@ def main():
         total_pairs = len(astm_file_name_pairs)
         print("Total Pairs Collected: {}".format(total_pairs))
         print("Downloading done. Please wait...")
-        time.sleep(6)
+        time.sleep(3)
 
         print_progress_bar(0, total_pairs,
                            prefix="Renaming PDFs in Group {}".format(letter),
@@ -131,11 +132,10 @@ def main():
                 print("Cannot find key {} in pairs dictionary".format(old_file_name))
                 continue
             fp_old_file_name = os.path.join(Constants.OUTPUT_DIR, old_file_name)
-            fp_new_file_name = os.path.join(Constants.OUTPUT_DIR, letter, new_file_name)
+            fp_new_file_name = os.path.join("\\\\?\\" + Constants.OUTPUT_DIR, letter, new_file_name)
             if os.path.exists(fp_old_file_name):
                 try:
                     shutil.move(fp_old_file_name, fp_new_file_name)
-                    time.sleep(0.5)
                 except Exception as e:
                     print(str(e))
             else:
