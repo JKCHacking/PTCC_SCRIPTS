@@ -54,7 +54,7 @@ class Astm:
     def get_standard_links(self):
         links = self.browser.find_elements_by_class_name("bluenolinelinks")
         for link in links:
-            if link.get_attribute("innerHTML").startswith("Standard"):
+            if "Standard" in link.get_attribute("innerHTML"):
                 yield link
 
 
