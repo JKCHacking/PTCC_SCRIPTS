@@ -52,10 +52,14 @@ class Astm:
             yield sub_dir.split(".")[0]
 
     def get_standard_links(self):
-        links = self.browser.find_elements_by_class_name("bluenolinelinks")
-        for link in links:
-            if "Standard" in link.get_attribute("innerHTML"):
-                yield link
+        # get all table row
+        t_rows = self.browser.find_elements_by_css_selector("tr")
+        for t_row in t_rows:
+            links = t_row.find_elements_by_class_name("bluenolinelinks")
+            if links:
+                designation = links[0]
+                title = links[1]
+                yield designation, title
 
 
 class DownloadMngr:
@@ -104,18 +108,23 @@ def main():
         astm_file_name_pairs = {}
         # download all the PDF then save some data.
         print("Downloading PDFs in Group {}...".format(letter))
-        for link in astm.get_standard_links():
+        for designation, title in astm.get_standard_links():
             # click the link to download
-            link.click()
+            designation.click()
             time.sleep(1)
             # wait until we get the file name
-            file_name = dl_mngr.get_downloaded_file_name(10)
-            name_of_standard = "{}.pdf".format(link.get_attribute("innerHTML"))
-            # remove invalid symbols to make a valid windows file name
-            name_of_standard = re.sub(r"[\\/:*?\"<>|]", '', name_of_standard)
-            if file_name and name_of_standard:
-                astm_file_name_pairs.update({file_name: name_of_standard})
-
+            old_file_name = dl_mngr.get_downloaded_file_name(10)
+            designation_string = designation.get_attribute("innerHTML")
+            title_string = title.get_attribute("innerHTML")
+            fixed_designation_string = designation_string.split("-")[0]
+            # remove &nbsp
+            fixed_designation_string = re.sub("&nbsp;", '', fixed_designation_string)
+            # combine designation and title as filename for new pdf
+            new_file_name = "{} {}.pdf".format(fixed_designation_string, title_string)
+            # remove invalid character for windows filename
+            new_file_name = re.sub(r"[\\/:*?\"<>|]", '', new_file_name)
+            if old_file_name and new_file_name:
+                astm_file_name_pairs.update({old_file_name: new_file_name})
         total_pairs = len(astm_file_name_pairs)
         print("Total Pairs Collected: {}".format(total_pairs))
         print("Downloading done. Please wait...")
