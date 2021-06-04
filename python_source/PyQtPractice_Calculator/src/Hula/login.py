@@ -5,42 +5,30 @@
 #
 # sys.excepthook = trap_exc_during_debug
 
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtGui import QMovie
-from PyQt5.QtCore import QSize
-from PyQt5.QtCore import QThread
-from PyQt5.QtCore import QObject
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 
-class LoginUI(QMainWindow):
+class LoginUI(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setFixedSize(250, 150)
-        self.email_label = QLabel("EMAIL")
-        self.password_label = QLabel("PASSWORD")
-        self.email_text = QLineEdit()
-        self.password_text = QLineEdit()
-        self.password_text.setEchoMode(QLineEdit.Password)
-        self.login_button = QPushButton("SIGN IN")
-        self.loading_anim = QLabel()
-        self.movie = QMovie("drawable/spinner.gif")
-        self.movie.setScaledSize(QSize(30, 30))
+        self.email_label = QtWidgets.QLabel("EMAIL")
+        self.password_label = QtWidgets.QLabel("PASSWORD")
+        self.email_text = QtWidgets.QLineEdit()
+        self.password_text = QtWidgets.QLineEdit()
+        self.password_text.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.login_button = QtWidgets.QPushButton("SIGN IN")
+        self.loading_anim = QtWidgets.QLabel()
+        self.movie = QtGui.QMovie("drawable/spinner.gif")
+        self.movie.setScaledSize(QtCore.QSize(30, 30))
         self.loading_anim.setMovie(self.movie)
-        self.error_label = QLabel()
-        self.general_layout = QVBoxLayout()
-        self.central_widget = QWidget(self)
+        self.general_layout = QtWidgets.QVBoxLayout()
+        self.central_widget = QtWidgets.QWidget(self)
 
     def create_login_window(self):
-        email_layout = QVBoxLayout()
-        password_layout = QVBoxLayout()
-        lower_layout = QHBoxLayout()
+        email_layout = QtWidgets.QVBoxLayout()
+        password_layout = QtWidgets.QVBoxLayout()
+        lower_layout = QtWidgets.QHBoxLayout()
 
         email_layout.addWidget(self.email_label)
         email_layout.addWidget(self.email_text)
@@ -49,7 +37,6 @@ class LoginUI(QMainWindow):
         lower_layout.addWidget(self.login_button)
         lower_layout.addWidget(self.loading_anim)
 
-        self.general_layout.addWidget(self.error_label)
         self.general_layout.addLayout(email_layout)
         self.general_layout.addLayout(password_layout)
         self.general_layout.addLayout(lower_layout)
@@ -58,14 +45,14 @@ class LoginUI(QMainWindow):
         self.central_widget.setLayout(self.general_layout)
 
 
-class LoginWorker(QObject):
-    finished = pyqtSignal()
+class LoginWorker(QtCore.QObject):
+    finished = QtCore.pyqtSignal()
 
     def __init__(self, model, parent=None):
         super().__init__(parent)
         self.model = model
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def run(self):
         email = self.view.email_text.text()
         password = self.view.password_text.text()
@@ -73,11 +60,11 @@ class LoginWorker(QObject):
         self.finished.emit()
 
 
-class LoginCtrl(QObject):
+class LoginCtrl(QtCore.QObject):
     def __init__(self, view, model, bot_ctrl):
         super().__init__()
         self.login_worker = None
-        self.login_thread = QThread()
+        self.login_thread = None
         self.view = view
         self.model = model
         self.bot_ctrl = bot_ctrl
@@ -91,19 +78,22 @@ class LoginCtrl(QObject):
         self.view.close()
         self.bot_ctrl.init_UI()
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def __login_finished(self):
-        client = self.model.get_client()
-        if client.isLoggedIn():
-            self.stop_loading_anim()
-            self.launch_bot()
+        session = self.model.get_session()
+        # if login failed it will return None
+        if session is not None:
+            if session.is_logged_in():
+                self.stop_loading_anim()
+                self.launch_bot()
         else:
-            self.view.error_label.setText("Login Failed.")
+            self.display_message_box("Login Failed.", "warning")
             self.view.login_button.setDisabled(False)
 
     def login(self):
         self.start_loading_anim()
         self.view.login_button.setDisabled(True)
+        self.login_thread = QtCore.QThread()
         self.login_worker = LoginWorker(self.model)
         self.login_worker.moveToThread(self.login_thread)
         self.login_worker.finished.connect(self.__login_finished)
@@ -122,3 +112,16 @@ class LoginCtrl(QObject):
 
     def stop_loading_anim(self):
         self.view.movie.stop()
+
+    def display_message_box(self, message, level):
+        msg = QtWidgets.QMessageBox()
+        if level == "info":
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+        elif level == "warning":
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+        elif level == "error":
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(message)
+        msg.setWindowTitle("Message")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.exec_()
