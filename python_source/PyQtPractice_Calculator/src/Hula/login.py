@@ -1,5 +1,10 @@
-import time
-import sys
+# DEBUGGING PURPOSES
+# import sys
+# def trap_exc_during_debug(*args):
+#     print(args)
+#
+# sys.excepthook = trap_exc_during_debug
+
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QWidget
@@ -44,19 +49,13 @@ class LoginUI(QMainWindow):
         lower_layout.addWidget(self.login_button)
         lower_layout.addWidget(self.loading_anim)
 
+        self.general_layout.addWidget(self.error_label)
         self.general_layout.addLayout(email_layout)
         self.general_layout.addLayout(password_layout)
         self.general_layout.addLayout(lower_layout)
         self.setWindowTitle("Login")
         self.setCentralWidget(self.central_widget)
         self.central_widget.setLayout(self.general_layout)
-
-
-def trap_exc_during_debug(*args):
-    print(args)
-
-
-sys.excepthook = trap_exc_during_debug
 
 
 class LoginWorker(QObject):
@@ -68,11 +67,9 @@ class LoginWorker(QObject):
 
     @pyqtSlot()
     def run(self):
-        # email = self.view.email_text.text()
-        # password = self.view.password_text.text()
-        # self.model.create_client(email, password)
-        # print("Worker running...")
-        time.sleep(10)
+        email = self.view.email_text.text()
+        password = self.view.password_text.text()
+        self.model.create_client(email, password)
         self.finished.emit()
 
 
