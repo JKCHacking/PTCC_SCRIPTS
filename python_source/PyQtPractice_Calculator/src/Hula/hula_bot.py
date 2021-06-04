@@ -37,8 +37,8 @@ class ListenWorker(QtCore.QObject):
     def run(self):
         # start listening
         for event in self.listener.listen():
-            if self.running and isinstance(event, fbchat.MessageEvent):
-                self.view.message_text.setText(event.message.text)
+            if isinstance(event, fbchat.MessageEvent):
+                self.view.listen_result_text.insertPlainText(event.message.text)
 
 
 class BotCtrl:
@@ -74,14 +74,19 @@ class BotCtrl:
             self.listener.disconnect()
             self.listener_thread.quit()
             self.listener_thread.wait()
-            self.listener = fbchat.Listener(self.session, chat_on=True, foreground=True)
+            self.listener = fbchat.Listener(session=self.session, chat_on=True, foreground=True)
 
     def send(self):
-        message = self.view.message_text.text()
+        message = self.view.message_text.toPlainText()
         if message:
-            self.conversation.send_text(message)
+            try:
+                self.conversation.send_text(message)
+                self.view.message_text.clear()
+                self.view.display_message_box("Message sent", "info")
+            except fbchat.FacebookError as fb_err:
+                self.view.display_message_box(str(fb_err), "error")
         else:
-            self.display_message_box("Please enter a message", "warning")
+            self.view.display_message_box("Please enter a message", "warning")
 
     def init_UI(self):
         self.view.create_main_window()
@@ -94,7 +99,7 @@ class BotCtrl:
     def verify(self):
         # initialize the session and listener
         self.session = self.model.get_session()
-        self.listener = fbchat.Listener(self.session, chat_on=True, foreground=True)
+        self.listener = fbchat.Listener(session=self.session, chat_on=True, foreground=True)
         # get the chat id from the view
         chat_id = self.view.chat_id_text.text()
         thread_type = None
@@ -118,10 +123,10 @@ class BotCtrl:
 
         # enables all the controls if everything is OK.
         if self.conversation is not None:
-            self.display_message_box("Verified.", "info")
+            self.view.display_message_box("Verified.", "info")
             self.enable_controls()
         else:
-            self.display_message_box("Not Verified.", "warning")
+            self.view.display_message_box("Not Verified.", "warning")
 
     def enable_controls(self):
         self.view.listen_switch.setDisabled(False)
@@ -140,19 +145,6 @@ class BotCtrl:
         self.view.time_picker.setDisabled(True)
         self.view.date_picker.setDisabled(True)
         self.view.schedule_message_text.setDisabled(True)
-
-    def display_message_box(self, message, level):
-        msg = QtWidgets.QMessageBox()
-        if level == "info":
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-        elif level == "warning":
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
-        elif level == "error":
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-        msg.setText(message)
-        msg.setWindowTitle("Message")
-        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        msg.exec_()
 
 
 class BotUI(QtWidgets.QMainWindow):
@@ -246,6 +238,19 @@ class BotUI(QtWidgets.QMainWindow):
 
         self.central_widget.setLayout(self.general_layout)
         self.setCentralWidget(self.central_widget)
+
+    def display_message_box(self, message, level):
+        msg = QtWidgets.QMessageBox()
+        if level == "info":
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+        elif level == "warning":
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+        elif level == "error":
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(message)
+        msg.setWindowTitle("Message")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.exec_()
 
 
 class Switch(QtWidgets.QPushButton):

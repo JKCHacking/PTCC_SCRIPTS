@@ -44,19 +44,33 @@ class LoginUI(QtWidgets.QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.central_widget.setLayout(self.general_layout)
 
+    def display_message_box(self, message, level):
+        msg = QtWidgets.QMessageBox()
+        if level == "info":
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+        elif level == "warning":
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+        elif level == "error":
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(message)
+        msg.setWindowTitle("Message")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.exec_()
+
 
 class LoginWorker(QtCore.QObject):
     finished = QtCore.pyqtSignal()
 
-    def __init__(self, model, parent=None):
+    def __init__(self, model, view, parent=None):
         super().__init__(parent)
         self.model = model
+        self.view = view
 
     @QtCore.pyqtSlot()
     def run(self):
         email = self.view.email_text.text()
         password = self.view.password_text.text()
-        self.model.create_client(email, password)
+        self.model.create_session(email, password)
         self.finished.emit()
 
 
@@ -87,14 +101,14 @@ class LoginCtrl(QtCore.QObject):
                 self.stop_loading_anim()
                 self.launch_bot()
         else:
-            self.display_message_box("Login Failed.", "warning")
+            self.view.display_message_box("Login Failed.", "warning")
             self.view.login_button.setDisabled(False)
 
     def login(self):
         self.start_loading_anim()
         self.view.login_button.setDisabled(True)
         self.login_thread = QtCore.QThread()
-        self.login_worker = LoginWorker(self.model)
+        self.login_worker = LoginWorker(self.model, self.view)
         self.login_worker.moveToThread(self.login_thread)
         self.login_worker.finished.connect(self.__login_finished)
         self.login_worker.finished.connect(self.login_thread.quit)
@@ -112,16 +126,3 @@ class LoginCtrl(QtCore.QObject):
 
     def stop_loading_anim(self):
         self.view.movie.stop()
-
-    def display_message_box(self, message, level):
-        msg = QtWidgets.QMessageBox()
-        if level == "info":
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-        elif level == "warning":
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
-        elif level == "error":
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-        msg.setText(message)
-        msg.setWindowTitle("Message")
-        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        msg.exec_()
