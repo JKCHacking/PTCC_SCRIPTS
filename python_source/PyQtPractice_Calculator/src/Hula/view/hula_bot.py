@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QRect
 
 class BotUI(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
+        QtWidgets.QMainWindow.__init__(self)
         self.resize(250, 400)
         # self.setStyleSheet("background-color: #000000")
         # Widgets
@@ -18,7 +18,7 @@ class BotUI(QtWidgets.QMainWindow):
         self.chat_type_rb_group.addButton(self.group_rbutton)
         self.listen_label = QtWidgets.QLabel("LISTEN")
         self.listen_switch = Switch()
-        self.listen_result_text = QtWidgets.QLabel()
+        self.listen_result_text = ScrollLabel()
         self.message_label = QtWidgets.QLabel("MESSAGE")
         self.message_text = QtWidgets.QPlainTextEdit()
         self.send_button = QtWidgets.QPushButton("SEND")
@@ -108,8 +108,8 @@ class BotUI(QtWidgets.QMainWindow):
 
 
 class Switch(QtWidgets.QPushButton):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        QtWidgets.QPushButton.__init__(self)
         self.setCheckable(True)
         self.setMinimumWidth(66)
         self.setMinimumHeight(22)
@@ -138,3 +138,36 @@ class Switch(QtWidgets.QPushButton):
             sw_rect.moveLeft(-width)
         painter.drawRoundedRect(sw_rect, radius, radius)
         painter.drawText(sw_rect, Qt.AlignCenter, label)
+
+
+class ScrollLabel(QtWidgets.QScrollArea):
+    # constructor
+    def __init__(self, *args, **kwargs):
+        QtWidgets.QScrollArea.__init__(self, *args, **kwargs)
+
+        # making widget resizable
+        self.setWidgetResizable(True)
+
+        # making qwidget object
+        content = QtWidgets.QWidget(self)
+        self.setWidget(content)
+
+        # vertical box layout
+        lay = QtWidgets.QVBoxLayout(content)
+
+        # creating label
+        self.label = QtWidgets.QLabel(content)
+
+        # setting alignment to the text
+        self.label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+        # making label multi-line
+        self.label.setWordWrap(True)
+
+        # adding label to the layout
+        lay.addWidget(self.label)
+
+    # the setText method
+    def setText(self, text):
+        # setting text to the label
+        self.label.setText(text)

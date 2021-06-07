@@ -16,7 +16,7 @@ class ListenWorker(QtCore.QObject):
         for event in self.listener.listen():
             if isinstance(event, fbchat.MessageEvent):
                 if event.author.id == self.view.chat_id_text.text():
-                    message = "{}\n".format(event.message.text)
+                    message = event.message.text
                     self.view.listen_result_text.setText(message)
 
 

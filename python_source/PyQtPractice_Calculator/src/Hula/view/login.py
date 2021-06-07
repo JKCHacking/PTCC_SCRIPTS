@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 class LoginUI(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
+        QtWidgets.QMainWindow.__init__(self)
         self.setFixedSize(250, 150)
         self.email_label = QtWidgets.QLabel("EMAIL")
         self.password_label = QtWidgets.QLabel("PASSWORD")
