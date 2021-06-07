@@ -7,6 +7,7 @@ from string import Template
 
 class ListenWorker(QtCore.QObject):
     finished = QtCore.pyqtSignal()
+    message_receive_sig = QtCore.pyqtSignal(str)
 
     def __init__(self, view, listener, parent=None):
         super().__init__(parent)
@@ -20,7 +21,7 @@ class ListenWorker(QtCore.QObject):
             if isinstance(event, fbchat.MessageEvent):
                 if event.author.id == self.view.chat_id_text.text():
                     message = event.message.text
-                    self.view.listen_result_text.setText(message)
+                    self.message_receive_sig.emit(message)
         self.finished.emit()
 
 
@@ -95,6 +96,7 @@ class BotCtrl(QtCore.QObject):
             self.listener_thread = QtCore.QThread()
             self.listener_worker = ListenWorker(self.view, self.listener)
             self.listener_worker.moveToThread(self.listener_thread)
+            self.listener_worker.message_receive_sig.connect(self.update_receive_text)
             self.listener_worker.finished.connect(self.listener_thread.quit)
             self.listener_worker.finished.connect(self.listener_worker.deleteLater)
             self.listener_thread.started.connect(self.listener_worker.run)
@@ -147,17 +149,6 @@ class BotCtrl(QtCore.QObject):
             self.view.time_picker.setDisabled(False)
             self.view.date_picker.setDisabled(False)
 
-    @QtCore.pyqtSlot(str)
-    def display_time_remaining(self, time_remaining):
-        self.view.t_remaining_label2.setText(time_remaining)
-
-    @QtCore.pyqtSlot()
-    def display_message_sent(self):
-        self.view.display_message_box("Message sent", "info")
-        self.view.schedule_switch.setChecked(False)
-        self.view.time_picker.setDisabled(False)
-        self.view.date_picker.setDisabled(False)
-
     def verify(self):
         # initialize the session and listener
         self.session = self.model.get_session()
@@ -207,3 +198,18 @@ class BotCtrl(QtCore.QObject):
         self.view.time_picker.setDisabled(True)
         self.view.date_picker.setDisabled(True)
         self.view.schedule_message_text.setDisabled(True)
+
+    @QtCore.pyqtSlot(str)
+    def update_receive_text(self, message):
+        self.view.listen_result_text.setText(message)
+
+    @QtCore.pyqtSlot(str)
+    def display_time_remaining(self, time_remaining):
+        self.view.t_remaining_label2.setText(time_remaining)
+
+    @QtCore.pyqtSlot()
+    def display_message_sent(self):
+        self.view.display_message_box("Message sent", "info")
+        self.view.schedule_switch.setChecked(False)
+        self.view.time_picker.setDisabled(False)
+        self.view.date_picker.setDisabled(False)
