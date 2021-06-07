@@ -1,5 +1,8 @@
 import fbchat
+import datetime
+import time
 from PyQt5 import QtCore
+from string import Template
 
 
 class ListenWorker(QtCore.QObject):
@@ -18,10 +21,56 @@ class ListenWorker(QtCore.QObject):
                 if event.author.id == self.view.chat_id_text.text():
                     message = event.message.text
                     self.view.listen_result_text.setText(message)
+        self.finished.emit()
 
 
-class BotCtrl:
+class DeltaTemplate(Template):
+    delimiter = "%"
+
+
+class AlarmWorker(QtCore.QObject):
+    finished = QtCore.pyqtSignal()
+    tick_sig = QtCore.pyqtSignal(str)
+
+    def __init__(self, view, conversation, parent=None):
+        super().__init__(parent)
+        self.view = view
+        self.conversation = conversation
+
+    @QtCore.pyqtSlot()
+    def run(self):
+        set_time = self.view.time_picker.time().toString()
+        set_date = self.view.date_picker.date().toString()
+        set_time_obj = datetime.datetime.strptime(set_time, "%H:%M:%S").time()
+        set_date_obj = datetime.datetime.strptime(set_date, "%a %b %d %Y").date()
+        set_datetime_obj = datetime.datetime.combine(set_date_obj, set_time_obj)
+        set_datetime_obj = set_datetime_obj.replace(second=0)
+        message = self.view.schedule_message_text.toPlainText()
+        while True:
+            remaining = set_datetime_obj - datetime.datetime.now()
+            time_remaining_string = self.strfdelta(remaining, "%H:%M:%S")
+            self.tick_sig.emit(time_remaining_string)
+            time.sleep(1)
+            if set_datetime_obj < datetime.datetime.now():
+                self.conversation.send_text(message)
+                break
+        self.finished.emit()
+
+    def strfdelta(self, tdelta, fmt):
+        d = {}
+        hours, rem = divmod(tdelta.seconds, 3600)
+        minutes, seconds = divmod(rem, 60)
+
+        d["H"] = '{:02d}'.format(hours)
+        d["M"] = '{:02d}'.format(minutes)
+        d["S"] = '{:02d}'.format(seconds)
+        t = DeltaTemplate(fmt)
+        return t.substitute(**d)
+
+
+class BotCtrl(QtCore.QObject):
     def __init__(self, view, model):
+        super().__init__()
         self.view = view
         self.model = model
         self.conversation = None
@@ -29,6 +78,8 @@ class BotCtrl:
         self.listener = None
         self.listener_worker = None
         self.listener_thread = None
+        self.alarm_worker = None
+        self.alarm_thread = None
 
         self.connect_signals()
 
@@ -36,6 +87,7 @@ class BotCtrl:
         self.view.listen_switch.clicked.connect(self.listen)
         self.view.verify_button.clicked.connect(self.verify)
         self.view.send_button.clicked.connect(self.send)
+        self.view.schedule_switch.clicked.connect(self.alarm)
 
     def listen(self):
         if self.view.listen_switch.isChecked():
@@ -76,7 +128,35 @@ class BotCtrl:
         pass
 
     def alarm(self):
-        pass
+        if self.view.schedule_switch.isChecked():
+            self.view.time_picker.setDisabled(True)
+            self.view.date_picker.setDisabled(True)
+            self.alarm_thread = QtCore.QThread()
+            self.alarm_worker = AlarmWorker(self.view, self.conversation)
+            self.alarm_worker.moveToThread(self.alarm_thread)
+            self.alarm_worker.tick_sig.connect(self.display_time_remaining)
+            self.alarm_worker.finished.connect(self.alarm_thread.quit)
+            self.alarm_worker.finished.connect(self.alarm_worker.deleteLater)
+            self.alarm_worker.finished.connect(self.display_message_sent)
+            self.alarm_thread.started.connect(self.alarm_worker.run)
+            self.alarm_thread.finished.connect(self.alarm_thread.deleteLater)
+            self.alarm_thread.start()
+        else:
+            self.alarm_thread.quit()
+            self.alarm_thread.wait()
+            self.view.time_picker.setDisabled(False)
+            self.view.date_picker.setDisabled(False)
+
+    @QtCore.pyqtSlot(str)
+    def display_time_remaining(self, time_remaining):
+        self.view.t_remaining_label2.setText(time_remaining)
+
+    @QtCore.pyqtSlot()
+    def display_message_sent(self):
+        self.view.display_message_box("Message sent", "info")
+        self.view.schedule_switch.setChecked(False)
+        self.view.time_picker.setDisabled(False)
+        self.view.date_picker.setDisabled(False)
 
     def verify(self):
         # initialize the session and listener
