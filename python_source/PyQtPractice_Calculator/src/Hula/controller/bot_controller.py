@@ -70,6 +70,8 @@ class AlarmWorker(QtCore.QObject):
 
 
 class BotCtrl(QtCore.QObject):
+    message_received = QtCore.pyqtSignal(str)
+
     def __init__(self, view, model):
         super().__init__()
         self.view = view
@@ -202,6 +204,7 @@ class BotCtrl(QtCore.QObject):
     @QtCore.pyqtSlot(str)
     def update_receive_text(self, message):
         self.view.listen_result_text.setText(message)
+        self.message_received.emit(message)
 
     @QtCore.pyqtSlot(str)
     def display_time_remaining(self, time_remaining):

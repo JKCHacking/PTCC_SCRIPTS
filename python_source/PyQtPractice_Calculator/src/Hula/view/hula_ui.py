@@ -15,6 +15,7 @@ class HulaUI(QtWidgets.QMainWindow):
         self.guessed_label = QtWidgets.QLabel("Guessed:")
         self.guessed_result_label = QtWidgets.QLabel()
         self.tickbox_layout = QtWidgets.QGridLayout()
+        self.bot_launcher_btn = QtWidgets.QPushButton("Launch Bot")
 
         self.setWindowTitle('Hula')
         # self.setFixedSize(300, 300)
@@ -23,4 +24,23 @@ class HulaUI(QtWidgets.QMainWindow):
         self.setCentralWidget(self._centralWidget)
         self._centralWidget.setLayout(self.generalLayout)
 
-        self.__create_main_window()
+    def create_main_window(self):
+        upper_layout = QtWidgets.QHBoxLayout()
+        center_layout = QtWidgets.QHBoxLayout()
+        lower_layout = QtWidgets.QHBoxLayout()
+
+        upper_layout.addWidget(self.start_label)
+        upper_layout.addWidget(self.start_sb)
+        upper_layout.addWidget(self.stop_label)
+        upper_layout.addWidget(self.stop_sb)
+
+        center_layout.addLayout(self.tickbox_layout)
+
+        lower_layout.addWidget(self.guessed_label)
+        lower_layout.addWidget(self.guessed_result_label)
+        lower_layout.addWidget(self.generate_btn)
+        lower_layout.addWidget(self.bot_launcher_btn)
+
+        self.generalLayout.addLayout(upper_layout)
+        self.generalLayout.addLayout(center_layout)
+        self.generalLayout.addLayout(lower_layout)

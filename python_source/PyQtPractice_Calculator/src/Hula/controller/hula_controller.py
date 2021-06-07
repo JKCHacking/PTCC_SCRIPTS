@@ -1,15 +1,20 @@
-from PyQt5.QtWidgets import QCheckBox
+from PyQt5 import QtWidgets, QtCore
 
 
-class HulaController:
-    def __init__(self, view, model):
+class HulaController(QtCore.QObject):
+    def __init__(self, view, model, login_controller):
+        super().__init__()
         self.view = view
         self.model = model
+        self.login_controller = login_controller
+
+        self.connect_signals()
 
     def connect_signals(self):
         self.view.start_sb.valueChanged.connect(self.__create_ticks)
         self.view.stop_sb.valueChanged.connect(self.__create_ticks)
         self.view.generate_btn.clicked.connect(self.__generate)
+        self.view.bot_launcher_btn.clicked.connect(self.launch_bot)
 
     def __create_ticks(self):
         start = self.view.start_sb.value()
@@ -23,7 +28,8 @@ class HulaController:
             if i % 10 == 0:
                 row += 1
                 col = 0
-            cb = QCheckBox(str(num_tick))
+            cb = QtWidgets.QCheckBox(str(num_tick))
+            cb.setObjectName("checkbox_{}".format(num_tick))
             cb.stateChanged.connect(self.__add_remove_taken)
             self.view.tickbox_layout.addWidget(cb, col, row)
             col += 1
@@ -48,3 +54,21 @@ class HulaController:
             self.model.add_taken(int(cb.text()))
         else:
             self.model.remove_taken(int(cb.text()))
+
+    @QtCore.pyqtSlot(str)
+    def listen(self, message):
+        if message.isnumeric():
+            cb = self.view.findChild(QtWidgets.QCheckBox, "checkbox_{}".format(message))
+            if cb is not None:
+                self.model.add_taken(message)
+                cb.setChecked(True)
+
+    def connect_bot_signal(self, bot_signal):
+        bot_signal.connect(self.listen)
+
+    def init_UI(self):
+        self.view.create_main_window()
+        self.view.show()
+
+    def launch_bot(self):
+        self.login_controller.init_UI()
