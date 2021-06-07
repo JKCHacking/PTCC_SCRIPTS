@@ -1,9 +1,10 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from login import LoginCtrl, LoginUI
-from hula_bot import BotCtrl
-from hula_bot import BotUI
-from hula_bot import BotModel
+from model.hula_bot import BotModel
+from controller.login import LoginCtrl
+from controller.hula_bot import BotCtrl
+from view.hula_bot import BotUI
+from view.login import LoginUI
 
 
 def main():
