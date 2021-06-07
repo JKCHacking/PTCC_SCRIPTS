@@ -1,7 +1,7 @@
 import random
 
 
-class HulaGenerator:
+class HulaModel:
     def __init__(self):
         self.taken = []
 
