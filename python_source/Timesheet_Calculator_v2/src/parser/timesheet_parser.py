@@ -38,17 +38,27 @@ class TimesheetParser:
             row_num = 11
             while not all(cell.value is None for row in ws["A{}".format(row_num):"E{}".format(row_num)]
                           for cell in row):
-                date = ws["A{}".format(row_num)].value.date()
+                date = ws["A{}".format(row_num)].value
                 start_time = ws["B{}".format(row_num)].value
                 end_time = ws["C{}".format(row_num)].value
                 task_name = ws["D{}".format(row_num)].value
                 project_name = ws["E{}".format(row_num)].value
-                task = Task(date=date,
-                            start_time=start_time,
-                            end_time=end_time,
-                            task_name=task_name,
-                            project_name=project_name)
-                task_list.append(task)
+                # date, start_time and end_time must be valid
+                # to avoid error in the calculator later
+                if isinstance(date, datetime.datetime):
+                    date = date.date()
+                if isinstance(start_time, datetime.datetime):
+                    start_time = start_time.time()
+                if isinstance(end_time, datetime.datetime):
+                    end_time = end_time.time()
+                if isinstance(date, datetime.date) and isinstance(start_time, datetime.time) and \
+                        isinstance(end_time, datetime.time):
+                    task = Task(date=date,
+                                start_time=start_time,
+                                end_time=end_time,
+                                task_name=task_name,
+                                project_name=project_name)
+                    task_list.append(task)
                 row_num += 1
             emp_ts = EmployeeTimesheet(
                 employee=emp,
