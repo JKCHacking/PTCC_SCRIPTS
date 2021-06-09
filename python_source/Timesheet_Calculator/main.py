@@ -1,4 +1,4 @@
-from src.timesheet_calculator_ui import TimesheetCalculatorUI
+from src.mvc.timesheet_calculator_ui import TimesheetCalculatorUI
 
 if __name__ == '__main__':
     ts_calc_ui = TimesheetCalculatorUI()
