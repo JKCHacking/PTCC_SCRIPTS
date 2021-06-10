@@ -8,5 +8,6 @@ class Constants:
     TEST_DIR = os.path.join(ROOT_DIR, "test")
     INPUT_DIR = os.path.join(ROOT_DIR, "input")
     OUTPUT_DIR = os.path.join(ROOT_DIR, "output")
+    FILES_DIR = os.path.join(ROOT_DIR, "files")
 
     EXCEL_EXT = ".xlsx"

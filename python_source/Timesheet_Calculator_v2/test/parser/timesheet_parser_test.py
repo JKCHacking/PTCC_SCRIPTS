@@ -8,11 +8,11 @@ from src.parser.timesheet_parser import TimesheetParser
 
 class TimesheetParserTest(unittest.TestCase):
     def test_parse_001(self):
-        test_data = "testdata/test_parse_testdata_001.xlsx"
+        test_data = "testdata/timesheet_parser_testdata_001.xlsx"
 
         # put testdata in input folder
         source = test_data
-        dest = os.path.join(Constants.INPUT_DIR, "test_parse_testdata_001.xlsx")
+        dest = os.path.join(Constants.INPUT_DIR, "timesheet_parser_testdata_001.xlsx")
         shutil.copyfile(source, dest)
         # run the test
         ts_parser = TimesheetParser()
@@ -34,11 +34,11 @@ class TimesheetParserTest(unittest.TestCase):
         # remove result files in output folder
 
     def test_parse_002(self):
-        test_data = "testdata/test_parse_testdata_002.xlsx"
+        test_data = "testdata/timesheet_parser_testdata_002.xlsx"
 
         # put testdata in input folder
         source = test_data
-        dest = os.path.join(Constants.INPUT_DIR, "test_parse_testdata_002.xlsx")
+        dest = os.path.join(Constants.INPUT_DIR, "timesheet_parser_testdata_002.xlsx")
         shutil.copyfile(source, dest)
         # run the test
         ts_parser = TimesheetParser()
@@ -60,11 +60,11 @@ class TimesheetParserTest(unittest.TestCase):
         # remove result files in output folder
 
     def test_parse_003(self):
-        test_data = "testdata/test_parse_testdata_003.xlsx"
+        test_data = "testdata/timesheet_parser_testdata_003.xlsx"
 
         # put testdata in input folder
         source = test_data
-        dest = os.path.join(Constants.INPUT_DIR, "test_parse_testdata_003.xlsx")
+        dest = os.path.join(Constants.INPUT_DIR, "timesheet_parser_testdata_003.xlsx")
         shutil.copyfile(source, dest)
         # run the test
         ts_parser = TimesheetParser()

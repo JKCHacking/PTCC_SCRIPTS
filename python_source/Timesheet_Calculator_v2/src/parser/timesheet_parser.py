@@ -8,9 +8,6 @@ from src.entity.employee_timesheet import EmployeeTimesheet
 
 
 class TimesheetParser:
-    def __init__(self):
-        pass
-
     def iter_spreadsheets(self):
         directory = Constants.INPUT_DIR
         for dirpath, dirnames, filenames in os.walk(directory):
@@ -43,7 +40,7 @@ class TimesheetParser:
                 end_time = ws["C{}".format(row_num)].value
                 task_name = ws["D{}".format(row_num)].value
                 project_name = ws["E{}".format(row_num)].value
-                # date, start_time and end_time must be valid
+                # date, start_time and end_time must be valid datetime object
                 # to avoid error in the calculator later
                 if isinstance(date, datetime.datetime):
                     date = date.date()
