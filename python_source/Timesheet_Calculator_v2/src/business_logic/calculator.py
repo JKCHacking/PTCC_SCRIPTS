@@ -1,5 +1,4 @@
 import datetime
-from collections import namedtuple
 
 
 class Calculator:
