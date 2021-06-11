@@ -14,6 +14,7 @@ class TimesheetCalculatorUI(QtWidgets.QMainWindow):
         self.generate_button.setFixedSize(70, 50)
         self.general_layout = QtWidgets.QVBoxLayout()
         self.central_widget = QtWidgets.QWidget(self)
+        self.progress_dialog = TimesheetProgressDialog(self)
 
     def create_window(self):
         from_date_layout = QtWidgets.QVBoxLayout()
@@ -29,3 +30,23 @@ class TimesheetCalculatorUI(QtWidgets.QMainWindow):
         self.setWindowTitle("Timesheet Calculator")
         self.resize(300, 100)
         self.setCentralWidget(self.central_widget)
+
+
+class TimesheetProgressDialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        QtWidgets.QDialog.__init__(self, parent)
+        self.found_label = QtWidgets.QLabel()
+        self.progress_label = QtWidgets.QLabel()
+        self.progress_bar = QtWidgets.QProgressBar()
+        self.progress_bar.setMaximum(100)
+        self.general_layout = QtWidgets.QVBoxLayout()
+        Qbtn = QtWidgets.QDialogButtonBox.Cancel
+        self.cancel_button = QtWidgets.QDialogButtonBox(Qbtn)
+
+    def init_ui(self):
+        self.general_layout.addWidget(self.found_label)
+        self.general_layout.addWidget(self.progress_label)
+        self.general_layout.addWidget(self.progress_bar)
+        self.general_layout.addWidget(self.cancel_button)
+        self.setLayout(self.general_layout)
+        self.resize(250, 100)

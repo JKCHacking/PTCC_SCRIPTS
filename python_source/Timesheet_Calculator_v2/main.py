@@ -7,6 +7,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     ts_controller = TimesheetCalculatorCtrl()
     ts_controller.init_ui()
+    ts_controller.init_model()
 
     sys.exit(app.exec_())
 
