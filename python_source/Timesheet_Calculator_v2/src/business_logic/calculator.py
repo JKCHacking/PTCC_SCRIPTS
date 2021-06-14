@@ -2,22 +2,18 @@ import datetime
 
 
 class Calculator:
-    def __init__(self, from_date, to_date):
-        self.from_date = from_date
-        self.to_date = to_date
-
-    def calculate_total_hour(self, date, time_in, time_out):
+    def calculate_task_hours(self, date, time_in, time_out):
         time_in_datetime = datetime.datetime.combine(date, time_in)
         time_out_datetime = datetime.datetime.combine(date, time_out)
         if time_in_datetime > time_out_datetime:
             time_out_datetime += datetime.timedelta(days=1)
-        decrement_seconds = self.__decrement_prohibit_hours(date, time_in_datetime, time_out_datetime)
+        decrement_seconds = self.__calculate_prohibit_seconds(date, time_in_datetime, time_out_datetime)
         time_delta = time_out_datetime - time_in_datetime
         total_seconds = time_delta.total_seconds() - decrement_seconds
         total_hours = total_seconds / 3600
         return total_hours
 
-    def __decrement_prohibit_hours(self, date, time_in_datetime, time_out_datetime):
+    def __calculate_prohibit_seconds(self, date, time_in_datetime, time_out_datetime):
         decrement_seconds = 0
         # prohibit hours
         midnight_start = datetime.datetime(day=date.day, month=date.month, year=date.year, hour=0)

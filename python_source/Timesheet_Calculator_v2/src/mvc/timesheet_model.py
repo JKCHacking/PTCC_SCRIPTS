@@ -15,3 +15,9 @@ class TimesheetModel:
         self.holiday_list = holiday_parser.parse()
         ts_parser = TimesheetParser()
         self.timesheet_list = ts_parser.parse()
+
+    def get_timesheets(self):
+        return self.timesheet_list
+
+    def get_holidays(self):
+        return self.holiday_list

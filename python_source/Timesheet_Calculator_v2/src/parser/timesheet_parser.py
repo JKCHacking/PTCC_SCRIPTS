@@ -28,6 +28,12 @@ class TimesheetParser:
                 first_name = ws["B6"].value
                 middle_name = ws["C6"].value
                 last_name = ws["D6"].value
+                # checking of value
+                id_number = id_number if id_number is not None else ""
+                first_name = first_name if first_name is not None else ""
+                middle_name = middle_name if middle_name is not None else ""
+                last_name = last_name if last_name is not None else ""
+
                 # create Employee object
                 emp = Employee(id_number=id_number,
                                first_name=first_name,
@@ -43,6 +49,9 @@ class TimesheetParser:
                     time_out = ws["C{}".format(row_num)].value
                     task_name = ws["D{}".format(row_num)].value
                     project_name = ws["E{}".format(row_num)].value
+                    # checking of value
+                    task_name = task_name if task_name is not None else ""
+                    project_name = project_name if project_name is not None else ""
                     # date, start_time and end_time must be valid datetime object
                     # to avoid error in the calculator later
                     if isinstance(date, datetime.datetime):
