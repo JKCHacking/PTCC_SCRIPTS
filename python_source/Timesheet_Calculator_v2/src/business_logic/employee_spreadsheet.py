@@ -3,10 +3,11 @@ from src.business_logic.calculator import Calculator
 
 
 class EmployeeSpreadsheet:
-    def __init__(self, workbook, employee, tasks):
+    def __init__(self, workbook, employee, tasks, holidays):
         self.ts_workbook = workbook
         self.employee = employee
         self.tasks = tasks
+        self.holidays = holidays
         self.employee_full_name = "{}, {} {}.".format(employee.get_last_name(),
                                                       employee.get_first_name(),
                                                       employee.get_middle_name()[0])
@@ -28,7 +29,6 @@ class EmployeeSpreadsheet:
             5: "SAT",
             6: "SUN"
         }
-        credited_minutes = 480
         # get the weekly cluster in dates
         date_list = self.__generate_mon_to_sun_dates()
         for week in date_list:
@@ -39,7 +39,13 @@ class EmployeeSpreadsheet:
                                                             last_day.strftime("%d-%b-%Y"))])
             self.__write_employee_report_columns(self.ws)
             for day in week:
-                date_string = day.strftime("%d-%b-%Y")
+                # if holiday, treat all hours as excess
+                if day in self.holidays:
+                    credited_minutes = 0
+                    date_string = day.strftime("%d-%b-%Y") + " (HOLIDAY)"
+                else:
+                    credited_minutes = 480
+                    date_string = day.strftime("%d-%b-%Y")
                 day_name = days_dict[day.weekday()]
                 tito = self.__get_tito_of_the_day(day, self.tasks)
                 total_mins = self.__get_total_minutes_of_the_day(day, self.tasks)

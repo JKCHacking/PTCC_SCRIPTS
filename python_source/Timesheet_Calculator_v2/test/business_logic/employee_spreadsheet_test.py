@@ -1,4 +1,5 @@
 import unittest
+import unittest
 import os
 import datetime
 import openpyxl
@@ -31,15 +32,18 @@ class EmployeeSpreadsheetTest(unittest.TestCase):
                           time_out=datetime.time(hour=18), project_name="Project5", task_name="Task5"),
                      Task(datetime.date(day=11, month=6, year=2021), time_in=datetime.time(hour=9),
                           time_out=datetime.time(hour=18), project_name="Project6", task_name="Task6"),
-                     Task(datetime.date(day=14, month=6, year=2021), time_in=datetime.time(hour=9),
+                     Task(datetime.date(day=12, month=6, year=2021), time_in=datetime.time(hour=9),
                           time_out=datetime.time(hour=18), project_name="Project7", task_name="Task7"),
-                     Task(datetime.date(day=15, month=6, year=2021), time_in=datetime.time(hour=9),
+                     Task(datetime.date(day=14, month=6, year=2021), time_in=datetime.time(hour=9),
                           time_out=datetime.time(hour=18), project_name="Project8", task_name="Task8"),
+                     Task(datetime.date(day=15, month=6, year=2021), time_in=datetime.time(hour=9),
+                          time_out=datetime.time(hour=18), project_name="Project9", task_name="Task9"),
                      Task(datetime.date(day=19, month=6, year=2021), time_in=datetime.time(hour=17),
-                          time_out=datetime.time(hour=20), project_name="Project9", task_name="Task9"),
+                          time_out=datetime.time(hour=20), project_name="Project10", task_name="Task10")
                      ]
+        holiday_list = [datetime.date(day=12, month=6, year=2021)]
         ts_wb = TimesheetWorkbook(s_date, e_date)
-        emp_ss = EmployeeSpreadsheet(ts_wb, emp, task_list)
+        emp_ss = EmployeeSpreadsheet(ts_wb, emp, task_list, holiday_list)
         emp_ss.write_headers()
         emp_ss.write_body()
         ts_wb.save()

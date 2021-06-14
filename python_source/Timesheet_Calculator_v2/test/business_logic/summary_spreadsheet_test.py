@@ -38,9 +38,9 @@ class SummarySpreadsheetTest(unittest.TestCase):
                           time_out=datetime.time(hour=20), project_name="Project9", task_name="Task9"),
                      ]
         ts_wb = TimesheetWorkbook(s_date, e_date)
-        summ_ss = SummarySpreadsheet(ts_wb, emp, task_list)
+        summ_ss = SummarySpreadsheet(ts_wb)
         summ_ss.write_headers()
-        summ_ss.write_body()
+        summ_ss.write_body(emp, task_list)
         summ_ss.write_footers()
         ts_wb.save()
 
