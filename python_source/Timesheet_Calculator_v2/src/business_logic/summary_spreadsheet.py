@@ -47,5 +47,6 @@ class SummarySpreadsheet:
         calculator = Calculator()
         total_hours = 0
         for task in tasks:
-            total_hours += calculator.calculate_task_hours(task.get_date(), task.get_time_in(), task.get_time_out())
+            if self.ts_workbook.get_start_date() <= task.get_date() <= self.ts_workbook.get_end_date():
+                total_hours += calculator.calculate_task_hours(task.get_date(), task.get_time_in(), task.get_time_out())
         return total_hours

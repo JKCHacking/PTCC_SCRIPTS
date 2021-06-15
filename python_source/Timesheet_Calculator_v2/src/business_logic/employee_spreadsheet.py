@@ -30,8 +30,8 @@ class EmployeeSpreadsheet:
             6: "SUN"
         }
         # get the weekly cluster in dates
-        date_list = self.__generate_mon_to_sun_dates()
-        for week in date_list:
+        weeks = self.__generate_mon_to_sun_dates()
+        for week in weeks:
             first_day = week[0]
             last_day = week[-1]
             self.ws.append([""])
@@ -84,12 +84,15 @@ class EmployeeSpreadsheet:
 
     def __generate_mon_to_sun_dates(self):
         week = []
-        date_list = []
-        current = self.ts_workbook.get_start_date()
-        while current <= self.ts_workbook.get_end_date():
-            week.append(current)
-            if current.weekday() == 6:
-                date_list.append(week)
+        weeks = []
+        start_date = self.ts_workbook.get_start_date()
+        end_date = self.ts_workbook.get_end_date()
+
+        dates = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+
+        for i, date in enumerate(dates):
+            week.append(date)
+            if date.weekday() == 6 or (date.weekday() != 6 and i == len(dates) - 1):
+                weeks.append(week)
                 week = []
-            current += datetime.timedelta(days=1)
-        return date_list
+        return weeks
