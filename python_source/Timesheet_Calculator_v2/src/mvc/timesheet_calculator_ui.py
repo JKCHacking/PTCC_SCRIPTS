@@ -31,22 +31,43 @@ class TimesheetCalculatorUI(QtWidgets.QMainWindow):
         self.resize(300, 100)
         self.setCentralWidget(self.central_widget)
 
+    def display_message_box(self, message, level):
+        msg = QtWidgets.QMessageBox()
+        if level == "info":
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+        elif level == "warning":
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+        elif level == "error":
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText(message)
+        msg.setWindowTitle("Message")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.exec_()
+
 
 class TimesheetProgressDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
-        self.found_label = QtWidgets.QLabel()
-        self.progress_label = QtWidgets.QLabel()
+        self.progress_message_label = QtWidgets.QLabel("")
+        self.progress_label = QtWidgets.QLabel("")
         self.progress_bar = QtWidgets.QProgressBar()
         self.progress_bar.setMaximum(100)
-        self.general_layout = QtWidgets.QVBoxLayout()
-        Qbtn = QtWidgets.QDialogButtonBox.Cancel
-        self.cancel_button = QtWidgets.QDialogButtonBox(Qbtn)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(False)
+        self.cancel_button = QtWidgets.QPushButton("Cancel")
+        self.close_button = QtWidgets.QPushButton("OK")
+        self.rerun_button = QtWidgets.QPushButton("Rerun")
 
     def init_ui(self):
-        self.general_layout.addWidget(self.found_label)
-        self.general_layout.addWidget(self.progress_label)
-        self.general_layout.addWidget(self.progress_bar)
-        self.general_layout.addWidget(self.cancel_button)
-        self.setLayout(self.general_layout)
+        general_layout = QtWidgets.QVBoxLayout()
+        button_layout = QtWidgets.QHBoxLayout()
+        button_layout.addWidget(self.close_button)
+        button_layout.addWidget(self.rerun_button)
+        button_layout.addWidget(self.cancel_button, alignment=QtCore.Qt.AlignRight)
+        general_layout.addWidget(self.progress_message_label)
+        general_layout.addWidget(self.progress_label)
+        general_layout.addWidget(self.progress_bar)
+        general_layout.addLayout(button_layout)
+        self.setLayout(general_layout)
         self.resize(250, 100)
+        self.setWindowTitle("Timesheet Calculator")

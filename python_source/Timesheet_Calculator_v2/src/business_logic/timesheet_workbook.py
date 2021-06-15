@@ -1,5 +1,6 @@
 import os
 import openpyxl
+from openpyxl.utils import get_column_letter
 from src.utils.constants import Constants
 
 
@@ -23,5 +24,30 @@ class TimesheetWorkbook:
     def get_workbook(self):
         return self.workbook
 
+    def adjust_cell_height_width(self):
+        for sheetname in self.workbook.sheetnames:
+            ws = self.workbook[sheetname]
+            dims_col = {}
+            dims_row = {}
+
+            for i, row in enumerate(ws.rows):
+                for cell in row:
+                    cell_value = cell.value
+                    if cell_value:
+                        dims_col[cell.column_letter] = max((dims_col.get(cell.column_letter, 0),
+                                                            len(str(cell.value)))) + 1.2
+                        newline_count = str(cell_value).count('\n')
+                        max_value = max((dims_row.get(i + 1, 0), newline_count))
+                        dims_row[i + 1] = max_value * 4.7
+
+            for col, value in dims_col.items():
+                ws.column_dimensions[col].width = value
+
+            for row, value in dims_row.items():
+                if value != 0:
+                    ws.row_dimensions[row].height = value
+
     def save(self):
+        self.workbook.remove(self.workbook["Sheet"])
+        self.adjust_cell_height_width()
         self.workbook.save(self.output_path)
