@@ -55,7 +55,7 @@ class TimesheetProgressDialog(QtWidgets.QDialog):
         self.progress_bar.setValue(0)
         self.progress_bar.setTextVisible(False)
         self.cancel_button = QtWidgets.QPushButton("Cancel")
-        self.close_button = QtWidgets.QPushButton("OK")
+        self.close_button = QtWidgets.QPushButton("Close")
         self.rerun_button = QtWidgets.QPushButton("Rerun")
 
     def init_ui(self):
