@@ -25,7 +25,7 @@ class TimesheetCalculatorUI(QtWidgets.QMainWindow):
         to_date_layout.addWidget(self.to_date_picker)
         self.general_layout.addLayout(from_date_layout)
         self.general_layout.addLayout(to_date_layout)
-        self.general_layout.addWidget(self.generate_button, alignment=QtCore.Qt.AlignRight)
+        self.general_layout.addWidget(self.generate_button, alignment=QtCore.Qt.AlignCenter)
         self.central_widget.setLayout(self.general_layout)
         self.setWindowTitle("Timesheet Calculator")
         self.resize(300, 100)

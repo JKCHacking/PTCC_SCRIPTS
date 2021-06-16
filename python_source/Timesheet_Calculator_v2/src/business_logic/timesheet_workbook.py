@@ -24,7 +24,7 @@ class TimesheetWorkbook:
     def get_workbook(self):
         return self.workbook
 
-    def adjust_cell_height_width(self):
+    def __adjust_cell_height_width(self):
         for sheetname in self.workbook.sheetnames:
             ws = self.workbook[sheetname]
             dims_col = {}
@@ -56,6 +56,6 @@ class TimesheetWorkbook:
 
     def save(self):
         self.workbook.remove(self.workbook["Sheet"])
-        self.adjust_cell_height_width()
+        self.__adjust_cell_height_width()
         self.__sort_employee_sheets()
         self.workbook.save(self.output_path)
