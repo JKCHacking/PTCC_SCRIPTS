@@ -47,7 +47,15 @@ class TimesheetWorkbook:
                 if value != 0:
                     ws.row_dimensions[row].height = value
 
+    def __sort_employee_sheets(self):
+        summary_sheet = self.workbook._sheets[0]
+        employee_sheets = self.workbook._sheets[1:]
+        # sort by name
+        employee_sheets.sort(key=lambda ws: ws.title)
+        self.workbook._sheets = [summary_sheet] + employee_sheets
+
     def save(self):
         self.workbook.remove(self.workbook["Sheet"])
         self.adjust_cell_height_width()
+        self.__sort_employee_sheets()
         self.workbook.save(self.output_path)
