@@ -34,6 +34,9 @@ class TimesheetCalculatorCtrl(QtCore.QObject):
         end_date_str = self.view.to_date_picker.date().toString()
         start_date = datetime.datetime.strptime(start_date_str, "%a %b %d %Y").date()
         end_date = datetime.datetime.strptime(end_date_str, "%a %b %d %Y").date()
+        if start_date > end_date:
+            self.view.display_message_box("From date is greater than To date.", "error")
+            return
         self.model.init_model()
         timesheets = self.model.get_timesheets()
         if len(timesheets) == 0:
