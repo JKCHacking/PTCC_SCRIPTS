@@ -8,6 +8,7 @@ typedef struct {
 	int elemSize;
 	int loglength;
 	int alloclength;
+	void (*freefn)(void*);
 } Stack;
 
 void StackNew(Stack *s, int elemSize);
@@ -24,8 +25,8 @@ void StackNew(Stack *s, int elemSize, void (*freefn)(void*))
 	s->loglength = 0;
 	s->alloclength = 4;
 	s->elems = malloc(4 * elemSize);
+	s->freefn = freefn;
 	assert(s->elems != NULL);
-	void (*freefn)(void*);
 }
 
 void StackDispose(Stack *s)
