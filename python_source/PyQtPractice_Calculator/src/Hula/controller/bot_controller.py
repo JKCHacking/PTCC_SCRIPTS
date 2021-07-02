@@ -19,9 +19,9 @@ class ListenWorker(QtCore.QObject):
         # start listening
         for event in self.listener.listen():
             if isinstance(event, fbchat.MessageEvent):
-                if event.author.id == self.view.chat_id_text.text():
-                    message = event.message.text
-                    self.message_receive_sig.emit(message)
+                # if event.author.id == self.view.chat_id_text.text():
+                message = event.message.text
+                self.message_receive_sig.emit(message)
         self.finished.emit()
 
 
