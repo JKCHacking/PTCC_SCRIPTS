@@ -1,110 +1,104 @@
 import os
-import argparse
-import array
+import pint
+from comtypes import COMError
+from FabAuto.src.app_creator import AppCreator
 from FabAuto.src.util.constants import Constants
-from FabAuto.src.controller.bricscad_controller import BricscadController
-from FabAuto.src.controller.inventor_controller import InventorController
+
+PINT_UNIT = pint.UnitRegistry()
+PINT_UNIT.default_system = "SI"
+
+
+def get_unit_document(document):
+    unit_dict = {
+        0: "dimensionless",
+        1: "inches",
+        2: "feet",
+        3: "miles",
+        4: "millimeters",
+        5: "centimeters",
+        6: "meters",
+        7: "kilometers",
+        8: "microinches",
+        9: "mils",
+        10: "yards",
+        11: "angstroms",
+        12: "nanometers",
+        13: "microns",
+        14: "decimeters",
+        15: "dekameters",
+        16: "hectometers",
+        17: "gigameters",
+        18: "astronomical Units",
+        19: "light Years",
+    }
+
+    unit_num = document.GetVariable("INSUNITS")
+    try:
+        unit_name = unit_dict[unit_num]
+    except KeyError:
+        unit_name = unit_dict[0]
+        print("Unsupported Unit number")
+    return unit_name
 
 
 def iter_input():
-    """
-    iterates over the input folder
-    :return:
-    """
     for dir_path, dir_names, file_names in os.walk(Constants.INPUT_DIR):
         for file_name in file_names:
             if file_name.endswith(".ipt"):
                 yield os.path.join(dir_path, file_name)
 
 
-def extract_2d_views(inventor_ctrl, view_list, model_file_path):
-    """
-    This function "extracts" the views from the IPT model. then saves a DWG file containing the 2D views of the model.
-    :param view_list:
-    :param model_file_path:
-    """
-    part_doc = inventor_ctrl.create_part_document(model_file_path)
-    drawing_doc = inventor_ctrl.create_drawing_document()
-
-    x = 15
-    y = 30
-    for view_name in view_list:
-        view = inventor_ctrl.create_view(part_doc, drawing_doc, view_name, x, y)
-        # for the sake of separation
-        x = x + view.width
-
-    dwg_filename = "{}.dwg".format(os.path.basename(model_file_path).split(".")[0])
-    dwg_full = os.path.join(Constants.OUTPUT_DIR, dwg_filename)
-    inventor_ctrl.save_drawing_as_dwg(drawing_doc, dwg_full)
-    inventor_ctrl.close_document(drawing_doc)
-    inventor_ctrl.close_document(part_doc)
-    return dwg_full
-
-
-def convert_acid_to_block_refs(dwg_document):
-    """
-    Explodes ACIDBLOCKREFERENCES to BLOCKREFERENCES resulted from Inventory DWG generation
-    :param dwg_document:
-    :return:
-    """
-    modelspace = dwg_document.ModelSpace
-    for ent in modelspace:
-        if ent.ObjectName.lower() == "acidblockreference":
-            ent.explode()
-            ent.Delete()
-
-
-def relayout_block_reference(bricscad_controller, dwg_document):
-    modelspace = dwg_document.ModelSpace
-    point1 = array.array("d", [0, 0, 0])
-    point2 = array.array("d", [0, 0, 0])
-    for ent in modelspace:
-        if ent.ObjectName.lower() == "acdbblockreference":
-            max_point, min_point = bricscad_controller.get_bounding_box(ent)
-            width = abs(max_point[0] - min_point[0])
-            ent.Move(point1, point2)
-            point2[0] += width * 1.5
-
-
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v",
-                        type=str,
-                        choices=["top",
-                                 "bottom",
-                                 "left",
-                                 "right",
-                                 "front",
-                                 "back",
-                                 "bottom_left",
-                                 "bottom_right",
-                                 "top_left",
-                                 "top_right"],
-                        nargs="+")
-    parser.add_argument("-tb",
-                        type=str)
-    args = parser.parse_args()
-    tb_path = None
-    if args.tb:
-        tb_path = args.tb
-    view_list = args.v
-    inventor_ctrl = InventorController()
-    bricscad_ctrl = BricscadController()
-    for model_file_path in iter_input():
-        # extracts 2d views from model and save as dwg file
-        dwg_fp = extract_2d_views(inventor_ctrl, view_list, model_file_path)
-        dwg_document = bricscad_ctrl.open_dwg_file(dwg_fp)
-        # convert inventor block reference to autocad blockreference
-        convert_acid_to_block_refs(dwg_document)
-        # relayout block references to look nicer
-        relayout_block_reference(bricscad_ctrl, dwg_document)
-        bricscad_ctrl.zoom_extents()
-        # create a new layout for the 2d views
-        # automatically creates a viewport
-        layout_name = os.path.basename(model_file_path).split(".")[0]
-        bricscad_ctrl.add_layout(layout_name, tb_path)
-        # delete the default layout
-        bricscad_ctrl.delete_layout("Sheet")
-        bricscad_ctrl.save_and_close()
-    inventor_ctrl.quit_app()
-    bricscad_ctrl.quit_app()
+    app_creator = AppCreator("Inventor.Application")
+    inventor_app = app_creator.get_app()
+    UOM = inventor_app.UnitsOfMeasure
+    app_creator = AppCreator("BricscadApp.AcadApplication")
+    bs_app = app_creator.get_app()
+
+    for ipt_file in iter_input():
+        part_doc = inventor_app.Documents.Open(ipt_file)
+        component_definition = part_doc.ComponentDefinition
+        parameters = component_definition.Parameters
+        surface_bodies = component_definition.SurfaceBodies
+
+        print("There are {} Surface Bodies in the Model.".format(surface_bodies.Count))
+        for surface_body in surface_bodies:
+            surf_body_name = surface_body.Name
+            template_path = None
+            # searching for the appropriate template for the surface body
+            for filename in os.listdir(os.path.join(Constants.TEMPLATE_DIR)):
+                if filename.endswith(".dwg") and filename.split(".")[0] in surf_body_name:
+                    template_path = os.path.join(Constants.TEMPLATE_DIR, filename)
+                    break
+
+            if template_path:
+                print("Found template for {}".format(surf_body_name))
+                dwg_template_doc = bs_app.Documents.Open(template_path)
+                bs_unit = get_unit_document(dwg_template_doc)
+                for parameter in parameters:
+                    if parameter.ParameterType == 11524:
+                        # the value that you get will always be converted based on the Database unit of the inventor
+                        # document. we have to actually take the "ACTUAL" value of the parameter by converting
+                        # it using the UOM.ConvertUnits()
+                        parameter_unit = parameter.Units
+                        try:
+                            value = UOM.ConvertUnits(parameter.Value, UOM.GetTypeFromString(
+                                UOM.GetDatabaseUnitsFromExpression(parameter.Expression, parameter_unit)),
+                                                            parameter_unit)
+                        except COMError:
+                            continue
+                        try:
+                            normalized_inv_unit = str(PINT_UNIT(parameter_unit).units)
+                        except pint.errors.UndefinedUnitError:
+                            continue
+                        normalized_bs_unit = str(PINT_UNIT(bs_unit).units)
+                        if normalized_bs_unit != normalized_inv_unit:
+                            # convert inventor unit to bricscad unit
+                            converted_equation = PINT_UNIT("{}{}".format(value,
+                                                                         parameter_unit)).to(normalized_bs_unit)
+                            value = converted_equation.magnitude
+                        command_str = "-PARAMETERS edit {} {}\n".format(parameter.Name, value)
+                        dwg_template_doc.SendCommand(command_str)
+                dwg_template_doc.SaveAs(os.path.join(Constants.OUTPUT_DIR, surf_body_name))
+                dwg_template_doc.Close()
+        part_doc.Close(True)
