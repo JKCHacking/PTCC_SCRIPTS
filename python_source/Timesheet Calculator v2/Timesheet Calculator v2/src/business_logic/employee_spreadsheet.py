@@ -45,21 +45,31 @@ class EmployeeSpreadsheet:
             for day in week:
                 # if holiday, treat all hours as excess
                 if day in self.holidays:
-                    credited_minutes = 0
                     date_string = day.strftime("%d-%b-%Y") + " (HOLIDAY)"
                 else:
-                    credited_minutes = 480
                     date_string = day.strftime("%d-%b-%Y")
                 day_name = days_dict[day.weekday()]
                 tito = self.__get_tito_of_the_day(day, self.tasks)
                 total_mins = self.__get_total_minutes_of_the_day(day, self.tasks)
-                excess_minutes = 0
-                if total_mins > credited_minutes:
-                    excess_minutes = total_mins - credited_minutes
-                if tito != "":
-                    data = [date_string, day_name, tito, total_mins, credited_minutes, excess_minutes]
-                else:
-                    data = [date_string, day_name, tito, total_mins, 0, excess_minutes]
+
+                # if holiday or weekend (Saturday/Sunday)
+                if day in self.holidays or (day not in self.holidays and day.weekday() >= 5):
+                    credited_minutes = 0
+                    excess_minutes = total_mins
+                else:  # Regular day
+                    if total_mins < 480:
+                        if total_mins == 0:
+                            credited_minutes = 0
+                        else:
+                            credited_minutes = total_mins
+                        excess_minutes = 0
+                    elif total_mins == 480:
+                        credited_minutes = 480
+                        excess_minutes = 0
+                    else:  # greater than 480
+                        credited_minutes = 480
+                        excess_minutes = total_mins - 480
+                data = [date_string, day_name, tito, total_mins, credited_minutes, excess_minutes]
                 self.ws.append(self.__apply_border_cells(data))
 
     def __apply_border_cells(self, data):
