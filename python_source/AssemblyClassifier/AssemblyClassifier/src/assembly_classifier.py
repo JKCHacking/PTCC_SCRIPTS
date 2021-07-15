@@ -25,6 +25,9 @@ class AssemblyClassifier:
                 self.__copy_to_assembly_folder(assembly_folder_name, part_path)
         assembly.Close(True)
         self.__copy_to_assembly_folder(assembly_folder_name, assembly_path)
+        print("[AsmClassifier] Created directory for {}".format(assembly_folder_name))
+        print("[AsmClassifier] Number of files inside: {}".format(
+            len(os.listdir(os.path.join(self.output_dir, assembly_folder_name)))))
 
     def __copy_to_assembly_folder(self, assembly_folder_name, src):
         landing_folder = os.path.join(self.output_dir, assembly_folder_name)
