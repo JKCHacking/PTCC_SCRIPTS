@@ -1,6 +1,6 @@
 import os
-from src.views_extractor import ViewsExtractor
-from src.constants import Constants
+from views_extractor import ViewsExtractor
+from constants import Constants
 
 
 def main():

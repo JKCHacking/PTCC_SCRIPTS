@@ -1,6 +1,6 @@
 import os
-from src.solid_2_assembly import Solid2Assembly
-from src.constants import Constants
+from solid_2_assembly import Solid2Assembly
+from constants import Constants
 
 
 def iter_input():

@@ -45,7 +45,7 @@ class ViewsExtractor:
             if border:
                 placement_point = border.RangeBox.MinPoint
             else:
-                placement_point = self.inv_app.TrnasientGeomtry.CreatePoint2d(0, 0)
+                placement_point = self.inv_app.TransientGeometry.CreatePoint2d(0, 0)
             drawing_view = drawing_sheet.DrawingViews.Item(1)
             drawing_sheet.PartsLists.Add(drawing_view, placement_point)
             # TODO add balloons to every view
