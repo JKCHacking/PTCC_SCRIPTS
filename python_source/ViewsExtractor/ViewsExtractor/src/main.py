@@ -10,7 +10,8 @@ def main():
         for file_name in file_names:
             if file_name.endswith(".ipt") or file_name.endswith(".iam"):
                 model_path = os.path.join(dir_path, file_name)
-                views_ext.extract_views(model_path)
+                dwg_path = views_ext.extract_2d_views(model_path)
+                views_ext.fix_inventor_dwg(dwg_path)
 
 
 if __name__ == "__main__":

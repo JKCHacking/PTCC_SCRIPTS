@@ -4,6 +4,7 @@ from comtypes import client
 from comtypes import COMError
 from comtypes import automation
 from ctypes import byref
+from src.balloon_helper import BalloonHelper
 
 
 class ViewsExtractor:
@@ -26,7 +27,7 @@ class ViewsExtractor:
         except OSError:
             self.bs_app = client.CreateObject(bs_progid, dynamic=True)
 
-    def extract_views(self, model_path):
+    def extract_2d_views(self, model_path):
         # open the model file
         self.model_doc = self.inv_app.Documents.Open(model_path)
         drawing_doc = self.__create_drawing_doc()
@@ -37,7 +38,7 @@ class ViewsExtractor:
         for view_name in self.view_list:
             view = self.__create_view(view_name, drawing_sheet, x, y)
             x = x + view.width
-        # if the file is an assembly file we need to add part list table and balloons.
+        # if the file is an assembly file we need to add parts list table and balloons.
         if model_path.endswith(".iam"):
             # add partlist table
             border = drawing_sheet.Border
@@ -47,16 +48,23 @@ class ViewsExtractor:
                 placement_point = self.inv_app.TrnasientGeomtry.CreatePoint2d(0, 0)
             drawing_view = drawing_sheet.DrawingViews.Item(1)
             drawing_sheet.PartsLists.Add(drawing_view, placement_point)
-            # TODO add balloons
+            # TODO add balloons to every view
+            # balloon_helper = BalloonHelper(self.inv_app)
+            # for drawing_view in drawing_sheet.DrawingViews:
+            #     balloon_helper.add_balloon_to_view(drawing_view)
         # save as dwg and close
         file_name_output = "{}.dwg".format(os.path.basename(model_path).split(".")[0])
         dir_output = os.path.join(self.output_dir, os.path.basename(os.path.dirname(model_path)))
-        drawing_doc.SaveAsInventorDWG(os.path.join(dir_output, file_name_output), True)
+        dwg_path = os.path.join(dir_output, file_name_output)
+        drawing_doc.SaveAsInventorDWG(dwg_path, True)
         drawing_doc.Close(True)
         self.model_doc.Close(True)
+        return dwg_path
 
+    def fix_inventor_dwg(self, dwg_path):
+        # fix objects in modelspace
         # open dwg file
-        dwg_doc = self.bs_app.Documents.Open(os.path.join(dir_output, file_name_output))
+        dwg_doc = self.bs_app.Documents.Open(dwg_path)
         # copy acid blocks from paperspace to modelspace
         for obj in dwg_doc.PaperSpace:
             if obj.ObjectName.lower() == "acidblockreference":
