@@ -78,7 +78,7 @@ class ViewsExtractor:
             if obj.ObjectName.lower() == "acidblockreference" or obj.ObjectName.lower() == "acdbblockreference":
                 max_point, min_point = self.__get_bounding_box(obj)
                 obj.Move(array.array("d", min_point), starting_position)
-                starting_position[0] += abs(max_point[0] - min_point[0])
+                starting_position[1] += abs(max_point[1] - min_point[1])
         # convert all acid blocks to "viewable" objects in bricscad in modelspace by exploding.
         for obj in dwg_doc.ModelSpace:
             if obj.ObjectName.lower() == "acidblockreference":
