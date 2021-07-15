@@ -9,9 +9,11 @@ def main():
     for dir_path, dir_names, file_names in os.walk(Constants.INPUT_DIR):
         for file_name in file_names:
             if file_name.endswith(".ipt") or file_name.endswith(".iam"):
+                print("[MAIN] Working with file {}".format(file_name))
                 model_path = os.path.join(dir_path, file_name)
                 dwg_path = views_ext.extract_2d_views(model_path)
                 views_ext.fix_inventor_dwg(dwg_path)
+                print("[MAIN] saved DWG file {} in {}".format(os.path.basename(dwg_path), Constants.OUTPUT_DIR))
 
 
 if __name__ == "__main__":

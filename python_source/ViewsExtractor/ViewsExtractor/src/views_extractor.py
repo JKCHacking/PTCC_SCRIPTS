@@ -4,7 +4,7 @@ from comtypes import client
 from comtypes import COMError
 from comtypes import automation
 from ctypes import byref
-from src.balloon_helper import BalloonHelper
+from balloon_helper import BalloonHelper
 
 
 class ViewsExtractor:
