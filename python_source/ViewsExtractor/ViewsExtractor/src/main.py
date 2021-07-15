@@ -1,10 +1,10 @@
 import os
+import argparse
 from views_extractor import ViewsExtractor
 from constants import Constants
 
 
-def main():
-    view_list = ["top", "front", "top_left"]
+def main(view_list):
     views_ext = ViewsExtractor(Constants.OUTPUT_DIR, view_list)
     for dir_path, dir_names, file_names in os.walk(Constants.INPUT_DIR):
         for file_name in file_names:
@@ -17,4 +17,20 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v",
+                        type=str,
+                        choices=["top",
+                                 "bottom",
+                                 "left",
+                                 "right",
+                                 "front",
+                                 "back",
+                                 "bottom_left",
+                                 "bottom_right",
+                                 "top_left",
+                                 "top_right"],
+                        nargs="+")
+    args = parser.parse_args()
+    view_list = args.v
+    main(view_list)
