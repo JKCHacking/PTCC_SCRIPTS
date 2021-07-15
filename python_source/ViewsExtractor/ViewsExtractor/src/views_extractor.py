@@ -78,6 +78,24 @@ class ViewsExtractor:
             if obj.ObjectName.lower() == "acidblockreference" or obj.ObjectName.lower() == "acdbblockreference":
                 max_point, min_point = self.__get_bounding_box(obj)
                 obj.Move(array.array("d", min_point), starting_position)
+                # put the view name beside view block reference
+                new_max_point, new_min_point = self.__get_bounding_box(obj)
+                block_margin = 10
+                mtext_width = 10
+                center_block_pt = [(new_max_point[0] - new_min_point[0]) / 2,
+                                   (new_max_point[1] - new_min_point[1]) / 2,
+                                   0]
+                mtext_insertion_pt = array.array("d",
+                                                 [center_block_pt[0] + (abs(max_point[0] - min_point[0]) / 2) +
+                                                  block_margin,
+                                                  ((max_point[1] - min_point[1]) / 2),
+                                                  0])
+                view_number_idx = obj.Name.split("_")[-1].split("VIEW")[1] - 1
+                # get the view name using the index from the view_list attribute
+                view_name = self.view_list[view_number_idx]
+                dwg_doc.ModelSpace.AddMText(mtext_insertion_pt, mtext_width, view_name.capitalize())
+                # lay them out vertically
+                # getting the height of the object to offset the new position for the next object
                 starting_position[1] += abs(max_point[1] - min_point[1])
         # convert all acid blocks to "viewable" objects in bricscad in modelspace by exploding.
         for obj in dwg_doc.ModelSpace:
