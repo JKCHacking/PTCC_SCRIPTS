@@ -155,13 +155,12 @@ class ViewsExtractor:
         }
         try:
             view_enum = view_dict[view_name]
-            hidden_line_enum = 32257
             # this point represents the center of the drawing view
             view = drawing_sheet.DrawingViews.AddBaseView(self.model_doc,
                                                           self.inv_app.TransientGeometry.CreatePoint2d(x, y),
                                                           1,
                                                           view_enum,
-                                                          hidden_line_enum,
+                                                          kHiddenLineDrawingViewStyle,
                                                           view_name.capitalize())
         except KeyError:
             view = None
