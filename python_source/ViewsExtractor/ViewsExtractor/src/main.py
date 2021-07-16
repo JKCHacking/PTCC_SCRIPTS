@@ -4,8 +4,7 @@ from views_extractor import ViewsExtractor
 from constants import Constants
 
 
-def main(view_list):
-    views_ext = ViewsExtractor(Constants.OUTPUT_DIR, view_list)
+def iter_input(views_ext):
     for dir_path, dir_names, file_names in os.walk(Constants.INPUT_DIR):
         for file_name in file_names:
             if file_name.endswith(".ipt") or file_name.endswith(".iam"):
@@ -15,6 +14,13 @@ def main(view_list):
                 if dwg_path:
                     views_ext.fix_inventor_dwg(dwg_path)
                     print("[MAIN] saved DWG file {} in {}".format(os.path.basename(dwg_path), Constants.OUTPUT_DIR))
+                    # delete bak files
+                    os.remove("{}.bak".format(os.path.splitext(dwg_path)[0]))
+
+
+def main(view_list):
+    views_ext = ViewsExtractor(Constants.OUTPUT_DIR, view_list)
+    iter_input(views_ext)
 
 
 if __name__ == "__main__":
