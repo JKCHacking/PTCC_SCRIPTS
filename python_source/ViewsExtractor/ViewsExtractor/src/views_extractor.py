@@ -55,10 +55,19 @@ class ViewsExtractor:
         drawing_doc = self.__create_drawing_doc()
         drawing_sheet = drawing_doc.Sheets.Item(1)
         # create 2d views from model and place on the drawing sheet.
-        for view_name in self.view_list:
-            print("[ViewsExtractor] Creating Views...")
-            self.__create_view(view_name, drawing_sheet, 0, 0)
-
+        print("[ViewsExtractor] Creating Views...")
+        x = 0
+        y = 0
+        prev_height = 0
+        margin = 10
+        for i, view_name in enumerate(self.view_list):
+            if i == 0:
+                view = self.__create_view(view_name, drawing_sheet, 0, 0)
+            else:
+                view = self.__create_view(view_name, drawing_sheet, 20, 0)
+                y += prev_height / 2 + view.Height / 2 + margin
+                view.Center = self.inv_app.TransientGeometry.CreatePoint2d(x, y)
+            prev_height = view.Height
         # if the file is an assembly file we need to add parts list table and balloons.
         if model_path.endswith(".iam"):
             print("[ViewsExtractor] Adding PartsList Table and Balloon...")
@@ -107,21 +116,20 @@ class ViewsExtractor:
                 obj.Explode()
                 obj.Delete()
         # put the view name beside view block reference
-        # for obj in dwg_doc.ModelSpace:
-        #     if obj.ObjectName.lower() == "acdbblockreference":
-        #         max_point, min_point = self.__get_bounding_box(obj)
-        #         block_margin = 5
-        #         mtext_width = 100
-        #         center_block_pt = [(max_point[0] - min_point[0]) / 2, (max_point[1] - min_point[1]) / 2, 0]
-        #         mtext_insertion_pt = array.array("d", [
-        #             center_block_pt[0] + (abs(max_point[0] - min_point[0]) / 2) + block_margin,
-        #             ((max_point[1] - min_point[1]) / 2), 0])
-        #         # get the view name using the index from the view_list attribute
-        #         view_number_idx = int(obj.Name.split("_")[-1].split("VIEW")[1]) - 1
-        #         view_name = self.view_list[view_number_idx]
-        #         # insert the view name beside the View block reference
-        #         dwg_doc.ModelSpace.AddMText(mtext_insertion_pt, mtext_width, view_name.capitalize())
+        for obj in dwg_doc.ModelSpace:
+            if obj.ObjectName.lower() == "acdbblockreference":
+                max_point, min_point = self.__get_bounding_box(obj)
+                block_margin = 5
+                mtext_width = 25
+                mtext_insertion_pt = array.array("d", [max_point[0] + block_margin, max_point[1], 0])
+                # get the view name using the index from the view_list attribute
+                view_number_idx = int(obj.Name.split("_")[-1].split("VIEW")[1]) - 1
+                view_name = self.view_list[view_number_idx]
+                # insert the view name beside the View block reference
+                mtext_obj = dwg_doc.ModelSpace.AddMText(mtext_insertion_pt, mtext_width, view_name.capitalize())
+                mtext_obj.Height = 10
         # apply zoom extents
+        dwg_doc.ActiveLayout = dwg_doc.Layouts.Item("Model")
         self.bs_app.ZoomExtents()
         # close and save dwg file.
         dwg_doc.Close(True)

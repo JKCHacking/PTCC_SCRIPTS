@@ -12,8 +12,9 @@ def main(view_list):
                 print("[MAIN] Working with file {}".format(file_name))
                 model_path = os.path.join(dir_path, file_name)
                 dwg_path = views_ext.extract_2d_views(model_path)
-                views_ext.fix_inventor_dwg(dwg_path)
-                print("[MAIN] saved DWG file {} in {}".format(os.path.basename(dwg_path), Constants.OUTPUT_DIR))
+                if dwg_path:
+                    views_ext.fix_inventor_dwg(dwg_path)
+                    print("[MAIN] saved DWG file {} in {}".format(os.path.basename(dwg_path), Constants.OUTPUT_DIR))
 
 
 if __name__ == "__main__":
