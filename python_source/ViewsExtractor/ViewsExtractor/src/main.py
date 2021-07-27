@@ -18,26 +18,10 @@ def iter_input(views_ext):
                     os.remove("{}.bak".format(os.path.splitext(dwg_path)[0]))
 
 
-def main(view_list):
-    views_ext = ViewsExtractor(Constants.OUTPUT_DIR, view_list)
+def main():
+    views_ext = ViewsExtractor(Constants.OUTPUT_DIR)
     iter_input(views_ext)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v",
-                        type=str,
-                        choices=["top",
-                                 "bottom",
-                                 "left",
-                                 "right",
-                                 "front",
-                                 "back",
-                                 "bottom_left",
-                                 "bottom_right",
-                                 "top_left",
-                                 "top_right"],
-                        nargs="+")
-    args = parser.parse_args()
-    view_list = args.v
-    main(view_list)
+    main()

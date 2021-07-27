@@ -7,6 +7,7 @@ from ctypes import byref
 from balloon_helper import BalloonHelper
 
 # ENUMS
+# View orientation enums
 kFrontViewOrientation = 10764
 kBackViewOrientation = 10756
 kLeftViewOrientation = 10758
@@ -17,14 +18,16 @@ kIsoTopRightViewOrientation = 10759
 kIsoTopLeftViewOrientation = 10760
 kIsoBottomLeftViewOrientation = 10762
 kIsoBottomRightViewOrientation = 10761
+# Drawing style enum
 kHiddenLineDrawingViewStyle = 32257
+# Document Type enum
 kDrawingDocumentObject = 12292
+# structured level enum for parts list table generation
 kStructuredAllLevels = 46595
 
 
 class ViewsExtractor:
-    def __init__(self, output_dir, view_list):
-        self.view_list = view_list
+    def __init__(self, output_dir):
         self.output_dir = output_dir
         self.model_doc = None
 
@@ -56,22 +59,66 @@ class ViewsExtractor:
         drawing_sheet = drawing_doc.Sheets.Item(1)
         # create 2d views from model and place on the drawing sheet.
         print("[ViewsExtractor] Creating Views...")
-        x = 0
-        y = 0
-        prev_height = 0
         margin = 10
-        for i, view_name in enumerate(self.view_list):
-            if i == 0:
-                view = self.__create_view(view_name, drawing_sheet, 0, 0)
-            else:
-                view = self.__create_view(view_name, drawing_sheet, 20, 0)
-                y += prev_height / 2 + view.Height / 2 + margin
-                view.Center = self.inv_app.TransientGeometry.CreatePoint2d(x, y)
-            prev_height = view.Height
-        # if the file is an assembly file we need to add parts list table and balloons.
+        base_view = drawing_sheet.DrawingViews.AddBaseView(
+            self.model_doc,
+            self.inv_app.TransientGeometry.CreatePoint2d(0, 0),
+            1,
+            kTopViewOrientation,
+            kHiddenLineDrawingViewStyle,
+            "Top")
+        base_center_pt = base_view.Center
+        back_projected = drawing_sheet.DrawingViews.AddProjectedView(
+            base_view, self.inv_app.TransientGeometry.CreatePoint2d(
+                base_center_pt.X,
+                base_center_pt.Y + base_view.Height + margin),
+            kHiddenLineDrawingViewStyle,
+            1)
+        front_projected = drawing_sheet.DrawingViews.AddProjectedView(
+            base_view, self.inv_app.TransientGeometry.CreatePoint2d(
+                base_center_pt.X,
+                base_center_pt.Y - base_view.Height - margin),
+            kHiddenLineDrawingViewStyle,
+            1)
+        left_projected = drawing_sheet.DrawingViews.AddProjectedView(
+            base_view,
+            self.inv_app.TransientGeometry.CreatePoint2d(
+                base_center_pt.X - base_view.Width - margin,
+                base_center_pt.Y),
+            kHiddenLineDrawingViewStyle,
+            1)
+        right_projected = drawing_sheet.DrawingViews.AddProjectedView(
+            base_view,
+            self.inv_app.TransientGeometry.CreatePoint2d(
+                base_center_pt.X + base_view.Width + margin,
+                base_center_pt.Y),
+            kHiddenLineDrawingViewStyle,
+            1)
+
+        # reposition the views again.
+        range_box = drawing_sheet.Border.RangeBox
+        border_min = range_box.MinPoint
+        border_max = range_box.MaxPoint
+        sheet_center = self.inv_app.TransientGeometry.CreatePoint2d((border_max.X - border_min.X) / 2,
+                                                                    (border_max.Y - border_min.Y) / 2)
+        base_view.Center = sheet_center
+        back_projected.Center = self.inv_app.TransientGeometry.CreatePoint2d(
+            base_view.Center.X,
+            base_view.Center.Y + base_view.Height / 2 + margin + back_projected.Height / 2)
+        front_projected.Center = self.inv_app.TransientGeometry.CreatePoint2d(
+            base_view.Center.X,
+            base_view.Center.Y - base_view.Height / 2 - margin - front_projected.Height / 2)
+        left_projected.Center = self.inv_app.TransientGeometry.CreatePoint2d(
+            base_view.Center.X - base_view.Width / 2 - margin - left_projected.Width / 2,
+            base_view.Center.Y
+        )
+        right_projected.Center = self.inv_app.TransientGeometry.CreatePoint2d(
+            base_view.Center.X + base_view.Width / 2 + margin + right_projected.Width / 2,
+            base_view.Center.Y
+        )
         if model_path.endswith(".iam"):
             print("[ViewsExtractor] Adding PartsList Table and Balloon...")
-            # add partlist table
+            # add parts list table
             placement_point = self.inv_app.TransientGeometry.CreatePoint2d(0, 0)
             drawing_view = drawing_sheet.DrawingViews.Item(1)
             drawing_sheet.PartsLists.Add(drawing_view, placement_point, kStructuredAllLevels)
@@ -83,7 +130,7 @@ class ViewsExtractor:
         print("[ViewsExtractor] Saving to DWG and Closing...")
         file_name_output = "{}.dwg".format(os.path.splitext(os.path.basename(model_path))[0])
         dwg_path = os.path.join(self.output_dir, file_name_output)
-        drawing_doc.SaveAsInventorDWG(dwg_path, True)
+        drawing_doc.SaveAs(dwg_path, True)
         drawing_doc.Close(True)
         self.model_doc.Close(True)
         return dwg_path
@@ -93,41 +140,10 @@ class ViewsExtractor:
         # fix objects in modelspace
         # open dwg file
         dwg_doc = self.bs_app.Documents.Open(dwg_path)
-        # copy acid blocks from paperspace to modelspace
-        for obj in dwg_doc.PaperSpace:
-            if obj.ObjectName.lower() == "acidblockreference":
-                try:
-                    dwg_doc.CopyObjects(obj, dwg_doc.ModelSpace)
-                except COMError:
-                    pass
-        # group them closely together for better viewing.
-        margin = 10
-        starting_position = array.array("d", [0, 0, 0])
-        for obj in dwg_doc.ModelSpace:
-            if obj.ObjectName.lower() == "acidblockreference" or obj.ObjectName.lower() == "acdbblockreference":
-                max_point, min_point = self.__get_bounding_box(obj)
-                obj.Move(array.array("d", min_point), starting_position)
-                # lay them out vertically
-                # getting the height of the object to offset the new position for the next object
-                starting_position[1] += abs(max_point[1] - min_point[1]) + margin
-        # convert all acid blocks to "viewable" objects in bricscad in modelspace by exploding.
-        for obj in dwg_doc.ModelSpace:
-            if obj.ObjectName.lower() == "acidblockreference":
-                obj.Explode()
-                obj.Delete()
-        # put the view name beside view block reference
+        # delete default title blocks
         for obj in dwg_doc.ModelSpace:
             if obj.ObjectName.lower() == "acdbblockreference":
-                max_point, min_point = self.__get_bounding_box(obj)
-                block_margin = 5
-                mtext_width = 25
-                mtext_insertion_pt = array.array("d", [max_point[0] + block_margin, max_point[1], 0])
-                # get the view name using the index from the view_list attribute
-                view_number_idx = int(obj.Name.split("_")[-1].split("VIEW")[1]) - 1
-                view_name = self.view_list[view_number_idx]
-                # insert the view name beside the View block reference
-                mtext_obj = dwg_doc.ModelSpace.AddMText(mtext_insertion_pt, mtext_width, view_name.capitalize())
-                mtext_obj.Height = 10
+                obj.Delete()
         # apply zoom extents
         dwg_doc.ActiveLayout = dwg_doc.Layouts.Item("Model")
         self.bs_app.ZoomExtents()
@@ -139,43 +155,3 @@ class ViewsExtractor:
         drawing_doc = self.inv_app.Documents.Add(kDrawingDocumentObject,
                                                  self.inv_app.FileManager.GetTemplateFile(kDrawingDocumentObject))
         return drawing_doc
-
-    def __create_view(self, view_name, drawing_sheet, x, y):
-        view_dict = {
-            "front": kFrontViewOrientation,
-            "back": kBackViewOrientation,
-            "right": kRightViewOrientation,
-            "left": kLeftViewOrientation,
-            "top": kTopViewOrientation,
-            "bottom": kBottomViewOrientation,
-            "bottom_left": kIsoBottomLeftViewOrientation,
-            "bottom_right": kIsoBottomRightViewOrientation,
-            "top_left": kIsoTopLeftViewOrientation,
-            "top_right": kIsoTopRightViewOrientation,
-        }
-        try:
-            view_enum = view_dict[view_name]
-            # this point represents the center of the drawing view
-            view = drawing_sheet.DrawingViews.AddBaseView(self.model_doc,
-                                                          self.inv_app.TransientGeometry.CreatePoint2d(x, y),
-                                                          1,
-                                                          view_enum,
-                                                          kHiddenLineDrawingViewStyle,
-                                                          view_name.capitalize())
-        except KeyError:
-            view = None
-        return view
-
-    def __get_bounding_box(self, obj):
-        max_point = automation.VARIANT(array.array('d', [0, 0, 0]))
-        min_point = automation.VARIANT(array.array('d', [0, 0, 0]))
-
-        ref_max_point = byref(max_point)
-        ref_min_point = byref(min_point)
-
-        obj.GetBoundingBox(ref_min_point, ref_max_point)
-
-        max_point = max_point.value
-        min_point = min_point.value
-
-        return max_point, min_point
