@@ -60,13 +60,19 @@ class ViewsExtractor:
         # create 2d views from model and place on the drawing sheet.
         print("[ViewsExtractor] Creating Views...")
         margin = 10
-        base_view = drawing_sheet.DrawingViews.AddBaseView(
-            self.model_doc,
-            self.inv_app.TransientGeometry.CreatePoint2d(0, 0),
-            1,
-            kTopViewOrientation,
-            kHiddenLineDrawingViewStyle,
-            "Top")
+        try:
+            base_view = drawing_sheet.DrawingViews.AddBaseView(
+                self.model_doc,
+                self.inv_app.TransientGeometry.CreatePoint2d(0, 0),
+                1,
+                kTopViewOrientation,
+                kHiddenLineDrawingViewStyle,
+                "Top")
+        except COMError:
+            print("Failed to create base view")
+            drawing_doc.Close(True)
+            self.model_doc.Close(True)
+            return None
         base_center_pt = base_view.Center
         back_projected = drawing_sheet.DrawingViews.AddProjectedView(
             base_view, self.inv_app.TransientGeometry.CreatePoint2d(
