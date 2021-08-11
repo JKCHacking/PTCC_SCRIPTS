@@ -389,19 +389,19 @@ class DeleteEmployeeController(unohelper.Base):
         doc = XSCRIPTCONTEXT.getDocument()
         current_sheet = doc.getCurrentController().getActiveSheet()
         # employee data
-        id_num = current_sheet.getCellByPosition(1, 2).getString()
-        name = current_sheet.getCellByPosition(1, 3).getString()
-        address = current_sheet.getCellByPosition(1, 4).getString()
-        contact = current_sheet.getCellByPosition(1, 5).getString()
-        birthday = current_sheet.getCellByPosition(1, 6).getString()
-        position = current_sheet.getCellByPosition(1, 7).getString()
-        date_hired = current_sheet.getCellByPosition(1, 8).getString()
-        department = current_sheet.getCellByPosition(1, 9).getString()
-        date_of_resignation = current_sheet.getCellByPosition(1, 10).getString()
-        tin = current_sheet.getCellByPosition(1, 11).getString()
-        sss = current_sheet.getCellByPosition(1, 12).getString()
-        philhealth = current_sheet.getCellByPosition(1, 13).getString()
-        pagibig = current_sheet.getCellByPosition(1, 14).getString()
+        id_num = current_sheet.getCellByPosition(1, 3).getString()
+        name = current_sheet.getCellByPosition(1, 4).getString()
+        address = current_sheet.getCellByPosition(1, 5).getString()
+        contact = current_sheet.getCellByPosition(1, 6).getString()
+        birthday = current_sheet.getCellByPosition(1, 7).getString()
+        position = current_sheet.getCellByPosition(1, 8).getString()
+        date_hired = current_sheet.getCellByPosition(1, 9).getString()
+        department = current_sheet.getCellByPosition(1, 10).getString()
+        date_of_resignation = current_sheet.getCellByPosition(1, 11).getString()
+        tin = current_sheet.getCellByPosition(1, 12).getString()
+        sss = current_sheet.getCellByPosition(1, 13).getString()
+        philhealth = current_sheet.getCellByPosition(1, 14).getString()
+        pagibig = current_sheet.getCellByPosition(1, 15).getString()
 
         # paste in the resigned employee table
         resigned_sheet = doc.Sheets["Resigned"]
@@ -426,8 +426,11 @@ class DeleteEmployeeController(unohelper.Base):
             master_sheet = doc.Sheets["Master List"]
             rows = master_sheet.getRows()
             rows.removeByIndex(id_num_row, 1)
-        # delete the sheet
-        doc.Sheets.removeByName(current_sheet.Name)
+            # delete the sheet
+            current_sheet.unprotect("")
+            doc.Sheets.removeByName(current_sheet.Name)
+        else:
+            MsgBox("Cannot find ID Number in Master List.")
 
 
 class RestoreEmployeeDlg(unohelper.Base):
@@ -550,21 +553,23 @@ class RestoreEmployeeController(unohelper.Base):
         # create new employee sheet
         add_employee_controller.create_new_employee_sheet(id_number, name)
         # add data to sheet
-        new_sheet_name = "{}_{}".format(name, id_number)
+        new_sheet_name = "{} {}".format(name, id_number)
         new_sheet = doc.Sheets[new_sheet_name]
-        new_sheet.getCellByPosition(1, 2).setString(id_number)
-        new_sheet.getCellByPosition(1, 3).setString(name)
-        new_sheet.getCellByPosition(1, 4).setString(address)
-        new_sheet.getCellByPosition(1, 5).setString(contact)
-        new_sheet.getCellByPosition(1, 6).setString(birthday)
-        new_sheet.getCellByPosition(1, 7).setString(position)
-        new_sheet.getCellByPosition(1, 8).setString(date_hired)
-        new_sheet.getCellByPosition(1, 9).setString(department)
-        new_sheet.getCellByPosition(1, 10).setString(date_of_resignation)
-        new_sheet.getCellByPosition(1, 11).setString(tin)
-        new_sheet.getCellByPosition(1, 12).setString(sss)
-        new_sheet.getCellByPosition(1, 13).setString(philhealth)
-        new_sheet.getCellByPosition(1, 14).setString(pagibig)
+        new_sheet.unprotect("")
+        new_sheet.getCellByPosition(1, 3).setString(id_number)
+        new_sheet.getCellByPosition(1, 4).setString(name)
+        new_sheet.getCellByPosition(1, 5).setString(address)
+        new_sheet.getCellByPosition(1, 6).setString(contact)
+        new_sheet.getCellByPosition(1, 7).setString(birthday)
+        new_sheet.getCellByPosition(1, 8).setString(position)
+        new_sheet.getCellByPosition(1, 9).setString(date_hired)
+        new_sheet.getCellByPosition(1, 10).setString(department)
+        new_sheet.getCellByPosition(1, 11).setString(date_of_resignation)
+        new_sheet.getCellByPosition(1, 12).setString(tin)
+        new_sheet.getCellByPosition(1, 13).setString(sss)
+        new_sheet.getCellByPosition(1, 14).setString(philhealth)
+        new_sheet.getCellByPosition(1, 15).setString(pagibig)
+        new_sheet.protect("")
         # add data to masterlist
         add_employee_controller.add_to_master(idnum, name)
         # delete entry in resigned sheet
