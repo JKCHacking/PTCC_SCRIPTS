@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import uno, unohelper
 import msgbox as util
-# from apso_utils import msgbox
 from com.sun.star.awt import XActionListener
 
 
@@ -24,8 +23,8 @@ class AddEmployeeButtonListener(unohelper.Base, XActionListener):
         # setting Surname, Firstname, Middle name format
         name = "{}, {} {}".format(surname, firstname, middlename)
         if self.add_emp_controller.check_input(id_num, surname, firstname, middlename):
-            self.add_emp_controller.add_to_master(id_num, name)
             self.add_emp_controller.create_new_employee_sheet(id_num, name)
+            self.add_emp_controller.add_to_master(id_num, name)
             self.add_emp_dialog.dialog.endExecute()
 
 
@@ -118,50 +117,26 @@ class AddEmployeeController(unohelper.Base):
         master_sheet = doc.Sheets['Master List']
         row = self.__get_last_used_row_by_col(master_sheet, 4, 0)
 
-        # setting cell values
-        cell = master_sheet.getCellByPosition(0, row)
-        cell.setString(id_num)
-        cell = master_sheet.getCellByPosition(1, row)
-        cell.setString(name)
+        # setting cell values with their formulas
+        master_sheet.getCellByPosition(0, row).setString(id_num)
+        master_sheet.getCellByPosition(1, row).setString(name)
 
     def create_new_employee_sheet(self, id_num, name):
         # copy template sheet
         doc = XSCRIPTCONTEXT.getDocument()
-        new_employee_sheet_name = "{}_{}".format(name, id_num)
+        new_employee_sheet_name = "{} {}".format(name, id_num)
         all_sheets = doc.Sheets
-        sheet_count = all_sheets.Count
         # get the alphabetical position of the new sheet created
         position = self.__get_sheet_index(new_employee_sheet_name, all_sheets) + 4  # 4 permanent sheets
         # create a new sheet based on the template sheet.
         doc.Sheets.copyByName('Employee Information Template', new_employee_sheet_name, position)
         new_sheet = all_sheets[new_employee_sheet_name]
-        cache_sheet = all_sheets["Cache"]
-
-        idnum_cell = new_sheet.getCellByPosition(1, 2)
-        tempidnum_cell = cache_sheet.getCellByPosition(0, 0)
-        name_cell = new_sheet.getCellByPosition(1, 3)
-
-        name_cell.setString(name)
-        idnum_cell.setString(id_num)
-        tempidnum_cell.setString(id_num)
-        self.__add_event_macro(new_employee_sheet_name)
-
-    def __add_event_macro(self, sheet_name):
-        event_properties = list(range(2))
-        event_properties[0] = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
-        event_properties[0].Name = "EventType"
-        event_properties[0].Value = "Script"
-        event_properties[1] = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
-        event_properties[1].Name = "Script"
-        event_properties[1].Value = "vnd.sun.star.script:macro.py$add_data_to_cache?language=Python&location=document"
-
-        doc = XSCRIPTCONTEXT.getDocument()
-        all_sheets = doc.Sheets
-        new_sheet = all_sheets[sheet_name]
-        uno.invoke(
-            new_sheet.Events,
-            "replaceByName",
-            ("OnFocus", uno.Any("[]com.sun.star.beans.PropertyValue", tuple(event_properties))))
+        # since by default the template sheet in protected we have to unprotect it.
+        new_sheet.unprotect("")
+        new_sheet.getCellByPosition(1, 3).setString(id_num)
+        new_sheet.getCellByPosition(1, 4).setString(name)
+        # we have to protect the sheet from unwanted changes to cells
+        new_sheet.protect("")
 
     def __get_last_used_row_by_col(self, sheet, start_row, col):
         # detect last used row in a specific column.
@@ -218,46 +193,61 @@ class AddEmployeeController(unohelper.Base):
 class SaveEmployee(unohelper.Base):
 
     def update(self):
+        ret = 1
         doc = XSCRIPTCONTEXT.getDocument()
         current_sheet = doc.getCurrentController().getActiveSheet()
         master_sheet = doc.Sheets["Master List"]
-        cache_sheet = doc.Sheets["Cache"]
+        current_sheet.unprotect("")
+        # check if there are new values for id_num and name
+        # update the id_num and name in the masterlist
+        new_id_num = current_sheet.getCellByPosition(2, 3).getString()
+        new_name = current_sheet.getCellByPosition(2, 4).getString()
+        # get the old id number
+        old_id_num = current_sheet.getCellByPosition(1, 3).getString()
+        old_name = current_sheet.getCellByPosition(1, 4).getString()
 
-        idnum_cell_curr = current_sheet.getCellByPosition(1, 2)
-        tempidnum_cell_curr = cache_sheet.getCellByPosition(0, 0)  # A1
-        name_cell_curr = current_sheet.getCellByPosition(1, 3)
-
-        new_name = name_cell_curr.getString()
-        new_idnum = idnum_cell_curr.getString()
-        temp_idnum = tempidnum_cell_curr.getString()
-
-        if temp_idnum == new_idnum:
-            ret = 1
-        else:
-            # check look for the current temp id in the masterlist
-            found_tempid, id_num_row_temp = self.__search_id_num(temp_idnum)
-            if found_tempid:
-                # check if the new id number exists
-                found_newid, id_num_row_new = self.__search_id_num(new_idnum)
-                if not found_newid:
-                    idnum_cell_master = master_sheet.getCellByPosition(0, id_num_row_temp)
-                    name_cell_master = master_sheet.getCellByPosition(1, id_num_row_temp)
-
-                    idnum_cell_master.setString(new_idnum)
-                    tempidnum_cell_curr.setString(new_idnum)
-                    name_cell_master.setString(new_name)
-
-                    new_sheet_name = "{}_{}".format(new_name, new_idnum)
-                    current_sheet.Name = new_sheet_name
-                    ret = 1
+        if new_id_num:
+            # search if new id_num already exists in the masterlist
+            found_flag, id_num_pos = self.__search_id_num(new_id_num)
+            if not found_flag:
+                # search for the old id number to be updated to the new id number
+                found_flag, id_num_pos = self.__search_id_num(old_id_num)
+                if found_flag:
+                    master_sheet.getCellByPosition(0, id_num_pos).setString(new_id_num)
+                    current_sheet.getCellByPosition(1, 3).setString(new_id_num)
+                    current_sheet.setName("{} {}".format(old_name, new_id_num))
+                    if new_name:
+                        master_sheet.getCellByPosition(1, id_num_pos).setString(new_name)
+                        current_sheet.getCellByPosition(1, 4).setString(new_name)
+                        current_sheet.setName("{} {}".format(new_name, new_id_num))
                 else:
-                    MsgBox("The new ID Number already exists in the Master List")
-                    # set it back to the previous value.
-                    idnum_cell_curr.setString(temp_idnum)
+                    MsgBox("Cannot find the old ID number.")
                     ret = -1
             else:
-                MsgBox("Employee does not exists in the Master list.")
+                MsgBox("Input ID Number already exists in the master list.")
                 ret = -1
+        else:
+            if new_name:
+                # search for the old id number to update the old name to the new name
+                found_flag, id_num_pos = self.__search_id_num(old_id_num)
+                if found_flag:
+                    master_sheet.getCellByPosition(1, id_num_pos).setString(new_name)
+                    current_sheet.getCellByPosition(1, 4).setString(new_name)
+                    current_sheet.getCellByPosition(2, 4).setString(new_name)
+                    current_sheet.setName("{} {}".format(new_name, old_id_num))
+                else:
+                    MsgBox("Cannot find the old ID number.")
+                    ret = -1
+        # update others
+        for i in range(5, 16):
+            new_value = current_sheet.getCellByPosition(2, i).getString()
+            if new_value:
+                current_sheet.getCellByPosition(1, i).setString(new_value)
+
+        # empty the New cells again
+        for i in range(3, 16):
+            current_sheet.getCellByPosition(2, i).setString("")
+        current_sheet.protect("")
         return ret
 
     def save(self):
@@ -656,14 +646,5 @@ def MsgBox(txt):
     mb.show(txt, 0, "Message")
 
 
-def add_data_to_cache(*args):
-    doc = XSCRIPTCONTEXT.getDocument()
-    current_sheet = doc.getCurrentController().getActiveSheet()
-    cache_sheet = doc.Sheets["Cache"]
-    id_number_cell = current_sheet.getCellByPosition(1, 2)
-    cell_cache = cache_sheet.getCellByPosition(0, 0)
-    cell_cache.setString(id_number_cell.getString())
-
-
-g_exportedScripts = (add_employee, save_employee, delete_employee, add_data_to_cache, filter_employee_info,
+g_exportedScripts = (add_employee, save_employee, delete_employee, filter_employee_info,
                      restore_employee)
