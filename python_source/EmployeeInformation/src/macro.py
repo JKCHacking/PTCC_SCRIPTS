@@ -5,9 +5,6 @@ import datetime
 from com.sun.star.awt import XActionListener
 
 
-PASSWORD = "admin"
-
-
 class AddEmployeeButtonListener(unohelper.Base, XActionListener):
     def __init__(self, dialog, controller):
         self.add_emp_dialog = dialog
@@ -119,13 +116,11 @@ class AddEmployeeController(unohelper.Base):
         # assuming input data are valid.
         doc = XSCRIPTCONTEXT.getDocument()
         master_sheet = doc.Sheets['Master List']
-        master_sheet.unprotect(PASSWORD)
         row = self.__get_last_used_row_by_col(master_sheet, 4, 0)
 
         # setting cell values with their formulas
         master_sheet.getCellByPosition(0, row).setString(id_num)
         master_sheet.getCellByPosition(1, row).setString(name)
-        master_sheet.protect(PASSWORD)
 
     def create_new_employee_sheet(self, id_num, name):
         # copy template sheet
@@ -137,12 +132,8 @@ class AddEmployeeController(unohelper.Base):
         # create a new sheet based on the template sheet.
         doc.Sheets.copyByName('Employee Information Template', new_employee_sheet_name, position)
         new_sheet = all_sheets[new_employee_sheet_name]
-        # since by default the template sheet in protected we have to unprotect it.
-        new_sheet.unprotect(PASSWORD)
         new_sheet.getCellByPosition(1, 3).setString(id_num)
         new_sheet.getCellByPosition(1, 4).setString(name)
-        # we have to protect the sheet from unwanted changes to cells
-        new_sheet.protect(PASSWORD)
 
     def __get_last_used_row_by_col(self, sheet, start_row, col):
         # detect last used row in a specific column.
@@ -203,8 +194,6 @@ class SaveEmployee(unohelper.Base):
         doc = XSCRIPTCONTEXT.getDocument()
         current_sheet = doc.getCurrentController().getActiveSheet()
         master_sheet = doc.Sheets["Master List"]
-        current_sheet.unprotect(PASSWORD)
-        master_sheet.unprotect(PASSWORD)
 
         # check if there are new values for id_num and name
         # update the id_num and name in the masterlist
@@ -255,8 +244,6 @@ class SaveEmployee(unohelper.Base):
         # empty the New cells again
         for i in range(3, 16):
             current_sheet.getCellByPosition(2, i).setString("")
-        current_sheet.protect(PASSWORD)
-        master_sheet.protect(PASSWORD)
         return ret
 
     def save(self):
@@ -436,7 +423,6 @@ class DeleteEmployeeController(unohelper.Base):
             rows = master_sheet.getRows()
             rows.removeByIndex(id_num_row, 1)
             # delete the sheet
-            current_sheet.unprotect(PASSWORD)
             doc.Sheets.removeByName(current_sheet.Name)
         else:
             MsgBox("Cannot find ID Number in Master List.")
@@ -564,7 +550,6 @@ class RestoreEmployeeController(unohelper.Base):
         # add data to sheet
         new_sheet_name = "{} {}".format(name, id_number)
         new_sheet = doc.Sheets[new_sheet_name]
-        new_sheet.unprotect(PASSWORD)
         new_sheet.getCellByPosition(1, 3).setString(id_number)
         new_sheet.getCellByPosition(1, 4).setString(name)
         new_sheet.getCellByPosition(1, 5).setString(address)
@@ -578,7 +563,6 @@ class RestoreEmployeeController(unohelper.Base):
         new_sheet.getCellByPosition(1, 13).setString(sss)
         new_sheet.getCellByPosition(1, 14).setString(philhealth)
         new_sheet.getCellByPosition(1, 15).setString(pagibig)
-        new_sheet.protect(PASSWORD)
         # add data to masterlist
         add_employee_controller.add_to_master(idnum, name)
         # delete entry in resigned sheet
