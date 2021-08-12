@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import uno, unohelper
 import msgbox as util
+import datetime
 from com.sun.star.awt import XActionListener
 
 
@@ -618,7 +619,8 @@ def filter_employee_info(event):
                    "TIN",
                    "SSS",
                    "PHILHEALTH",
-                   "PAG-IBIG"]
+                   "PAG-IBIG",
+                   "YEARS OF SERVICE"]
 
     doc = XSCRIPTCONTEXT.getDocument()
     master_sheet = doc.Sheets["Master List"]
@@ -634,10 +636,20 @@ def filter_employee_info(event):
         if not id:
             break
         if selected_info != "":
-            sheet_name = "{}_{}".format(name, id)
+            sheet_name = "{} {}".format(name, id)
             sheet = doc.Sheets[sheet_name]
-            info_row = column_list.index(selected_info) + 4  # add offset for title, id number and name.
-            info_value = sheet.getCellByPosition(1, info_row).getString()
+            if selected_info == "YEARS OF SERVICE":
+                # get the date hired
+                date_hired = sheet.getCellByPosition(1, 9).getString()
+                # convert this to datetime object
+                date_hired_obj = datetime.datetime.strptime(date_hired, "%d-%b-%Y")
+                # subtract to now
+                diff_delta = datetime.datetime.now() - date_hired_obj
+                diff_years = (diff_delta.days + diff_delta.seconds / 86400) / 365.2425
+                info_value = round(diff_years, 2)
+            else:
+                info_row = column_list.index(selected_info) + 5  # add offset for title, id number and name.
+                info_value = sheet.getCellByPosition(1, info_row).getString()
             # put it to the respective row
             master_sheet.getCellByPosition(2, row).setString(info_value)
         else:
