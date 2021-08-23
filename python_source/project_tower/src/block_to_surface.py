@@ -37,7 +37,7 @@ def main():
             continue
         doc.EndUndoMark()
         doc.SendCommand("_undo\n\n")
-        # block.Delete()
+        block.Delete()
         poly_line = modelspace.Add3Dpoly(
             array.array("d", [upper_right_point[0], upper_right_point[1], upper_right_point[2],
                               upper_left_point[0], upper_left_point[1], upper_left_point[2],
