@@ -18,7 +18,51 @@ def main():
         print("\rWorking with Block {}/{}".format(i+1, len(blocks)), end="", flush=True)
         doc.StartUndoMark()
         try:
+            # getting the bounding box of the top most vertices
             top_most_vertices, bot_most_vertices = get_top_bot_most_vertices(block)
+            bb_top = ezdxf.math.BoundingBox(top_most_vertices)
+            bb_bot = ezdxf.math.BoundingBox(bot_most_vertices)
+
+            if abs(bb_top.extmax[1] - bb_top.extmin[1]) > abs(bb_top.extmax[0] - bb_top.extmin[0]):
+                bb_top_extmin = bb_top.extmax
+                bb_top_extmax = bb_top.extmin
+                bb_top_top_right = [bb_top_extmax[0], bb_top_extmin[1], bb_top_extmin[2]]
+                top_extmax_distances = [get_distance_between_points(vertex, bb_top_extmax) for vertex in
+                                        top_most_vertices]
+                top_extmin_distances = [get_distance_between_points(vertex, bb_top_top_right) for vertex in
+                                        top_most_vertices]
+            else:
+                bb_top_extmax = bb_top.extmax
+                bb_top_extmin = bb_top.extmin
+                bb_top_top_left = [bb_top_extmin[0], bb_top_extmax[1], bb_top_extmax[2]]
+                top_extmax_distances = [get_distance_between_points(vertex, bb_top_extmax) for vertex in
+                                        top_most_vertices]
+                top_extmin_distances = [get_distance_between_points(vertex, bb_top_top_left) for vertex in
+                                        top_most_vertices]
+
+            if abs(bb_bot.extmax[1] - bb_bot.extmin[1]) > abs(bb_bot.extmax[0] - bb_bot.extmin[0]):
+                bb_bot_extmin = bb_bot.extmax
+                bb_bot_extmax = bb_bot.extmin
+                bb_bot_top_right = [bb_bot_extmax[0], bb_bot_extmin[1], bb_bot_extmin[2]]
+                bot_extmax_distances = [get_distance_between_points(vertex, bb_bot_extmax) for vertex in
+                                        bot_most_vertices]
+                bot_extmin_distances = [get_distance_between_points(vertex, bb_bot_top_right) for vertex in
+                                        bot_most_vertices]
+            else:
+                bb_bot_extmax = bb_bot.extmax
+                bb_bot_extmin = bb_bot.extmin
+                # getting the bounding box of the bot most vertices
+                bb_bot_top_left = [bb_bot_extmin[0], bb_bot_extmax[1], bb_bot_extmax[2]]
+                bot_extmax_distances = [get_distance_between_points(vertex, bb_bot_extmax) for vertex in
+                                        bot_most_vertices]
+                bot_extmin_distances = [get_distance_between_points(vertex, bb_bot_top_left) for vertex in
+                                        bot_most_vertices]
+
+            upper_right_point = top_most_vertices[top_extmax_distances.index(min(top_extmax_distances))]
+            upper_left_point = top_most_vertices[top_extmin_distances.index(min(top_extmin_distances))]
+            lower_right_point = bot_most_vertices[bot_extmax_distances.index(min(bot_extmax_distances))]
+            lower_left_point = bot_most_vertices[bot_extmin_distances.index(min(bot_extmin_distances))]
+
             # pt_urf, pt_ulf, pt_lrf, pt_llf, pt_urb, pt_ulb, pt_lrb, pt_llb = get_bounding_box(block)
             # ur_distances = [get_distance_between_points(vertex, pt_urb) for vertex in top_most_vertices]
             # ul_distances = [get_distance_between_points(vertex, pt_ulb) for vertex in top_most_vertices]
@@ -27,28 +71,33 @@ def main():
 
             # getting the upper right point
             # upper_right_point = top_most_vertices[ur_distances.index(min(ur_distances))]
-            upper_right_point = max(top_most_vertices, key=lambda x: (x[0]))
+            # upper_right_point = max(top_most_vertices, key=lambda x: (x[0]))
             # getting the upper left point
             # upper_left_point = top_most_vertices[ul_distances.index(min(ul_distances))]
-            upper_left_point = min(top_most_vertices, key=lambda x: (x[0]))
+            # upper_left_point = min(top_most_vertices, key=lambda x: (x[0]))
             # getting the lower right point
             # lower_right_point = bot_most_vertices[lr_distances.index(min(lr_distances))]
-            lower_right_point = max(bot_most_vertices, key=lambda x: (x[0]))
+            # lower_right_point = max(bot_most_vertices, key=lambda x: (x[0]))
             # getting the lower left point
             # lower_left_point = bot_most_vertices[ll_distances.index(min(ll_distances))]
-            lower_left_point = min(bot_most_vertices, key=lambda x: (x[0]))
+            # lower_left_point = min(bot_most_vertices, key=lambda x: (x[0]))
         except ValueError:
             continue
         doc.EndUndoMark()
         doc.SendCommand("_undo\n\n")
-        block.Delete()
-        poly_line = modelspace.Add3Dpoly(
+        # block.Delete()
+        modelspace.Add3Dpoly(
             array.array("d", [upper_right_point[0], upper_right_point[1], upper_right_point[2],
                               upper_left_point[0], upper_left_point[1], upper_left_point[2],
                               lower_left_point[0], lower_left_point[1], lower_left_point[2],
                               lower_right_point[0], lower_right_point[1], lower_right_point[2],
                               upper_right_point[0], upper_right_point[1], upper_right_point[2]])
         )
+
+        modelspace.AddPoint(array.array("d", list(bb_top_extmax)))
+        modelspace.AddPoint(array.array("d", list(bb_top_extmin)))
+        modelspace.AddPoint(array.array("d", list(bb_bot_extmax)))
+        modelspace.AddPoint(array.array("d", list(bb_bot_extmin)))
 
 
 def get_objects(object_name):
@@ -99,11 +148,11 @@ def get_centroid(vertices):
     return centroid[0], centroid[1], centroid[2]
 
 
-# def get_distance_between_points(pt1, pt2):
-#     distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(pt1, pt2)]))
-#     return round(distance, 4)
-#
-#
+def get_distance_between_points(pt1, pt2):
+    distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(pt1, pt2)]))
+    return round(distance, 4)
+
+
 # def get_bounding_box(block):
 #     sub_objs = block.Explode()
 #     vertices = []
