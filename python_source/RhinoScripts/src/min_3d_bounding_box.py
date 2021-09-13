@@ -138,3 +138,20 @@ class Min3DBoundingBox:
                 print("Refinement aborted after {} passes.".format(i + 1))
                 break
         return curr_bb, curr_vol, passes + 1
+
+
+def main():
+    object_id = rs.GetObject("Select Object")
+    if object_id:
+        objs = [rs.coercegeometry(object_id)]
+    else:
+        return
+    count = 50
+    wxy_plane = Rhino.Geometry.Plane.WorldXY
+    min_bb = Min3DBoundingBox()
+    curr_bb, curr_vol, passes = min_bb.get_min_bb(objs, wxy_plane, count, False, True)
+    sc.doc.Objects.AddBox(curr_bb)
+
+
+if __name__ == "__main__":
+    main()
