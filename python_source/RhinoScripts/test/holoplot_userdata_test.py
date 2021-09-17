@@ -28,28 +28,27 @@ class HoloplotUserDataTest(unittest.TestCase):
 
     def test_article_at_03(self):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
-        article_at = holoplot_userdata.get_article_at(top_chord_id)
+        spec_name = holoplot_userdata.get_specific_part_name(top_chord_id)
+        article_at = holoplot_userdata.get_article_at(spec_name)
         self.assertEqual("1421-STC01-500,00", article_at)
-
-    def test_article_de_05(self):
-        top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
-        article_de = holoplot_userdata.get_article_at(top_chord_id)
-        self.assertEqual("1421-STC01-500,00", article_de)
 
     def test_weight_polysurface_AL_12(self):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
-        weight = holoplot_userdata.get_weight(top_chord_id)
+        group = holoplot_userdata.get_group(top_chord_id)
+        weight = holoplot_userdata.get_weight(top_chord_id, group)
         expected_weight = round(0.0016657682 * 2710, 4)
         self.assertEqual(expected_weight, weight)
 
     def test_weight_polysurface_SS_12(self):
         cp_id = rs.ObjectsByName("1421-H01-F01-CP01")[0]
-        weight = holoplot_userdata.get_weight(cp_id)
+        group = holoplot_userdata.get_group(cp_id)
+        weight = holoplot_userdata.get_weight(cp_id, group)
         self.assertEqual(1.2959, weight)
 
     def test_weight_block_12(self):
         non_std_truss_id = rs.ObjectsByName("1421-H01-T03")[0]
-        weight = holoplot_userdata.get_weight(non_std_truss_id)
+        group = holoplot_userdata.get_group(non_std_truss_id)
+        weight = holoplot_userdata.get_weight(non_std_truss_id, group)
         expected_weight = round(0.0081595586 * 2710, 4)
         self.assertEqual(round(expected_weight, 2), round(weight, 2))
 
@@ -110,16 +109,23 @@ class HoloplotUserDataTest(unittest.TestCase):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
         frame_pr_id = rs.ObjectsByName("1421-H01-F01-PR01")[0]
         non_std_truss_id = rs.ObjectsByName("1421-H01-T03")[0]
-        std_truss_id = rs.ObjectsByName("1421-ST01-500,00")[0]
+        std_part_assm = rs.ObjectsByName("1421-H01-TSP-VP05")[0]
 
-        category = holoplot_userdata.get_category(top_chord_id)
+        spec_name = holoplot_userdata.get_specific_part_name(top_chord_id)
+        category = holoplot_userdata.get_category(spec_name)
         self.assertEqual("Standard Parts Single", category)
-        category = holoplot_userdata.get_category(std_truss_id)
-        self.assertEqual("Standard Parts Assembly", category)
-        category = holoplot_userdata.get_category(frame_pr_id)
+
+        spec_name = holoplot_userdata.get_specific_part_name(frame_pr_id)
+        category = holoplot_userdata.get_category(spec_name)
         self.assertEqual("Single Part", category)
-        category = holoplot_userdata.get_category(non_std_truss_id)
+
+        spec_name = holoplot_userdata.get_specific_part_name(non_std_truss_id)
+        category = holoplot_userdata.get_category(spec_name)
         self.assertEqual("Pre-Assembly", category)
+
+        spec_name = holoplot_userdata.get_specific_part_name(std_part_assm)
+        category = holoplot_userdata.get_category(spec_name)
+        self.assertEqual("Standard Parts Assembly", category)
 
     def test_assembly_55(self):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
@@ -130,41 +136,125 @@ class HoloplotUserDataTest(unittest.TestCase):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
         spec_name = holoplot_userdata.get_specific_part_name(top_chord_id)
         group = holoplot_userdata.get_group(top_chord_id)
-        category = holoplot_userdata.get_category(top_chord_id, spec_name)
+        category = holoplot_userdata.get_category(spec_name)
         template_at = holoplot_userdata.get_template_at(group, category)
         self.assertEqual("2065", template_at)
 
         cp_id = rs.ObjectsByName("1421-H01-F01-CP01")[0]
         spec_name = holoplot_userdata.get_specific_part_name(top_chord_id)
         group = holoplot_userdata.get_group(cp_id)
-        category = holoplot_userdata.get_category(cp_id, spec_name)
+        category = holoplot_userdata.get_category(spec_name)
         template_at = holoplot_userdata.get_template_at(group, category)
         self.assertEqual("2106", template_at)
 
         non_std_truss_id = rs.ObjectsByName("1421-H01-T03")[0]
         spec_name = holoplot_userdata.get_specific_part_name(non_std_truss_id)
         group = holoplot_userdata.get_group(non_std_truss_id)
-        category = holoplot_userdata.get_category(non_std_truss_id, spec_name)
+        category = holoplot_userdata.get_category(spec_name)
         template_at = holoplot_userdata.get_template_at(group, category)
         self.assertEqual("2152", template_at)
+
+    def test_template_de(self):
+        top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
+        spec_name = holoplot_userdata.get_specific_part_name(top_chord_id)
+        group = holoplot_userdata.get_group(top_chord_id)
+        category = holoplot_userdata.get_category(spec_name)
+        template_de = holoplot_userdata.get_template_de(group, category)
+        self.assertEqual("V-AL09", template_de)
+
+        cp_id = rs.ObjectsByName("1421-H01-F01-CP01")[0]
+        spec_name = holoplot_userdata.get_specific_part_name(top_chord_id)
+        group = holoplot_userdata.get_group(cp_id)
+        category = holoplot_userdata.get_category(spec_name)
+        template_de = holoplot_userdata.get_template_de(group, category)
+        self.assertEqual("V-VA09", template_de)
+
+        non_std_truss_id = rs.ObjectsByName("1421-H01-T03")[0]
+        spec_name = holoplot_userdata.get_specific_part_name(non_std_truss_id)
+        group = holoplot_userdata.get_group(non_std_truss_id)
+        category = holoplot_userdata.get_category(spec_name)
+        template_de = holoplot_userdata.get_template_de(group, category)
+        self.assertEqual("V-AL21", template_de)
+
+        profile_id = rs.ObjectsByName("1421-H01-F01-PR01")[0]
+        spec_name = holoplot_userdata.get_specific_part_name(profile_id)
+        group = holoplot_userdata.get_group(profile_id)
+        category = holoplot_userdata.get_category(spec_name)
+        template_de = holoplot_userdata.get_template_de(group, category)
+        self.assertEqual("V-AL35", template_de)
+
+    def test_name(self):
+        std_part_single_id = rs.ObjectsByName("1421-STC01-500,00")[0]
+        std_part_assm_id = rs.ObjectsByName("1421-H01-TSP-VP05")[0]
+        single_part_id = rs.ObjectsByName("1421-H01-F01-PR01")[0]
+        assm_id = rs.ObjectsByName("1421-H01-T03")[0]
+
+        spec_name = holoplot_userdata.get_specific_part_name(std_part_single_id)
+        category = holoplot_userdata.get_category(spec_name)
+        name = holoplot_userdata.get_name(spec_name, category)
+        self.assertEqual("1421-STC01-500,00 ... standard top chord", name)
+
+        spec_name = holoplot_userdata.get_specific_part_name(std_part_assm_id)
+        category = holoplot_userdata.get_category(spec_name)
+        name = holoplot_userdata.get_name(spec_name, category)
+        self.assertEqual("1421-H01-TSP-VP05 ... vertical part", name)
+
+        spec_name = holoplot_userdata.get_specific_part_name(single_part_id)
+        category = holoplot_userdata.get_category(spec_name)
+        name = holoplot_userdata.get_name(spec_name, category)
+        self.assertEqual("1421-H01-F01-PR01 ... profile", name)
+
+        spec_name = holoplot_userdata.get_specific_part_name(assm_id)
+        category = holoplot_userdata.get_category(spec_name)
+        name = holoplot_userdata.get_name(spec_name, category)
+        self.assertEqual("1421-H01-T03 ... truss assembly", name)
+
+    def test_material(self):
+        truss_id = rs.ObjectsByName("1421-H01-T03")[0]
+        top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
+        vp_id = rs.ObjectsByName("1421-H01-TSP-VP05")[0]
+        cp_id = rs.ObjectsByName("1421-H01-F01-CP01")[0]
+        pr_id = rs.ObjectsByName("1421-H01-F01-PR01")[0]
+
+        group = holoplot_userdata.get_group(truss_id)
+        material = holoplot_userdata.get_material(group)
+        self.assertEqual("aluminum EN AW-5754", material)
+
+        group = holoplot_userdata.get_group(top_chord_id)
+        material = holoplot_userdata.get_material(group)
+        self.assertEqual("aluminum EN AW-5754", material)
+
+        group = holoplot_userdata.get_group(vp_id)
+        material = holoplot_userdata.get_material(group)
+        self.assertEqual("aluminum EN AW-5754", material)
+
+        group = holoplot_userdata.get_group(cp_id)
+        material = holoplot_userdata.get_material(group)
+        self.assertEqual("stainless steel 1.4571", material)
+
+        group = holoplot_userdata.get_group(pr_id)
+        material = holoplot_userdata.get_material(group)
+        self.assertEqual("aluminum EN AW-6060 T66", material)
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(HoloplotUserDataTest("test_spec_name"))
-    # suite.addTest(HoloplotUserDataTest('test_position_01'))
-    # suite.addTest(HoloplotUserDataTest('test_revision_02'))
-    # suite.addTest(HoloplotUserDataTest('test_article_at_03'))
-    # suite.addTest(HoloplotUserDataTest('test_article_de_05'))
-    # suite.addTest(HoloplotUserDataTest('test_weight_polysurface_AL_12'))
-    # suite.addTest(HoloplotUserDataTest('test_weight_polysurface_SS_12'))
-    # suite.addTest(HoloplotUserDataTest('test_screw_lock_15'))
-    # suite.addTest(HoloplotUserDataTest('test_coating_area_polysurface_31'))
-    # suite.addTest(HoloplotUserDataTest('test_dimensions_polysurface_21_22_23'))
-    # suite.addTest(HoloplotUserDataTest('test_group_51'))
-    # suite.addTest(HoloplotUserDataTest('test_category_54'))
-    # suite.addTest(HoloplotUserDataTest('test_assembly_55'))
+    suite.addTest(HoloplotUserDataTest('test_position_01'))
+    suite.addTest(HoloplotUserDataTest('test_revision_02'))
+    suite.addTest(HoloplotUserDataTest('test_article_at_03'))
+    suite.addTest(HoloplotUserDataTest('test_weight_polysurface_AL_12'))
+    suite.addTest(HoloplotUserDataTest('test_weight_polysurface_SS_12'))
+    suite.addTest(HoloplotUserDataTest('test_screw_lock_15'))
+    suite.addTest(HoloplotUserDataTest('test_coating_area_polysurface_31'))
+    suite.addTest(HoloplotUserDataTest('test_dimensions_polysurface_21_22_23'))
+    suite.addTest(HoloplotUserDataTest('test_group_51'))
+    suite.addTest(HoloplotUserDataTest('test_category_54'))
+    suite.addTest(HoloplotUserDataTest('test_assembly_55'))
     suite.addTest(HoloplotUserDataTest('test_template_at_04'))
+    suite.addTest(HoloplotUserDataTest('test_template_de'))
+    suite.addTest(HoloplotUserDataTest('test_name'))
+    suite.addTest(HoloplotUserDataTest('test_material'))
     # this needs to be manually run because it modifies the test 3d document.
     # you have to undo the file manually using ctrl+Z
     # suite.addTest(HoloplotUserDataTest('test_weight_block_12'))
