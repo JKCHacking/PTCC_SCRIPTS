@@ -51,29 +51,26 @@ def add_userdata(obj_id, truss_part=False):
     position = get_position(obj_id)
     revision = get_revision(obj_id)
     article_at = get_article_at(spec_pname)
-    # article_de = get_article_de(spec_pname)
     material = get_material(obj_id)
     surface = get_surface(obj_id)
     colour = get_colour(obj_id)
     screw_lock = get_screw_lock(obj_id)
-    length, width, height = get_dimensions(obj_id)
-    coating_area = get_coating_area(obj_id)
-    gross_area = get_gross_area(length, width)
-    # net_area = get_net_area(obj_id)
-    net_area = coating_area
     profession = get_profession(obj_id)
     delivery = get_delivery(obj_id, truss_part)
     assembly = get_assembly(obj_id)
     group = get_group(obj_id)
     category = get_category(spec_pname)
     template_at = get_template_at(group, category)
-    mass = get_weight(obj_id, group)
     template_de = get_template_de(group, category)
-    template_name_de = get_template_name_de(obj_id)
-    # rawmat_no_de = get_rawmat_no_de(obj_id)
-    # rawmat_name_de = get_rawmat_name_de(obj_id)
+    template_name_de = get_template_name_de(group)
     name = get_name(spec_pname, category)
+    length, width, height = get_dimensions(obj_id)
+    gross_area = get_gross_area(length, width)
+    mass, new_obj_id = get_weight(obj_id, group)
+    coating_area, new_obj_id = get_coating_area(new_obj_id)
+    net_area = coating_area
 
+    obj_id = new_obj_id
     rs.SetUserText(obj_id, "01_POSITION", position)
     rs.SetUserText(obj_id, "02_REVISION", revision)
     rs.SetUserText(obj_id, "03_ARTICLE_AT", article_at)
@@ -86,9 +83,7 @@ def add_userdata(obj_id, truss_part=False):
     rs.SetUserText(obj_id, "10_NAME", name)
     rs.SetUserText(obj_id, "11_MATERIAL", material)
     rs.SetUserText(obj_id, "12_MASS", str(mass))
-    # TODO no specification
     rs.SetUserText(obj_id, "13_SURFACE", surface)
-    # TODO no specification
     rs.SetUserText(obj_id, "14_COLOUR", colour)
     rs.SetUserText(obj_id, "15_SCREW_LOCK", screw_lock)
     rs.SetUserText(obj_id, "21_LENGTH", str(length))
@@ -178,16 +173,6 @@ def get_template_name_de(group):
     return template_name_de
 
 
-# def get_rawmat_no_de(obj_id):
-#     rawmat_no_de = ""
-#     return rawmat_no_de
-#
-#
-# def get_rawmat_name_de(obj_id):
-#     rawmat_name_de = ""
-#     return rawmat_name_de
-
-
 def get_name(spec_name, category):
     name_dict = {
         "": "",
@@ -243,7 +228,7 @@ def get_weight(obj_id, group):
                     tot_sv += sv * 1e-09  # convert to meters3
                 else:
                     tot_sv += sv
-        create_block(part_ids, orig_blk_name, blk_in_pt)
+        obj_id = create_block(part_ids, orig_blk_name, blk_in_pt)
     elif rs.IsPolysurface(obj_id):
         sv = rs.SurfaceVolume(obj_id)[0]
         if UNIT == "mm":
@@ -254,14 +239,16 @@ def get_weight(obj_id, group):
         weight = round(tot_sv * SS_DEN, W_ROUND_PRECISION)
     else:
         weight = round(tot_sv * AL_DEN, W_ROUND_PRECISION)
-    return weight
+    return weight, obj_id
 
 
+# TODO NO SPECIFICATION
 def get_surface(obj_id):
     surface = ""
     return surface
 
 
+# TODO NO SPECIFICATION
 def get_colour(obj_id):
     colour = ""
     return colour
@@ -333,9 +320,9 @@ def get_coating_area(obj_id):
                     tot_c_area += sa * 1e-06  # convert to meters^2
                 else:
                     tot_c_area += sa
-        create_block(part_ids, orig_blk_name, blk_in_pt)
+        obj_id = create_block(part_ids, orig_blk_name, blk_in_pt)
     tot_c_area = round(tot_c_area, 4)
-    return tot_c_area
+    return tot_c_area, obj_id
 
 
 def get_gross_area(length, width):
@@ -343,12 +330,6 @@ def get_gross_area(length, width):
     if UNIT == "mm":
         gross_area *= 1e-06  # convert to meters^2
     return gross_area
-
-
-# def get_net_area(obj_id):
-#     # coating area = net area
-#     net_area = get_coating_area(obj_id)
-#     return net_area
 
 
 def get_group(obj_id):
