@@ -64,7 +64,6 @@ def add_userdata(obj_id, truss_part=False):
     profession = get_profession(obj_id)
     delivery = get_delivery(obj_id, truss_part)
     assembly = get_assembly(obj_id)
-
     group = get_group(obj_id)
     category = get_category(spec_pname)
     template_at = get_template_at(group, category)
@@ -73,7 +72,7 @@ def add_userdata(obj_id, truss_part=False):
     template_name_de = get_template_name_de(obj_id)
     # rawmat_no_de = get_rawmat_no_de(obj_id)
     # rawmat_name_de = get_rawmat_name_de(obj_id)
-    name = get_name(obj_id, category)
+    name = get_name(spec_pname, category)
 
     rs.SetUserText(obj_id, "01_POSITION", position)
     rs.SetUserText(obj_id, "02_REVISION", revision)
@@ -163,6 +162,9 @@ def get_template_de(group, category):
             template_de = "V-AL21"
     elif group == "AL profile":
         if "Single" in category:
+            template_de = "V-AL35"
+    elif group == "SS sheet":
+        if "Single" in category:
             template_de = "V-VA09"
     return template_de
 
@@ -186,13 +188,45 @@ def get_template_name_de(group):
 #     return rawmat_name_de
 
 
-def get_name(obj_id, category):
-    name = ""
+def get_name(spec_name, category):
+    name_dict = {
+        "": "",
+        "T": "truss assembly",
+        "B": "bracing",
+        "F": "frame",
+        "TC": "top chord",
+        "BC": "bottom chord",
+        "EX": "extension part",
+        "DP": "diagonal part",
+        "PR": "profile",
+        "CP": "connection part",
+        "EP": "end part",
+        "VP": "vertical part",
+        "HP": "horizontal part",
+        "STC": "standard top chord",
+        "SBC": "standard bottom chord",
+        "SDP": "standard diagonal part",
+        "SCP": "standard connection part"
+    }
+    p_type = ""
+    if category == "Pre-Assembly":
+        p_type = spec_name.split("-")[2][0]
+    elif category == "Standard Parts Assembly" or category == "Single Part":
+        p_type = spec_name.split("-")[3][:2]
+    elif category == "Standard Parts Single":
+        p_type = spec_name.split("-")[1][:3]
+    name = "{} ... {}".format(spec_name, name_dict[p_type])
     return name
 
 
-def get_material(obj_id):
+def get_material(group):
     material = ""
+    if group == "AL sheet":
+        material = "aluminum EN AW-5754"
+    elif group == "AL profile":
+        material = "aluminum EN AW-6060 T66"
+    elif group == "SS sheet":
+        material = "stainless steel 1.4571"
     return material
 
 
@@ -341,20 +375,19 @@ def get_delivery(obj_id, truss_part=False):
 
 def get_category(spec_name):
     category = ""
-    article_list = spec_name.split("-")
+    spec_name_list = spec_name.split("-")
     # not a standard
-    if article_list[1].startswith("H"):
+    if spec_name_list[1].startswith("H"):
         # check if single or assembly
-        if len(article_list) == 4:  # single
-            category = "Single Part"
-        elif len(article_list) == 3:  # assembly
+        if len(spec_name_list) == 4:  # single
+            if "SP" in spec_name_list[2]:
+                category = "Standard Parts Assembly"
+            else:
+                category = "Single Part"
+        elif len(spec_name_list) == 3:  # assembly
             category = "Pre-Assembly"
-    else:  # standard
-        # check if single or assembly
-        if re.search("ST[0-9]{2}", article_list[1]):  # assembly
-            category = "Standard Parts Assembly"
-        else:  # part
-            category = "Standard Parts Single"
+    elif spec_name_list[1].startswith("S"):  # standard
+        category = "Standard Parts Single"
     return category
 
 
