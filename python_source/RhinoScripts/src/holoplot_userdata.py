@@ -222,15 +222,13 @@ def get_weight(obj_id, group):
     return weight
 
 
-# TODO NO SPECIFICATION
 def get_surface():
-    surface = " "
+    surface = "anodized E6/C-35"
     return surface
 
 
-# TODO NO SPECIFICATION
 def get_colour():
-    colour = " "
+    colour = "black"
     return colour
 
 
