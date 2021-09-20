@@ -236,7 +236,7 @@ class HoloplotUserDataTest(unittest.TestCase):
 
     def test_add_userdata(self):
         truss_id = rs.ObjectsByName("1421-H01-T03")[0]
-        truss_id = holoplot_userdata.add_userdata(truss_id)
+        holoplot_userdata.add_userdata(truss_id)
         self.assertEqual(rs.GetUserText(truss_id, "01_POSITION"), "H01-T03")
         self.assertEqual(rs.GetUserText(truss_id, "02_REVISION"), "00")
         self.assertEqual(rs.GetUserText(truss_id, "03_ARTICLE_AT"), "1421-H01-T03")
