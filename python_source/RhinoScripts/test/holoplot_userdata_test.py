@@ -315,6 +315,6 @@ if __name__ == "__main__":
     suite.addTest(HoloplotUserDataTest('test_material'))
     suite.addTest(HoloplotUserDataTest('test_weight_block_12'))
     suite.addTest(HoloplotUserDataTest('test_coating_area_block_31'))
-    # suite.addTest(HoloplotUserDataTest('test_add_userdata'))
-    # suite.addTest(HoloplotUserDataTest('test_main'))
+    suite.addTest(HoloplotUserDataTest('test_add_userdata'))
+    suite.addTest(HoloplotUserDataTest('test_main'))
     unittest.TextTestRunner(verbosity=2).run(suite)
