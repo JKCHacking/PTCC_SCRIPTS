@@ -17,49 +17,51 @@ BB_POINTS = []
 
 
 def main():
-    # iterate to all block reference
-    blk_ids = iter_objects("Block Instances")
-    for blk_id in blk_ids:
-        # save the current insertion point and the block name
-        blk_in_pt = rs.BlockInstanceInsertPoint(blk_id)
-        target_blk_name = rs.BlockInstanceName(blk_id)
-        # explode the block instance and place userdata on each part component
-        part_ids = rs.ExplodeBlockInstance(blk_id)
-        for part_id in part_ids:
-            if rs.IsPolysurface(part_id):
-                add_userdata(part_id, truss_part=True)
-            if sc.escape_test(False):
-                print("Aborted")
-                break
-        new_blk_id = create_block(part_ids, target_blk_name, blk_in_pt)
-        add_userdata(new_blk_id)
+    all_obj_ids = rs.AllObjects()
+    for obj_id in all_obj_ids:
+        if rs.IsBlockInstance(obj_id):
+            # save the current insertion point and the block name
+            blk_in_pt = rs.BlockInstanceInsertPoint(obj_id)
+            target_blk_name = rs.BlockInstanceName(obj_id)
+            # explode the block instance and place userdata on each part component
+            part_ids = rs.ExplodeBlockInstance(obj_id)
+            for part_id in part_ids:
+                if rs.IsPolysurface(part_id):
+                    add_userdata(part_id, is_truss_part=True)
+                if sc.escape_test(False):
+                    print("Aborted")
+                    break
+            new_blk_id = create_block(part_ids, target_blk_name, blk_in_pt)
+            add_userdata(new_blk_id)
+        elif rs.IsPolysurface(obj_id):
+            add_userdata(obj_id)
 
 
-def iter_objects(obj_type):
-    obj_list = []
-    if obj_type == "Block Instances":
-        block_names = rs.BlockNames(True)
-        for block_name in block_names:
-            block_ids = rs.BlockInstances(block_name)
-            for block_id in block_ids:
-                obj_list.append(block_id)
-    return obj_list
+# def iter_objects(obj_type):
+#     obj_list = []
+#     if obj_type == "Block Instances":
+#         block_names = rs.BlockNames(True)
+#         for block_name in block_names:
+#             block_ids = rs.BlockInstances(block_name)
+#             for block_id in block_ids:
+#                 obj_list.append(block_id)
+#     return obj_list
 
 
-def add_userdata(obj_id, truss_part=False):
+def add_userdata(obj_id, is_truss_part=False):
     spec_pname = get_specific_part_name(obj_id)
-    position = get_position(obj_id)
-    revision = get_revision(obj_id)
+    position = get_position(spec_pname)
+    revision = get_revision()
     article_at = get_article_at(spec_pname)
-    material = get_material(obj_id)
-    surface = get_surface(obj_id)
-    colour = get_colour(obj_id)
-    screw_lock = get_screw_lock(obj_id)
-    profession = get_profession(obj_id)
-    delivery = get_delivery(obj_id, truss_part)
+    surface = get_surface()
+    colour = get_colour()
+    screw_lock = get_screw_lock()
+    profession = get_profession()
+    delivery = get_delivery(is_truss_part)
     assembly = get_assembly(obj_id)
     group = get_group(obj_id)
     category = get_category(spec_pname)
+    material = get_material(group)
     template_at = get_template_at(group, category)
     template_de = get_template_de(group, category)
     template_name_de = get_template_name_de(group)
@@ -97,6 +99,7 @@ def add_userdata(obj_id, truss_part=False):
     rs.SetUserText(obj_id, "53_DELIVERY", delivery)
     rs.SetUserText(obj_id, "54_CATEGORY", category)
     rs.SetUserText(obj_id, "55_ASSEMBLY", assembly)
+    return obj_id
 
 
 def create_block(part_ids, blk_name, ins_point):
@@ -114,13 +117,13 @@ def get_specific_part_name(obj_id):
     return spec_pname
 
 
-def get_position(obj_id):
-    position_list = get_specific_part_name(obj_id).split("-")[1:]
+def get_position(spec_name):
+    position_list = spec_name.split("-")[1:]
     position = "-".join(position_list)
     return position
 
 
-def get_revision(obj_id):
+def get_revision():
     revision = "00"
     return revision
 
@@ -243,18 +246,18 @@ def get_weight(obj_id, group):
 
 
 # TODO NO SPECIFICATION
-def get_surface(obj_id):
-    surface = ""
+def get_surface():
+    surface = " "
     return surface
 
 
 # TODO NO SPECIFICATION
-def get_colour(obj_id):
-    colour = ""
+def get_colour():
+    colour = " "
     return colour
 
 
-def get_screw_lock(obj_id):
+def get_screw_lock():
     screw_lock = "NO"
     return screw_lock
 
@@ -321,7 +324,7 @@ def get_coating_area(obj_id):
                 else:
                     tot_c_area += sa
         obj_id = create_block(part_ids, orig_blk_name, blk_in_pt)
-    tot_c_area = round(tot_c_area, 4)
+    tot_c_area = round(tot_c_area, W_ROUND_PRECISION)
     return tot_c_area, obj_id
 
 
@@ -329,7 +332,7 @@ def get_gross_area(length, width):
     gross_area = length * width
     if UNIT == "mm":
         gross_area *= 1e-06  # convert to meters^2
-    return gross_area
+    return round(gross_area, W_ROUND_PRECISION)
 
 
 def get_group(obj_id):
@@ -342,14 +345,14 @@ def get_group(obj_id):
     return group
 
 
-def get_profession(obj_id):
+def get_profession():
     profession = "HOL"
     return profession
 
 
-def get_delivery(obj_id, truss_part=False):
+def get_delivery(is_truss_part=False):
     delivery = "S"
-    if truss_part:
+    if is_truss_part:
         delivery = "F"
     return delivery
 
