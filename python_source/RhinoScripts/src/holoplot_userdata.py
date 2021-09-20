@@ -19,33 +19,23 @@ BB_POINTS = []
 def main():
     all_obj_ids = rs.AllObjects()
     for obj_id in all_obj_ids:
-        if rs.IsBlockInstance(obj_id):
-            # save the current insertion point and the block name
-            blk_in_pt = rs.BlockInstanceInsertPoint(obj_id)
+        fp_layer = rs.ObjectLayer(obj_id)
+        if rs.IsBlockInstance(obj_id) and "Fixings" not in fp_layer:
+            # get the block name
             target_blk_name = rs.BlockInstanceName(obj_id)
-            # explode the block instance and place userdata on each part component
-            part_ids = rs.ExplodeBlockInstance(obj_id)
+            # get the ids of the block parts and add user data to it.
+            part_ids = rs.BlockObjects(target_blk_name)
             for part_id in part_ids:
+                # poly surface
                 if rs.IsPolysurface(part_id):
-                    add_userdata(part_id, is_truss_part=True)
-                if sc.escape_test(False):
-                    print("Aborted")
-                    break
-            new_blk_id = create_block(part_ids, target_blk_name, blk_in_pt)
-            add_userdata(new_blk_id)
+                    try:
+                        add_userdata(part_id, is_truss_part=True)
+                    except IndexError:
+                        pass
+            add_userdata(obj_id)
+        # poly surface
         elif rs.IsPolysurface(obj_id):
             add_userdata(obj_id)
-
-
-# def iter_objects(obj_type):
-#     obj_list = []
-#     if obj_type == "Block Instances":
-#         block_names = rs.BlockNames(True)
-#         for block_name in block_names:
-#             block_ids = rs.BlockInstances(block_name)
-#             for block_id in block_ids:
-#                 obj_list.append(block_id)
-#     return obj_list
 
 
 def add_userdata(obj_id, is_truss_part=False):
@@ -68,11 +58,10 @@ def add_userdata(obj_id, is_truss_part=False):
     name = get_name(spec_pname, category)
     length, width, height = get_dimensions(obj_id)
     gross_area = get_gross_area(length, width)
-    mass, new_obj_id = get_weight(obj_id, group)
-    coating_area, new_obj_id = get_coating_area(new_obj_id)
+    mass = get_weight(obj_id, group)
+    coating_area = get_coating_area(obj_id)
     net_area = coating_area
 
-    obj_id = new_obj_id
     rs.SetUserText(obj_id, "01_POSITION", position)
     rs.SetUserText(obj_id, "02_REVISION", revision)
     rs.SetUserText(obj_id, "03_ARTICLE_AT", article_at)
@@ -99,16 +88,6 @@ def add_userdata(obj_id, is_truss_part=False):
     rs.SetUserText(obj_id, "53_DELIVERY", delivery)
     rs.SetUserText(obj_id, "54_CATEGORY", category)
     rs.SetUserText(obj_id, "55_ASSEMBLY", assembly)
-    return obj_id
-
-
-def create_block(part_ids, blk_name, ins_point):
-    temp_blk_name = rs.AddBlock(part_ids, ins_point, None, delete_input=True)
-    new_blk_id = rs.InsertBlock(temp_blk_name, ins_point)
-    if rs.IsBlock(blk_name):
-        rs.DeleteBlock(blk_name)
-    rs.RenameBlock(temp_blk_name, blk_name)
-    return new_blk_id
 
 
 def get_specific_part_name(obj_id):
@@ -221,9 +200,8 @@ def get_material(group):
 def get_weight(obj_id, group):
     tot_sv = 0
     if rs.IsBlockInstance(obj_id):
-        blk_in_pt = rs.BlockInstanceInsertPoint(obj_id)
         orig_blk_name = rs.BlockInstanceName(obj_id)
-        part_ids = rs.ExplodeBlockInstance(obj_id)
+        part_ids = rs.BlockObjects(orig_blk_name)
         for part_id in part_ids:
             if rs.IsPolysurface(part_id):
                 sv = rs.SurfaceVolume(part_id)[0]
@@ -231,7 +209,6 @@ def get_weight(obj_id, group):
                     tot_sv += sv * 1e-09  # convert to meters3
                 else:
                     tot_sv += sv
-        obj_id = create_block(part_ids, orig_blk_name, blk_in_pt)
     elif rs.IsPolysurface(obj_id):
         sv = rs.SurfaceVolume(obj_id)[0]
         if UNIT == "mm":
@@ -242,7 +219,7 @@ def get_weight(obj_id, group):
         weight = round(tot_sv * SS_DEN, W_ROUND_PRECISION)
     else:
         weight = round(tot_sv * AL_DEN, W_ROUND_PRECISION)
-    return weight, obj_id
+    return weight
 
 
 # TODO NO SPECIFICATION
@@ -313,9 +290,8 @@ def get_coating_area(obj_id):
         if UNIT == "mm":
             tot_c_area = tot_c_area * 1e-06
     elif rs.IsBlockInstance(obj_id):
-        blk_in_pt = rs.BlockInstanceInsertPoint(obj_id)
         orig_blk_name = rs.BlockInstanceName(obj_id)
-        part_ids = rs.ExplodeBlockInstance(obj_id)
+        part_ids = rs.BlockObjects(orig_blk_name)
         for part_id in part_ids:
             if rs.IsPolysurface(part_id):
                 sa = rs.SurfaceArea(part_id)[0]
@@ -323,9 +299,8 @@ def get_coating_area(obj_id):
                     tot_c_area += sa * 1e-06  # convert to meters^2
                 else:
                     tot_c_area += sa
-        obj_id = create_block(part_ids, orig_blk_name, blk_in_pt)
     tot_c_area = round(tot_c_area, W_ROUND_PRECISION)
-    return tot_c_area, obj_id
+    return tot_c_area
 
 
 def get_gross_area(length, width):

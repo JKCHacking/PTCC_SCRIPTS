@@ -35,39 +35,36 @@ class HoloplotUserDataTest(unittest.TestCase):
     def test_weight_polysurface_AL_12(self):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
         group = holoplot_userdata.get_group(top_chord_id)
-        weight, top_chord_id = holoplot_userdata.get_weight(top_chord_id, group)
+        weight = holoplot_userdata.get_weight(top_chord_id, group)
         expected_weight = round(0.0016657682 * 2710, 4)
         self.assertEqual(expected_weight, weight)
 
     def test_weight_polysurface_SS_12(self):
         cp_id = rs.ObjectsByName("1421-H01-F01-CP01")[0]
         group = holoplot_userdata.get_group(cp_id)
-        weight, cp_id = holoplot_userdata.get_weight(cp_id, group)
+        weight = holoplot_userdata.get_weight(cp_id, group)
         self.assertEqual(1.2959, weight)
 
     def test_weight_block_12(self):
         non_std_truss_id = rs.ObjectsByName("1421-H01-T03")[0]
         group = holoplot_userdata.get_group(non_std_truss_id)
-        weight, non_std_truss_id = holoplot_userdata.get_weight(non_std_truss_id, group)
+        weight = holoplot_userdata.get_weight(non_std_truss_id, group)
         expected_weight = round(0.0081595586 * 2710, 4)
         self.assertEqual(round(expected_weight, 2), round(weight, 2))
-        rs.ObjectName(non_std_truss_id, "1421-H01-T03")
 
     def test_screw_lock_15(self):
-        top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
         screw_lock = holoplot_userdata.get_screw_lock()
         self.assertEqual("NO", screw_lock)
 
     def test_coating_area_polysurface_31(self):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
-        coating_area, top_chord_id = holoplot_userdata.get_coating_area(top_chord_id)
+        coating_area = holoplot_userdata.get_coating_area(top_chord_id)
         self.assertEqual(0.3231, coating_area)
 
     def test_coating_area_block_31(self):
         non_std_truss_id = rs.ObjectsByName("1421-H01-T03")[0]
-        coating_area, non_std_truss_id = holoplot_userdata.get_coating_area(non_std_truss_id)
+        coating_area = holoplot_userdata.get_coating_area(non_std_truss_id)
         self.assertEqual(1.6429, coating_area)
-        rs.ObjectName(non_std_truss_id, "1421-H01-T03")
 
     def test_dimensions_polysurface_21_22_23(self):
         top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
@@ -100,7 +97,6 @@ class HoloplotUserDataTest(unittest.TestCase):
         self.assertEqual("SS sheet", group)
 
     def test_profession_52(self):
-        top_chord_id = rs.ObjectsByName("1421-STC01-500,00")[0]
         profession = holoplot_userdata.get_profession()
         self.assertEqual("HOL", profession)
 
@@ -268,6 +264,36 @@ class HoloplotUserDataTest(unittest.TestCase):
         self.assertEqual(rs.GetUserText(truss_id, "54_CATEGORY"), "Pre-Assembly")
         self.assertEqual(rs.GetUserText(truss_id, "55_ASSEMBLY"), "H01")
 
+    def test_main(self):
+        holoplot_userdata.main()
+        truss_id = rs.ObjectsByName("1421-H01-T03")[0]
+        self.assertEqual(rs.GetUserText(truss_id, "01_POSITION"), "H01-T03")
+        self.assertEqual(rs.GetUserText(truss_id, "02_REVISION"), "00")
+        self.assertEqual(rs.GetUserText(truss_id, "03_ARTICLE_AT"), "1421-H01-T03")
+        self.assertEqual(rs.GetUserText(truss_id, "04_TEMPLATE_AT"), "2152")
+        self.assertEqual(rs.GetUserText(truss_id, "05_ARTICLE_DE"), "1421-H01-T03")
+        self.assertEqual(rs.GetUserText(truss_id, "06_TEMPLATE_DE"), "V-AL21")
+        self.assertEqual(rs.GetUserText(truss_id, "07_TEMPLATE_NAME_DE"), "AL-Element")
+        self.assertEqual(rs.GetUserText(truss_id, "08_RAWMAT_NO_DE"), "V-AL21")
+        self.assertEqual(rs.GetUserText(truss_id, "09_RAWMAT_NAME_DE"), "AL-Element")
+        self.assertEqual(rs.GetUserText(truss_id, "10_NAME"), "1421-H01-T03 ... truss assembly")
+        self.assertEqual(rs.GetUserText(truss_id, "11_MATERIAL"), "aluminum EN AW-5754")
+        self.assertEqual(str(round(float(rs.GetUserText(truss_id, "12_MASS")), 2)), str(round(0.0081595586 * 2710, 2)))
+        self.assertEqual(rs.GetUserText(truss_id, "13_SURFACE"), " ")
+        self.assertEqual(rs.GetUserText(truss_id, "14_COLOUR"), " ")
+        self.assertEqual(rs.GetUserText(truss_id, "15_SCREW_LOCK"), "NO")
+        self.assertTrue(len(rs.GetUserText(truss_id, "21_LENGTH")) > 0)
+        self.assertTrue(len(rs.GetUserText(truss_id, "22_WIDTH")) > 0)
+        self.assertTrue(len(rs.GetUserText(truss_id, "23_HEIGHT")) > 0)
+        self.assertEqual(rs.GetUserText(truss_id, "31_COATING_AREA"), "1.6429")
+        self.assertTrue(len(rs.GetUserText(truss_id, "32_GROSS_AREA")) > 0)
+        self.assertEqual(rs.GetUserText(truss_id, "33_NET_AREA"), "1.6429")
+        self.assertEqual(rs.GetUserText(truss_id, "51_GROUP"), "AL sheet")
+        self.assertEqual(rs.GetUserText(truss_id, "52_PROFESSION"), "HOL")
+        self.assertEqual(rs.GetUserText(truss_id, "53_DELIVERY"), "S")
+        self.assertEqual(rs.GetUserText(truss_id, "54_CATEGORY"), "Pre-Assembly")
+        self.assertEqual(rs.GetUserText(truss_id, "55_ASSEMBLY"), "H01")
+
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
@@ -290,4 +316,5 @@ if __name__ == "__main__":
     suite.addTest(HoloplotUserDataTest('test_weight_block_12'))
     suite.addTest(HoloplotUserDataTest('test_coating_area_block_31'))
     # suite.addTest(HoloplotUserDataTest('test_add_userdata'))
+    # suite.addTest(HoloplotUserDataTest('test_main'))
     unittest.TextTestRunner(verbosity=2).run(suite)
