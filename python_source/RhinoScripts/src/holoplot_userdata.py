@@ -35,7 +35,10 @@ def main():
             add_userdata(obj_id)
         # poly surface
         elif rs.IsPolysurface(obj_id):
-            add_userdata(obj_id)
+            try:
+                add_userdata(obj_id)
+            except IndexError:
+                pass
 
 
 def add_userdata(obj_id, is_truss_part=False):
