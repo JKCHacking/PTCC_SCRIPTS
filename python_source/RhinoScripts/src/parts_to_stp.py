@@ -83,7 +83,9 @@ def main():
     for obj_id in all_obj_ids:
         if rs.IsPolysurface(obj_id):
             txt_id = search_nearest_text(obj_id)
-            or_part_id, or_txt_id = orient_to_top(obj_id, txt_id)
+            misc_ids = [txt_id]
+            or_part_id, or_misc_ids = orient_to_top(obj_id, misc_ids)
+            or_txt_id = or_misc_ids[0]
             curve_ids = rs.ExplodeText(or_txt_id)
             ids_to_export = curve_ids.append(or_part_id)
             filename = "{}.stp".format(get_specific_part_name(or_part_id))
