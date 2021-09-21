@@ -20,7 +20,7 @@ def main():
     all_obj_ids = rs.AllObjects()
     for obj_id in all_obj_ids:
         fp_layer = rs.ObjectLayer(obj_id)
-        if rs.IsBlockInstance(obj_id) and "Fixings" not in fp_layer:
+        if rs.IsBlockInstance(obj_id) and "TRUSS" in fp_layer:
             # get the block name
             target_blk_name = rs.BlockInstanceName(obj_id)
             # get the ids of the block parts and add user data to it.
