@@ -17,7 +17,8 @@ BB_POINTS = []
 
 
 def main():
-    all_obj_ids = rs.AllObjects()
+    # all_obj_ids = rs.AllObjects()
+    all_obj_ids = rs.GetObjects("Select objects you want to add Userdata")
     for obj_id in all_obj_ids:
         fp_layer = rs.ObjectLayer(obj_id)
         if rs.IsBlockInstance(obj_id) and "TRUSS" in fp_layer:
@@ -91,6 +92,7 @@ def add_userdata(obj_id, is_truss_part=False):
     rs.SetUserText(obj_id, "53_DELIVERY", delivery)
     rs.SetUserText(obj_id, "54_CATEGORY", category)
     rs.SetUserText(obj_id, "55_ASSEMBLY", assembly)
+    rs.ObjectName(obj_id, name)
 
 
 def get_specific_part_name(obj_id):
