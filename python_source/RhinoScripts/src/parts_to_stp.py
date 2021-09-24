@@ -51,7 +51,7 @@ def orient_to_top(part_id, misc_ids):
 def export_to_stp(stp_filename, obj_ids):
     rs.SelectObjects(obj_ids)
     rs.Command("_-Export {} _Enter".format(stp_filename), False)
-    rs.UnSelectObjects(obj_ids)
+    rs.UnselectObjects(obj_ids)
 
 
 def get_specific_part_name(obj_id):
@@ -63,7 +63,6 @@ def get_specific_part_name(obj_id):
 def search_nearest_text(part_id):
     position_list = get_specific_part_name(part_id).split("-")[1:]
     position = " ".join(position_list)
-
     all_obj_ids = rs.AllObjects()
     txt_ids = []
     for obj_id in all_obj_ids:
@@ -79,19 +78,46 @@ def search_nearest_text(part_id):
 
 
 def main():
-    all_obj_ids = rs.AllObjects()
-    for obj_id in all_obj_ids:
-        if rs.IsPolysurface(obj_id):
-            txt_id = search_nearest_text(obj_id)
-            misc_ids = [txt_id]
-            or_part_id, or_misc_ids = orient_to_top(obj_id, misc_ids)
-            or_txt_id = or_misc_ids[0]
-            curve_ids = rs.ExplodeText(or_txt_id)
-            ids_to_export = curve_ids.append(or_part_id)
-            filename = "{}.stp".format(get_specific_part_name(or_part_id))
-            export_to_stp(filename, ids_to_export)
-            rs.DeleteObject(or_part_id)
-            rs.DeleteObject(or_txt_id)
+    holoplot_num = "H01"
+    # all_obj_ids = rs.GetObjects("Select parts to export stp")
+    # for obj_id in all_obj_ids:
+    #     if rs.IsPolysurface(obj_id):
+    #         ids_to_export = []
+    #         full_path = "H:\\Desktop\\projects\\holoplot\\{}\\{}"
+    #         txt_id = search_nearest_text(obj_id)
+    #         misc_ids = [txt_id]
+    #         or_part_id, or_misc_ids = orient_to_top(obj_id, misc_ids)
+    #         or_txt_id = or_misc_ids[0]
+    #         curve_ids = rs.ExplodeText(or_txt_id)
+    #         ids_to_export.append(or_part_id)
+    #         ids_to_export.extend(curve_ids)
+    #         filename = "{}.stp".format(get_specific_part_name(or_part_id))
+    #         full_path = full_path.format(holoplot_num, filename)
+    #         export_to_stp(full_path, ids_to_export)
+    #         rs.DeleteObject(or_part_id)
+    #         rs.DeleteObject(or_txt_id)
+    #         rs.DeleteObjects(curve_ids)
+
+    ids_to_export = []
+    curve_ids = []
+    part_id = rs.GetObject("Select part to export stp")
+    misc_ids = rs.GetObjects("Select miscellaneous of part")
+    txt_id = search_nearest_text(part_id)
+    misc_ids.append(txt_id)
+    or_part_id, or_misc_ids = orient_to_top(part_id, misc_ids)
+    ids_to_export.append(or_part_id)
+    for or_misc_id in or_misc_ids:
+        if rs.IsText(or_misc_id):
+            curve_ids = rs.ExplodeText(or_misc_id)
+            ids_to_export.extend(curve_ids)
+        else:
+            ids_to_export.append(or_misc_id)
+    filename = "H:\\Desktop\\projects\\holoplot\\{}\\{}.stp".format(holoplot_num,
+                                                                    get_specific_part_name(or_part_id))
+    export_to_stp(filename, ids_to_export)
+    rs.DeleteObject(or_part_id)
+    rs.DeleteObjects(or_misc_ids)
+    rs.DeleteObjects(curve_ids)
 
 
 if __name__ == "__main__":
