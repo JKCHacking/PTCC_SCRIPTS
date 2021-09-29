@@ -7,21 +7,13 @@ from string import Template
 
 class ListenWorker(QtCore.QObject):
     finished = QtCore.pyqtSignal()
-    message_receive_sig = QtCore.pyqtSignal(str)
 
-    def __init__(self, view, listener, parent=None):
-        super().__init__(parent)
-        self.view = view
-        self.listener = listener
+    def __init__(self, client):
+        super().__init__()
+        self.client = client
 
-    @QtCore.pyqtSlot()
     def run(self):
-        # start listening
-        for event in self.listener.listen():
-            if isinstance(event, fbchat.MessageEvent):
-                # if event.author.id == self.view.chat_id_text.text():
-                message = event.message.text
-                self.message_receive_sig.emit(message)
+        self.client.listen()
         self.finished.emit()
 
 
@@ -53,7 +45,8 @@ class AlarmWorker(QtCore.QObject):
             self.tick_sig.emit(time_remaining_string)
             time.sleep(1)
             if set_datetime_obj < datetime.datetime.now():
-                self.conversation.send_text(message)
+                self.client.send(fbchat.models.Message(text=message), thread_id=self.chat_id,
+                                 thread_type=self.thread_type)
                 break
         self.finished.emit()
 
@@ -76,14 +69,13 @@ class BotCtrl(QtCore.QObject):
         super().__init__()
         self.view = view
         self.model = model
-        self.conversation = None
-        self.session = None
-        self.listener = None
-        self.listener_worker = None
-        self.listener_thread = None
+        self.client = None
+        self.chat_id = None
+        self.thread_type = None
         self.alarm_worker = None
         self.alarm_thread = None
-
+        self.listen_thread = None
+        self.listen_worker = None
         self.connect_signals()
 
     def connect_signals(self):
@@ -95,30 +87,30 @@ class BotCtrl(QtCore.QObject):
     def listen(self):
         if self.view.listen_switch.isChecked():
             # start listening
-            self.listener_thread = QtCore.QThread()
-            self.listener_worker = ListenWorker(self.view, self.listener)
-            self.listener_worker.moveToThread(self.listener_thread)
-            self.listener_worker.message_receive_sig.connect(self.update_receive_text)
-            self.listener_worker.finished.connect(self.listener_thread.quit)
-            self.listener_worker.finished.connect(self.listener_worker.deleteLater)
-            self.listener_thread.started.connect(self.listener_worker.run)
-            self.listener_thread.finished.connect(self.listener_thread.deleteLater)
-            self.listener_thread.start()
+            self.client.connect_signal(self.update_receive_text)
+            self.listen_thread = QtCore.QThread()
+            self.listen_worker = ListenWorker(self.client)
+            self.listen_worker.moveToThread(self.listen_thread)
+            self.listen_worker.finished.connect(self.listen_thread.quit)
+            self.listen_worker.finished.connect(self.listen_worker.deleteLater)
+            self.listen_thread.started.connect(self.listen_worker.run)
+            self.listen_thread.finished.connect(self.listen_thread.deleteLater)
+            self.listen_thread.start()
         else:
             # stop listening
-            self.listener.disconnect()
-            self.listener_thread.quit()
-            self.listener_thread.wait()
-            self.listener = fbchat.Listener(session=self.session, chat_on=True, foreground=True)
+            self.client.stopListening()
+            self.listen_thread.quit()
+            self.listen_thread.wait()
 
     def send(self):
         message = self.view.message_text.toPlainText()
         if message:
             try:
-                self.conversation.send_text(message)
+                self.client.send(fbchat.models.Message(text=message), thread_id=self.chat_id,
+                                 thread_type=self.thread_type)
                 self.view.message_text.clear()
                 self.view.display_message_box("Message sent", "info")
-            except fbchat.FacebookError as fb_err:
+            except fbchat.FBchatUserError as fb_err:
                 self.view.display_message_box(str(fb_err), "error")
         else:
             self.view.display_message_box("Please enter a message", "warning")
@@ -153,10 +145,9 @@ class BotCtrl(QtCore.QObject):
 
     def verify(self):
         # initialize the session and listener
-        self.session = self.model.get_session()
-        self.listener = fbchat.Listener(session=self.session, chat_on=True, foreground=True)
+        self.client = self.model.get_client()
         # get the chat id from the view
-        chat_id = self.view.chat_id_text.text()
+        self.chat_id = self.view.chat_id_text.text()
         thread_type = None
         # get the thread type of the conversation
         for button in self.view.chat_type_rb_group.buttons():
@@ -164,20 +155,16 @@ class BotCtrl(QtCore.QObject):
                 thread_type = button.text()
 
         # creates a User object if the selected is USER and Group object if GROUP
-        try:
-            if thread_type == "USER":
-                self.conversation = fbchat.User(session=self.session, id=chat_id)
-                print("USER")
-            elif thread_type == "GROUP":
-                self.conversation = fbchat.Group(session=self.session, id=chat_id)
-                print("GROUP")
-            else:
-                print("Unable to process")
-        except fbchat.FacebookError as fb_err:
-            print(str(fb_err))
+        if thread_type == "USER":
+            self.thread_type = fbchat.models.ThreadType.USER
+        elif thread_type == "GROUP":
+            self.thread_type = fbchat.models.ThreadType.GROUP
 
         # enables all the controls if everything is OK.
-        if self.conversation is not None:
+        # check if thread is valid
+        # enables all the controls if everything is OK.
+        thread = self.client.fetchThreadInfo(self.chat_id)[self.chat_id]
+        if thread.name and thread.type == self.thread_type:
             self.view.display_message_box("Verified.", "info")
             self.enable_controls()
         else:

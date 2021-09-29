@@ -11,9 +11,10 @@ class LoginWorker(QtCore.QObject):
 
     @QtCore.pyqtSlot()
     def run(self):
-        email = self.view.email_text.text()
-        password = self.view.password_text.text()
-        self.model.create_session(email, password)
+        # email = self.view.email_text.text()
+        # password = self.view.password_text.text()
+        # self.model.create_session(email, password)
+        self.model.create_client()
         self.finished.emit()
 
 
@@ -25,7 +26,6 @@ class LoginCtrl(QtCore.QObject):
         self.view = view
         self.model = model
         self.bot_ctrl = bot_ctrl
-
         self.connect_signals()
 
     def connect_signals(self):
@@ -37,12 +37,11 @@ class LoginCtrl(QtCore.QObject):
 
     @QtCore.pyqtSlot()
     def __login_finished(self):
-        session = self.model.get_session()
+        client = self.model.get_client()
         # if login failed it will return None
-        if session is not None:
-            if session.is_logged_in():
-                self.stop_loading_anim()
-                self.launch_bot()
+        if client and client.isLoggedIn():
+            self.stop_loading_anim()
+            self.launch_bot()
         else:
             self.view.display_message_box("Login Failed.", "warning")
             self.view.login_button.setDisabled(False)
