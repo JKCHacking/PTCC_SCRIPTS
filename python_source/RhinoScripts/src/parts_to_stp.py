@@ -77,27 +77,28 @@ def search_nearest_text(part_id):
     return txt_id
 
 
-def main():
-    holoplot_num = "H01"
-    # all_obj_ids = rs.GetObjects("Select parts to export stp")
-    # for obj_id in all_obj_ids:
-    #     if rs.IsPolysurface(obj_id):
-    #         ids_to_export = []
-    #         full_path = "H:\\Desktop\\projects\\holoplot\\{}\\{}"
-    #         txt_id = search_nearest_text(obj_id)
-    #         misc_ids = [txt_id]
-    #         or_part_id, or_misc_ids = orient_to_top(obj_id, misc_ids)
-    #         or_txt_id = or_misc_ids[0]
-    #         curve_ids = rs.ExplodeText(or_txt_id)
-    #         ids_to_export.append(or_part_id)
-    #         ids_to_export.extend(curve_ids)
-    #         filename = "{}.stp".format(get_specific_part_name(or_part_id))
-    #         full_path = full_path.format(holoplot_num, filename)
-    #         export_to_stp(full_path, ids_to_export)
-    #         rs.DeleteObject(or_part_id)
-    #         rs.DeleteObject(or_txt_id)
-    #         rs.DeleteObjects(curve_ids)
+def get_multiparts(holoplot_num):
+    all_obj_ids = rs.GetObjects("Select parts to export stp")
+    for obj_id in all_obj_ids:
+        if rs.IsPolysurface(obj_id):
+            ids_to_export = []
+            full_path = "H:\\Desktop\\projects\\holoplot\\{}\\{}"
+            txt_id = search_nearest_text(obj_id)
+            misc_ids = [txt_id]
+            or_part_id, or_misc_ids = orient_to_top(obj_id, misc_ids)
+            or_txt_id = or_misc_ids[0]
+            curve_ids = rs.ExplodeText(or_txt_id)
+            ids_to_export.append(or_part_id)
+            ids_to_export.extend(curve_ids)
+            filename = "{}.stp".format(get_specific_part_name(or_part_id))
+            full_path = full_path.format(holoplot_num, filename)
+            export_to_stp(full_path, ids_to_export)
+            rs.DeleteObject(or_part_id)
+            rs.DeleteObject(or_txt_id)
+            rs.DeleteObjects(curve_ids)
 
+
+def get_single_part_misc(holoplot_num):
     ids_to_export = []
     curve_ids = []
     part_id = rs.GetObject("Select part to export stp")
@@ -118,6 +119,12 @@ def main():
     rs.DeleteObject(or_part_id)
     rs.DeleteObjects(or_misc_ids)
     rs.DeleteObjects(curve_ids)
+
+
+def main():
+    holoplot_num = "H01"
+    get_multiparts(holoplot_num)
+    # get_single_part_misc(holoplot_num)
 
 
 if __name__ == "__main__":

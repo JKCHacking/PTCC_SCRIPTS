@@ -14,10 +14,11 @@ SS_DEN = 7849.9764  # kg/m^3
 DIM_ROUND_PRECISION = 2
 W_ROUND_PRECISION = 4
 BB_POINTS = []
+HOLOPLOT_NUM = ""
 
 
 def main():
-    # all_obj_ids = rs.AllObjects()
+    HOLOPLOT_NUM = rs.GetString("Holoplot Number")
     all_obj_ids = rs.GetObjects("Select objects you want to add Userdata")
     for obj_id in all_obj_ids:
         fp_layer = rs.ObjectLayer(obj_id)
@@ -52,7 +53,6 @@ def add_userdata(obj_id, is_truss_part=False):
     screw_lock = get_screw_lock()
     profession = get_profession()
     delivery = get_delivery(is_truss_part)
-    assembly = get_assembly(obj_id)
     group = get_group(obj_id)
     category = get_category(spec_pname)
     material = get_material(group)
@@ -91,7 +91,7 @@ def add_userdata(obj_id, is_truss_part=False):
     rs.SetUserText(obj_id, "52_PROFESSION", profession)
     rs.SetUserText(obj_id, "53_DELIVERY", delivery)
     rs.SetUserText(obj_id, "54_CATEGORY", category)
-    rs.SetUserText(obj_id, "55_ASSEMBLY", assembly)
+    rs.SetUserText(obj_id, "55_ASSEMBLY", HOLOPLOT_NUM)
     rs.ObjectName(obj_id, name)
 
 
@@ -351,12 +351,6 @@ def get_category(spec_name):
     elif spec_name_list[1].startswith("S"):  # standard
         category = "Standard Parts Single"
     return category
-
-
-def get_assembly(obj_id):
-    full_path_layer = rs.ObjectLayer(obj_id)
-    assembly = full_path_layer.split("::")[0].split("...")[0].split("-")[1].strip()
-    return assembly
 
 
 class Min3DBoundingBox:
