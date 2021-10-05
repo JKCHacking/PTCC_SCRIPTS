@@ -33,14 +33,14 @@ def main():
                     try:
                         add_userdata(part_id, is_truss_part=True)
                     except IndexError:
-                        pass
+                        print("Index Error: {}".format(obj_id))
             add_userdata(obj_id)
         # poly surface
         elif rs.IsPolysurface(obj_id):
             try:
                 add_userdata(obj_id)
             except IndexError:
-                pass
+                print("Index Error: {}".format(obj_id))
 
 
 def add_userdata(obj_id, is_truss_part=False):
