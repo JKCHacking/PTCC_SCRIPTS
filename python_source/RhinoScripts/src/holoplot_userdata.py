@@ -14,11 +14,10 @@ SS_DEN = 7849.9764  # kg/m^3
 DIM_ROUND_PRECISION = 2
 W_ROUND_PRECISION = 4
 BB_POINTS = []
-HOLOPLOT_NUM = ""
 
 
 def main():
-    HOLOPLOT_NUM = rs.GetString("Holoplot Number")
+    holo_num = rs.GetString("Holoplot Number")
     all_obj_ids = rs.GetObjects("Select objects you want to add Userdata")
     for obj_id in all_obj_ids:
         fp_layer = rs.ObjectLayer(obj_id)
@@ -31,19 +30,19 @@ def main():
                 # poly surface
                 if rs.IsPolysurface(part_id):
                     try:
-                        add_userdata(part_id, is_truss_part=True)
+                        add_userdata(part_id, holo_num=holo_num, is_truss_part=True)
                     except IndexError:
                         print("Index Error: {}".format(obj_id))
-            add_userdata(obj_id)
+            add_userdata(obj_id, holo_num=holo_num)
         # poly surface
         elif rs.IsPolysurface(obj_id):
             try:
-                add_userdata(obj_id)
+                add_userdata(obj_id, holo_num=holo_num)
             except IndexError:
                 print("Index Error: {}".format(obj_id))
 
 
-def add_userdata(obj_id, is_truss_part=False):
+def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     spec_pname = get_specific_part_name(obj_id)
     position = get_position(spec_pname)
     revision = get_revision()
@@ -91,7 +90,7 @@ def add_userdata(obj_id, is_truss_part=False):
     rs.SetUserText(obj_id, "52_PROFESSION", profession)
     rs.SetUserText(obj_id, "53_DELIVERY", delivery)
     rs.SetUserText(obj_id, "54_CATEGORY", category)
-    rs.SetUserText(obj_id, "55_ASSEMBLY", HOLOPLOT_NUM)
+    rs.SetUserText(obj_id, "55_ASSEMBLY", holo_num)
     rs.ObjectName(obj_id, name)
 
 
