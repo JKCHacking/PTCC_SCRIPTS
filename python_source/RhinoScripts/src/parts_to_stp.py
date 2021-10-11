@@ -91,7 +91,7 @@ def get_multiparts(holoplot_num):
             ids_to_export.append(or_part_id)
             ids_to_export.extend(curve_ids)
             filename = "{}.stp".format(get_specific_part_name(or_part_id))
-            full_path = full_path.format(holoplot_num, filename)
+            full_path = full_path.format("H" + holoplot_num, filename)
             export_to_stp(full_path, ids_to_export)
             rs.DeleteObject(or_part_id)
             rs.DeleteObject(or_txt_id)
@@ -113,7 +113,7 @@ def get_single_part_misc(holoplot_num):
             ids_to_export.extend(curve_ids)
         else:
             ids_to_export.append(or_misc_id)
-    filename = "H:\\Desktop\\projects\\holoplot\\{}\\{}.stp".format(holoplot_num,
+    filename = "H:\\Desktop\\projects\\holoplot\\{}\\{}.stp".format("H" + holoplot_num,
                                                                     get_specific_part_name(or_part_id))
     export_to_stp(filename, ids_to_export)
     rs.DeleteObject(or_part_id)
