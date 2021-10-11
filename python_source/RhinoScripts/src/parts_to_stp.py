@@ -122,9 +122,14 @@ def get_single_part_misc(holoplot_num):
 
 
 def main():
-    holoplot_num = "H01"
-    get_multiparts(holoplot_num)
-    # get_single_part_misc(holoplot_num)
+    holoplot_num = rs.GetString("Holoplot Number")
+    user_choice = rs.GetString("multi or single")
+    if user_choice == "multi":
+        get_multiparts(holoplot_num)
+    elif user_choice == "single":
+        get_single_part_misc(holoplot_num)
+    else:
+        print("Incorrect input")
 
 
 if __name__ == "__main__":
