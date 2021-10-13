@@ -1,4 +1,4 @@
-import re
+import os
 import statistics
 import math
 import rhinoscriptsyntax as rs
@@ -6,6 +6,7 @@ import scriptcontext as sc
 import Rhino.Geometry
 import Rhino.RhinoApp
 import Rhino
+import datetime
 
 PROJECT_NUMBER = "1421"
 UNIT = rs.UnitSystemName(abbreviate=True)
@@ -42,9 +43,17 @@ def main():
                 print("Index Error: {}".format(obj_id))
 
 
+def log_error(message):
+    if os.path.exists("error.txt"):
+        mode = "a"
+    else:
+        mode = "w"
+    with open("error.txt", mode=mode) as err_f:
+        err_f.write("[{}]: {}\n".format(datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), message))
+
+
 def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     spec_pname = get_specific_part_name(obj_id)
-    print("Working on {}".format(spec_pname))
     position = get_position(spec_pname)
     revision = get_revision()
     article_at = get_article_at(spec_pname)
@@ -61,8 +70,18 @@ def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     name = get_name(spec_pname, category)
     length, width, height = get_dimensions(obj_id)
     gross_area = get_gross_area(length, width)
-    mass = get_weight(obj_id, group)
-    coating_area = get_coating_area(obj_id)
+    try:
+        mass = get_weight(obj_id, group)
+    except TypeError as e:
+        mass = 0
+        message = "Cant get weight: {}".format(spec_pname)
+        log_error(message)
+    try:
+        coating_area = get_coating_area(obj_id)
+    except TypeError as e:
+        coating_area = 0
+        message = "Cant get area: {}".format(spec_pname)
+        log_error(message)
     net_area = coating_area
 
     rs.SetUserText(obj_id, "01_POSITION", position)
@@ -83,9 +102,9 @@ def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     rs.SetUserText(obj_id, "21_LENGTH", str(length))
     rs.SetUserText(obj_id, "22_WIDTH", str(width))
     rs.SetUserText(obj_id, "23_HEIGHT", str(height))
-    rs.SetUserText(obj_id, "31_COATING_AREA", coating_area)
-    rs.SetUserText(obj_id, "32_GROSS_AREA", gross_area)
-    rs.SetUserText(obj_id, "33_NET_AREA", net_area)
+    rs.SetUserText(obj_id, "31_COATING_AREA", str(coating_area))
+    rs.SetUserText(obj_id, "32_GROSS_AREA", str(gross_area))
+    rs.SetUserText(obj_id, "33_NET_AREA", str(net_area))
     rs.SetUserText(obj_id, "51_GROUP", group)
     rs.SetUserText(obj_id, "52_PROFESSION", profession)
     rs.SetUserText(obj_id, "53_DELIVERY", delivery)
