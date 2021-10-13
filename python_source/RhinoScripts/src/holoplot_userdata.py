@@ -43,12 +43,13 @@ def main():
                 print("Index Error: {}".format(obj_id))
 
 
-def log_error(message):
-    if os.path.exists("error.txt"):
+def log_error(message, holo_num):
+    error_file = "error_H{}.txt".format(holo_num)
+    if os.path.exists(error_file):
         mode = "a"
     else:
         mode = "w"
-    with open("error.txt", mode=mode) as err_f:
+    with open(error_file, mode=mode) as err_f:
         err_f.write("[{}]: {}\n".format(datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), message))
 
 
@@ -75,13 +76,13 @@ def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     except TypeError as e:
         mass = 0
         message = "Cant get weight: {}".format(spec_pname)
-        log_error(message)
+        log_error(message, holo_num)
     try:
         coating_area = get_coating_area(obj_id)
     except TypeError as e:
         coating_area = 0
         message = "Cant get area: {}".format(spec_pname)
-        log_error(message)
+        log_error(message, holo_num)
     net_area = coating_area
 
     rs.SetUserText(obj_id, "01_POSITION", position)
