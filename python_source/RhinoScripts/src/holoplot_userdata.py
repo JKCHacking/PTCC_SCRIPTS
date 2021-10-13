@@ -44,6 +44,7 @@ def main():
 
 def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     spec_pname = get_specific_part_name(obj_id)
+    print("Working on {}".format(spec_pname))
     position = get_position(spec_pname)
     revision = get_revision()
     article_at = get_article_at(spec_pname)
