@@ -81,6 +81,7 @@ def get_multiparts(holoplot_num):
     all_obj_ids = rs.GetObjects("Select parts to export stp")
     for obj_id in all_obj_ids:
         if rs.IsPolysurface(obj_id):
+            print("Working on: {}".format(get_specific_part_name(obj_id)))
             ids_to_export = []
             full_path = "H:\\Desktop\\projects\\holoplot\\{}\\{}"
             txt_id = search_nearest_text(obj_id)
