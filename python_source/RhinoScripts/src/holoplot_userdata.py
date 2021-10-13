@@ -56,8 +56,7 @@ def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     category = get_category(spec_pname)
     material = get_material(group)
     template_at = get_template_at(group, category)
-    template_de = get_template_de(group, category)
-    template_name_de = get_template_name_de(group)
+    template_de, template_name_de = get_template(obj_id)
     name = get_name(spec_pname, category)
     length, width, height = get_dimensions(obj_id)
     gross_area = get_gross_area(length, width)
@@ -134,29 +133,30 @@ def get_article_de(spec_name):
     return article_de
 
 
-def get_template_de(group, category):
-    template_de = ""
-    if group == "AL sheet":
-        if "Single" in category:
-            template_de = "V-AL09"
-        elif "Assembly" in category:
-            template_de = "V-AL21"
-    elif group == "AL profile":
-        if "Single" in category:
-            template_de = "V-AL35"
-    elif group == "SS sheet":
-        if "Single" in category:
-            template_de = "V-VA09"
-    return template_de
-
-
-def get_template_name_de(group):
+def get_template(obj_id):
     template_name_de = ""
-    if "AL" in group:
-        template_name_de = "AL-Element"
-    elif "SS" in group:
+    template_de = ""
+    layer = rs.ObjectLayer(obj_id)
+    base_layer_name = layer.split("::")[-1]
+    if "top chord" in base_layer_name or \
+        "bottom chord" in base_layer_name or \
+        "vertical part" in base_layer_name or \
+        "extension part" in base_layer_name or \
+        "end part" in base_layer_name:
+        template_de = "V-AL09"
+        template_name_de = "AL-Blechteil"
+    elif "horizontal part" in base_layer_name or \
+        "diagonal part" in base_layer_name or \
+        "profile" in base_layer_name:
+        template_de = "V-AL35"
+        template_name_de = "AL-Profilzuschnitt"
+    elif "connection part" in base_layer_name:
+        template_de = "V-VA09"
         template_name_de = "VA-Blechteil"
-    return template_name_de
+    elif "TRUSS" in base_layer_name:
+        template_de = "V-AL21"
+        template_name_de = "AL-Element"
+    return template_de, template_name_de
 
 
 def get_name(spec_name, category):
