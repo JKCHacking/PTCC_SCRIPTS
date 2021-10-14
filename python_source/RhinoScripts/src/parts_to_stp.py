@@ -104,15 +104,24 @@ def get_threads(bb_points):
     return thread_ids
 
 
-def convert_parts_to_stp(holoplot_num, sel_obj_ids):
+def convert_parts_to_stp(holoplot_num, sel_obj_ids, has_thread=False, has_other_txt=False):
     for obj_id in sel_obj_ids:
         part_name = get_specific_part_name(obj_id)
         print("Working on: {}".format(part_name))
         if rs.IsPolysurface(obj_id) and "threaded" not in part_name:
             bb_points = get_min_bb(obj_id)
             engraving_id = get_engravings(obj_id)
-            thread_ids = get_threads(bb_points)
-            other_text_ids = get_other_texts(bb_points)
+
+            if has_thread:
+                thread_ids = get_threads(bb_points)
+            else:
+                thread_ids = []
+
+            if has_other_txt:
+                other_text_ids = get_other_texts(bb_points)
+            else:
+                other_text_ids = []
+
             if engraving_id:
                 lying_xform = get_lying_plane_xform(bb_points)
                 xform_part_id = tranform_objects([obj_id], lying_xform)[0]
@@ -154,8 +163,27 @@ def log_error(message, holo_num):
 
 def main():
     holoplot_num = rs.GetString("Holoplot Number")
+    has_other_txt = rs.GetString("Has Other Text?", defaultString="no", strings=["yes", "no"])
+    has_thread = rs.GetString("Has Threads?", defaultString="no", strings=["yes", "no"])
     sel_obj_ids = rs.GetObjects("Select parts to export stp")
-    convert_parts_to_stp(holoplot_num, sel_obj_ids)
+
+    if has_other_txt == "yes":
+        has_other_txt = True
+    elif has_other_txt == "no":
+        has_other_txt = False
+    else:
+        print("Has other texts invalid input")
+        return
+
+    if has_thread == "yes":
+        has_thread = True
+    elif has_thread == "no":
+        has_thread = False
+    else:
+        print("Has thread invalid input ")
+        return
+
+    convert_parts_to_stp(holoplot_num, sel_obj_ids, has_thread, has_other_txt)
 
 
 if __name__ == "__main__":
