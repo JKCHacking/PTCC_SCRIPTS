@@ -106,10 +106,10 @@ def get_threads(bb_points):
 
 def convert_parts_to_stp(holoplot_num, sel_obj_ids):
     for obj_id in sel_obj_ids:
-        if rs.IsPolysurface(obj_id):
+        part_name = get_specific_part_name(obj_id)
+        print("Working on: {}".format(part_name))
+        if rs.IsPolysurface(obj_id) and "threaded" not in part_name:
             bb_points = get_min_bb(obj_id)
-            part_name = get_specific_part_name(obj_id)
-            print("Working on: {}".format(part_name))
             engraving_id = get_engravings(obj_id)
             thread_ids = get_threads(bb_points)
             other_text_ids = get_other_texts(bb_points)
