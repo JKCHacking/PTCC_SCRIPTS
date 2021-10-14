@@ -163,7 +163,8 @@ def log_error(message, holo_num):
 
 def main():
     holoplot_num = rs.GetString("Holoplot Number")
-    result = rs.GetBoolean("Options", [("Threads", "No", "Yes"), ("Other Texts", "No", "Yes")], (False, False))
+    items = ("Threads", "No", "Yes"), ("OtherTexts", "No", "Yes")
+    result = rs.GetBoolean("Options", items, (False, False))
     sel_obj_ids = rs.GetObjects("Select parts to export stp")
     convert_parts_to_stp(holoplot_num, sel_obj_ids, result[0], result[1])
 
