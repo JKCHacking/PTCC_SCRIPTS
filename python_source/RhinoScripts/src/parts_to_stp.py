@@ -163,27 +163,9 @@ def log_error(message, holo_num):
 
 def main():
     holoplot_num = rs.GetString("Holoplot Number")
-    has_other_txt = rs.GetString("Has Other Text?", defaultString="no", strings=["yes", "no"])
-    has_thread = rs.GetString("Has Threads?", defaultString="no", strings=["yes", "no"])
+    result = rs.GetBoolean("Options", [("Threads", "No", "Yes"), ("Other Texts", "No", "Yes")], (False, False))
     sel_obj_ids = rs.GetObjects("Select parts to export stp")
-
-    if has_other_txt == "yes":
-        has_other_txt = True
-    elif has_other_txt == "no":
-        has_other_txt = False
-    else:
-        print("Has other texts invalid input")
-        return
-
-    if has_thread == "yes":
-        has_thread = True
-    elif has_thread == "no":
-        has_thread = False
-    else:
-        print("Has thread invalid input ")
-        return
-
-    convert_parts_to_stp(holoplot_num, sel_obj_ids, has_thread, has_other_txt)
+    convert_parts_to_stp(holoplot_num, sel_obj_ids, result[0], result[1])
 
 
 if __name__ == "__main__":
