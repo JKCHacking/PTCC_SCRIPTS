@@ -83,44 +83,31 @@ def get_engravings(part_id):
     return txt_id
 
 
-def get_other_texts(bb_points):
+def get_other_texts(sel_oth_txt_ids, bb_points):
     other_text_ids = []
-    all_obj_ids = rs.AllObjects()
-    for obj_id in all_obj_ids:
-        obj_name = rs.ObjectLayer(obj_id).split("::")[-1]
-        if rs.IsText(obj_id) and rs.TextObjectText(obj_id) not in obj_name and rs.IsObjectInBox(obj_id, bb_points):
+    for obj_id in sel_oth_txt_ids:
+        if rs.IsObjectInBox(obj_id, bb_points):
             other_text_ids.append(obj_id)
     return other_text_ids
 
 
-def get_threads(bb_points):
+def get_threads(sel_thread_ids, bb_points):
     thread_ids = []
-    # find all threads that's inside the part
-    all_obj_ids = rs.AllObjects()
-    for obj_id in all_obj_ids:
-        obj_name = rs.ObjectLayer(obj_id).split("::")[-1]
-        if rs.IsPolysurface(obj_id) and "threaded" in obj_name and rs.IsObjectInBox(obj_id, bb_points):
+    for obj_id in sel_thread_ids:
+        if rs.IsObjectInBox(obj_id, bb_points):
             thread_ids.append(obj_id)
     return thread_ids
 
 
-def convert_parts_to_stp(holoplot_num, sel_obj_ids, has_thread=False, has_other_txt=False):
+def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_text_ids):
     for obj_id in sel_obj_ids:
         part_name = get_specific_part_name(obj_id)
         print("Working on: {}".format(part_name))
         if rs.IsPolysurface(obj_id) and "threaded" not in part_name:
             bb_points = get_min_bb(obj_id)
             engraving_id = get_engravings(obj_id)
-
-            if has_thread:
-                thread_ids = get_threads(bb_points)
-            else:
-                thread_ids = []
-
-            if has_other_txt:
-                other_text_ids = get_other_texts(bb_points)
-            else:
-                other_text_ids = []
+            thread_ids = get_threads(sel_thread_ids, bb_points)
+            other_text_ids = get_other_texts(sel_other_text_ids, bb_points)
 
             if engraving_id:
                 lying_xform = get_lying_plane_xform(bb_points)
@@ -166,7 +153,14 @@ def main():
     items = ("Threads", "No", "Yes"), ("OtherTexts", "No", "Yes")
     result = rs.GetBoolean("Options", items, (False, False))
     sel_obj_ids = rs.GetObjects("Select parts to export stp")
-    convert_parts_to_stp(holoplot_num, sel_obj_ids, result[0], result[1])
+
+    thread_ids = []
+    other_text_ids = []
+    if result[0]:
+        thread_ids = rs.GetObjects("Select threads")
+    if result[1]:
+        other_text_ids = rs.GetObjects("Select other texts")
+    convert_parts_to_stp(holoplot_num, sel_obj_ids, thread_ids, other_text_ids)
 
 
 if __name__ == "__main__":
