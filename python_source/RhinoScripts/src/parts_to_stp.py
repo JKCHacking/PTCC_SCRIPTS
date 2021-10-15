@@ -28,14 +28,29 @@ def get_min_bb(obj_id):
     return bb_points
 
 
-def get_lying_plane_xform(bb_points):
+def get_lying_plane_xform(bb_points, engraving_pt):
     box = rs.AddBox(bb_points)
     surfaces = rs.ExplodePolysurfaces(box)
     areas = []
     for surface in surfaces:
         areas.append(rs.SurfaceArea(surface))
-    lying_plane = surfaces[areas.index(max(areas))]
-    rs.Command("CPlane _O _SelID {}".format(lying_plane), echo=False)
+    # get the 2 highest areas
+    if areas[0] > areas[1]:
+        m, m2 = areas[0], areas[1]
+    else:
+        m, m2 = areas[1], areas[0]
+    for x in areas[2:]:
+        if x > m2:
+            if x > m:
+                m2, m = m, x
+            else:
+                m2 = x
+    surface1 = surfaces[areas.index(m)]
+    surface2 = surfaces[areas.index(m2)]
+    if rs.IsPointOnSurface(surface1, engraving_pt):
+        rs.Command("CPlane _O _SelID {}".format(surface1), echo=False)
+    else:
+        rs.Command("CPlane _O _SelID {}".format(surface2), echo=False)
     curr_cplane = rs.ViewCPlane()
     top_plane = rs.ViewCPlane("Top")
     xform = rg.Transform.PlaneToPlane(curr_cplane, top_plane)
@@ -110,7 +125,8 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
             other_text_ids = get_other_texts(sel_other_text_ids, bb_points)
 
             if engraving_id:
-                lying_xform = get_lying_plane_xform(bb_points)
+                engraving_pt = rs.TextObjectPoint(engraving_id)
+                lying_xform = get_lying_plane_xform(bb_points, engraving_pt)
                 xform_part_id = tranform_objects([obj_id], lying_xform)[0]
                 xform_eng_id = tranform_objects([engraving_id], lying_xform)[0]
                 xform_thread_ids = tranform_objects(thread_ids, lying_xform)
