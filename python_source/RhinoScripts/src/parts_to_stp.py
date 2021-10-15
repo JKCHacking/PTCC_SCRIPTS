@@ -141,7 +141,7 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 ids_to_export.extend(xform_thread_ids)
                 ids_to_export.extend(xform_eng_curve_ids)
                 ids_to_export.extend(xform_oth_txt_curve_ids)
-                filename = "{}.stp".format(get_specific_part_name(obj_id))
+                filename = "{}_00.stp".format(get_specific_part_name(obj_id))
                 full_path = "H:\\Desktop\\projects\\holoplot\\{}\\{}".format("H" + holoplot_num, filename)
                 export_to_stp(full_path, ids_to_export)
                 rs.DeleteObject(xform_part_id)
