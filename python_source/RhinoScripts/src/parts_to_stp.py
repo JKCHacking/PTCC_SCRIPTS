@@ -115,10 +115,13 @@ def get_threads(sel_thread_ids, bb_points):
 
 
 def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_text_ids):
+    already_done = []
     for obj_id in sel_obj_ids:
         part_name = get_specific_part_name(obj_id)
         print("Working on: {}".format(part_name))
-        if rs.IsPolysurface(obj_id) and "threaded" not in part_name:
+        if rs.IsPolysurface(obj_id) and\
+                "threaded" not in part_name and\
+                part_name not in already_done:
             bb_points = get_min_bb(obj_id)
             engraving_id = get_engravings(obj_id)
             thread_ids = get_threads(sel_thread_ids, bb_points)
@@ -152,6 +155,7 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 rs.DeleteObjects(xform_oth_txt_curve_ids)
             else:
                 log_error("Cannot find engraving for {}".format(part_name), holoplot_num)
+            already_done.append(part_name)
 
 
 def log_error(message, holo_num):
