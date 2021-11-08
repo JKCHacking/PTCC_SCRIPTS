@@ -23,6 +23,9 @@
 	(setq partColNum (findColNumber "Part Name"))
 	(if (isTableBlockOK)
 		(progn
+      (if (not (funcGroup "isSync"))
+          (funcGroup "updateTable")
+      )
 			(setq tableReactor (vlr-object-reactor (list (vlax-ename->vla-object table)) NIL '((:vlr-modified . syncParametricBlock))))
 			(setq paramBlockReactor (vlr-object-reactor (list (vlax-ename->vla-object paramBlock)) NIL '((:vlr-modified . syncTable))))
 		)
