@@ -1,3 +1,9 @@
+;; +----------------------------------------------------------------+
+;; | Author: Joshnee Kim Cunanan                                    |
+;; | Version: 1.0                                                   |
+;; | Description: Driving parametric blocks with tables using LISP  |
+;; +----------------------------------------------------------------+
+
 (vl-load-com)
 
 (defun C:linkBlockTable(/ ssParamBlocks paramBlock table tableReactor paramBlockReactor)
