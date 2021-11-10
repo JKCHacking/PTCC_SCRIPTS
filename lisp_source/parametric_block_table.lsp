@@ -1,13 +1,12 @@
 (vl-load-com)
 
-(defun C:linkBlockTable()
+(defun C:linkBlockTable(/ ssParamBlocks paramBlock table tableReactor paramBlockReactor)
 ;; Description:
 ;; ===========
 ;; This function is the main entry point of the script.
 ;; It links the table and the parametric block and does some checkings if they fit for linking.
 ;; It checks if the table and parametric block are okay, it automatically syncs the table
-;; from the parameteric block. right now it only accepts 1:1 relationship between 
-;; a parametric block and a table.
+;; from the parameteric block.
 ;;
 ;; Params:
 ;; =======
@@ -17,44 +16,37 @@
 ;; =======
 ;; none
 
+	;; pick the parametric blocks
+	(princ "\nPick parametric blocks to link: ")
+	(setq ssParamBlocks (ssget '((0 . "INSERT"))))
+	(princ "\n")
 	(setq table (car (entsel "Pick the table:")))
-	(setq paramBlock (car (entsel "Pick the Parametric Block:")))
-	(setq compName (bmlispget "ComponentName" (getComponentHandle paramBlock)))
-	(setq partColNum (findColNumber "Part Name"))
-	(if (isTableBlockOK)
-		(progn
-      (if (not (funcGroup "isSync"))
-          (funcGroup "updateTable")
-      )
-			(setq tableReactor (vlr-object-reactor (list (vlax-ename->vla-object table)) NIL '((:vlr-modified . syncParametricBlock))))
-			(setq paramBlockReactor (vlr-object-reactor (list (vlax-ename->vla-object paramBlock)) NIL '((:vlr-modified . syncTable))))
+	(setq PARTCOLNUM (findColNumber table "Part Name"))
+
+	(if (> (sslength ssParamBlocks) 0)
+		(repeat (setq i (sslength ssParamBlocks))
+			(setq paramBlock (ssname ssParamBlocks (setq i (1- i))))
+			(if (isTableBlockOK table paramBlock)
+				(progn
+					(if (not (isSync table paramBlock))
+						(updateTable table paramBlock)
+					)
+					(setq tableReactor (vlr-object-reactor (list (vlax-ename->vla-object table))
+															paramBlock 
+															'((:vlr-modified . syncParametricBlock)))
+					)
+					(setq paramBlockReactor (vlr-object-reactor (list (vlax-ename->vla-object paramBlock))
+																table
+																'((:vlr-modified . syncTable)))
+					)
+				)
+			)
 		)
 	)
+  (princ)
 )
 
-;; ====================================TESTING FUNCTIONS======================================
-(defun T:testInit()
-	(setq table (handent "123"))
-	(setq paramBlock (handent "9B"))
-	(setq compName (bmlispget "ComponentName" (getComponentHandle paramBlock)))
-	(setq partColNum (findColNumber "Part Name"))
-)
-
-(defun T:testUpdateTable()
-	(funcGroup "updateTable")
-)
-(defun T:testUpdateBlock()
-	(funcGroup "updateBlock")
-)
-(defun T:testIsSync()
-	(funcGroup "isSync")
-)
-(defun T:testIsTableBlockOK()
-	(isTableBlockOK)
-)
-;; =======================================END=====================================================
-
-(defun syncTable()
+(defun syncTable(paramBlock reactor args / table)
 ;; Description:
 ;; ============
 ;; This callback function is called when bricscad detects changes in the parametric block.
@@ -62,18 +54,22 @@
 ;;
 ;; Parameters:
 ;; ===========
-;; none
+;; paramBlock - VLA-OBJECT, this is the object the has been modified
+;; reactor - VLA-REACTOR, this is the reactor object
+;; args - LIST, list of arguments from the reactor callback function. (VLA-MODIFIED 0 args)
 ;;
 ;; Returns:
 ;; ========
 ;; none
 
-	(if (not (funcGroup "isSync"))
-		(funcGroup "updateTable")
+	(setq paramBlock (vlax-vla-object->ename paramBlock))
+	(setq table (vlr-data reactor))
+	(if (not(isSync table paramBlock))
+		(updateTable table paramBlock)
 	)
 )
 
-(defun syncParametricBlock()
+(defun syncParametricBlock(table reactor args / paramBlock)
 ;; Description:
 ;; ============
 ;; This callback function is called when bricscad detects changes in the table.
@@ -81,93 +77,131 @@
 ;;
 ;; Parameters:
 ;; ===========
-;; none
+;; paramBlock - VLA-OBJECT, this is the object the has been modified
+;; reactor - VLA-REACTOR, this is the reactor object
+;; args - LIST, list of arguments from the reactor callback function. (VLA-MODIFIED 0 args)
 ;;
 ;; Returns:
 ;; ========
 ;; none
 
-	(if (not (funcGroup "isSync"))
-		(funcGroup "updateBlock")
+	(setq table (vlax-vla-object->ename table))
+	(setq paramBlock (vlr-data reactor))
+	(if (not(isSync table paramBlock))
+		(updateBlock table paramBlock)
 	)
 )
 
-(defun funcGroup(funcName / paramPairs synced partRowNum paramName paramVal pair tableParamVal)
+(defun updateTable(table paramBlock / compName paramPairs partRowNum paramName paramVal paramColNum pair)
 ;; Description:
 ;; ============
-;; This function contains different subfunctions.
-;; *very ugly, iknow. right now i cant think of other solution in this language.*
+;; This function updates the table parameter values based from the changes made in the parametric block.
 ;;
 ;; Parameters:
 ;; ===========
-;; funcName - STR, name of the subfunctions to be called:
-;;            updateTable - will update the cell in the table
-;;            updateBlock - will update the parameters in the parametric block
-;;            isSync - checks if the parametric block and the table are not in synced. synced means
-;;            that the parameters of the parametric block does not equal to the parameters in the table.
+;; table - ENAME, the table
+;; paramBlock - ENAME, the parametric block
 ;;
 ;; Returns:
 ;; ========
-;; If funcName is either "updateBlock" or "updateTable":
 ;; none
-;; If funcName is isSync:
-;; synced - T or -1. T means that the parametric block and table are in synced.
-;;          -1 means that the parametrick and table are not in synced.
 
-	(setq synced T)
-	(setq paramPairs (getParamPairs))
-	(setq partRowNum (findRowNumber compName partColNum))
+	(setq compName (bmlispget "ComponentName" (getComponentHandle paramBlock)))
+	(setq paramPairs (getParamPairs paramBlock))
+	(setq partRowNum (findRowNumber table compName PARTCOLNUM))
 	(foreach pair paramPairs
 		(setq paramName (car pair))
 		(setq paramVal (cdr pair))
-		(setq paramColNum (findColNumber paramName))
-		(cond
-			((= funcName "updateTable")
-				(vla-settext (vlax-ename->vla-object table) partRowNum paramColNum paramVal)
-				(princ)
-			)
-			((= funcName "updateBlock")
-				(setq tableParamVal (vla-gettext (vlax-ename->vla-object table) partRowNum paramColNum))
-				(command "_-BMPARAMETERS" paramBlock "" "Edit" paramName tableParamVal)
-				(princ)
-			)
-			((= funcName "isSync")
-				;; check if the parameter value is not equal to the current value in the table.
-				;; if not then they are not synced.
-				(cond
-					((not (eq paramVal (atoi (vla-gettext (vlax-ename->vla-object table) partRowNum paramColNum))))
-						(setq synced NIL)
-					)
-				)
-				synced
-			)
-		)
+		(setq paramColNum (findColNumber table paramName))
+		(vla-settext (vlax-ename->vla-object table) partRowNum paramColNum paramVal)
+		(princ)
 	)
 )
 
-(defun isTableBlockOK(/ isOK partRowNum paramPairs found paramName paramVal pair paramColNum)
+(defun updateBlock(table paramBlock / compName paramPairs partRowNum paramName paramVal paramColNum pair)
+;; Description:
+;; ============
+;; This function updates the values in the parametric block according to the changes made in the table.
+;; For now this function modifies all parameters at once.
+;;
+;; Parameters:
+;; ===========
+;; table - ENAME, the table
+;; paramBlock - ENAME, the parametric block
+;;
+;; Returns:
+;; ========
+;; none
+
+	(setq compName (bmlispget "ComponentName" (getComponentHandle paramBlock)))
+	(setq paramPairs (getParamPairs paramBlock))
+	(setq partRowNum (findRowNumber table compName PARTCOLNUM))
+	(foreach pair paramPairs
+		(setq paramName (car pair))
+		(setq paramVal (cdr pair))
+		(setq paramColNum (findColNumber table paramName))
+		(setq tableParamVal (vla-gettext (vlax-ename->vla-object table) partRowNum paramColNum))
+		(command "_-BMPARAMETERS" paramBlock "" "Edit" paramName tableParamVal)
+		(princ)
+	)
+)
+
+(defun isSync(table paramBlock / compName paramPairs partRowNum paramName paramVal paramColNum synced pair)
+;; Description:
+;; ============
+;; This function checks if the table and the parametric block are in synced. Synced means that the parameter values
+;; in the parametric block are equal to the values in the table
+;;
+;; Parameters:
+;; ===========
+;; table - ENAME, the table
+;; paramBlock - ENAME, the parametric block
+;;
+;; Returns:
+;; ========
+;; synced - T/-1, T if they are synced. -1 if they are not synced.
+
+	(setq synced T)
+	(setq compName (bmlispget "ComponentName" (getComponentHandle paramBlock)))
+	(setq paramPairs (getParamPairs paramBlock))
+	(setq partRowNum (findRowNumber table compName PARTCOLNUM))
+	(foreach pair paramPairs
+		(setq paramName (car pair))
+		(setq paramVal (cdr pair))
+		(setq paramColNum (findColNumber table paramName))
+		(if (not (eq paramVal (atoi (vla-gettext (vlax-ename->vla-object table) partRowNum paramColNum))))
+			(setq synced NIL)
+		)
+	)
+  synced
+)
+
+
+(defun isTableBlockOK(table paramBlock / isOK partRowNum paramPairs found paramName paramVal pair paramColNum compName)
 ;; Description:
 ;; ============
 ;; This function checks some compatibility issues of the table and the parametric block.
 ;;
 ;; Parameters:
 ;; ===========
-;; none
+;; table - ENAME, the table
+;; paramBlock - ENAME, the parametric block
 ;;
 ;; Returns:
 ;; ========
 ;; isOK - T/NIL (T if table and parametrics blocks does not have compatibility issues, NIL otherwise)
 
 	(setq isOK T)
+	(setq compName (bmlispget "ComponentName" (getComponentHandle paramBlock)))
 	;; check if the "Part Name" Column is in the Columns of the table
-	(if (= partColNum -1)
+	(if (= PARTCOLNUM -1)
 		(progn
 			(princ "Cannot find Part Name column\n")
 			(setq isOK NIL)
 		)
 		(progn
 			;; check if the Component Name is in the Table
-			(setq partRowNum (findRowNumber compName partColNum))
+			(setq partRowNum (findRowNumber table compName partColNum))
 			(if (= partRowNum -1)
 				(progn
 					(princ "Cannot find Component Name in the Table\n")
@@ -175,12 +209,12 @@
 				)
 				(progn
 					;; check if all the parameters are on the Columns of the Table
-					(setq paramPairs (getParamPairs))
+					(setq paramPairs (getParamPairs paramBlock))
 					(setq found T)
 					(foreach pair paramPairs
 						(setq paramName (car pair))
 						(setq paramVal (cdr pair))
-						(setq paramColNum (findColNumber paramName))
+						(setq paramColNum (findColNumber table paramName))
 						(if (= paramColNum -1)
 							(setq found NIL)
 						)
@@ -198,7 +232,7 @@
 	isOK
 )
 
-(defun getParamPairs( / compHandle paramNames paramPairs paramVal paramName)
+(defun getParamPairs(paramBlock / compHandle paramNames paramPairs paramVal paramName)
 ;; Description:
 ;; ============
 ;; This function gets the parameter names and it value from the parametric block and
@@ -206,7 +240,7 @@
 ;;
 ;; Parameters:
 ;; ===========
-;; none
+;; paramBlock - ENAME, the parametric block.
 ;;
 ;; Returns:
 ;; ========
@@ -252,13 +286,14 @@
 	componentHandle
 )
 
-(defun findColNumber(colName / nCols currCol found colName colNumber)
+(defun findColNumber(table colName / nCols currCol found colNumber)
 ;; Description:
 ;; ============
 ;; Finds the column number of the specified column name in the table
 ;;
 ;; Parameters:
 ;; ===========
+;; table - ENAME, table to use for lookup.
 ;; colName - STR, column name to find its column number
 ;;
 ;; Returns:
@@ -284,13 +319,14 @@
 	colNumber
 )
 
-(defun findRowNumber(rowName colNumber / nRows found rowNumber currRow)
+(defun findRowNumber(table rowName colNumber / nRows found rowNumber currRow)
 ;; Description:
 ;; ============
 ;; Finds the row number given its rowName and colNumber in the table.
 ;;
 ;; Parameters:
 ;; ===========
+;; table - ENAME, table to use for lookup.
 ;; rowName - STR, row name
 ;; colNumber - INT, column number
 ;;
