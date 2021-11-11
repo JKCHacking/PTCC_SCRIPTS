@@ -1,7 +1,8 @@
 ;; +----------------------------------------------------------------+
 ;; | Author: Joshnee Kim Cunanan                                    |
+;; | Date: 11/11/2021                                               |
 ;; | Version: 1.0                                                   |
-;; | Description: Driving parametric blocks with tables using LISP  |
+;; | Description: Linking parametric blocks and table using LISP    |
 ;; +----------------------------------------------------------------+
 
 (vl-load-com)
