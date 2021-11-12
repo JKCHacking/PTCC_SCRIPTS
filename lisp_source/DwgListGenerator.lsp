@@ -1,7 +1,7 @@
 (vl-load-com)
 
 (defun PTCC:generateList(/ chosenFiles activeDoc mspace dTable baseFile filePath currRow textHeight)
-    (setq chosenFiles (LM:getfiles "Select DWG files:" nil "dwg"))
+    (setq chosenFiles (LM:getfiles "Select DWG files" nil "dwg"))
     (setq nRows (length chosenFiles))
     (setq activeDoc (vla-get-activedocument (vlax-get-acad-object)))
     (setq mspace (vla-get-modelspace activeDoc))
