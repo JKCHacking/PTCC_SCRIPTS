@@ -1,3 +1,10 @@
+;; +-------------------------------------------------------+
+;; | Author: Joshnee Kim Cunanan                           |
+;; | Date: 12/11/2021                                      |
+;; | Version: 1                                            |
+;; | Description: Purge and Audit all selected DWG files   |
+;; +-------------------------------------------------------+
+
 (vl-load-com)
 
 

@@ -1,3 +1,11 @@
+;; +-------------------------------------------------------+
+;; | Author: Joshnee Kim Cunanan                           |
+;; | Date: 12/11/2021                                      |
+;; | Version: 1                                            |
+;; | Description: Creates a table from selected DWG files  |
+;; +-------------------------------------------------------+
+
+
 (vl-load-com)
 
 (defun PTCC:generateList(/ chosenFiles activeDoc mspace dTable baseFile filePath currRow textHeight)
