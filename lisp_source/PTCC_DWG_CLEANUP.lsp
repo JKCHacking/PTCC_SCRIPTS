@@ -1,14 +1,17 @@
-;; +-------------------------------------------------------+
-;; | Author: Joshnee Kim Cunanan                           |
-;; | Date: 12/11/2021                                      |
-;; | Version: 1                                            |
-;; | Description: Purge and Audit all selected DWG files   |
-;; +-------------------------------------------------------+
+;; +--------------------------------------------------------------------------+
+;; | Author: Joshnee Kim Cunanan                                              |
+;; | Date: 12/11/2021                                                         |
+;; | Version: 1                                                               |
+;; | Description: This script is used by PTCC as a final clean up             |
+;; | before submitting the drawings to the client. This will ask for DWG files|
+;; | as input to the user and will purge and audit then zoom extents          |
+;; | each layouts.                                                            |
+;; +--------------------------------------------------------------------------+
 
 (vl-load-com)
 
 
-(defun PTCC:purgeAudit()
+(defun PTCC:cleanup(/ activeDoc layouts layout)
     (setq chosenFiles (LM:getfiles "Select DWG files" nil "dwg"))
     (setq acadObject (vlax-get-acad-object))
     (foreach fp chosenFiles
@@ -22,8 +25,14 @@
         (vla-purgeall activeDoc)
         ;; audit
         (vla-auditinfo activeDoc :vlax-true)
-        ;; zoom extent document
-        (vla-zoomextents acadObject)
+        ;; get all the layout names, loop through it then zoom extents.
+        (setq layouts (vla-get-Layouts activeDoc))
+        (repeat (setq i (vla-get-Count layouts))
+            (setq layout (vla-Item layouts (setq i (1- i))))
+            (setvar "ctab" (vla-get-Name layout))
+            (vla-zoomextents acadObject)
+        )
+        (setvar 'tilemode 0)
         ;; save document
         (vla-save activeDoc)
         ;; close document
