@@ -11,26 +11,47 @@
 (vl-load-com)
 
 
-(defun PTCC:cleanup(/ activeDoc layouts layout)
+(defun PTCC:cleanup(/ activeDoc layouts layout isFix chosenFiles acadObject fp docName i layoutName newLayoutName)
+    (setq isFix (getString "\nDo you want to fix layout names as well? [y/n]: "))
     (setq chosenFiles (LM:getfiles "Select DWG files" nil "dwg"))
     (setq acadObject (vlax-get-acad-object))
+    ;; loop all selected files
     (foreach fp chosenFiles
         (setq activeDoc (vla-open (vla-get-documents acadObject) fp))
+        (setq docName (vl-filename-base (vla-get-FullName activeDoc)))
         (vla-activate activeDoc)
+        (princ "\nPurging document 5 times...")
         ;; purge 5 times
         (vla-purgeall activeDoc)
         (vla-purgeall activeDoc)
         (vla-purgeall activeDoc)
         (vla-purgeall activeDoc)
         (vla-purgeall activeDoc)
+        (princ "\nAuditing...")
         ;; audit
         (vla-auditinfo activeDoc :vlax-true)
         ;; get all the layout names, loop through it then zoom extents.
+        (if (= isFix "y")
+            (princ "\nDoing Zoom Extents and Fixing Layout Names...")
+            (princ "\nDoing Zoom Extents...")
+        )
         (setq layouts (vla-get-Layouts activeDoc))
         (repeat (setq i (vla-get-Count layouts))
             (setq layout (vla-Item layouts (setq i (1- i))))
-            (setvar "ctab" (vla-get-Name layout))
+            (setq layoutName (vla-get-Name layout))
+            (setvar "ctab" layoutName)
             (vla-zoomextents acadObject)
+            ;; fix layout names
+            (if (= isFix "y")
+                (progn
+                    (if (not(= layoutName "Model"))
+                        (progn
+							(setq newLayoutName (strcat docName "-" (rtos i 2)))
+							(vla-put-Name layout newLayoutName)
+						)
+                    )
+                )
+            )
         )
         (setvar 'tilemode 0)
         ;; save document
