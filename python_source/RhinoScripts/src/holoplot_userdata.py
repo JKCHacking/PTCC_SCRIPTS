@@ -44,7 +44,7 @@ def main():
 
 
 def log_error(message, holo_num):
-    error_file = "userdata_err_H{}.txt".format(holo_num)
+    error_file = "H:\\Desktop\\projects\\holoplot\\H{holo_num}\\userdata_err_H{holo_num}.txt".format(holo_num=holo_num)
     if os.path.exists(error_file):
         mode = "a"
     else:
