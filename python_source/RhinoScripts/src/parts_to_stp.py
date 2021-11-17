@@ -176,7 +176,15 @@ def log_error(message, holo_num):
         err_f.write("[{}]: {}\n".format(datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), message))
 
 
+def reset_rhino_view():
+    # reset views
+    rs.Command("_4View")
+    rs.Command("_4View")
+    rs.Command("_-Zoom _E")
+
+
 def main():
+    reset_rhino_view()
     holoplot_num = rs.GetString("Holoplot Number")
     items = ("Threads", "No", "Yes"), ("OtherTexts", "No", "Yes")
     result = rs.GetBoolean("Options", items, (False, False))
