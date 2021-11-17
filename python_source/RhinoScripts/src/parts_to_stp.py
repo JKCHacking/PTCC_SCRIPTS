@@ -47,11 +47,19 @@ def get_lying_plane_xform(bb_points, engraving_pt):
                 m2 = x
     surface1 = surfaces[areas.index(m)]
     surface2 = surfaces[areas.index(m2)]
-    if rs.IsPointOnSurface(surface1, engraving_pt):
+
+    # determine the right plane by getting the nearest to the point.
+    centroid_surf1 = rs.SurfaceAreaCentroid(surface1)[0]
+    centroid_surf2 = rs.SurfaceAreaCentroid(surface2)[0]
+    if rs.Distance(engraving_pt, centroid_surf1) < rs.Distance(engraving_pt, centroid_surf2):
         rs.Command("CPlane _O _SelID {}".format(surface1), echo=False)
     else:
         rs.Command("CPlane _O _SelID {}".format(surface2), echo=False)
     curr_cplane = rs.ViewCPlane()
+    # orient the cplane on the correct orientation.
+    if curr_cplane.XAxis[0] < 0:
+        rotated = rs.RotatePlane(curr_cplane, 180, curr_cplane.ZAxis)
+        curr_cplane = rs.ViewCPlane(None, rotated)
     top_plane = rs.ViewCPlane("Top")
     xform = rg.Transform.PlaneToPlane(curr_cplane, top_plane)
     rs.DeleteObject(box)
@@ -159,7 +167,7 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
 
 
 def log_error(message, holo_num):
-    error_file = "parts2stp_err_H{}.txt".format(holo_num)
+    error_file = "H:\\Desktop\\projects\\holoplot\\H{holo_num}\\parts2stp_err_H{holo_num}.txt".format(holo_num=holo_num)
     if os.path.exists(error_file):
         mode = "a"
     else:
