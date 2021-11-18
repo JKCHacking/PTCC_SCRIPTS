@@ -122,7 +122,7 @@ def get_threads(sel_thread_ids, bb_points):
     return thread_ids
 
 
-def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_text_ids):
+def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_text_ids, mirror_text):
     already_done = []
     for obj_id in sel_obj_ids:
         part_name = get_specific_part_name(obj_id)
@@ -137,11 +137,18 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
 
             if engraving_id:
                 engraving_pt = rs.TextObjectPoint(engraving_id)
-                lying_xform = get_lying_plane_xform(bb_points, engraving_pt)
-                xform_part_id = tranform_objects([obj_id], lying_xform)[0]
-                xform_eng_id = tranform_objects([engraving_id], lying_xform)[0]
-                xform_thread_ids = tranform_objects(thread_ids, lying_xform)
-                xform_oth_txt_ids = tranform_objects(other_text_ids, lying_xform)
+                xform = get_lying_plane_xform(bb_points, engraving_pt)
+                if mirror_text:
+                    text_plane = rs.TextObjectPlane(engraving_id)
+                    start = rs.TextObjectPoint(engraving_id) + \
+                        (text_plane.YAxis * (rs.TextObjectHeight(engraving_id) / 2) * -1)
+                    end = start + (text_plane.YAxis * -10)
+                    rs.MirrorObject(engraving_id, start, end)
+                    rs.RotateObject(engraving_id, start, 180)
+                xform_part_id = tranform_objects([obj_id], xform)[0]
+                xform_eng_id = tranform_objects([engraving_id], xform)[0]
+                xform_thread_ids = tranform_objects(thread_ids, xform)
+                xform_oth_txt_ids = tranform_objects(other_text_ids, xform)
                 xform_eng_curve_ids = rs.ExplodeText(xform_eng_id)
                 xform_oth_txt_curve_ids = list()
                 for xform_oth_txt_id in xform_oth_txt_ids:
@@ -186,8 +193,8 @@ def reset_rhino_view():
 def main():
     reset_rhino_view()
     holoplot_num = rs.GetString("Holoplot Number")
-    items = ("Threads", "No", "Yes"), ("OtherTexts", "No", "Yes")
-    result = rs.GetBoolean("Options", items, (False, False))
+    items = ("Threads", "No", "Yes"), ("OtherTexts", "No", "Yes"), ("MirrorText", "No", "Yes")
+    result = rs.GetBoolean("Options", items, (False, False, False))
     sel_obj_ids = rs.GetObjects("Select parts to export stp")
 
     thread_ids = []
@@ -196,7 +203,7 @@ def main():
         thread_ids = rs.GetObjects("Select threads")
     if result[1]:
         other_text_ids = rs.GetObjects("Select other texts")
-    convert_parts_to_stp(holoplot_num, sel_obj_ids, thread_ids, other_text_ids)
+    convert_parts_to_stp(holoplot_num, sel_obj_ids, thread_ids, other_text_ids, result[2])
 
 
 if __name__ == "__main__":
