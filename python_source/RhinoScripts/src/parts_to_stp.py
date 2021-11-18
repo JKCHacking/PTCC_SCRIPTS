@@ -143,8 +143,9 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                     start = rs.TextObjectPoint(engraving_id) + \
                         (text_plane.YAxis * (rs.TextObjectHeight(engraving_id) / 2) * -1)
                     end = start + (text_plane.YAxis * -10)
-                    rs.MirrorObject(engraving_id, start, end)
-                    rs.RotateObject(engraving_id, start, 180)
+                    mirror_eng_id = rs.MirrorObject(engraving_id, start, end, True)
+                    rs.RotateObject(mirror_eng_id, start, 180)
+                    engraving_id = mirror_eng_id
                 xform_part_id = tranform_objects([obj_id], xform)[0]
                 xform_eng_id = tranform_objects([engraving_id], xform)[0]
                 xform_thread_ids = tranform_objects(thread_ids, xform)
@@ -164,6 +165,8 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 export_to_stp(full_path, ids_to_export)
                 rs.DeleteObject(xform_part_id)
                 rs.DeleteObject(xform_eng_id)
+                if mirror_text:
+                    rs.DeleteObject(engraving_id)
                 rs.DeleteObjects(xform_thread_ids)
                 rs.DeleteObjects(xform_oth_txt_ids)
                 rs.DeleteObjects(xform_eng_curve_ids)
