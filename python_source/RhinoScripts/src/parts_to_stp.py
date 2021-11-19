@@ -67,13 +67,6 @@ def get_lying_plane_xform(bb_points, engraving_pt):
     return xform
 
 
-def tranform_objects(obj_ids, xform):
-    xform_obj_ids = []
-    for obj_id in obj_ids:
-        xform_obj_ids.append(rs.TransformObject(obj_id, matrix=xform, copy=True))
-    return xform_obj_ids
-
-
 def export_to_stp(stp_filename, obj_ids):
     rs.SelectObjects(obj_ids)
     rs.Command("_-Export {} _Enter".format(stp_filename), False)
@@ -122,7 +115,7 @@ def get_threads(sel_thread_ids, bb_points):
     return thread_ids
 
 
-def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_text_ids, mirror_text):
+def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_text_ids):
     already_done = []
     for obj_id in sel_obj_ids:
         part_name = get_specific_part_name(obj_id)
@@ -138,18 +131,28 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
             if engraving_id:
                 engraving_pt = rs.TextObjectPoint(engraving_id)
                 xform = get_lying_plane_xform(bb_points, engraving_pt)
-                if mirror_text:
-                    text_plane = rs.TextObjectPlane(engraving_id)
-                    start = rs.TextObjectPoint(engraving_id) + \
-                        (text_plane.YAxis * (rs.TextObjectHeight(engraving_id) / 2) * -1)
-                    end = start + (text_plane.YAxis * -10)
-                    mirror_eng_id = rs.MirrorObject(engraving_id, start, end, True)
-                    rs.RotateObject(mirror_eng_id, start, 180)
-                    engraving_id = mirror_eng_id
-                xform_part_id = tranform_objects([obj_id], xform)[0]
-                xform_eng_id = tranform_objects([engraving_id], xform)[0]
-                xform_thread_ids = tranform_objects(thread_ids, xform)
-                xform_oth_txt_ids = tranform_objects(other_text_ids, xform)
+                xform_part_id = rs.TransformObject(obj_id, xform, True)
+                xform_eng_id = rs.TransformObject(engraving_id, xform, True)
+                xform_thread_ids = rs.TransformObjects(thread_ids, xform, True)
+                xform_oth_txt_ids = rs.TransformObjects(other_text_ids, xform, True)
+
+                # unmirror all text objects if they are in mirror form.
+                unmirror(xform_eng_id)
+                for xform_oth_txt_id in xform_oth_txt_ids:
+                    unmirror(xform_oth_txt_id)
+                # if upside-down, rotate until everything is okay.
+                text_plane = rs.TextObjectPlane(xform_eng_id)
+                diff_x = rs.WorldXYPlane().XAxis - text_plane.XAxis
+                diff_y = rs.WorldXYPlane().YAxis - text_plane.YAxis
+                while round(diff_x[0], 3) != 0 and round(diff_y[1], 3) != 0:
+                    rs.RotateObject(xform_part_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+                    rs.RotateObject(xform_eng_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+                    rs.RotateObjects(xform_thread_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+                    rs.RotateObjects(xform_oth_txt_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+                    text_plane = rs.TextObjectPlane(xform_eng_id)
+                    diff_x = rs.WorldXYPlane().XAxis - text_plane.XAxis
+                    diff_y = rs.WorldXYPlane().YAxis - text_plane.YAxis
+
                 xform_eng_curve_ids = rs.ExplodeText(xform_eng_id)
                 xform_oth_txt_curve_ids = list()
                 for xform_oth_txt_id in xform_oth_txt_ids:
@@ -165,8 +168,6 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 export_to_stp(full_path, ids_to_export)
                 rs.DeleteObject(xform_part_id)
                 rs.DeleteObject(xform_eng_id)
-                if mirror_text:
-                    rs.DeleteObject(engraving_id)
                 rs.DeleteObjects(xform_thread_ids)
                 rs.DeleteObjects(xform_oth_txt_ids)
                 rs.DeleteObjects(xform_eng_curve_ids)
@@ -174,6 +175,22 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
             else:
                 log_error("Cannot find engraving for {}".format(part_name), holoplot_num)
             already_done.append(part_name)
+
+
+def unmirror(text_id):
+    # if mirrored, unmirror
+    world_plane_xy = rs.WorldXYPlane()
+    text_plane = rs.TextObjectPlane(text_id)
+    diff_x = world_plane_xy.XAxis - text_plane.XAxis
+    diff_y = world_plane_xy.YAxis - text_plane.YAxis
+    # mirrored
+    if (round(diff_x[0], 3) != 0 and round(diff_y[1], 3) == 0) or \
+            (round(diff_x[0], 3) == 0 and round(diff_y[1], 3) != 0):
+        text_plane = rs.TextObjectPlane(text_id)
+        start = rs.TextObjectPoint(text_id) + (text_plane.YAxis * (rs.TextObjectHeight(text_id) / 2) * -1)
+        end = start + (text_plane.YAxis * -10)
+        rs.MirrorObject(text_id, start, end)
+        rs.RotateObject(text_id, start, 180, rs.WorldXYPlane().Normal)
 
 
 def log_error(message, holo_num):
@@ -196,8 +213,8 @@ def reset_rhino_view():
 def main():
     reset_rhino_view()
     holoplot_num = rs.GetString("Holoplot Number")
-    items = ("Threads", "No", "Yes"), ("OtherTexts", "No", "Yes"), ("MirrorText", "No", "Yes")
-    result = rs.GetBoolean("Options", items, (False, False, False))
+    items = ("Threads", "No", "Yes"), ("OtherTexts", "No", "Yes")
+    result = rs.GetBoolean("Options", items, (False, False))
     sel_obj_ids = rs.GetObjects("Select parts to export stp")
 
     thread_ids = []
@@ -206,7 +223,7 @@ def main():
         thread_ids = rs.GetObjects("Select threads")
     if result[1]:
         other_text_ids = rs.GetObjects("Select other texts")
-    convert_parts_to_stp(holoplot_num, sel_obj_ids, thread_ids, other_text_ids, result[2])
+    convert_parts_to_stp(holoplot_num, sel_obj_ids, thread_ids, other_text_ids)
 
 
 if __name__ == "__main__":
