@@ -16,8 +16,10 @@ def write_json_ws(holo_data, ws):
 
 
 def main():
+    holo_num = input("Holoplot Number:")
     tkinter.Tk().withdraw()
-    filename = askopenfilename(initialdir="H:/Desktop/PTCC_SCRIPTS/python_source/RhinoScripts/src",
+    filename = askopenfilename(initialdir="H:\\Desktop\\projects\\holoplot\\H{holo_num:02d}\\".format(holo_num=
+                                                                                                      int(holo_num)),
                                filetypes=[("JSON Files", ".json")])
     if os.path.exists(filename):
         with open(filename, "r") as jf:
@@ -28,7 +30,8 @@ def main():
                         "unit", "length", "width", "height", "drawing no.", "E", "F", "A", "L"]
         ws.append(column_names)
         write_json_ws(holoplot_data, ws)
-        wb.save("{} Partlist.xlsx".format(filename.split(".")[0]))
+        wb.save("H:\\Desktop\\projects\\holoplot\\H{holo_num:02d}\\H{holo_num:02d} Partlist.xlsx".format(holo_num=
+                                                                                                         int(holo_num)))
 
 
 if __name__ == "__main__":
