@@ -3,6 +3,8 @@ import datetime
 import rhinoscriptsyntax as rs
 import Rhino.Geometry as rg
 
+PRECISION = 3
+
 
 def get_min_bb(obj_id):
     bb_points = []
@@ -136,26 +138,24 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 xform_thread_ids = rs.TransformObjects(thread_ids, xform, True)
                 xform_oth_txt_ids = rs.TransformObjects(other_text_ids, xform, True)
 
-                if round(rs.TextObjectPlane(xform_eng_id).XAxis[0], 3) == 0:
+                rs.Command("Top")
+                # make it horizontal or make the X axis point to the right
+                while round(rs.TextObjectPlane(xform_eng_id).XAxis[0], PRECISION) <= 0:
                     rs.RotateObject(xform_part_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObject(xform_eng_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObjects(xform_thread_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObjects(xform_oth_txt_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
-
                 # unmirror all text objects if they are in mirror form.
                 unmirror(xform_eng_id)
                 for xform_oth_txt_id in xform_oth_txt_ids:
                     unmirror(xform_oth_txt_id)
-                # if upside-down, rotate until everything is okay.
-                diff_x = rs.WorldXYPlane().XAxis - rs.TextObjectPlane(xform_eng_id).XAxis
-                diff_y = rs.WorldXYPlane().YAxis - rs.TextObjectPlane(xform_eng_id).YAxis
-                while round(diff_x[0], 3) != 0 and round(diff_y[1], 3) != 0:
+                # make the XAxis point to the right and make the YAxis point up
+                while round(rs.TextObjectPlane(xform_eng_id).XAxis[0], PRECISION) <= 0 and \
+                        round(rs.TextObjectPlane(xform_eng_id).YAxis[1], PRECISION) <= 0:
                     rs.RotateObject(xform_part_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObject(xform_eng_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObjects(xform_thread_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObjects(xform_oth_txt_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
-                    diff_x = rs.WorldXYPlane().XAxis - rs.TextObjectPlane(xform_eng_id).XAxis
-                    diff_y = rs.WorldXYPlane().YAxis - rs.TextObjectPlane(xform_eng_id).YAxis
 
                 xform_eng_curve_ids = rs.ExplodeText(xform_eng_id)
                 xform_oth_txt_curve_ids = list()
@@ -176,29 +176,24 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 rs.DeleteObjects(xform_oth_txt_ids)
                 rs.DeleteObjects(xform_eng_curve_ids)
                 rs.DeleteObjects(xform_oth_txt_curve_ids)
+                rs.Command("Perspective")
             else:
                 log_error("Cannot find engraving for {}".format(part_name), holoplot_num)
             already_done.append(part_name)
 
 
 def unmirror(text_id):
-    # if mirrored, unmirror
-    diff_x = rs.WorldXYPlane().XAxis - rs.TextObjectPlane(text_id).XAxis
-    diff_y = rs.WorldXYPlane().YAxis - rs.TextObjectPlane(text_id).YAxis
     # mirrored
-    if (round(diff_x[0], 3) != 0 and round(diff_y[1], 3) == 0) or \
-            (round(diff_x[0], 3) == 0 and round(diff_y[1], 3) != 0):
+    if (rs.TextObjectPlane(text_id).XAxis[0] <= 0 < rs.TextObjectPlane(text_id).YAxis[1]) or \
+            (rs.TextObjectPlane(text_id).XAxis[0] > 0 >= rs.TextObjectPlane(text_id).YAxis[1]):
         start = rs.TextObjectPoint(text_id)
         end = start + (rs.TextObjectPlane(text_id).YAxis * rs.TextObjectHeight(text_id) * -1)
         mid = start + (rs.TextObjectPlane(text_id).YAxis * (rs.TextObjectHeight(text_id) / 2) * -1)
-
-        rs.Command("Top")
         rs.MirrorObject(text_id, start, end)
         rs.RotateObject(text_id,
                         mid,
                         180,
                         rs.WorldXYPlane().Normal)
-        rs.Command("Perspective")
 
 
 def log_error(message, holo_num):
