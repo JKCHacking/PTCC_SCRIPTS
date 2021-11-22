@@ -199,7 +199,6 @@ def unmirror(text_id):
                         180,
                         rs.WorldXYPlane().Normal)
         rs.Command("Perspective")
-        rs.AddPoints([start, mid, end])
 
 
 def log_error(message, holo_num):
