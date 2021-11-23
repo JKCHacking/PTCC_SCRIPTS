@@ -99,12 +99,13 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 xform_thread_ids = rs.TransformObjects(thread_ids, xform_plane, True)
                 xform_oth_txt_ids = rs.TransformObjects(other_text_ids, xform_plane, True)
                 # rotate 180 degrees
-                xform_rotate = rs.XformRotation2(180, rs.WorldXYPlane().XAxis,
-                                                 rs.WorldXYPlane().Origin)
-                rs.TransformObject(xform_part_id, xform_rotate)
-                rs.TransformObject(xform_eng_id, xform_rotate)
-                rs.TransformObjects(xform_thread_ids, xform_rotate)
-                rs.TransformObjects(xform_oth_txt_ids, xform_rotate)
+                if is_mirrored(xform_eng_id):
+                    xform_rotate = rs.XformRotation2(180, rs.WorldXYPlane().XAxis,
+                                                     rs.WorldXYPlane().Origin)
+                    rs.TransformObject(xform_part_id, xform_rotate)
+                    rs.TransformObject(xform_eng_id, xform_rotate)
+                    rs.TransformObjects(xform_thread_ids, xform_rotate)
+                    rs.TransformObjects(xform_oth_txt_ids, xform_rotate)
 
                 # make it horizontal or make the X axis point to the right
                 while round(rs.TextObjectPlane(xform_eng_id).XAxis[0], PRECISION) <= 0:
@@ -112,10 +113,12 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                     rs.RotateObject(xform_eng_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObjects(xform_thread_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
                     rs.RotateObjects(xform_oth_txt_ids, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+
                 # unmirror all text objects if they are in mirror form.
-                unmirror(xform_eng_id)
-                for xform_oth_txt_id in xform_oth_txt_ids:
-                    unmirror(xform_oth_txt_id)
+                if is_mirrored(xform_eng_id):
+                    unmirror(xform_eng_id)
+                    for xform_oth_txt_id in xform_oth_txt_ids:
+                        unmirror(xform_oth_txt_id)
                 # make the XAxis point to the right and make the YAxis point up
                 while round(rs.TextObjectPlane(xform_eng_id).XAxis[0], PRECISION) <= 0 and \
                         round(rs.TextObjectPlane(xform_eng_id).YAxis[1], PRECISION) <= 0:
@@ -151,17 +154,23 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
 def unmirror(text_id):
     rs.Command("Top")
     # mirrored
+    start = rs.TextObjectPoint(text_id)
+    end = start + (rs.TextObjectPlane(text_id).YAxis * rs.TextObjectHeight(text_id) * -1)
+    mid = start + (rs.TextObjectPlane(text_id).YAxis * (rs.TextObjectHeight(text_id) / 2) * -1)
+    rs.MirrorObject(text_id, start, end)
+    rs.RotateObject(text_id,
+                    mid,
+                    180,
+                    rs.WorldXYPlane().Normal)
+    rs.Command("Perspective")
+
+
+def is_mirrored(text_id):
+    mirrored = False
     if (rs.TextObjectPlane(text_id).XAxis[0] <= 0 < rs.TextObjectPlane(text_id).YAxis[1]) or \
             (rs.TextObjectPlane(text_id).XAxis[0] > 0 >= rs.TextObjectPlane(text_id).YAxis[1]):
-        start = rs.TextObjectPoint(text_id)
-        end = start + (rs.TextObjectPlane(text_id).YAxis * rs.TextObjectHeight(text_id) * -1)
-        mid = start + (rs.TextObjectPlane(text_id).YAxis * (rs.TextObjectHeight(text_id) / 2) * -1)
-        rs.MirrorObject(text_id, start, end)
-        rs.RotateObject(text_id,
-                        mid,
-                        180,
-                        rs.WorldXYPlane().Normal)
-    rs.Command("Perspective")
+        mirrored = True
+    return mirrored
 
 
 def log_error(message, holo_num):
