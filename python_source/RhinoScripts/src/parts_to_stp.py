@@ -30,45 +30,6 @@ def get_min_bb(obj_id):
     return bb_points
 
 
-def get_lying_plane_xform(bb_points, engraving_pt):
-    box = rs.AddBox(bb_points)
-    surfaces = rs.ExplodePolysurfaces(box)
-    areas = []
-    for surface in surfaces:
-        areas.append(rs.SurfaceArea(surface))
-    # get the 2 highest areas
-    if areas[0] > areas[1]:
-        m, m2 = areas[0], areas[1]
-    else:
-        m, m2 = areas[1], areas[0]
-    for x in areas[2:]:
-        if x > m2:
-            if x > m:
-                m2, m = m, x
-            else:
-                m2 = x
-    surface1 = surfaces[areas.index(m)]
-    surface2 = surfaces[areas.index(m2)]
-
-    # determine the right plane by getting the nearest to the point.
-    centroid_surf1 = rs.SurfaceAreaCentroid(surface1)[0]
-    centroid_surf2 = rs.SurfaceAreaCentroid(surface2)[0]
-    if rs.Distance(engraving_pt, centroid_surf1) < rs.Distance(engraving_pt, centroid_surf2):
-        rs.Command("CPlane _O _SelID {}".format(surface1), echo=False)
-    else:
-        rs.Command("CPlane _O _SelID {}".format(surface2), echo=False)
-    curr_cplane = rs.ViewCPlane()
-    # orient the cplane on the correct orientation.
-    if curr_cplane.XAxis[0] < 0:
-        rotated = rs.RotatePlane(curr_cplane, 180, curr_cplane.ZAxis)
-        curr_cplane = rs.ViewCPlane(None, rotated)
-    top_plane = rs.ViewCPlane("Top")
-    xform = rg.Transform.PlaneToPlane(curr_cplane, top_plane)
-    rs.DeleteObject(box)
-    rs.DeleteObjects(surfaces)
-    return xform
-
-
 def export_to_stp(stp_filename, obj_ids):
     rs.SelectObjects(obj_ids)
     rs.Command("_-Export {} _Enter".format(stp_filename), False)
@@ -131,14 +92,20 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
             other_text_ids = get_other_texts(sel_other_text_ids, bb_points)
 
             if engraving_id:
-                engraving_pt = rs.TextObjectPoint(engraving_id)
-                xform = get_lying_plane_xform(bb_points, engraving_pt)
-                xform_part_id = rs.TransformObject(obj_id, xform, True)
-                xform_eng_id = rs.TransformObject(engraving_id, xform, True)
-                xform_thread_ids = rs.TransformObjects(thread_ids, xform, True)
-                xform_oth_txt_ids = rs.TransformObjects(other_text_ids, xform, True)
+                # transform plane
+                xform_plane = rg.Transform.PlaneToPlane(rs.TextObjectPlane(engraving_id), rs.WorldXYPlane())
+                xform_part_id = rs.TransformObject(obj_id, xform_plane, True)
+                xform_eng_id = rs.TransformObject(engraving_id, xform_plane, True)
+                xform_thread_ids = rs.TransformObjects(thread_ids, xform_plane, True)
+                xform_oth_txt_ids = rs.TransformObjects(other_text_ids, xform_plane, True)
+                # rotate 180 degrees
+                xform_rotate = rs.XformRotation2(180, rs.WorldXYPlane().XAxis,
+                                                 rs.WorldXYPlane().Origin)
+                rs.TransformObject(xform_part_id, xform_rotate)
+                rs.TransformObject(xform_eng_id, xform_rotate)
+                rs.TransformObjects(xform_thread_ids, xform_rotate)
+                rs.TransformObjects(xform_oth_txt_ids, xform_rotate)
 
-                rs.Command("Top")
                 # make it horizontal or make the X axis point to the right
                 while round(rs.TextObjectPlane(xform_eng_id).XAxis[0], PRECISION) <= 0:
                     rs.RotateObject(xform_part_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
@@ -176,13 +143,13 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 rs.DeleteObjects(xform_oth_txt_ids)
                 rs.DeleteObjects(xform_eng_curve_ids)
                 rs.DeleteObjects(xform_oth_txt_curve_ids)
-                rs.Command("Perspective")
             else:
                 log_error("Cannot find engraving for {}".format(part_name), holoplot_num)
             already_done.append(part_name)
 
 
 def unmirror(text_id):
+    rs.Command("Top")
     # mirrored
     if (rs.TextObjectPlane(text_id).XAxis[0] <= 0 < rs.TextObjectPlane(text_id).YAxis[1]) or \
             (rs.TextObjectPlane(text_id).XAxis[0] > 0 >= rs.TextObjectPlane(text_id).YAxis[1]):
@@ -194,6 +161,7 @@ def unmirror(text_id):
                         mid,
                         180,
                         rs.WorldXYPlane().Normal)
+    rs.Command("Perspective")
 
 
 def log_error(message, holo_num):
