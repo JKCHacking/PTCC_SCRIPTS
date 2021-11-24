@@ -63,11 +63,10 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 "threaded" not in part_name and\
                 part_name not in already_done:
             engraving_id = get_engravings(obj_id)
-            bb_points = rs.BoundingBox(obj_id, rs.TextObjectPlane(engraving_id))
-            thread_ids = get_threads(sel_thread_ids, bb_points)
-            other_text_ids = get_other_texts(sel_other_text_ids, bb_points)
-
             if engraving_id:
+                bb_points = rs.BoundingBox(obj_id, rs.TextObjectPlane(engraving_id))
+                thread_ids = get_threads(sel_thread_ids, bb_points)
+                other_text_ids = get_other_texts(sel_other_text_ids, bb_points)
                 # unmirror all text objects if they are mirrored.
                 copy_obj_id = rs.CopyObject(obj_id)
                 copy_thread_ids = rs.CopyObjects(thread_ids)
