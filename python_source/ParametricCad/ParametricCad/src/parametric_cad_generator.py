@@ -1,8 +1,10 @@
 import csv
 import os
 import shutil
+import tkinter
 from comtypes import client
 from comtypes import COMError
+from tkinter.filedialog import askopenfilename, askopenfilenames
 
 
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -19,36 +21,35 @@ def get_cad_application():
     except COMError:
         b_cad_app = client.CreateObject(b_cad, dynamic=True)
         b_cad_app.Visible = True
-    return b_cad
+    return b_cad_app
 
 
 def main():
-    template_path = ""
-    config_paths = []
+    tkinter.Tk().withdraw()
+    template_path = askopenfilename(title="Select the Template DWG file", filetypes=[("DWG Files", ".dwg")])
+    config_paths = askopenfilenames(title="Select the CSV config files", filetypes=[("CSV Files", ".csv")])
+    b_cad_app = get_cad_application()
 
     for config_path in config_paths:
-        b_cad_app = get_cad_application()
         dwg_file_name = os.path.splitext(os.path.basename(config_path))[0] + ".dwg"
         dwg_output_path = shutil.copyfile(template_path, os.path.join(OUTPUT_PATH, dwg_file_name))
-        dwg_doc = b_cad_app.Documents.Open("dwg_file_name")
-        modelspace = dwg_doc.ModelSpace
-
+        dwg_doc = b_cad_app.Documents.Open(dwg_output_path)
+        model_space = dwg_doc.ModelSpace
         # open csv file
         with open(config_path, "r") as config_csv:
             reader = csv.DictReader(config_csv)
             for row in reader:
-                parameter_name = row["Parameter Name"]
+                parameter_name = row["Name"]
                 parameter_value = row["Value"]
-                for cad_obj in modelspace:
-                    if "Dimension" in cad_obj.ObjectName and cad_obj.DimConstrForm:
-                        print(cad_obj.DimConstrExpression)
-                        print(cad_obj.DimConstrName)
-                        print(cad_obj.DimConstrValue)
+                for cad_obj in model_space:
+                    if "Dimension" in cad_obj.ObjectName and cad_obj.Layer == "*ADSK_CONSTRAINTS":
+                        if cad_obj.TextOverride.split("=")[0] == parameter_name:
+                            dwg_doc.SendCommand("-PARAMETERS edit {} {}\n".format(parameter_name, parameter_value))
+                        else:
+                            print("Parameter {} does not exists.".format(parameter_name))
         dwg_doc.Save()
         dwg_doc.Close()
 
 
-
-
 if __name__ == "__main__":
-    pass
+    main()
