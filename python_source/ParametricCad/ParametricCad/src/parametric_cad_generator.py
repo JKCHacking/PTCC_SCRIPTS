@@ -45,6 +45,7 @@ def main():
                     if "Dimension" in cad_obj.ObjectName and cad_obj.Layer == "*ADSK_CONSTRAINTS":
                         if cad_obj.TextOverride.split("=")[0] == parameter_name:
                             dwg_doc.SendCommand("-PARAMETERS edit {} {}\n".format(parameter_name, parameter_value))
+                            dwg_doc.SendCommand("REGEN\n")
                         else:
                             print("Parameter {} does not exists.".format(parameter_name))
         dwg_doc.Save()
