@@ -28,6 +28,10 @@ def main():
     tkinter.Tk().withdraw()
     template_path = askopenfilename(title="Select the Template DWG file", filetypes=[("DWG Files", ".dwg")])
     config_paths = askopenfilenames(title="Select the CSV config files", filetypes=[("CSV Files", ".csv")])
+
+    print("=====USER INPUT=======")
+    print("Template File:\n{}\n".format(os.path.basename(template_path)))
+    print("Config Files:\n{}\n".format("\n".join([os.path.basename(c) for c in config_paths])))
     b_cad_app = get_cad_application()
 
     for config_path in config_paths:
@@ -35,6 +39,8 @@ def main():
         dwg_output_path = shutil.copyfile(template_path, os.path.join(OUTPUT_PATH, dwg_file_name))
         dwg_doc = b_cad_app.Documents.Open(dwg_output_path)
         model_space = dwg_doc.ModelSpace
+        print("Generating {}...\n".format(dwg_file_name))
+
         # open csv file
         with open(config_path, "r") as config_csv:
             reader = csv.DictReader(config_csv)
