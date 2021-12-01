@@ -30,8 +30,8 @@ def main():
     config_paths = askopenfilenames(title="Select the CSV config files", filetypes=[("CSV Files", ".csv")])
 
     print("=====USER INPUT=======")
-    print("Template File:\n{}\n".format(os.path.basename(template_path)))
-    print("Config Files:\n{}\n".format("\n".join([os.path.basename(c) for c in config_paths])))
+    print("Template File:\n{}\n\n".format(os.path.basename(template_path)))
+    print("Config Files:\n{}\n\n".format("\n".join([os.path.basename(c) for c in config_paths])))
     b_cad_app = get_cad_application()
 
     for config_path in config_paths:
