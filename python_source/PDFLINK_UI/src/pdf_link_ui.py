@@ -17,9 +17,7 @@ class PDFLinkUI(QMainWindow):
         super().__init__()
         # initialize UI Widgets
         self.keyword_line_edit = QLineEdit()
-        self.page_spin_box = QSpinBox()
-        self.page_spin_box.setRange(1, 1)
-        self.page_spin_box.setReadOnly(True)
+        self.page_line_edit = QLineEdit()
         self.pdf_fp_line_edit = QLineEdit()
         self.pdf_fp_line_edit.setReadOnly(True)
         self.browse_button = QPushButton("Browse")
@@ -45,7 +43,7 @@ class PDFLinkUI(QMainWindow):
         form_layout = QFormLayout()
         form_layout.addRow('PDF File:', file_picker_layout)
         form_layout.addRow('Keyword:', self.keyword_line_edit)
-        form_layout.addRow('Page to link:', self.page_spin_box)
+        form_layout.addRow('Page to link:', self.page_line_edit)
         self.general_layout.addLayout(form_layout)
 
         # initializing ok and cancel buttons
@@ -82,5 +80,4 @@ class PDFLinkUI(QMainWindow):
         # make to default values
         self.pdf_fp_line_edit.setText("")
         self.keyword_line_edit.setText("")
-        self.page_spin_box.setRange(1, 1)
-        self.page_spin_box.setReadOnly(True)
+        self.page_line_edit.setText("")
