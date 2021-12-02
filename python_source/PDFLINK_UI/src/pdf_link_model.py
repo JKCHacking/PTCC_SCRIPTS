@@ -14,7 +14,7 @@ class PDFLinkModel:
                 if text_coord_list:
                     not_found.remove(keyword)
                     for text_coord in text_coord_list:
-                        page.insertLink({"kind": fitz.LINK_GOTO, "page": pagenum_dest, "from": text_coord})
+                        page.insertLink({"kind": fitz.LINK_GOTO, "page": pagenum_dest - 1, "from": text_coord})
                 else:
                     not_found.add(keyword)
         return not_found
