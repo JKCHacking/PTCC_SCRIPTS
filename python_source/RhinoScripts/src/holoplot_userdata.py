@@ -15,32 +15,30 @@ SS_DEN = 7849.9764  # kg/m^3
 DIM_ROUND_PRECISION = 2
 W_ROUND_PRECISION = 4
 BB_POINTS = []
+HOLO_NUM = ""
 
 
 def main():
-    holo_num = rs.GetString("Holoplot Number")
+    global HOLO_NUM
+    HOLO_NUM = rs.GetString("Holoplot Number")
     all_obj_ids = rs.GetObjects("Select objects you want to add Userdata")
     for obj_id in all_obj_ids:
-        fp_layer = rs.ObjectLayer(obj_id)
-        if rs.IsBlockInstance(obj_id) and "TRUSS" in fp_layer:
-            # get the block name
-            target_blk_name = rs.BlockInstanceName(obj_id)
-            # get the ids of the block parts and add user data to it.
-            part_ids = rs.BlockObjects(target_blk_name)
-            for part_id in part_ids:
-                # poly surface
-                if rs.IsPolysurface(part_id):
-                    try:
-                        add_userdata(part_id, holo_num=holo_num, is_truss_part=True)
-                    except IndexError:
-                        print("Index Error: {}".format(obj_id))
-            add_userdata(obj_id, holo_num=holo_num)
-        # poly surface
-        elif rs.IsPolysurface(obj_id):
-            try:
-                add_userdata(obj_id, holo_num=holo_num)
-            except IndexError:
-                print("Index Error: {}".format(obj_id))
+        part_name = get_specific_part_name(obj_id)
+        if part_name.startswith("1421"):
+            print("Working with: {}".format(part_name))
+            if rs.IsBlockInstance(obj_id):
+                # get the block name
+                target_blk_name = rs.BlockInstanceName(obj_id)
+                # get the ids of the block parts and add user data to it.
+                part_ids = rs.BlockObjects(target_blk_name)
+                for truss_part_id in part_ids:
+                    truss_part_name = get_specific_part_name(truss_part_id)
+                    if rs.IsPolysurface(truss_part_id) and truss_part_name.startswith("1421"):
+                        add_userdata(truss_part_id, parent_block=obj_id)
+                add_userdata(obj_id)
+            # poly surface
+            elif rs.IsPolysurface(obj_id):
+                add_userdata(obj_id)
 
 
 def log_error(message, holo_num):
@@ -53,7 +51,7 @@ def log_error(message, holo_num):
         err_f.write("[{}]: {}\n".format(datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), message))
 
 
-def add_userdata(obj_id, holo_num="01", is_truss_part=False):
+def add_userdata(obj_id, parent_block=None):
     spec_pname = get_specific_part_name(obj_id)
     position = get_position(spec_pname)
     revision = get_revision()
@@ -62,27 +60,27 @@ def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     colour = get_colour()
     screw_lock = get_screw_lock()
     profession = get_profession()
-    delivery = get_delivery(is_truss_part)
+    delivery = get_delivery(parent_block)
     group = get_group(obj_id)
     category = get_category(spec_pname)
     material = get_material(group)
     template_at = get_template_at(group, category)
     template_de, template_name_de = get_template(obj_id)
     name = get_name(spec_pname, category)
-    length, width, height = get_dimensions(obj_id)
+    length, width, height = get_dimensions(obj_id, parent_block)
     gross_area = get_gross_area(length, width)
     try:
         mass = get_weight(obj_id, group)
     except TypeError as e:
         mass = 0
         message = "Cant get weight: {}".format(spec_pname)
-        log_error(message, holo_num)
+        log_error(message, HOLO_NUM)
     try:
         coating_area = get_coating_area(obj_id)
     except TypeError as e:
         coating_area = 0
         message = "Cant get area: {}".format(spec_pname)
-        log_error(message, holo_num)
+        log_error(message, HOLO_NUM)
     net_area = coating_area
 
     rs.SetUserText(obj_id, "01_POSITION", position)
@@ -110,7 +108,7 @@ def add_userdata(obj_id, holo_num="01", is_truss_part=False):
     rs.SetUserText(obj_id, "52_PROFESSION", profession)
     rs.SetUserText(obj_id, "53_DELIVERY", delivery)
     rs.SetUserText(obj_id, "54_CATEGORY", category)
-    rs.SetUserText(obj_id, "55_ASSEMBLY", holo_num)
+    rs.SetUserText(obj_id, "55_ASSEMBLY", HOLO_NUM)
     rs.ObjectName(obj_id, name)
 
 
@@ -262,36 +260,36 @@ def get_screw_lock():
     return screw_lock
 
 
-def get_dimensions(obj_id):
-    bb_list = []
+def get_dimensions(obj_id, parent_block=None):
     bb_points = []
     length = 0
     width = 0
     height = 0
-    # setting for determining the accuracy of the minimum bounding box
-    count = 25
-    if rs.IsPolysurface(obj_id):
-        surface_ids = rs.ExplodePolysurfaces(obj_id)
-        # collect all possible bounding box volumes through all surfaces of the model.
-        for surface_id in surface_ids:
-            if rs.IsSurfaceTrimmed(surface_id):
-                rs.Command("CPlane _O _SelID {}".format(surface_id), echo=False)
-                current_cplane = rs.ViewCPlane()
-                bb = rs.BoundingBox(obj_id, view_or_plane=current_cplane)
-                box_id = rs.AddBox(bb)
-                volume = rs.SurfaceVolume(box_id)
-                rs.DeleteObject(box_id)
-                bb_list.append((volume, bb))
-        rs.DeleteObjects(surface_ids)
-        # determine the best bounding box for the profile by determining least volume.
-        best_bb = min(bb_list, key=lambda x: (x[0][0], x[0][1]))
-        bb_points = best_bb[1]
-    elif rs.IsBlockInstance(obj_id):
-        objs = [rs.coercegeometry(obj_id)]
-        wxy_plane = Rhino.Geometry.Plane.WorldXY
-        min_bb = Min3DBoundingBox()
-        bb, curr_vol, passes = min_bb.get_min_bb(objs, wxy_plane, count, True, True)
-        bb_points = bb.GetCorners()
+    ref_engraving_id = None
+    if rs.IsBlockInstance(obj_id):
+        # get all the truss parts
+        blk_name = rs.BlockInstanceName(obj_id)
+        truss_part_ids = rs.BlockObjects(blk_name)
+        # find the bottom chord engraving text object
+        for truss_part_id in truss_part_ids:
+            truss_part_name = get_specific_part_name(truss_part_id)
+            if "BC" in truss_part_name:
+                ref_engraving_id = get_engravings(truss_part_id, truss_part_ids)
+                break
+        if ref_engraving_id:
+            plane = rs.TextObjectPlane(ref_engraving_id)
+            bb_points = rs.BoundingBox(truss_part_ids, view_or_plane=plane)
+    elif rs.IsPolysurface(obj_id):
+        if parent_block:
+            blk_name = rs.BlockInstanceName(parent_block)
+            blk_objs = rs.BlockObjects(blk_name)
+            ref_engraving_id = get_engravings(obj_id, blk_objs)
+        else:
+            ref_engraving_id = get_engravings(obj_id)
+
+        if ref_engraving_id:
+            plane = rs.TextObjectPlane(ref_engraving_id)
+            bb_points = rs.BoundingBox(obj_id, view_or_plane=plane)
 
     if bb_points:
         dim1 = rs.Distance(bb_points[0], bb_points[1])
@@ -304,6 +302,30 @@ def get_dimensions(obj_id):
         width = round(statistics.median(dims_list), DIM_ROUND_PRECISION)
         height = round(min(dims_list), DIM_ROUND_PRECISION)
     return length, width, height
+
+
+def get_engravings(part_id, all_obj_ids=None):
+    position_list = get_specific_part_name(part_id).split("-")[1:]
+    position = " ".join(position_list)
+    if not all_obj_ids:
+        all_obj_ids = rs.AllObjects()
+
+    txt_ids = []
+    for obj_id in all_obj_ids:
+        if rs.IsText(obj_id) and rs.TextObjectText(obj_id) == position:
+            txt_ids.append(obj_id)
+
+    if txt_ids:
+        part_cent_pt = rs.SurfaceVolumeCentroid(part_id)[0]
+        txt_pt_list = [rs.TextObjectPoint(txt_id) for txt_id in txt_ids]
+        pt_ids = rs.AddPoints(txt_pt_list)
+        closest_pt_id, pt_obj = rs.PointClosestObject(part_cent_pt, pt_ids)
+        txt_id = txt_ids[txt_pt_list.index(pt_obj)]
+        rs.DeleteObjects(pt_ids)
+    else:
+        txt_id = None
+        log_error("Cannot find engraving for {}".format(get_specific_part_name(part_id)), HOLO_NUM)
+    return txt_id
 
 
 def get_coating_area(obj_id):
@@ -348,9 +370,9 @@ def get_profession():
     return profession
 
 
-def get_delivery(is_truss_part=False):
+def get_delivery(parent_block=None):
     delivery = "S"
-    if is_truss_part:
+    if parent_block:
         delivery = "F"
     return delivery
 
@@ -371,140 +393,6 @@ def get_category(spec_name):
     elif spec_name_list[1].startswith("S"):  # standard
         category = "Standard Parts Single"
     return category
-
-
-class Min3DBoundingBox:
-    """Algorithm to calculate the minimum bounding box of an object. Adapted from Mitch Heynick's algorithm"""
-    def __get_obj_bbox(self, obj, xform, accurate):
-        if isinstance(obj, Rhino.Geometry.Point):
-            pt = obj.Location
-            if xform:
-                pt = xform * pt
-            return Rhino.Geometry.BoundingBox(pt, pt)
-        elif xform:
-            return obj.GetBoundingBox(xform)
-        else:
-            return obj.GetBoundingBox(accurate)
-
-    def __get_bounding_box_plane(self, objs, plane, ret_pts=False, accurate=True):
-        """Returns a plane-aligned bounding box in world coordinates"""
-        wxy_plane = Rhino.Geometry.Plane.WorldXY
-        xform = Rhino.Geometry.Transform.ChangeBasis(wxy_plane, plane)
-        bbox = Rhino.Geometry.BoundingBox.Empty
-        if isinstance(objs, list) or isinstance(objs, tuple):
-            for obj in objs:
-                object_bbox = self.__get_obj_bbox(obj, xform, accurate)
-                bbox = Rhino.Geometry.BoundingBox.Union(bbox, object_bbox)
-        else:
-            object_bbox = self.__get_obj_bbox(objs, xform, accurate)
-            bbox = Rhino.Geometry.BoundingBox.Union(bbox, object_bbox)
-        if not bbox.IsValid:
-            return
-        plane_to_world = Rhino.Geometry.Transform.ChangeBasis(plane, wxy_plane)
-        if ret_pts:
-            corners = list(bbox.GetCorners())
-            for pt in corners:
-                pt.Transform(plane_to_world)
-            return corners
-        else:
-            box = Rhino.Geometry.Box(bbox)
-            box.Transform(plane_to_world)
-            return box
-
-    def __rotate_copy_planes(self, tot_ang, count, init_planes, dir_vec):
-        """takes a single plane or list of planes as input rotates/copies planes through
-        angle tot_ang number of planes=count, number of angle division = count-1"""
-        if isinstance(init_planes, Rhino.Geometry.Plane):
-            init_planes = [init_planes]
-        inc = tot_ang / (count - 1)
-        origin = Rhino.Geometry.Point3d(0, 0, 0)
-        planes = []
-        for i in range(count):
-            for init_plane in init_planes:
-                new_plane = Rhino.Geometry.Plane(init_plane)
-                new_plane.Rotate(inc * i, dir_vec, origin)
-                planes.append(new_plane)
-        return planes
-
-    def __generate_octant_planes(self, count):
-        tot_ang = math.pi * 5  # 90 degress
-        # generates an array of count ** 3 planes in 3 axes covering xyz positive octant
-        yz_plane = Rhino.Geometry.Plane.WorldYZ
-        dir_vec = Rhino.Geometry.Vector3d(1, 0, 0)
-        x_planes = self.__rotate_copy_planes(tot_ang, count, yz_plane, dir_vec)
-        dir_vec = Rhino.Geometry.Vector3d(0, -1, 0)
-        xy_planes = self.__rotate_copy_planes(tot_ang, count, x_planes, dir_vec)
-        dir_vec = Rhino.Geometry.Vector3d(0, 0, 1)
-        xyz_planes = self.__rotate_copy_planes(tot_ang, count, xy_planes, dir_vec)
-        return xyz_planes
-
-    def __rotate_plane_array(self, plane, tot_ang, divs, axis):
-        out_planes = []
-        plane.Rotate(-tot_ang * 0.5, axis)
-        out_planes.append(Rhino.Geometry.Plane(plane))
-        inc = tot_ang / (divs - 1)
-        for _ in range(divs - 1):
-            plane.Rotate(inc, axis)
-            out_planes.append(Rhino.Geometry.Plane(plane))
-        return out_planes
-
-    def __rotate_plane_array_3d(self, view_plane, tot_ang, divs):
-        """Used in 3D refinement calculation"""
-        out_planes = []
-        yaw_planes = self.__rotate_plane_array(view_plane, tot_ang, divs, view_plane.ZAxis)
-        for y_plane in yaw_planes:
-            roll_planes = self.__rotate_plane_array(y_plane, tot_ang, divs, y_plane.YAxis)
-            for r_plane in roll_planes:
-                pitch_planes = self.__rotate_plane_array(r_plane, tot_ang, divs, r_plane.XAxis)
-                for p_plane in pitch_planes:
-                    out_planes.append(p_plane)
-        return out_planes
-
-    def __get_min_bb_plane(self, objs, best_plane, planes, curr_box, curr_vol):
-        for plane in planes:
-            bb = self.__get_bounding_box_plane(objs, plane)
-            if bb.Volume < curr_vol:
-                curr_vol = bb.Volume
-                best_plane = plane
-                curr_box = bb
-        return best_plane, curr_box, curr_vol
-
-    def get_min_bb(self, objs, init_plane, count, rel_stop, im_rep):
-        curr_bb = self.__get_bounding_box_plane(objs, init_plane)
-        curr_vol = curr_bb.Volume
-
-        tot_ang = math.pi * 0.5
-        factor = 0.1
-        max_passes = 20
-        prec = sc.doc.ModelDistanceDisplayPrecision
-        us = rs.UnitSystemName(abbreviate=True)
-
-        xyz_planes = self.__generate_octant_planes(count)
-        best_plane, curr_bb, curr_vol = self.__get_min_bb_plane(objs, init_plane, xyz_planes, curr_bb, curr_vol)
-        if im_rep:
-            print("Initial pass 0, volume: {} {}3".format(round(curr_vol, prec), us))
-
-        passes = 0
-        for i in range(max_passes):
-            passes = i
-            prev_vol = curr_vol
-            tot_ang *= factor
-            ref_planes = self.__rotate_plane_array_3d(best_plane, tot_ang, count)
-            best_plane, curr_bb, curr_vol = self.__get_min_bb_plane(objs, best_plane, ref_planes, curr_bb, curr_vol)
-            vol_diff = prev_vol - curr_vol
-            if rel_stop:
-                if vol_diff < 0.0001 * prev_vol:
-                    break
-            else:
-                if vol_diff < sc.doc.ModelAbsoluteTolerance:
-                    break
-            Rhino.RhinoApp.Wait()
-            if im_rep:
-                print("Refine pass {}, volume: {} {}3".format(i + 1, round(curr_vol, prec), us))
-            if sc.escape_test(False):
-                print("Refinement aborted after {} passes.".format(i + 1))
-                break
-        return curr_bb, curr_vol, passes + 1
 
 
 if __name__ == "__main__":
