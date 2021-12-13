@@ -1,9 +1,12 @@
 import os
 import fitz
+import tkinter
+from tkinter.filedialog import askopenfilename
 
 
 def main():
-    pdf_fp = "H:/Desktop/projects/pdf_project/2021 12 01 [WA 1000] SHOP DRAWING - TOWER REVISION.pdf"
+    tkinter.Tk().withdraw()
+    pdf_fp = askopenfilename(title="Select the PDF file", filetypes=[("PDF Files", ".pdf")])
     doc = fitz.open(pdf_fp)
     bookmarks = doc.getToC(simple=True)
     not_found = []
@@ -29,4 +32,3 @@ def main():
 
 if __name__ == "__main__":
     not_found = main()
-    # print("Keywords not found:\n{}".format("\n".join(not_found)))
