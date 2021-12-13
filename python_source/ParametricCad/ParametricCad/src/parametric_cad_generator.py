@@ -48,13 +48,18 @@ def main():
                 parameter_value = row["Value"]
                 found = False
                 for cad_obj in model_space:
-                    if "Dimension" in cad_obj.ObjectName and cad_obj.Layer == "*ADSK_CONSTRAINTS":
-                        if cad_obj.TextOverride.split("=")[0] == parameter_name:
-                            dwg_doc.SendCommand("-PARAMETERS edit {} {}\n".format(parameter_name, parameter_value))
-                            dwg_doc.SendCommand("REGEN\n")
-                            found = True
+                    if "Dimension" in cad_obj.ObjectName and \
+                            cad_obj.Layer == "*ADSK_CONSTRAINTS" and \
+                            cad_obj.TextOverride.split("=")[0] == parameter_name:
+                        dwg_doc.SendCommand("-PARAMETERS edit {} {}\n".format(parameter_name, parameter_value))
+                        dwg_doc.SendCommand("REGEN\n")
+                        found = True
                 if not found:
                     print("Parameter {} does not exists.".format(parameter_name))
+        # delete all constraints
+        print("Deleting Parameters and Constraints...")
+        for cad_obj in model_space:
+            dwg_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(cad_obj.Handle))
         dwg_doc.Save()
         dwg_doc.Close()
 
