@@ -27,41 +27,35 @@ def get_cad_application():
 def main():
     tkinter.Tk().withdraw()
     template_path = askopenfilename(title="Select the Template DWG file", filetypes=[("DWG Files", ".dwg")])
-    config_paths = askopenfilenames(title="Select the CSV config files", filetypes=[("CSV Files", ".csv")])
+    config_path = askopenfilename(title="Select the CSV config file", filetypes=[("CSV Files", ".csv")])
 
     print("Template File:\n{}\n".format(os.path.basename(template_path)))
-    print("Config Files:\n{}\n".format("\n".join([os.path.basename(c) for c in config_paths])))
+    print("Config File:\n{}\n".format(os.path.basename(config_path)))
     b_cad_app = get_cad_application()
 
-    for config_path in config_paths:
-        dwg_file_name = os.path.splitext(os.path.basename(config_path))[0] + ".dwg"
-        dwg_output_path = shutil.copyfile(template_path, os.path.join(OUTPUT_PATH, dwg_file_name))
-        dwg_doc = b_cad_app.Documents.Open(dwg_output_path)
-        model_space = dwg_doc.ModelSpace
-        print("Generating {}...".format(dwg_file_name))
-
-        # open csv file
-        with open(config_path, "r") as config_csv:
-            reader = csv.DictReader(config_csv)
-            for row in reader:
-                parameter_name = row["Name"]
-                parameter_value = row["Value"]
-                found = False
-                for cad_obj in model_space:
-                    if "Dimension" in cad_obj.ObjectName and \
-                            cad_obj.Layer == "*ADSK_CONSTRAINTS" and \
-                            cad_obj.TextOverride.split("=")[0] == parameter_name:
-                        dwg_doc.SendCommand("-PARAMETERS edit {} {}\n".format(parameter_name, parameter_value))
-                        dwg_doc.SendCommand("REGEN\n")
-                        found = True
-                if not found:
-                    print("Parameter {} does not exists.".format(parameter_name))
-        # delete all constraints
-        print("Deleting Parameters and Constraints...")
-        for cad_obj in model_space:
-            dwg_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(cad_obj.Handle))
-        dwg_doc.Save()
-        dwg_doc.Close()
+    with open(config_path, "r") as csvfile:
+        reader = csv.DictReader(csvfile)
+        headers = reader.fieldnames
+        file_col_name = headers[0]
+        parameter_names = headers[1:]
+        for row in reader:
+            dwg_file_name = os.path.splitext(row[file_col_name])[0] + ".dwg"
+            dwg_output_path = shutil.copyfile(template_path, os.path.join(OUTPUT_PATH, dwg_file_name))
+            dwg_doc = b_cad_app.Documents.Open(dwg_output_path)
+            model_space = dwg_doc.ModelSpace
+            print("Generating {}...".format(dwg_file_name))
+            # loop regardless if the parameter exists or not.
+            for parameter_name in parameter_names:
+                value = row[parameter_name]
+                if value:
+                    dwg_doc.SendCommand("-PARAMETERS edit {} {}\n".format(parameter_name, value))
+                    dwg_doc.SendCommand("REGEN\n")
+            # delete all constraints
+            print("Deleting Parameters and Constraints...")
+            for cad_obj in model_space:
+                dwg_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(cad_obj.Handle))
+            dwg_doc.Save()
+            dwg_doc.Close()
 
 
 if __name__ == "__main__":
