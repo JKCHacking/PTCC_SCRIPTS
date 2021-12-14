@@ -24,6 +24,11 @@ def get_cad_application():
     return b_cad_app
 
 
+def get_entities(dwg_doc, object_names):
+    entities = [obj for obj in dwg_doc.ModelSpace if obj.ObjectName in object_names]
+    return entities
+
+
 def main():
     tkinter.Tk().withdraw()
     template_path = askopenfilename(title="Select the Template DWG file", filetypes=[("DWG Files", ".dwg")])
@@ -42,7 +47,6 @@ def main():
             dwg_file_name = os.path.splitext(row[file_col_name])[0] + ".dwg"
             dwg_output_path = shutil.copyfile(template_path, os.path.join(OUTPUT_PATH, dwg_file_name))
             dwg_doc = b_cad_app.Documents.Open(dwg_output_path)
-            model_space = dwg_doc.ModelSpace
             print("Generating {}...".format(dwg_file_name))
             # loop regardless if the parameter exists or not.
             for parameter_name in parameter_names:
@@ -52,7 +56,8 @@ def main():
                     dwg_doc.SendCommand("REGEN\n")
             # delete all constraints
             print("Deleting Parameters and Constraints...")
-            for cad_obj in model_space:
+            objs = get_entities(dwg_doc, ["AcDbLine", "AcDbPolyline"])
+            for cad_obj in objs:
                 dwg_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(cad_obj.Handle))
             dwg_doc.Save()
             dwg_doc.Close()
