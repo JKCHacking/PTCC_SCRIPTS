@@ -203,6 +203,7 @@ class Part:
 
     def update_parameters(self, parameters):
         for k, v in parameters.items():
+            found = False
             for obj in self.doc.ModelSpace:
                 if "Dimension" in obj.ObjectName:
                     type_out = automation.VARIANT([0, 0])
@@ -212,6 +213,9 @@ class Part:
                     if k == param:
                         obj.TextOverride = v
                         obj.Update()
+                        found = True
+            if not found:
+                print("Cannot find {} parameter".format(k))
 
     def copy_to_directory(self, part_temp, directory):
         self.path = shutil.copyfile(part_temp, os.path.join(directory, self.part_name + ".dwg"))
