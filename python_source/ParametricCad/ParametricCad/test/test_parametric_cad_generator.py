@@ -8,7 +8,7 @@ from src.parametric_cad_generator import get_part_names,\
 
 class ParametricCadGeneratorTest(unittest.TestCase):
     def test_get_subcomp_names(self):
-        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/U443-A36_test.dwg"
+        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/test files/U443-A36_test.dwg"
         subcomp_names = get_part_names(template_path)
         self.assertEqual(["W756222 - 000",
                           "W754147 - 000",
@@ -28,7 +28,7 @@ class ParametricCadGeneratorTest(unittest.TestCase):
 
     def test_find_col_idx(self):
         b_cad = get_cad_application()
-        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/U443-A36_test.dwg"
+        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/test files/U443-A36_test.dwg"
         doc = b_cad.Documents.Open(template_path)
         table = doc.HandleToObject("7334F")
         col_idx = find_col_idx(table, "PART NUMBER")
@@ -37,7 +37,7 @@ class ParametricCadGeneratorTest(unittest.TestCase):
 
     def test_find_row_idx(self):
         b_cad = get_cad_application()
-        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/U443-A36_test.dwg"
+        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/test files/U443-A36_test.dwg"
         doc = b_cad.Documents.Open(template_path)
         table = doc.HandleToObject("7334F")
         row_idx = find_row_idx(table, 2, "G488")
@@ -46,14 +46,14 @@ class ParametricCadGeneratorTest(unittest.TestCase):
 
     def test_find_part_table(self):
         b_cad = get_cad_application()
-        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/U443-A36_test.dwg"
+        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/test files/U443-A36_test.dwg"
         doc = b_cad.Documents.Open(template_path)
         table = find_part_table(doc)
         self.assertEqual(doc.HandleToObject("7334F"), table)
         doc.Close()
 
     def test_assembly(self):
-        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/U443-A36_test.dwg"
+        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/test files/U443-A36_test.dwg"
         directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testdata")
         assembly = Assembly("TestAssembly01")
         assembly.copy_to_directory(template_path, directory)
@@ -76,7 +76,7 @@ class ParametricCadGeneratorTest(unittest.TestCase):
         os.remove(os.path.splitext(assembly.path)[0] + ".bak")
 
     def test_part(self):
-        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/W753213-003_test.dwg"
+        template_path = "H:/Desktop/projects/parametric blocks programming/DEMO/test files/W753213-003_test.dwg"
         directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testdata")
         part = Part("TestPart01")
         part.copy_to_directory(template_path, directory)
