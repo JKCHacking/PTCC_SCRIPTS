@@ -121,7 +121,7 @@ def main():
                 assembly.open()
                 for part_name in part_names:
                     print("Generating Part: {}".format(part_name))
-                    part_temp_path = os.path.join(os.path.basename(assm_temp_path), part_name + ".dwg")
+                    part_temp_path = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
                     if os.path.exists(part_temp_path):
                         part = Part(part_name)
                         part.copy_to_directory(part_temp_path, assembly_directory)
@@ -129,6 +129,7 @@ def main():
                     else:
                         print("Part Template does not exists {}".format(part_temp_path))
                 # this will also implicitly update the parts parameters.
+                print("Updating parameters...")
                 assembly.update_parameters(parameters)
                 assembly.delete_constraints()
                 assembly.save_and_close()
