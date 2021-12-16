@@ -109,7 +109,7 @@ def main():
             # and each row creates a subdirectory for assembly and parts of the assembly.
             for row in reader:
                 assembly_name = row[part_name_col]
-                print("Generating Assembly: {}".format(assembly_name))
+                print("Generating Assembly:\n{}".format(assembly_name))
                 parameters = {param_name: row[param_name] for param_name in parameter_names}
                 assembly_directory = os.path.join(OUTPUT_PATH, assembly_name)
                 try:
@@ -119,8 +119,9 @@ def main():
                 assembly = Assembly(assembly_name)
                 assembly.copy_to_directory(assm_temp_path, assembly_directory)
                 assembly.open()
+                print("\nGenerating Part:")
                 for part_name in part_names:
-                    print("Generating Part: {}".format(part_name))
+                    print(part_name)
                     part_temp_path = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
                     if os.path.exists(part_temp_path):
                         part = Part(part_name)
@@ -129,11 +130,10 @@ def main():
                     else:
                         print("Part Template does not exists {}".format(part_temp_path))
                 # this will also implicitly update the parts parameters.
-                print("Updating parameters...")
                 assembly.update_parameters(parameters)
                 assembly.delete_constraints()
                 assembly.save_and_close()
-                print("\n")
+                print("")
     else:
         print("Cannot find parts.")
 
@@ -149,6 +149,8 @@ class Assembly:
         self.parts.append(part)
 
     def update_parameters(self, parameters):
+        print("\nUpdating Assembly Parameters...")
+        print(self.assembly_name)
         for k, v in parameters.items():
             self.__edit_parameters(k, v)
         # extract parameters for parts
@@ -160,7 +162,9 @@ class Assembly:
             length_col_idx = find_col_idx(part_table, "LENGTH")
             width_col_idx = find_col_idx(part_table, "WIDTH")
             height_col_idx = find_col_idx(part_table, "HEIGHT")
+            print("\nUpdating Parts Parameters...")
             for part in self.parts:
+                print(part.part_name)
                 part.open()
                 row_idx = find_row_idx(part_table, part_col_idx, part.part_name)
                 # get the actual values of the parameter in the table.
