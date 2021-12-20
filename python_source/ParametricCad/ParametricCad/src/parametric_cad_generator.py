@@ -210,7 +210,12 @@ def main():
                     else:
                         part_template = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
                         new_part_file_name = "{}-{:03d}.dwg".format(part_name.split("-")[0], count + 1)
-                        new_part = shutil.copyfile(part_template, os.path.join(assembly_directory, new_part_file_name))
+                        try:
+                            new_part = shutil.copyfile(part_template, os.path.join(assembly_directory,
+                                                                                   new_part_file_name))
+                        except FileNotFoundError:
+                            print("Cannot find part {} in {}".format(part_name.split("-")[0],
+                                                                     os.path.dirname(assm_temp_path)))
                         # update the new part
                         part_doc = b_app.Documents.Open(new_part)
                         update_part_params(part_doc, assembly_params)
