@@ -49,7 +49,7 @@ def get_part_names(assm_temp_path):
                         parts.append(val)
     else:
         print("Cannot find part table.")
-    doc.Close()
+    doc.Close(False)
     return parts
 
 
@@ -162,6 +162,18 @@ def find_duplicate_part(part_name, assembly_params):
     return dup_part, count
 
 
+def update_assembly_part_table(assembly_doc, part_name):
+    part_table = find_part_table(assembly_doc)
+    default_part_name = part_name.split("-")[0] + "-000"
+    part_col = find_col_idx(part_table, "PART NUMBER")
+    part_row = find_row_idx(part_table, part_col, default_part_name)
+    if part_row != -1:
+        # update the cell
+        part_table.SetCellValue(part_row, part_col, part_name)
+    else:
+        print("Cannot find part {} in the part table".format(default_part_name))
+
+
 def main():
     b_app = get_cad_application()
     tkinter.Tk().withdraw()
@@ -188,24 +200,23 @@ def main():
                 parameters = {param_name: row[param_name] for param_name in parameter_names}
                 update_assembly_params(assembly_doc, parameters)
                 assembly_params = get_all_assm_params(assembly_doc)
-                assembly_doc.Save()
-                assembly_doc.Close()
                 print("\nGenerating Part:")
                 for part_name in part_names:
                     print(part_name)
                     dup_part, count = find_duplicate_part(part_name, assembly_params)
                     if dup_part:
-                        shutil.copyfile(dup_part, os.path.join(assembly_directory, os.path.basename(dup_part)))
+                        new_part_file_name = os.path.basename(dup_part)
+                        shutil.copyfile(dup_part, os.path.join(assembly_directory, new_part_file_name))
                     else:
                         part_template = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
-                        new_part = shutil.copyfile(part_template,
-                                                   os.path.join(assembly_directory,
-                                                                "{}_{:03d}.dwg".format(part_name, count + 1)))
+                        new_part_file_name = "{}-{:03d}.dwg".format(part_name.split("-")[0], count + 1)
+                        new_part = shutil.copyfile(part_template, os.path.join(assembly_directory, new_part_file_name))
                         # update the new part
                         part_doc = b_app.Documents.Open(new_part)
                         update_part_params(part_doc, assembly_params)
-                        part_doc.Save()
                         part_doc.Close()
+                    update_assembly_part_table(assembly_doc, new_part_file_name)
+                assembly_doc.Close()
                 print("")
     else:
         print("Cannot find parts.")

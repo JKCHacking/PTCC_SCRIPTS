@@ -12,6 +12,60 @@ SRC_PATH = os.path.join(APP_PATH, "src")
 
 
 class TestParametricCadGenerator(unittest.TestCase):
+    def test_get_part_names(self):
+        template_path = os.path.join(TEST_PATH, "testdata", "U443-A36_test.dwg")
+        part_names = parametric_cad_generator.get_part_names(template_path)
+        self.assertEqual(["W756222-000",
+                          "W754147-000",
+                          "W756221-000",
+                          "W751235-000",
+                          "SRT1409-000",
+                          "W752222-000",
+                          "W753219-000",
+                          "G537-000",
+                          "G488-000",
+                          "ISO001-000",
+                          "W752375-000",
+                          "W752374-000",
+                          "G1-000",
+                          "G2-000",
+                          "P1-000"], part_names)
+
+    def test_find_col_idx(self):
+        b_cad = parametric_cad_generator.get_cad_application()
+        template_path = os.path.join(TEST_PATH, "testdata", "U443-A36_test.dwg")
+        doc = b_cad.Documents.Open(template_path)
+        table = doc.HandleToObject("7334F")
+        col_idx = parametric_cad_generator.find_col_idx(table, "PART NUMBER")
+        self.assertEqual(2, col_idx)
+        doc.Close(False)
+
+    def test_find_row_idx(self):
+        b_cad = parametric_cad_generator.get_cad_application()
+        template_path = os.path.join(TEST_PATH, "testdata", "U443-A36_test.dwg")
+        doc = b_cad.Documents.Open(template_path)
+        table = doc.HandleToObject("7334F")
+        row_idx = parametric_cad_generator.find_row_idx(table, 2, "G488-000")
+        self.assertEqual(10, row_idx)
+        doc.Close(False)
+
+    def test_find_part_table(self):
+        b_cad = parametric_cad_generator.get_cad_application()
+        template_path = os.path.join(TEST_PATH, "testdata", "U443-A36_test.dwg")
+        doc = b_cad.Documents.Open(template_path)
+        table = parametric_cad_generator.find_part_table(doc)
+        self.assertEqual(doc.HandleToObject("7334F"), table)
+        doc.Close(False)
+
+    def test_update_assembly_part_table(self):
+        b_cad = parametric_cad_generator.get_cad_application()
+        template_path = os.path.join(TEST_PATH, "testdata", "U443-A36_test.dwg")
+        doc = b_cad.Documents.Open(template_path)
+        parametric_cad_generator.update_assembly_part_table(doc, "W756222-024")
+        part_table = doc.HandleToObject("7334F")
+        self.assertEqual("W756222-024", part_table.GetCellValue(2, 2))
+        doc.Close(False)
+
     def test_create_assembly(self):
         testdata = os.path.join(TEST_PATH, "testdata", "assembly_test.dwg")
         test_dir = os.path.join(OUTPUT_PATH, "test_asm")
