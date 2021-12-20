@@ -90,14 +90,87 @@ def find_part_table(doc):
     return part_table
 
 
+def create_assembly(template, assembly_name, assembly_directory):
+    try:
+        os.makedirs(assembly_directory)
+    except FileExistsError:
+        print("{} already exists.".format(assembly_directory))
+    directory = os.path.join(OUTPUT_PATH, assembly_name)
+    path = shutil.copyfile(template, os.path.join(directory, assembly_name + ".dwg"))
+    bcad = get_cad_application()
+    return bcad.Documents.Open(path)
+
+
+def update_assembly_params(assembly_doc, params):
+    for param_name, value in params.items():
+        assembly_doc.SendCommand("-PARAMETERS edit {} {}\n".format(param_name, value))
+        assembly_doc.SendCommand("REGEN\n")
+
+
+def update_part_params(part_doc, assembly_params):
+    for obj in part_doc.ModelSpace:
+        if "Dimension" in obj.ObjectName:
+            type_out = automation.VARIANT([0, 0])
+            data_out = automation.VARIANT(["", ""])
+            obj.GetXData("PARAMETRIC", ctypes.byref(type_out), ctypes.byref(data_out))
+            param_name = data_out[0][1]
+            if param_name in assembly_params:
+                obj.TextOverride = assembly_params[param_name]
+                obj.Update()
+
+
+def get_all_assm_params(assembly_doc):
+    params = {}
+    for obj in assembly_doc.ModelSpace:
+        if obj.Layer == "*ADSK_CONSTRAINTS":
+            param_name, value = obj.TextOverride.split("=")
+            params.update({param_name: value})
+    return params
+
+
+def get_all_part_params(part_doc):
+    params = {}
+    for obj in part_doc.ModelSpace:
+        if "Dimension" in obj.ObjectName:
+            type_out = automation.VARIANT([0, 0])
+            data_out = automation.VARIANT(["", ""])
+            obj.GetXData("PARAMETRIC", ctypes.byref(type_out), ctypes.byref(data_out))
+            param = data_out[0][1]
+            val = obj.TextOverride if obj.TextOverride else str(round(obj.Measurement, 3))
+            params.update({param: val})
+    return params
+
+
+def find_duplicate_part(part_name, assembly_params):
+    b_app = get_cad_application()
+    dup_part = None
+    count = 0
+    for root, dirs, files in os.walk(OUTPUT_PATH):
+        for file in files:
+            if file.startswith(part_name) and file.endswith(".dwg"):
+                part_file = os.path.join(root, file)
+                part_doc = b_app.Documents.Open(part_file)
+                part_params = get_all_part_params(part_doc)
+                checks = [True if param_name in assembly_params and value == assembly_params[param_name]
+                          else False for param_name, value in part_params.items()]
+                # this means that all part parameters are equal in assembly params.
+                # a part with those parameters already exists.
+                if all(checks):
+                    dup_part = part_file
+                part_doc.Close(False)
+                count += 1
+    return dup_part, count
+
+
 def main():
+    b_app = get_cad_application()
     tkinter.Tk().withdraw()
     assm_temp_path = askopenfilename(title="Select the Template Assembly DWG file", filetypes=[("DWG Files", ".dwg")])
     config_path = askopenfilename(title="Select the CSV config file", filetypes=[("CSV Files", ".csv")])
     part_names = get_part_names(assm_temp_path)
     print("Assembly File:\n{}\n".format(os.path.basename(assm_temp_path)))
     print("Config File:\n{}\n".format(os.path.basename(config_path)))
-    print("SubComponents:\n{}\n".format("\n".join(part_names)))
+    print("Parts:\n{}\n".format("\n".join(part_names)))
 
     if part_names:
         with open(config_path, "r") as csvfile:
@@ -109,128 +182,33 @@ def main():
             # and each row creates a subdirectory for assembly and parts of the assembly.
             for row in reader:
                 assembly_name = row[part_name_col]
-                print("Generating Assembly:\n{}".format(assembly_name))
-                parameters = {param_name: row[param_name] for param_name in parameter_names}
                 assembly_directory = os.path.join(OUTPUT_PATH, assembly_name)
-                try:
-                    os.makedirs(assembly_directory)
-                except FileExistsError:
-                    print("{} already exists.".format(assembly_directory))
-                assembly = Assembly(assembly_name)
-                assembly.copy_to_directory(assm_temp_path, assembly_directory)
-                assembly.open()
+                print("Generating Assembly:\n{}".format(assembly_name))
+                assembly_doc = create_assembly(assm_temp_path, assembly_name, assembly_directory)
+                parameters = {param_name: row[param_name] for param_name in parameter_names}
+                update_assembly_params(assembly_doc, parameters)
+                assembly_params = get_all_assm_params(assembly_doc)
+                assembly_doc.Save()
+                assembly_doc.Close()
                 print("\nGenerating Part:")
                 for part_name in part_names:
                     print(part_name)
-                    part_temp_path = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
-                    if os.path.exists(part_temp_path):
-                        part = Part(part_name)
-                        part.copy_to_directory(part_temp_path, assembly_directory)
-                        assembly.add_parts(part)
+                    dup_part, count = find_duplicate_part(part_name, assembly_params)
+                    if dup_part:
+                        shutil.copyfile(dup_part, os.path.join(assembly_directory, os.path.basename(dup_part)))
                     else:
-                        print("Part Template does not exists {}".format(part_temp_path))
-                # this will also implicitly update the parts parameters.
-                assembly.update_parameters(parameters)
-                assembly.delete_constraints()
-                assembly.save_and_close()
+                        part_template = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
+                        new_part = shutil.copyfile(part_template,
+                                                   os.path.join(assembly_directory,
+                                                                "{}_{:03d}.dwg".format(part_name, count + 1)))
+                        # update the new part
+                        part_doc = b_app.Documents.Open(new_part)
+                        update_part_params(part_doc, assembly_params)
+                        part_doc.Save()
+                        part_doc.Close()
                 print("")
     else:
         print("Cannot find parts.")
-
-
-class Assembly:
-    def __init__(self, assembly_name):
-        self.assembly_name = assembly_name
-        self.parts = []
-        self.doc = None
-        self.path = ""
-
-    def add_parts(self, part):
-        self.parts.append(part)
-
-    def update_parameters(self, parameters):
-        print("\nUpdating Assembly Parameters...")
-        print(self.assembly_name)
-        for k, v in parameters.items():
-            self.__edit_parameters(k, v)
-        # extract parameters for parts
-        # use the part table in the assembly document
-        part_table = find_part_table(self.doc)
-        if part_table:
-            # get the col index for part number, length, width, height
-            part_col_idx = find_col_idx(part_table, "PART NUMBER")
-            length_col_idx = find_col_idx(part_table, "LENGTH")
-            width_col_idx = find_col_idx(part_table, "WIDTH")
-            height_col_idx = find_col_idx(part_table, "HEIGHT")
-            print("\nUpdating Parts Parameters...")
-            for part in self.parts:
-                print(part.part_name)
-                part.open()
-                row_idx = find_row_idx(part_table, part_col_idx, part.part_name)
-                # get the actual values of the parameter in the table.
-                length = part_table.GetCellValue(row_idx, length_col_idx)
-                width = part_table.GetCellValue(row_idx, width_col_idx)
-                height = part_table.GetCellValue(row_idx, height_col_idx)
-
-                length = length if length else 0
-                width = width if width else 0
-                height = height if height else 0
-
-                parameters = {"LENGTH": length, "WIDTH": width, "HEIGHT": height}
-                part.update_parameters(parameters)
-                part.save_and_close()
-
-    def delete_constraints(self):
-        objs = get_entities(self.doc, ["AcDbLine", "AcDbPolyline"])
-        for cad_obj in objs:
-            self.doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(cad_obj.Handle))
-
-    def __edit_parameters(self, param_name, value):
-        self.doc.SendCommand("-PARAMETERS edit {} {}\n".format(param_name, value))
-        self.doc.SendCommand("REGEN\n")
-
-    def copy_to_directory(self, assm_temp, directory):
-        self.path = shutil.copyfile(assm_temp, os.path.join(directory, self.assembly_name + ".dwg"))
-
-    def open(self):
-        self.doc = get_cad_application().Documents.Open(self.path)
-
-    def save_and_close(self):
-        self.doc.Save()
-        self.doc.Close()
-
-
-class Part:
-    def __init__(self, part_name):
-        self.part_name = part_name
-        self.doc = None
-        self.path = ""
-
-    def update_parameters(self, parameters):
-        for k, v in parameters.items():
-            found = False
-            for obj in self.doc.ModelSpace:
-                if "Dimension" in obj.ObjectName:
-                    type_out = automation.VARIANT([0, 0])
-                    data_out = automation.VARIANT(["", ""])
-                    obj.GetXData("PARAMETRIC", ctypes.byref(type_out), ctypes.byref(data_out))
-                    param = data_out[0][1]
-                    if k == param:
-                        obj.TextOverride = v
-                        obj.Update()
-                        found = True
-            if not found:
-                print("Cannot find {} parameter".format(k))
-
-    def copy_to_directory(self, part_temp, directory):
-        self.path = shutil.copyfile(part_temp, os.path.join(directory, self.part_name + ".dwg"))
-
-    def open(self):
-        self.doc = get_cad_application().Documents.Open(self.path)
-
-    def save_and_close(self):
-        self.doc.Save()
-        self.doc.Close()
 
 
 if __name__ == "__main__":
