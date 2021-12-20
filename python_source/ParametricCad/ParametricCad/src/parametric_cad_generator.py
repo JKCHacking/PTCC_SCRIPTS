@@ -169,7 +169,7 @@ def update_assembly_part_table(assembly_doc, part_name):
     part_row = find_row_idx(part_table, part_col, default_part_name)
     if part_row != -1:
         # update the cell
-        part_table.SetCellValue(part_row, part_col, part_name)
+        part_table.SetCellValue(part_row, part_col, os.path.splitext(part_name)[0])
     else:
         print("Cannot find part {} in the part table".format(default_part_name))
 
