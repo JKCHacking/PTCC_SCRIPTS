@@ -202,7 +202,6 @@ def main():
                 assembly_params = get_all_assm_params(assembly_doc)
                 print("\nGenerating Part:")
                 for part_name in part_names:
-                    print(part_name)
                     dup_part, count = find_duplicate_part(part_name, assembly_params)
                     if dup_part:
                         new_part_file_name = os.path.basename(dup_part)
@@ -220,6 +219,7 @@ def main():
                         part_doc = b_app.Documents.Open(new_part)
                         update_part_params(part_doc, assembly_params)
                         part_doc.Close()
+                    print(os.path.splitext(new_part_file_name)[0])
                     update_assembly_part_table(assembly_doc, new_part_file_name)
                 assembly_doc.Close()
                 print("")
