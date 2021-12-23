@@ -209,9 +209,12 @@ def update_assembly_part_table(assembly_doc, part_name):
 
 
 def delete_parametric_dims(assm_doc):
+    lines = []
     for obj in assm_doc.ModelSpace:
         if obj.ObjectName == "AcDbLine" or obj.ObjectName == "AcDbPolyline":
-            assm_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(obj.Handle))
+            lines.append(obj)
+    for line in lines:
+        assm_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(line.Handle))
 
 
 def main():
