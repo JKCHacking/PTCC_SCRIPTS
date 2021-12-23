@@ -208,6 +208,12 @@ def update_assembly_part_table(assembly_doc, part_name):
         print("Cannot find part {} in the part table".format(default_part_name))
 
 
+def delete_parametric_dims(assm_doc):
+    for obj in assm_doc.ModelSpace:
+        if obj.ObjectName == "AcDbLine" or obj.ObjectName == "AcDbPolyline":
+            assm_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(obj.Handle))
+
+
 def main():
     b_app = get_cad_application()
     tkinter.Tk().withdraw()
@@ -259,6 +265,7 @@ def main():
                         part_doc.Close()
                     print(os.path.splitext(new_part_file_name)[0])
                     update_assembly_part_table(assembly_doc, new_part_file_name)
+                delete_parametric_dims(assembly_doc)
                 assembly_doc.Close()
                 print("")
     else:
