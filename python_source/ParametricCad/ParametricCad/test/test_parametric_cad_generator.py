@@ -128,3 +128,16 @@ class TestParametricCadGenerator(unittest.TestCase):
         self.assertIsNone(duplicate)
         self.assertEqual(1, count)
         shutil.rmtree(dest_dir)
+
+    def test_extract_variables(self):
+        equation_string = "VAR1"
+        self.assertEqual(["VAR1"], parametric_cad_generator.extract_variables(equation_string))
+        equation_string = "VAR1 + VAR2"
+        self.assertEqual(["VAR1", "VAR2"], parametric_cad_generator.extract_variables(equation_string))
+        equation_string = "VAR + 2"
+        self.assertEqual(["VAR"], parametric_cad_generator.extract_variables(equation_string))
+
+    def test_equation_solver(self):
+        equation_string = "VAR1 + VAR2"
+        params = {"VAR1": "2", "VAR2": "3"}
+        self.assertEqual("5", parametric_cad_generator.equation_resolver(equation_string, params))

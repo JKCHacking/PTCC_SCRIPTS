@@ -3,11 +3,11 @@ import os
 import shutil
 import tkinter
 import ctypes
+import re
 from comtypes import client
 from comtypes import COMError
 from comtypes import automation
 from tkinter.filedialog import askopenfilename, askopenfilenames
-
 
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 APP_PATH = os.path.dirname(SRC_PATH)
@@ -128,6 +128,32 @@ def get_all_assm_params(assembly_doc):
     return params
 
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+def extract_variables(equation_string):
+    tokens = re.split('\\+|\\+ |\\*|\\* |-|- |/|/ |\\(|\\)|\\s', equation_string)
+    variables = [token for token in tokens if token and not is_number(token)]
+    return variables
+
+
+def equation_resolver(equation_string, params):
+    variables = extract_variables(equation_string)
+    for var in variables:
+        try:
+            val = params[var]
+            equation_string = equation_string.replace(var, val)
+        except KeyError:
+            print("Parameter {} does not exists".format(var))
+    res = str(eval(equation_string))
+    return res
+
+
 def get_all_part_params(part_doc):
     params = {}
     for obj in part_doc.ModelSpace:
@@ -200,6 +226,11 @@ def main():
                 parameters = {param_name: row[param_name] for param_name in parameter_names}
                 update_assembly_params(assembly_doc, parameters)
                 assembly_params = get_all_assm_params(assembly_doc)
+                # resolve all equation to numbers
+                for name, val in assembly_params.items():
+                    if not is_number(val):
+                        new_val = equation_resolver(val, assembly_params)
+                        assembly_params.update({name: new_val})
                 print("\nGenerating Part:")
                 for part_name in part_names:
                     dup_part, count = find_duplicate_part(part_name, assembly_params)
