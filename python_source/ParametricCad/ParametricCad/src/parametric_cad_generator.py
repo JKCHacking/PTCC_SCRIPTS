@@ -154,6 +154,14 @@ def equation_resolver(equation_string, params):
     return res
 
 
+def simplify_parameters(assembly_params):
+    # resolve all equation to numbers
+    for name, val in assembly_params.items():
+        if not is_number(val):
+            new_val = equation_resolver(val, assembly_params)
+            assembly_params.update({name: new_val})
+
+
 def get_all_part_params(part_doc):
     params = {}
     for obj in part_doc.ModelSpace:
@@ -226,11 +234,7 @@ def main():
                 parameters = {param_name: row[param_name] for param_name in parameter_names}
                 update_assembly_params(assembly_doc, parameters)
                 assembly_params = get_all_assm_params(assembly_doc)
-                # resolve all equation to numbers
-                for name, val in assembly_params.items():
-                    if not is_number(val):
-                        new_val = equation_resolver(val, assembly_params)
-                        assembly_params.update({name: new_val})
+                simplify_parameters(assembly_params)
                 print("\nGenerating Part:")
                 for part_name in part_names:
                     dup_part, count = find_duplicate_part(part_name, assembly_params)
