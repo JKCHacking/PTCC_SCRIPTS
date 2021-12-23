@@ -237,10 +237,13 @@ def main():
                 simplify_parameters(assembly_params)
                 print("\nGenerating Part:")
                 for part_name in part_names:
-                    dup_part, count = find_duplicate_part(part_name, assembly_params)
+                    dup_part, count = find_duplicate_part(part_name.split("-")[0], assembly_params)
                     if dup_part:
                         new_part_file_name = os.path.basename(dup_part)
-                        shutil.copyfile(dup_part, os.path.join(assembly_directory, new_part_file_name))
+                        try:
+                            shutil.copyfile(dup_part, os.path.join(assembly_directory, new_part_file_name))
+                        except shutil.SameFileError:
+                            pass
                     else:
                         part_template = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
                         new_part_file_name = "{}-{:03d}.dwg".format(part_name.split("-")[0], count + 1)
