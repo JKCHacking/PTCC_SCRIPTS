@@ -171,7 +171,8 @@ def get_all_part_params(part_doc):
             obj.GetXData("PARAMETRIC", ctypes.byref(type_out), ctypes.byref(data_out))
             param = data_out[0][1]
             val = obj.TextOverride if obj.TextOverride else str(round(obj.Measurement, 3))
-            params.update({param: val})
+            if param and val:
+                params.update({param: val})
     return params
 
 
