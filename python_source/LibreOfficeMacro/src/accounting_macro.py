@@ -30,23 +30,23 @@ def get_transactions():
         # get all the data from constant columns
         curr_row = 5
         while input_sheet.getCellByPosition(0, curr_row).getString():
-            date = input_sheet.getCellByPosition(0, curr_row).getString()
-            cv_no = input_sheet.getCellByPosition(1, curr_row).getString()
-            si_date = input_sheet.getCellByPosition(2, curr_row).getString()
-            si_no = input_sheet.getCellByPosition(3, curr_row).getString()
-            supplier = input_sheet.getCellByPosition(4, curr_row).getString()
-            particulars = input_sheet.getCellByPosition(5, curr_row).getString()
-            is_qualified = input_sheet.getCellByPosition(6, curr_row).getString()
-            cash_in_bank = input_sheet.getCellByPosition(7, curr_row).getString()
-            ewt = input_sheet.getCellByPosition(8, curr_row).getString()
-            in_tax = input_sheet.getCellByPosition(9, curr_row).getString()
+            date = input_sheet.getCellByPosition(0, curr_row).getString().strip()
+            cv_no = input_sheet.getCellByPosition(1, curr_row).getString().strip()
+            si_date = input_sheet.getCellByPosition(2, curr_row).getString().strip()
+            si_no = input_sheet.getCellByPosition(3, curr_row).getString().strip()
+            supplier = input_sheet.getCellByPosition(4, curr_row).getString().strip()
+            particulars = input_sheet.getCellByPosition(5, curr_row).getString().strip()
+            is_qualified = input_sheet.getCellByPosition(6, curr_row).getString().strip()
+            cash_in_bank = input_sheet.getCellByPosition(7, curr_row).getString().strip()
+            ewt = input_sheet.getCellByPosition(8, curr_row).getString().strip()
+            in_tax = input_sheet.getCellByPosition(9, curr_row).getString().strip()
 
             # get the data from the account titles
             acc_col = 10
             acc_dict = {}
             while input_sheet.getCellByPosition(acc_col, 4).getString():
-                acc_name = input_sheet.getCellByPosition(acc_col, 4).getString()
-                acc_val = input_sheet.getCellByPosition(acc_col, curr_row).getString()
+                acc_name = input_sheet.getCellByPosition(acc_col, 4).getString().strip()
+                acc_val = input_sheet.getCellByPosition(acc_col, curr_row).getString().strip()
                 if acc_val:
                     acc_dict.update({acc_name: acc_val})
                 acc_col += 1
@@ -119,9 +119,9 @@ class Transaction:
         self.supplier = supplier
         self.particulars = particulars
         self.is_qualified = True if is_qualified == "Yes" else False
-        self.cash_in_bank = atof(cash_in_bank)
-        self.ewt = atof(ewt)
-        self.in_tax = atof(in_tax)
+        self.cash_in_bank = atof(cash_in_bank) if cash_in_bank else 0
+        self.ewt = atof(ewt) if ewt else 0
+        self.in_tax = atof(in_tax) if in_tax else 0
 
         # convert all account values to float from string
         for k, v in accounts.items():
