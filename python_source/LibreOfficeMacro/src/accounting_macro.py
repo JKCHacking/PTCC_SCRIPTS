@@ -68,7 +68,7 @@ def get_transactions():
     return trans_list
 
 
-def load_transactions():
+def load_transactions(*args):
     tax_doc = XSCRIPTCONTEXT.getDocument()
     input_sheet = tax_doc.Sheets["Input Data"]
     trans_list = get_transactions()
@@ -129,4 +129,4 @@ class Transaction:
         self.accounts = accounts
 
 
-g_exportedScripts = load_transactions,
+g_exportedScripts = (load_transactions,)
