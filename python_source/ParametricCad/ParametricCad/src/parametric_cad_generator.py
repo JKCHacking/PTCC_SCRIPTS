@@ -272,6 +272,7 @@ def main():
                     dup_part, count = find_duplicate_part(part_name.split("-")[0], assembly_params)
                     if dup_part:
                         new_part_file_name = os.path.basename(dup_part)
+                        print(os.path.splitext(new_part_file_name)[0])
                         try:
                             shutil.copyfile(dup_part, os.path.join(assembly_directory, new_part_file_name))
                         except shutil.SameFileError:
@@ -279,6 +280,7 @@ def main():
                     else:
                         part_template = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
                         new_part_file_name = "{}-{:03d}.dwg".format(part_name.split("-")[0], count + 1)
+                        print(os.path.splitext(new_part_file_name)[0])
                         try:
                             new_part = shutil.copyfile(part_template, os.path.join(assembly_directory,
                                                                                    new_part_file_name))
@@ -289,7 +291,6 @@ def main():
                         part_doc = b_app.Documents.Open(new_part)
                         update_part_params(part_doc, assembly_params)
                         part_doc.Close()
-                    print(os.path.splitext(new_part_file_name)[0])
                     update_assembly_part_table(assembly_doc, new_part_file_name)
                 delete_parametric_dims(assembly_doc)
                 assembly_doc.Close()
