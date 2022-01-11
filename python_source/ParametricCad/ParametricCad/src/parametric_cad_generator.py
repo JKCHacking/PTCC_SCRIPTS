@@ -4,6 +4,7 @@ import shutil
 import tkinter
 import ctypes
 import re
+import fractions
 from comtypes import client
 from comtypes import COMError
 from comtypes import automation
@@ -13,6 +14,12 @@ SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 APP_PATH = os.path.dirname(SRC_PATH)
 PROJ_PATH = os.path.dirname(APP_PATH)
 OUTPUT_PATH = os.path.join(PROJ_PATH, "output")
+
+FRACTIONAL = 5
+UNITS = {
+    1: "\"",
+    4: "mm"
+}
 
 
 def get_cad_application():
@@ -115,8 +122,23 @@ def update_part_params(part_doc, assembly_params):
             obj.GetXData("PARAMETRIC", ctypes.byref(type_out), ctypes.byref(data_out))
             param_name = data_out[0][1]
             if param_name in assembly_params:
-                obj.TextOverride = assembly_params[param_name]
+                val = assembly_params[param_name]
+                # detects fractional as format of numbers in the document.
+                if part_doc.GetVariable("DIMLUNIT") == FRACTIONAL:
+                    sep = obj.DecimalSeparator
+                    val = dec_to_frac(val, sep)
+                obj.TextOverride = val + UNITS[part_doc.GetVariable("INSUNITS")]
                 obj.Update()
+
+
+def dec_to_frac(num, sep):
+    frac = num
+    if sep in num:
+        whole, dec = num.split(sep)
+        frac = "{} {}".format(whole, fractions.Fraction("{}{}".format(sep, dec)))
+        if dec == "0":
+            frac = whole
+    return frac
 
 
 def get_all_assm_params(assembly_doc):
