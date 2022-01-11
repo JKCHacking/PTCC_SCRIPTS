@@ -125,19 +125,19 @@ def update_part_params(part_doc, assembly_params):
                 val = assembly_params[param_name]
                 # detects fractional as format of numbers in the document.
                 if part_doc.GetVariable("DIMLUNIT") == FRACTIONAL:
-                    sep = obj.DecimalSeparator
-                    val = dec_to_frac(val, sep)
+                    val = dec_to_frac(val)
+                else:
+                    val = str(val)
                 obj.TextOverride = val + UNITS[part_doc.GetVariable("INSUNITS")]
                 obj.Update()
 
 
-def dec_to_frac(num, sep):
-    frac = num
-    if sep in num:
-        whole, dec = num.split(sep)
-        frac = "{} {}".format(whole, fractions.Fraction("{}{}".format(sep, dec)))
-        if dec == "0":
-            frac = whole
+def dec_to_frac(num):
+    dec = round(num % 1, 3)
+    whole = int(num)
+    frac = str(whole)
+    if dec != 0:
+        frac = "{} {}".format(whole, fractions.Fraction(dec))
     return frac
 
 
@@ -146,6 +146,8 @@ def get_all_assm_params(assembly_doc):
     for obj in assembly_doc.ModelSpace:
         if obj.Layer == "*ADSK_CONSTRAINTS":
             param_name, value = obj.TextOverride.split("=")
+            if is_number(value):
+                value = round(float(value), 3)
             params.update({param_name: value})
     return params
 
@@ -169,10 +171,10 @@ def equation_resolver(equation_string, params):
     for var in variables:
         try:
             val = params[var]
-            equation_string = equation_string.replace(var, val)
+            equation_string = equation_string.replace(var, str(val))
         except KeyError:
             print("Parameter {} does not exists".format(var))
-    res = str(eval(equation_string))
+    res = eval(equation_string)
     return res
 
 
@@ -192,8 +194,17 @@ def get_all_part_params(part_doc):
             data_out = automation.VARIANT(["", ""])
             obj.GetXData("PARAMETRIC", ctypes.byref(type_out), ctypes.byref(data_out))
             param = data_out[0][1]
-            val = obj.TextOverride if obj.TextOverride else str(round(obj.Measurement, 3))
-            if param and val:
+            if param:
+                val = obj.TextOverride if obj.TextOverride else round(obj.Measurement, 3)
+                if isinstance(val, str):
+                    # remove the unit
+                    val = val.replace(UNITS[part_doc.GetVariable("INSUNITS")], "")
+                    if "/" in val:
+                        whole, frac = val.split(" ")
+                        dec = round(float(fractions.Fraction(frac)), 3)
+                        val = int(whole) + dec
+                    else:
+                        val = int(val)
                 params.update({param: val})
     return params
 
