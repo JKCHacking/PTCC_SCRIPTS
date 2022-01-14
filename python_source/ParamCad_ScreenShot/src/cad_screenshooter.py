@@ -5,7 +5,6 @@ from ctypes import windll, Structure, c_ulong, byref
 from comtypes import client
 from comtypes import COMError
 
-
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 APP_PATH = os.path.dirname(SRC_PATH)
 OUTPUT_PATH = os.path.join(APP_PATH, "output")
@@ -66,8 +65,37 @@ def main():
     lr_point = query_mouse_position()
     print(lr_point)
 
-    param_names = ["MW", "MH"]
-    for r in zip(range(100, 200), range(150, 250)):
+    num_frames = 10
+    changes = [
+        {
+            "param_name": "MW",
+            "start": 100,
+            "stop": 200
+        },
+        {
+            "param_name": "MH",
+            "start": 150,
+            "stop": 250
+        },
+        {
+            "param_name": "PW",
+            "start": 50,
+            "stop": 150
+        },
+        {
+            "param_name": "PH",
+            "start": 90,
+            "stop": 190
+        }
+    ]
+    param_names = []
+    param_ranges = []
+    for change in changes:
+        param_names.append(change["param_name"])
+        param_ranges.append(range(change["start"],
+                                  change["stop"],
+                                  int((change["stop"] - change["start"]) / num_frames)))
+    for r in zip(*param_ranges):
         param_val = []
         for i, v in enumerate(r):
             edit_parameters(doc, param_names[i], v)
