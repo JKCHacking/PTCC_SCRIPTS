@@ -1,13 +1,17 @@
 import mss
 import mss.tools
 import os
+import tkinter
 from ctypes import windll, Structure, c_ulong, byref
 from comtypes import client
 from comtypes import COMError
+from tkinter.filedialog import askopenfilename
 
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 APP_PATH = os.path.dirname(SRC_PATH)
 OUTPUT_PATH = os.path.join(APP_PATH, "output")
+ACPAPERSPACE = 0
+ACMODELSPACE = 1
 
 
 def get_cad_application():
@@ -54,7 +58,8 @@ def query_mouse_position():
 
 
 def main():
-    path = "H:/Desktop/projects/parametric blocks programming/DEMO/U443-A36.dwg"
+    tkinter.Tk().withdraw()
+    path = askopenfilename(title="Select a DWG file", filetypes=[("DWG Files", ".dwg")])
     bs_app = get_cad_application()
     doc = bs_app.Documents.Open(path)
 
@@ -65,43 +70,42 @@ def main():
     lr_point = query_mouse_position()
     print(lr_point)
 
-    num_frames = 10
+    num_frames = int(input("input number of frames per parameter: "))
     changes = [
         {
             "param_name": "MW",
             "start": 100,
-            "stop": 200
+            "stop": 110
         },
         {
             "param_name": "MH",
             "start": 150,
-            "stop": 250
+            "stop": 160
         },
         {
             "param_name": "PW",
             "start": 50,
-            "stop": 150
+            "stop": 60
         },
         {
             "param_name": "PH",
             "start": 90,
-            "stop": 190
+            "stop": 100
         }
     ]
-    param_names = []
-    param_ranges = []
+
     for change in changes:
-        param_names.append(change["param_name"])
-        param_ranges.append(range(change["start"],
-                                  change["stop"],
-                                  int((change["stop"] - change["start"]) / num_frames)))
-    for r in zip(*param_ranges):
-        param_val = []
-        for i, v in enumerate(r):
-            edit_parameters(doc, param_names[i], v)
-            param_val.append("{}_{}".format(param_names[i], v))
-        image_path = os.path.join(OUTPUT_PATH, "_".join(param_val) + ".png")
-        screenshot_partial(image_path, ul_point, lr_point)
+        doc.StartUndoMark()
+        for i in range(change["start"], change["stop"] + 1, int((change["stop"] - change["start"]) / num_frames)):
+            print("Creating screenshot for {} = {}".format(change["param_name"], i))
+            doc.ActiveSpace = ACMODELSPACE
+            edit_parameters(doc, change["param_name"], i)
+            doc.ActiveSpace = ACPAPERSPACE
+            image_path = os.path.join(OUTPUT_PATH, "{}_{}.png".format(change["param_name"], i))
+            screenshot_partial(image_path, ul_point, lr_point)
+        doc.EndUndoMark()
+        doc.SendCommand("_U\n")
+        doc.SendCommand("REGEN\n")
 
 
 if __name__ == "__main__":
