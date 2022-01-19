@@ -2,6 +2,7 @@ import mss
 import mss.tools
 import os
 import tkinter
+from PIL import Image
 from ctypes import windll, Structure, c_ulong, byref
 from comtypes import client
 from comtypes import COMError
@@ -38,6 +39,12 @@ def screenshot_partial(filename, ul_point, lr_point):
         }
     sct_image = sct.grab(monitor)
     mss.tools.to_png(sct_image.rgb, sct_image.size, output=filename)
+
+
+def make_image_hd(image_path):
+    image_file = Image.open(image_path)
+    image_file = image_file.resize((1920, 1080), Image.ANTIALIAS)
+    image_file.save(image_path, quality=95)
 
 
 def edit_parameters(doc, param_name, value):
@@ -103,6 +110,7 @@ def main():
             doc.ActiveSpace = ACPAPERSPACE
             image_path = os.path.join(OUTPUT_PATH, "{}_{}.png".format(change["param_name"], i))
             screenshot_partial(image_path, ul_point, lr_point)
+            make_image_hd(image_path)
         doc.EndUndoMark()
         doc.SendCommand("_U\n")
         doc.SendCommand("REGEN\n")
