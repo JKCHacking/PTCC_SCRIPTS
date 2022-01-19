@@ -3,6 +3,7 @@ import mss.tools
 import os
 import tkinter
 import numpy
+import json
 from PIL import Image
 from ctypes import windll, Structure, c_ulong, byref
 from comtypes import client
@@ -79,28 +80,9 @@ def main():
     print(lr_point)
 
     num_frames = int(input("input number of frames per parameter: "))
-    changes = [
-        {
-            "param_name": "MW",
-            "start": 100,
-            "stop": 110
-        },
-        {
-            "param_name": "MH",
-            "start": 150,
-            "stop": 160
-        },
-        {
-            "param_name": "PW",
-            "start": 50,
-            "stop": 60
-        },
-        {
-            "param_name": "PH",
-            "start": 90,
-            "stop": 100
-        }
-    ]
+    changes_json_file = askopenfilename(title="Select the Changes JSON file", filetypes=[("JSON Files", ".json")])
+    with open(changes_json_file, 'r') as json_file:
+        changes = json.load(json_file)
 
     for change in changes:
         doc.StartUndoMark()
