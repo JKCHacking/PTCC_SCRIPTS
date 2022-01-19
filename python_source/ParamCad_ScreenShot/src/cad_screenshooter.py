@@ -2,6 +2,7 @@ import mss
 import mss.tools
 import os
 import tkinter
+import numpy
 from PIL import Image
 from ctypes import windll, Structure, c_ulong, byref
 from comtypes import client
@@ -103,12 +104,13 @@ def main():
 
     for change in changes:
         doc.StartUndoMark()
-        for i in range(change["start"], change["stop"] + 1, int((change["stop"] - change["start"]) / num_frames)):
-            print("Creating screenshot for {} = {}".format(change["param_name"], i))
+        for i in numpy.linspace(change["start"], change["stop"] + 1, num_frames):
+            step = round(i, 3)
+            print("Creating screenshot for {} = {}".format(change["param_name"], step))
             doc.ActiveSpace = ACMODELSPACE
-            edit_parameters(doc, change["param_name"], i)
+            edit_parameters(doc, change["param_name"], step)
             doc.ActiveSpace = ACPAPERSPACE
-            image_path = os.path.join(OUTPUT_PATH, "{}_{}.png".format(change["param_name"], i))
+            image_path = os.path.join(OUTPUT_PATH, "{}_{}.png".format(change["param_name"], step))
             screenshot_partial(image_path, ul_point, lr_point)
             make_image_hd(image_path)
         doc.EndUndoMark()
