@@ -12,9 +12,10 @@ class PDFLinkModel:
             for keyword, pagenum_dest in zip(keywords, pagenum_dests):
                 text_coord_list = page.searchFor(keyword)
                 if text_coord_list:
-                    not_found.remove(keyword)
+                    if keyword in not_found:
+                        not_found.remove(keyword)
                     for text_coord in text_coord_list:
-                        page.insertLink({"kind": fitz.LINK_GOTO, "page": pagenum_dest - 1, "from": text_coord})
+                        page.insertLink({"kind": fitz.LINK_GOTO, "page": pagenum_dest, "from": text_coord})
                 else:
                     not_found.add(keyword)
         return not_found

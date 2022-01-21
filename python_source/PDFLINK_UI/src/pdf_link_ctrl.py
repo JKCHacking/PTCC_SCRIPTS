@@ -13,7 +13,7 @@ class PDFLinkCtrl(QObject):
     @pyqtSlot()
     def create_links(self):
         keywords = self.view.keyword_line_edit.text()
-        pages = self.view.page_spin_box.value()
+        pages = self.view.page_line_edit.text()
         pdf_file_path = self.view.pdf_file_path
 
         if keywords and pages and pdf_file_path:
