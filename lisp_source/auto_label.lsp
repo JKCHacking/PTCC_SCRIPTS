@@ -1,6 +1,6 @@
 (vl-load-com)
 
-(defun C:AutoBlockLabel( / leaderLineLen 
+(defun PTCC:AutoBlockLabel( / leaderLineLen
                            landingLineLen 
                            acadObj 
                            doc 
