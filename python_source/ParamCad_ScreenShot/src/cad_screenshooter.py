@@ -92,7 +92,7 @@ def main():
             doc.ActiveSpace = ACMODELSPACE
             edit_parameters(doc, change["param_name"], step)
             doc.ActiveSpace = ACPAPERSPACE
-            image_path = os.path.join(OUTPUT_PATH, "{}_{}.png".format(change["param_name"], step))
+            image_path = os.path.join(OUTPUT_PATH, "{}_{:07.3f}.png".format(change["param_name"], step))
             screenshot_partial(image_path, ul_point, lr_point)
             make_image_hd(image_path)
         doc.EndUndoMark()
