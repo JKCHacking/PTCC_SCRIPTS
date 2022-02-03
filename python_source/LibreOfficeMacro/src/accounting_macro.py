@@ -92,7 +92,7 @@ def load_transactions(*args):
                 if "Non taxable" not in account_title:
                     net_purchases += value
                     account_titles.append(account_title)
-            net_purchases -= trans.ewt
+            # net_purchases -= trans.ewt
             gross_purchases = net_purchases + trans.in_tax
             input_sheet.getCellByPosition(6, row).setString(", ".join(account_titles))
             if trans.is_qualified:
