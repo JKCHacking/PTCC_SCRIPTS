@@ -1,5 +1,6 @@
 import datetime
 import uno
+import time
 from locale import atof, setlocale, LC_NUMERIC
 
 setlocale(LC_NUMERIC, '')
@@ -29,22 +30,25 @@ def get_transactions():
 
         # get all the data from constant columns
         curr_row = 5
-        while input_sheet.getCellByPosition(0, curr_row).getString():
-            date = input_sheet.getCellByPosition(0, curr_row).getString().strip()
-            cv_no = input_sheet.getCellByPosition(1, curr_row).getString().strip()
-            si_date = input_sheet.getCellByPosition(2, curr_row).getString().strip()
-            si_no = input_sheet.getCellByPosition(3, curr_row).getString().strip()
-            supplier = input_sheet.getCellByPosition(4, curr_row).getString().strip()
-            particulars = input_sheet.getCellByPosition(5, curr_row).getString().strip()
-            is_qualified = input_sheet.getCellByPosition(6, curr_row).getString().strip()
-            atc_code = input_sheet.getCellByPosition(7, curr_row).getString().strip()
-            categories = input_sheet.getCellByPosition(8, curr_row).getString().strip()
-            cash_in_bank = input_sheet.getCellByPosition(9, curr_row).getString().strip()
-            ewt = input_sheet.getCellByPosition(10, curr_row).getString().strip()
-            in_tax = input_sheet.getCellByPosition(11, curr_row).getString().strip()
+        while input_sheet.getCellByPosition(1, curr_row).getString():
+            date = input_sheet.getCellByPosition(1, curr_row).getString().strip()
+            cv_no = input_sheet.getCellByPosition(2, curr_row).getString().strip()
+            si_date = input_sheet.getCellByPosition(3, curr_row).getString().strip()
+            si_no = input_sheet.getCellByPosition(4, curr_row).getString().strip()
+            supplier = input_sheet.getCellByPosition(5, curr_row).getString().strip()
+            particulars = input_sheet.getCellByPosition(6, curr_row).getString().strip()
+            is_qualified = input_sheet.getCellByPosition(7, curr_row).getString().strip()
+            atc_code = input_sheet.getCellByPosition(8, curr_row).getString().strip()
+            categories = input_sheet.getCellByPosition(10, curr_row).getString().strip()
+            cash_in_bank = input_sheet.getCellByPosition(11, curr_row).getString().strip()
+            ewt = input_sheet.getCellByPosition(12, curr_row).getString().strip()
+            while ewt == "#REF!":
+                ewt = input_sheet.getCellByPosition(12, curr_row).getString().strip()
+                time.sleep(0.5)
+            in_tax = input_sheet.getCellByPosition(13, curr_row).getString().strip()
 
             # get the data from the account titles
-            acc_col = 12
+            acc_col = 14
             acc_dict = {}
             while input_sheet.getCellByPosition(acc_col, 4).getString():
                 acc_name = input_sheet.getCellByPosition(acc_col, 4).getString().strip()
