@@ -109,7 +109,8 @@ def load_transactions(*args):
                     input_sheet.getCellByPosition(11, row + 1).setValue(trans.ewt)
                     row += 1
             else:
-                input_sheet.getCellByPosition(11, row).setValue(trans.cash_in_bank)
+                # input_sheet.getCellByPosition(11, row).setValue(trans.cash_in_bank)
+                input_sheet.getCellByPosition(11, row).setValue(net_purchases)
 
 
 class Transaction:
