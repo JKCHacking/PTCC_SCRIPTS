@@ -3,6 +3,7 @@ import uno
 import time
 from locale import atof, setlocale, LC_NUMERIC
 
+TRIES = 10
 setlocale(LC_NUMERIC, '')
 
 
@@ -42,9 +43,13 @@ def get_transactions():
             categories = input_sheet.getCellByPosition(10, curr_row).getString().strip()
             cash_in_bank = input_sheet.getCellByPosition(11, curr_row).getString().strip()
             ewt = input_sheet.getCellByPosition(12, curr_row).getString().strip()
-            while ewt == "#REF!":
-                ewt = input_sheet.getCellByPosition(12, curr_row).getString().strip()
-                time.sleep(0.5)
+            # N attempts to get the value in ewt cell.
+            for _ in range(TRIES):
+                if ewt == "#REF!":
+                    ewt = input_sheet.getCellByPosition(12, curr_row).getString().strip()
+                    time.sleep(0.5)
+                else:
+                    break
             in_tax = input_sheet.getCellByPosition(13, curr_row).getString().strip()
 
             # get the data from the account titles
@@ -84,6 +89,10 @@ def load_transactions(*args):
         row_offset = 5
         for i, trans in enumerate(trans_list):
             row = row_offset + i
+            # check row first
+            check = input_sheet.getCellByPosition(0, row).getString().strip()
+            if check:
+                row += 1
             input_sheet.getCellByPosition(0, row).setString(trans.date.strftime("%Y-%b-%d"))
             input_sheet.getCellByPosition(1, row).setString(trans.cv_no)
             input_sheet.getCellByPosition(3, row).setString(trans.supplier)
@@ -96,7 +105,6 @@ def load_transactions(*args):
                 if "Non taxable" not in account_title:
                     net_purchases += value
                     account_titles.append(account_title)
-            # net_purchases -= trans.ewt
             gross_purchases = net_purchases + trans.in_tax
             input_sheet.getCellByPosition(6, row).setString(", ".join(account_titles))
             if trans.is_qualified:
@@ -107,13 +115,12 @@ def load_transactions(*args):
                     input_sheet.getCellByPosition(0, row + 1).setString(trans.date.strftime("%Y-%b-%d"))
                     input_sheet.getCellByPosition(1, row + 1).setString(trans.cv_no)
                     input_sheet.getCellByPosition(3, row + 1).setString(trans.supplier)
+                    input_sheet.getCellByPosition(6, row + 1).setString(", ".join(account_titles))
                     input_sheet.getCellByPosition(7, row + 1).setString(trans.atc_code)
                     input_sheet.getCellByPosition(8, row + 1).setString(trans.categories)
                     input_sheet.getCellByPosition(13, row + 1).setString(trans.si_no)
                     input_sheet.getCellByPosition(11, row + 1).setValue(trans.ewt)
-                    row += 1
             else:
-                # input_sheet.getCellByPosition(11, row).setValue(trans.cash_in_bank)
                 input_sheet.getCellByPosition(11, row).setValue(net_purchases)
 
 
