@@ -1,6 +1,6 @@
 import datetime
 import uno
-addedimport msgbox
+import msgbox
 from locale import atof, setlocale, LC_NUMERIC
 
 TRIES = 10
