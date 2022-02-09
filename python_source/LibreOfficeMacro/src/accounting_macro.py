@@ -156,7 +156,7 @@ class Transaction:
                  ewt, in_tax, accounts):
         self.date = datetime.datetime.strptime(date, "%Y-%b-%d").date()
         self.cv_no = cv_no
-        self.si_date = datetime.datetime.strptime(si_date, "%Y-%b-%d").date()
+        self.si_date = datetime.datetime.strptime(si_date, "%Y-%b-%d").date() if si_date else ""
         self.si_no = si_no
         self.supplier = supplier
         self.particulars = particulars
