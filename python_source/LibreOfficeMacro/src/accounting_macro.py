@@ -1,6 +1,6 @@
 import datetime
 import uno
-import time
+addedimport msgbox
 from locale import atof, setlocale, LC_NUMERIC
 
 TRIES = 10
@@ -25,59 +25,64 @@ def get_transactions():
     trans_list = []
     url = open_file_chooser()
     if url:
-        desktop = XSCRIPTCONTEXT.getDesktop()
-        liquidat = desktop.loadComponentFromURL(url, "_blank", 0, [])
-        input_sheet = liquidat.Sheets["Input Data"]
+        # find the chosen file in the list of open files.
+        active_docs = get_ods_docs()
+        liquid_doc = None
+        for active_doc in active_docs:
+            if url == active_doc.Location:
+                liquid_doc = active_doc
+                break
 
-        # get all the data from constant columns
-        curr_row = 5
-        while input_sheet.getCellByPosition(1, curr_row).getString():
-            date = input_sheet.getCellByPosition(1, curr_row).getString().strip()
-            cv_no = input_sheet.getCellByPosition(2, curr_row).getString().strip()
-            si_date = input_sheet.getCellByPosition(3, curr_row).getString().strip()
-            si_no = input_sheet.getCellByPosition(4, curr_row).getString().strip()
-            supplier = input_sheet.getCellByPosition(5, curr_row).getString().strip()
-            particulars = input_sheet.getCellByPosition(6, curr_row).getString().strip()
-            is_qualified = input_sheet.getCellByPosition(7, curr_row).getString().strip()
-            atc_code = input_sheet.getCellByPosition(8, curr_row).getString().strip()
-            categories = input_sheet.getCellByPosition(10, curr_row).getString().strip()
-            cash_in_bank = input_sheet.getCellByPosition(11, curr_row).getString().strip()
-            ewt = input_sheet.getCellByPosition(12, curr_row).getString().strip()
-            # N attempts to get the value in ewt cell.
-            for _ in range(TRIES):
-                if ewt == "#REF!":
-                    ewt = input_sheet.getCellByPosition(12, curr_row).getString().strip()
-                    time.sleep(0.5)
-                else:
-                    break
-            in_tax = input_sheet.getCellByPosition(13, curr_row).getString().strip()
+        if liquid_doc:
+            input_sheet = liquid_doc.Sheets["Input Data"]
+            # get all the data from constant columns
+            curr_row = 5
+            ewt = input_sheet.getCellByPosition(13, curr_row).getString().strip()
+            if ewt != "#REF!":
+                while input_sheet.getCellByPosition(1, curr_row).getString():
+                    date = input_sheet.getCellByPosition(1, curr_row).getString().strip()
+                    cv_no = input_sheet.getCellByPosition(2, curr_row).getString().strip()
+                    si_date = input_sheet.getCellByPosition(4, curr_row).getString().strip()
+                    si_no = input_sheet.getCellByPosition(5, curr_row).getString().strip()
+                    supplier = input_sheet.getCellByPosition(6, curr_row).getString().strip()
+                    particulars = input_sheet.getCellByPosition(7, curr_row).getString().strip()
+                    is_qualified = input_sheet.getCellByPosition(8, curr_row).getString().strip()
+                    atc_code = input_sheet.getCellByPosition(9, curr_row).getString().strip()
+                    categories = input_sheet.getCellByPosition(11, curr_row).getString().strip()
+                    cash_in_bank = input_sheet.getCellByPosition(12, curr_row).getString().strip()
+                    ewt = input_sheet.getCellByPosition(13, curr_row).getString().strip()
+                    in_tax = input_sheet.getCellByPosition(14, curr_row).getString().strip()
 
-            # get the data from the account titles
-            acc_col = 14
-            acc_dict = {}
-            while input_sheet.getCellByPosition(acc_col, 4).getString():
-                acc_name = input_sheet.getCellByPosition(acc_col, 4).getString().strip()
-                acc_val = input_sheet.getCellByPosition(acc_col, curr_row).getString().strip()
-                if acc_val:
-                    acc_dict.update({acc_name: acc_val})
-                acc_col += 1
-            trans = Transaction(
-                date,
-                cv_no,
-                si_date,
-                si_no,
-                supplier,
-                particulars,
-                is_qualified,
-                atc_code,
-                categories,
-                cash_in_bank,
-                ewt,
-                in_tax,
-                acc_dict
-            )
-            trans_list.append(trans)
-            curr_row += 1
+                    # get the data from the account titles
+                    acc_col = 15
+                    acc_dict = {}
+                    while input_sheet.getCellByPosition(acc_col, 4).getString():
+                        acc_name = input_sheet.getCellByPosition(acc_col, 4).getString().strip()
+                        acc_val = input_sheet.getCellByPosition(acc_col, curr_row).getString().strip()
+                        if acc_val:
+                            acc_dict.update({acc_name: acc_val})
+                        acc_col += 1
+                    trans = Transaction(
+                        date,
+                        cv_no,
+                        si_date,
+                        si_no,
+                        supplier,
+                        particulars,
+                        is_qualified,
+                        atc_code,
+                        categories,
+                        cash_in_bank,
+                        ewt,
+                        in_tax,
+                        acc_dict
+                    )
+                    trans_list.append(trans)
+                    curr_row += 1
+            else:
+                MsgBox("There are unreferenced links.")
+        else:
+            MsgBox("Your file is not open.")
     return trans_list
 
 
@@ -122,6 +127,23 @@ def load_transactions(*args):
                     input_sheet.getCellByPosition(11, row + 1).setValue(trans.ewt)
             else:
                 input_sheet.getCellByPosition(11, row).setValue(net_purchases)
+
+
+def MsgBox(txt):
+    mb = msgbox.MsgBox(uno.getComponentContext())
+    mb.addButton("OK")
+    mb.show(txt, 0, "Python")
+
+
+def get_ods_docs():
+    ods_doc_list = []
+    components = XSCRIPTCONTEXT.getDesktop().getComponents()
+    docs = components.createEnumeration()
+    while docs.hasMoreElements():
+        doc = docs.nextElement()
+        if doc.supportsService("com.sun.star.sheet.SpreadsheetDocument"):
+            ods_doc_list.append(doc)
+    return ods_doc_list
 
 
 class Transaction:
