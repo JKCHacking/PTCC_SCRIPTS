@@ -103,7 +103,7 @@ def convert_parts_to_stp(holoplot_num, sel_obj_ids, sel_thread_ids, sel_other_te
                 ids_to_export.extend(eng_curve_ids)
                 ids_to_export.extend(oth_txt_curve_ids)
                 filename = "{}_00.stp".format(get_specific_part_name(obj_id))
-                full_path = "H:\\Desktop\\projects\\holoplot\\{}\\{}".format("H" + holoplot_num, filename)
+                full_path = "H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\{}\\{}".format("H" + holoplot_num, filename)
                 export_to_stp(full_path, ids_to_export)
                 rs.DeleteObject(copy_obj_id)
                 rs.DeleteObject(copy_engraving_id)
@@ -128,7 +128,8 @@ def unmirror(text_id):
 
 
 def log_error(message, holo_num):
-    error_file = "H:\\Desktop\\projects\\holoplot\\H{holo_num}\\parts2stp_err_H{holo_num}.txt".format(holo_num=holo_num)
+    error_file = "H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\parts2stp_err_H{holo_num}.txt".format(
+        holo_num=holo_num)
     if os.path.exists(error_file):
         mode = "a"
     else:

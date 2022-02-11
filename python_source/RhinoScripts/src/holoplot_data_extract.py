@@ -244,8 +244,8 @@ def main():
     sort_child_parts(holo_tree_dict)
     set_unique_num(holo_tree_dict)
     set_structure_num(holo_tree_dict)
-    with open("H:\\Desktop\\projects\\holoplot\\H{holo_num:02d}\\H{holo_num:02d}.json".format(holo_num=holo_num), "w") \
-            as fp:
+    with open("H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num:02d}\\H{holo_num:02d}.json".format(
+            holo_num=holo_num), "w") as fp:
         json.dump(holo_tree_dict, fp)
 
 
