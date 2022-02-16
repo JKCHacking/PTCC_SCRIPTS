@@ -35,10 +35,13 @@ def main():
             y_dist = max_pt[0][1] - min_pt[0][1]
             z_dist = max_pt[0][2] - min_pt[0][2]
             length = round(max([x_dist, y_dist, z_dist]), 1)
-            if length in groups:
-                groups.update({length: groups[length] + 1})
+            if length != 0:
+                if length in groups:
+                    groups.update({length: groups[length] + 1})
+                else:
+                    groups.update({length: 1})
             else:
-                groups.update({length: 1})
+                print("solid with 0 length: {}".format(obj.Handle))
 
     total = 0
     output = "H://Desktop//projects//ObjectCounter"
