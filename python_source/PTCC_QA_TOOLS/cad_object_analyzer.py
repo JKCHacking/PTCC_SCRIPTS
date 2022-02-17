@@ -1,9 +1,11 @@
 from comtypes import client
 from comtypes import COMError
 from comtypes import automation
+import array
 import ctypes
 import csv
 import os
+import math
 
 
 SS_NAME = "SSOBJECTS"
@@ -67,12 +69,8 @@ def remove_duplicate_objects(doc):
             pass
 
 
-def main():
-    b_cad = get_cad_application()
-    doc = b_cad.ActiveDocument
+def create_count_report(doc):
     groups = {}
-    # removing duplicate objects
-    remove_duplicate_objects(doc)
     solids = get_solids(doc)
     for solid in solids:
         length = get_length(solid)
@@ -96,6 +94,86 @@ def main():
             writer.writerow({"Length": key, "Count": value})
             total = total + value
     print("Total: {}".format(total))
+
+
+def is_square(obj):
+    square = False
+    min_pt, max_pt = get_bounding_box(obj)
+    x_dist = max_pt[0][0] - min_pt[0][0]
+    y_dist = max_pt[0][1] - min_pt[0][1]
+    z_dist = max_pt[0][2] - min_pt[0][2]
+    dists = [x_dist, y_dist, z_dist]
+    max_dist = max(dists)
+    dists.remove(max_dist)
+    if dists[0] == dists[1]:
+        square = True
+    return square
+
+
+def is_vertical(obj):
+    vertical = False
+    min_pt, max_pt = get_bounding_box(obj)
+    x_dist = max_pt[0][0] - min_pt[0][0]
+    y_dist = max_pt[0][1] - min_pt[0][1]
+    if y_dist > x_dist:
+        vertical = True
+    return vertical
+
+
+def get_centroid(obj):
+    min_pt, max_pt = get_bounding_box(obj)
+    midx = (min_pt[0][0] + max_pt[0][0]) / 2
+    midy = (min_pt[0][1] + max_pt[0][1]) / 2
+    midz = (min_pt[0][2] + max_pt[0][2]) / 2
+    return automation.VARIANT([midx, midy, midz])
+
+
+def move_solids(solids, start_point):
+    col_offset = 0
+    row_offset = 0
+    padding = 100
+    for i, solid in enumerate(solids):
+        solid_copy = solid.Copy()
+        centroid = array.array("d", get_centroid(solid)[0])
+        if is_vertical(solid_copy):
+            solid_copy.Rotate(centroid, math.radians(90))
+        solid_copy.Move(centroid,
+                        array.array("d", [start_point[0] + col_offset + padding, start_point[1] - row_offset, 0]))
+        col_offset += get_length(solid)
+        if i % 50 == 0:
+            col_offset = 0
+            row_offset += 1000
+
+
+def sort_solid(doc):
+    square = []
+    rect = []
+    solids = get_solids(doc)
+    for solid in solids:
+        if is_square(solid):
+            square.append(solid)
+        else:
+            rect.append(solid)
+    move_solids(square, array.array("d",
+                                    doc.Utility.GetPoint(
+                                        array.array("d", [0, 0, 0]), "Pick a start point for squares: ")))
+    move_solids(rect, array.array("d",
+                                  doc.Utility.GetPoint(
+                                      array.array("d", [0, 0, 0]), "Pick a start point for rectangles: ")))
+
+
+def main():
+    b_cad = get_cad_application()
+    doc = b_cad.ActiveDocument
+    # removing duplicate objects
+    print("Removing duplicate objects...")
+    remove_duplicate_objects(doc)
+    # create csv file for different solid counts
+    print("Creating CSV Count Report...")
+    create_count_report(doc)
+    # sort according to square and rectangle
+    print("Sorting solids...")
+    sort_solid(doc)
 
 
 if __name__ == "__main__":
