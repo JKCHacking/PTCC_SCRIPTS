@@ -168,8 +168,8 @@ def main():
     # get all the solids that are visible.
     solids = get_solids(doc)
     # removing duplicate objects and returning the new set of solids
-    print("Removing duplicate objects...")
-    solids = remove_duplicate_objects(doc, solids)
+    # print("Removing duplicate objects...")
+    # solids = remove_duplicate_objects(doc, solids)
     # create csv file for different solid counts
     print("Creating CSV Count Report...")
     create_count_report(doc, solids)
