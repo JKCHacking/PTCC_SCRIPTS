@@ -42,13 +42,12 @@ def get_solids(doc):
     solids = []
     model_space = doc.ModelSpace
     for obj in model_space:
-        if obj.ObjectName == "AcDb3dSolid":
+        if obj.ObjectName == "AcDb3dSolid" and obj.Visible:
             solids.append(obj)
     return solids
 
 
-def remove_duplicate_objects(doc):
-    solids = get_solids(doc)
+def remove_duplicate_objects(doc, solids):
     to_delete = []
     for solid in solids:
         if solid not in to_delete:
@@ -67,11 +66,11 @@ def remove_duplicate_objects(doc):
             solid.Delete()
         except COMError:
             pass
+    return get_solids(doc)
 
 
-def create_count_report(doc):
+def create_count_report(doc, solids):
     groups = {}
-    solids = get_solids(doc)
     for solid in solids:
         length = get_length(solid)
         if length != 0:
@@ -84,7 +83,8 @@ def create_count_report(doc):
 
     total = 0
     output = "H://Desktop//projects//ObjectCounter"
-    csv_out = os.path.splitext(os.path.basename(doc.GetVariable("dwgname")))[0] + ".csv"
+    filename = input("Input Filename of the CSV: ")
+    csv_out = os.path.splitext(filename)[0] + ".csv"
     with open(os.path.join(output, csv_out), "w", newline="") as csvfile:
         fieldnames = ["Length", "Count"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -145,10 +145,9 @@ def move_solids(solids, start_point):
             row_offset += 1000
 
 
-def sort_solid(doc):
+def sort_solid(doc, solids):
     square = []
     rect = []
-    solids = get_solids(doc)
     for solid in solids:
         if is_square(solid):
             square.append(solid)
@@ -165,15 +164,18 @@ def sort_solid(doc):
 def main():
     b_cad = get_cad_application()
     doc = b_cad.ActiveDocument
-    # removing duplicate objects
+
+    # get all the solids that are visible.
+    solids = get_solids(doc)
+    # removing duplicate objects and returning the new set of solids
     print("Removing duplicate objects...")
-    remove_duplicate_objects(doc)
+    solids = remove_duplicate_objects(doc, solids)
     # create csv file for different solid counts
     print("Creating CSV Count Report...")
-    create_count_report(doc)
+    create_count_report(doc, solids)
     # sort according to square and rectangle
     print("Sorting solids...")
-    sort_solid(doc)
+    sort_solid(doc, solids)
 
 
 if __name__ == "__main__":
