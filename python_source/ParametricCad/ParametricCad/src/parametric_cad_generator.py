@@ -137,7 +137,7 @@ def dec_to_frac(num):
     whole = int(num)
     frac = str(whole)
     if dec != 0:
-        frac = "{} {}".format(whole, fractions.Fraction(dec))
+        frac = "{} {}".format(whole, fractions.Fraction(dec).limit_denominator())
     return frac
 
 
