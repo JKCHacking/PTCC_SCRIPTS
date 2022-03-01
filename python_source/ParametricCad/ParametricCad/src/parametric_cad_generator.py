@@ -143,47 +143,22 @@ def dec_to_frac(num):
 
 def get_all_assm_params(assembly_doc):
     params = {}
-    for obj in assembly_doc.ModelSpace:
-        if obj.Layer == "*ADSK_CONSTRAINTS":
-            param_name, value = obj.TextOverride.split("=")
-            if is_number(value):
-                value = round(float(value), 3)
-            params.update({param_name: value})
+    assembly_doc.SetVariable("LOGFILEMODE", 1)
+    assembly_doc.SendCommand("-Parameters\n\n")
+    log_path = assembly_doc.GetVariable("LOGFILENAME")
+    assembly_doc.SetVariable("LOGFILEMODE", 0)
+    with open(log_path, "r") as log_file:
+        for line in log_file.readlines():
+            res_param = re.search(r'(?<=Parameter:).*(?=Expression:)', line)
+            res_val = re.search(r'(?<=Value:).*', line)
+            if res_param and res_val:
+                parameter_name = res_param.group(0).strip()
+                if parameter_name:
+                    value = res_val.group(0).strip()
+                    value = round(float(value), 3)
+                    params.update({parameter_name: value})
+    os.remove(log_path)
     return params
-
-
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
-
-def extract_variables(equation_string):
-    tokens = re.split('\\+|\\+ |\\*|\\* |-|- |/|/ |\\(|\\)|\\s', equation_string)
-    variables = [token for token in tokens if token and not is_number(token)]
-    return variables
-
-
-def equation_resolver(equation_string, params):
-    variables = extract_variables(equation_string)
-    for var in variables:
-        try:
-            val = params[var]
-            equation_string = equation_string.replace(var, str(val))
-        except KeyError:
-            print("Parameter {} does not exists".format(var))
-    res = eval(equation_string)
-    return res
-
-
-def simplify_parameters(assembly_params):
-    # resolve all equation to numbers
-    for name, val in assembly_params.items():
-        if not is_number(val):
-            new_val = equation_resolver(val, assembly_params)
-            assembly_params.update({name: new_val})
 
 
 def get_all_part_params(part_doc):
@@ -202,7 +177,13 @@ def get_all_part_params(part_doc):
                     if "/" in val:
                         whole, frac = val.split(" ")
                         dec = round(float(fractions.Fraction(frac)), 3)
-                        val = int(whole) + dec
+                        try:
+                            whole = int(whole)
+                        except ValueError:
+                            # remove the color format "\\C7;" = white
+                            whole = whole.split(";")[1]
+                            whole = int(whole)
+                        val = whole + dec
                     else:
                         val = int(val)
                 params.update({param: val})
@@ -242,13 +223,9 @@ def update_assembly_part_table(assembly_doc, part_name):
         print("Cannot find part {} in the part table".format(default_part_name))
 
 
-def delete_parametric_dims(assm_doc):
-    lines = []
-    for obj in assm_doc.ModelSpace:
-        if obj.ObjectName == "AcDbLine" or obj.ObjectName == "AcDbPolyline":
-            lines.append(obj)
-    for line in lines:
-        assm_doc.SendCommand('DELCONSTRAINT (handent "{}")\n\n'.format(line.Handle))
+def delete_parametric_dims(assm_doc, assembly_params):
+    for param in assembly_params.keys():
+        assm_doc.SendCommand("-PARAMETERS Delete {}\n".format(param))
 
 
 def main():
@@ -277,7 +254,7 @@ def main():
                 parameters = {param_name: row[param_name] for param_name in parameter_names}
                 update_assembly_params(assembly_doc, parameters)
                 assembly_params = get_all_assm_params(assembly_doc)
-                simplify_parameters(assembly_params)
+                # simplify_parameters(assembly_params)
                 print("\nGenerating Part:")
                 for part_name in part_names:
                     dup_part, count = find_duplicate_part(part_name.split("-")[0], assembly_params)
@@ -296,14 +273,16 @@ def main():
                                                                                    new_part_file_name))
                             print(os.path.splitext(new_part_file_name)[0])
                         except FileNotFoundError:
+                            new_part = ""
                             print("Cannot find part {} in {}".format(part_name.split("-")[0],
                                                                      os.path.dirname(assm_temp_path)))
                         # update the new part
-                        part_doc = b_app.Documents.Open(new_part)
-                        update_part_params(part_doc, assembly_params)
-                        part_doc.Close()
-                    update_assembly_part_table(assembly_doc, new_part_file_name)
-                delete_parametric_dims(assembly_doc)
+                        if new_part:
+                            part_doc = b_app.Documents.Open(new_part)
+                            update_part_params(part_doc, assembly_params)
+                            part_doc.Close()
+                            update_assembly_part_table(assembly_doc, new_part_file_name)
+                delete_parametric_dims(assembly_doc, assembly_params)
                 assembly_doc.Close()
                 print("")
     else:
