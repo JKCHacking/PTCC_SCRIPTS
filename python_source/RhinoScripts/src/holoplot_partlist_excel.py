@@ -18,8 +18,8 @@ def write_json_ws(holo_data, ws):
 def main():
     holo_num = input("Holoplot Number:")
     tkinter.Tk().withdraw()
-    filename = askopenfilename(initialdir="H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num:02d}\\".format(
-        holo_num=int(holo_num)),
+    filename = askopenfilename(initialdir="H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\".format(
+        holo_num=holo_num),
                                filetypes=[("JSON Files", ".json")])
     if os.path.exists(filename):
         with open(filename, "r") as jf:
@@ -30,8 +30,8 @@ def main():
                         "unit", "length", "width", "height", "drawing no.", "E", "F", "A", "L"]
         ws.append(column_names)
         write_json_ws(holoplot_data, ws)
-        wb.save("H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num:02d}\\H{holo_num:02d} Partlist.xlsx".format(
-            holo_num=int(holo_num)))
+        wb.save("H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\H{holo_num} Partlist.xlsx".format(
+            holo_num=holo_num))
 
 
 if __name__ == "__main__":

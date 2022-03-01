@@ -174,18 +174,18 @@ def extract_holoplot_data(obj_ids, holo_num):
                                  s_no=0,
                                  i_no="V-AL21",
                                  desc="AL-Element",
-                                 desc2="holoplot-{:02d}".format(holo_num),
+                                 desc2="holoplot-{}".format(holo_num),
                                  quantity=1,
                                  unit="Stuck",
                                  length=0,
                                  width=0,
                                  height=0,
-                                 d_no="1421-H{:02d}".format(holo_num),
+                                 d_no="1421-H{}".format(holo_num),
                                  efal=[None, "X", "X", None],
                                  child_parts={}
                                  )
     holoplot_tree = {
-        "1421-H{:02d}".format(holo_num): holoplot_parts
+        "1421-H{}".format(holo_num): holoplot_parts
     }
     for obj_id in obj_ids:
         part_name1 = get_specific_part_name(obj_id)
@@ -200,13 +200,13 @@ def extract_holoplot_data(obj_ids, holo_num):
                         truss_raw_part = init_raw_part(truss_part_id)
                         truss_part["child_parts"].update({part_name2 + "-Zuschnitt": truss_raw_part})
                         truss["child_parts"].update({part_name2: truss_part})
-                holoplot_tree["1421-H{:02d}".format(holo_num)]["child_parts"].update({part_name1: truss})
+                holoplot_tree["1421-H{}".format(holo_num)]["child_parts"].update({part_name1: truss})
         elif rs.IsPolysurface(obj_id):
             if "1421" in part_name1:
                 part = init_part(obj_id)
                 raw_part = init_raw_part(obj_id)
                 part["child_parts"].update({part_name1 + "-Zuschnitt": raw_part})
-                holoplot_tree["1421-H{:02d}".format(holo_num)]["child_parts"].update({part_name1: part})
+                holoplot_tree["1421-H{}".format(holo_num)]["child_parts"].update({part_name1: part})
     return holoplot_tree
 
 
@@ -238,13 +238,13 @@ def set_structure_num(holo_dict):
 
 
 def main():
-    holo_num = rs.GetInteger("Holoplot Number")
+    holo_num = rs.GetString("Holoplot Number")
     sel_obj_ids = rs.GetObjects("Select parts")
     holo_tree_dict = extract_holoplot_data(sel_obj_ids, holo_num)
     sort_child_parts(holo_tree_dict)
     set_unique_num(holo_tree_dict)
     set_structure_num(holo_tree_dict)
-    with open("H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num:02d}\\H{holo_num:02d}.json".format(
+    with open("H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\H{holo_num}.json".format(
             holo_num=holo_num), "w") as fp:
         json.dump(holo_tree_dict, fp)
 
