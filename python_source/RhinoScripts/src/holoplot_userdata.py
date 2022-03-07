@@ -1,11 +1,6 @@
 import os
 import statistics
-import math
 import rhinoscriptsyntax as rs
-import scriptcontext as sc
-import Rhino.Geometry
-import Rhino.RhinoApp
-import Rhino
 import datetime
 
 PROJECT_NUMBER = "1421"
@@ -16,39 +11,85 @@ DIM_ROUND_PRECISION = 2
 W_ROUND_PRECISION = 4
 BB_POINTS = []
 HOLO_NUM = ""
+ERROR_FILE = "H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\userdata_err_H{holo_num}.txt"
 
 
 def main():
     global HOLO_NUM
     HOLO_NUM = rs.GetString("Holoplot Number")
     all_obj_ids = rs.GetObjects("Select objects you want to add Userdata")
-    for obj_id in all_obj_ids:
+    # check all the parts before adding userdata.
+    check_parts(all_obj_ids)
+    # after checking it will create an error file
+    if os.path.exists(ERROR_FILE.format(holo_num=HOLO_NUM)):
+        print("There's an error in the holoplot. Please check in the error file.")
+    else:
+        # add userdata
+        add_userdata_objs(all_obj_ids)
+
+
+def check_parts(obj_ids):
+    """
+    Desc: Function to check for the correctness of the objects recursively:
+        * Wrong layernames
+        * engraving tags missing or incompatible
+        * openpolysurface
+    params: obj_ids - list of object ids
+    returns: None
+    """
+    for obj_id in obj_ids:
+        part_name = get_specific_part_name(obj_id)
+        if part_name.startswith("1421"):
+            if rs.IsBlockInstance(obj_id):
+                check_layer_name(obj_id)
+                check_parts(rs.BlockObjects(rs.BlockInstanceName(obj_id)))
+            elif rs.IsPolysurface(obj_id):
+                if not rs.IsPolysurfaceClosed(obj_id):
+                    log_error("[{}] Open Polysurface detected.".format(part_name))
+                check_layer_name(obj_id)
+                get_engravings(obj_id, obj_ids)
+
+
+def check_layer_name(obj_id):
+    part_name = get_part_name(obj_id)
+    if isWrong(obj_id):
+        log_error("[{}] Wrong layer name".format(part_name))
+
+
+def isWrong(obj):
+    wrong = False
+    part_name = get_part_name(obj)
+    if part_name.startswith("1421") and "..." not in part_name:
+        wrong = True
+    return wrong
+
+
+def add_userdata_objs(obj_ids, parent_block=None):
+    """
+    Desc: Function that adds userdata to a holoplot recursively.
+    param: obj_ids - list of object ids
+    return: None
+    """
+    for obj_id in obj_ids:
         part_name = get_specific_part_name(obj_id)
         if part_name.startswith("1421"):
             print("Working with: {}".format(part_name))
             if rs.IsBlockInstance(obj_id):
-                # get the block name
-                target_blk_name = rs.BlockInstanceName(obj_id)
-                # get the ids of the block parts and add user data to it.
-                part_ids = rs.BlockObjects(target_blk_name)
-                for truss_part_id in part_ids:
-                    truss_part_name = get_specific_part_name(truss_part_id)
-                    if rs.IsPolysurface(truss_part_id) and truss_part_name.startswith("1421"):
-                        add_userdata(truss_part_id, parent_block=obj_id)
+                # recurse the parts of the assembly and add userdata
+                add_userdata_objs(rs.BlockObjects(rs.BlockInstanceName(obj_id)), obj_id)
+                # add userdata to assembly
                 add_userdata(obj_id)
-            # poly surface
-            elif rs.IsPolysurface(obj_id):
-                add_userdata(obj_id)
+            elif rs.IsPolysurfaceClosed(obj_id):
+                # add userdata to parts
+                add_userdata(obj_id, parent_block)
 
 
-def log_error(message, holo_num):
-    error_file = "H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\userdata_err_H{holo_num}.txt".format(
-        holo_num=holo_num)
-    if os.path.exists(error_file):
+def log_error(message):
+    if os.path.exists(ERROR_FILE.format(holo_num=HOLO_NUM)):
         mode = "a"
     else:
         mode = "w"
-    with open(error_file, mode=mode) as err_f:
+    with open(ERROR_FILE.format(holo_num=HOLO_NUM), mode=mode) as err_f:
         err_f.write("[{}]: {}\n".format(datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), message))
 
 
@@ -70,18 +111,8 @@ def add_userdata(obj_id, parent_block=None):
     name = get_name(spec_pname, category)
     length, width, height = get_dimensions(obj_id, parent_block)
     gross_area = get_gross_area(length, width)
-    try:
-        mass = get_weight(obj_id, group)
-    except TypeError as e:
-        mass = 0
-        message = "Cant get weight: {}".format(spec_pname)
-        log_error(message, HOLO_NUM)
-    try:
-        coating_area = get_coating_area(obj_id)
-    except TypeError as e:
-        coating_area = 0
-        message = "Cant get area: {}".format(spec_pname)
-        log_error(message, HOLO_NUM)
+    mass = get_weight(obj_id, group)
+    coating_area = get_coating_area(obj_id)
     net_area = coating_area
 
     rs.SetUserText(obj_id, "01_POSITION", position)
@@ -117,6 +148,10 @@ def get_specific_part_name(obj_id):
     layer = rs.ObjectLayer(obj_id)
     spec_pname = layer.split("::")[-1].split("...")[0].strip()
     return spec_pname
+
+
+def get_part_name(obj):
+    return rs.ObjectLayer(obj).split("::")[-1]
 
 
 def get_position(spec_name):
@@ -197,15 +232,21 @@ def get_name(spec_name, category):
         "STC": "standard top chord",
         "SBC": "standard bottom chord",
         "SDP": "standard diagonal part",
-        "SCP": "standard connection part"
+        "SCP": "standard connection part",
+        "SVP": "standard vertical part"
     }
     p_type = ""
+    p = ""
     if category == "Pre-Assembly":
-        p_type = spec_name.split("-")[2][0]
+        p = spec_name.split("-")[2]
     elif category == "Standard Parts Assembly" or category == "Single Part":
-        p_type = spec_name.split("-")[3][:2]
+        p = spec_name.split("-")[3]
     elif category == "Standard Parts Single":
-        p_type = spec_name.split("-")[1][:3]
+        p = spec_name.split("-")[1]
+
+    for c in p:
+        if c.isalpha():
+            p_type += c
     name = "{} ... {}".format(spec_name, name_dict[p_type])
     return name
 
@@ -274,7 +315,7 @@ def get_dimensions(obj_id, parent_block=None):
         # find the bottom chord engraving text object
         for truss_part_id in truss_part_ids:
             truss_part_name = get_specific_part_name(truss_part_id)
-            if "BC" in truss_part_name:
+            if "TC" in truss_part_name:
                 ref_engraving_id = get_engravings(truss_part_id, truss_part_ids)
                 break
         if ref_engraving_id:
@@ -313,7 +354,8 @@ def get_engravings(part_id, all_obj_ids=None):
 
     txt_ids = []
     for obj_id in all_obj_ids:
-        if rs.IsText(obj_id) and rs.TextObjectText(obj_id) == position:
+        if rs.IsText(obj_id) and \
+                "".join(rs.TextObjectText(obj_id).split()).lower() == "".join(position.split()).lower():
             txt_ids.append(obj_id)
 
     if txt_ids:
@@ -325,7 +367,7 @@ def get_engravings(part_id, all_obj_ids=None):
         rs.DeleteObjects(pt_ids)
     else:
         txt_id = None
-        log_error("Cannot find engraving for {}".format(get_specific_part_name(part_id)), HOLO_NUM)
+        log_error("[{}]Cannot find engraving".format(get_specific_part_name(part_id)))
     return txt_id
 
 
