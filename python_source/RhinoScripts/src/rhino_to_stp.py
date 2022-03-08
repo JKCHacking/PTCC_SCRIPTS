@@ -190,8 +190,6 @@ def convert_block(block_id):
                     else:
                         ids_to_export.append(block_obj)
 
-                filename = "{}_00.stp".format(get_specific_part_name(block_id))
-                full_path = os.path.join(STP_FOLDER, filename)
                 export_to_stp(full_path, ids_to_export)
                 rs.DeleteObjects(ids_to_export)
                 rs.DeleteObject(copy_engraving_id)
