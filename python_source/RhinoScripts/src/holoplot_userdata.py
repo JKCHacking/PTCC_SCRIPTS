@@ -29,7 +29,7 @@ def main():
     else:
         # add userdata
         add_userdata_objs(all_obj_ids)
-    rs.MessageBox("Userdata Done.")
+        rs.MessageBox("Userdata Done.")
 
 
 def check_parts(obj_ids):
