@@ -98,102 +98,105 @@ def rhino_to_stp(obj_ids):
 
 
 def convert_part(obj_id, local_objs):
-    engraving_id = get_engravings(obj_id, local_objs)
-    if engraving_id:
-        # bb_points = rs.BoundingBox(obj_id, rs.TextObjectPlane(engraving_id))
-        thread_ids = get_threads(obj_id, local_objs)
-        # other_text_ids = get_other_texts(bb_points, local_objs)
-        # remove engraving_id in other text
-        # try:
-        #     other_text_ids.remove(engraving_id)
-        # except ValueError:
-        #     pass
-
-        copy_obj_id = rs.CopyObject(obj_id)
-        copy_thread_ids = rs.CopyObjects(thread_ids)
-        copy_engraving_id = rs.CopyObject(engraving_id)
-        # copy_oth_txt_ids = rs.CopyObjects(other_text_ids)
-
-        ids_to_export = []
-        ids_to_export.extend([copy_obj_id])
-        ids_to_export.extend(copy_thread_ids)
-
-        # unmirror all text objects if they are mirrored.
-        if IS_TEXT_MIRROR:
-            unmirror(copy_engraving_id)
-            # for other_text_id in copy_oth_txt_ids:
-            #     unmirror(other_text_id)
-
-        text_objs = [copy_engraving_id]
-        # text_objs.extend(copy_oth_txt_ids)
-
-        # transform plane
-        xform_plane = rg.Transform.PlaneToPlane(rs.TextObjectPlane(copy_engraving_id), rs.WorldXYPlane())
-        rs.TransformObjects(ids_to_export, xform_plane)
-        rs.TransformObjects(text_objs, xform_plane)
-
-        # make the XAxis point to the right and make the YAxis point up
-        while round(rs.TextObjectPlane(copy_engraving_id).XAxis[0], PRECISION) <= 0 and \
-                round(rs.TextObjectPlane(copy_engraving_id).YAxis[1], PRECISION) <= 0:
-            rs.RotateObjects(ids_to_export, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
-            rs.RotateObjects(text_objs, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
-
-        # explode all text objects before converting to STP
-        for text_id in text_objs:
-            exploded = rs.ExplodeText(text_id)
-            ids_to_export.extend(exploded)
-
-        filename = "{}_00.stp".format(get_specific_part_name(obj_id))
-        full_path = os.path.join(STP_FOLDER, filename)
-        export_to_stp(full_path, ids_to_export)
-        rs.DeleteObjects(ids_to_export)
-        rs.DeleteObjects(text_objs)
-    else:
-        print("Cannot find engraving for {}".format(get_specific_part_name(obj_id)))
-
-
-def convert_block(block_id):
-    copy_block_id = rs.CopyObject(block_id)
-    obj_ref = None
-    # find the reference object
-    for obj_id in rs.BlockObjects(rs.BlockInstanceName(copy_block_id)):
-        part_name = get_specific_part_name(obj_id)
-        if part_name.startswith("1421") and rs.IsPolysurface(obj_id):
-            if "TC" in part_name:
-                obj_ref = obj_id
-                break
-    # get the engraving object for reference.
-    if obj_ref:
-        engraving_id = get_engravings(obj_ref, rs.BlockObjects(rs.BlockInstanceName(copy_block_id)))
+    filename = "{}_00.stp".format(get_specific_part_name(obj_id))
+    full_path = os.path.join(STP_FOLDER, filename)
+    if not os.path.exists(full_path):
+        engraving_id = get_engravings(obj_id, local_objs)
         if engraving_id:
+            # bb_points = rs.BoundingBox(obj_id, rs.TextObjectPlane(engraving_id))
+            thread_ids = get_threads(obj_id, local_objs)
+            # other_text_ids = get_other_texts(bb_points, local_objs)
+            # remove engraving_id in other text
+            # try:
+            #     other_text_ids.remove(engraving_id)
+            # except ValueError:
+            #     pass
+
+            copy_obj_id = rs.CopyObject(obj_id)
+            copy_thread_ids = rs.CopyObjects(thread_ids)
+            copy_engraving_id = rs.CopyObject(engraving_id)
+            # copy_oth_txt_ids = rs.CopyObjects(other_text_ids)
+
+            ids_to_export = []
+            ids_to_export.extend([copy_obj_id])
+            ids_to_export.extend(copy_thread_ids)
+
+            # unmirror all text objects if they are mirrored.
+            if IS_TEXT_MIRROR:
+                unmirror(copy_engraving_id)
+                # for other_text_id in copy_oth_txt_ids:
+                #     unmirror(other_text_id)
+
+            text_objs = [copy_engraving_id]
+            # text_objs.extend(copy_oth_txt_ids)
+
             # transform plane
-            xform_plane = rg.Transform.PlaneToPlane(rs.TextObjectPlane(engraving_id), rs.WorldXYPlane())
-            rs.TransformObject(copy_block_id, xform_plane)
-            copy_engraving_id = rs.TransformObject(engraving_id, xform_plane, copy=True)
+            xform_plane = rg.Transform.PlaneToPlane(rs.TextObjectPlane(copy_engraving_id), rs.WorldXYPlane())
+            rs.TransformObjects(ids_to_export, xform_plane)
+            rs.TransformObjects(text_objs, xform_plane)
+
             # make the XAxis point to the right and make the YAxis point up
             while round(rs.TextObjectPlane(copy_engraving_id).XAxis[0], PRECISION) <= 0 and \
                     round(rs.TextObjectPlane(copy_engraving_id).YAxis[1], PRECISION) <= 0:
-                rs.RotateObjects(copy_block_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+                rs.RotateObjects(ids_to_export, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+                rs.RotateObjects(text_objs, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
 
-            # we need to explode the block instance
-            ids_to_export = []
-            block_objs = rs.ExplodeBlockInstance(copy_block_id)
-            for block_obj in block_objs:
-                if rs.IsText(block_obj):
-                    # need to explode all the text objects inside the block.
-                    curves = rs.ExplodeText(block_obj)
-                    ids_to_export.extend(curves)
-                else:
-                    ids_to_export.append(block_obj)
+            # explode all text objects before converting to STP
+            for text_id in text_objs:
+                exploded = rs.ExplodeText(text_id)
+                ids_to_export.extend(exploded)
 
-            filename = "{}_00.stp".format(get_specific_part_name(block_id))
-            full_path = os.path.join(STP_FOLDER, filename)
             export_to_stp(full_path, ids_to_export)
             rs.DeleteObjects(ids_to_export)
-            rs.DeleteObject(copy_engraving_id)
+            rs.DeleteObjects(text_objs)
         else:
-            print("Cannot find engraving for {}".format(get_specific_part_name(obj_ref)))
-        print("Cannot ")
+            print("Cannot find engraving for {}".format(get_specific_part_name(obj_id)))
+
+
+def convert_block(block_id):
+    filename = "{}_00.stp".format(get_specific_part_name(block_id))
+    full_path = os.path.join(STP_FOLDER, filename)
+    if os.path.exists(full_path):
+        copy_block_id = rs.CopyObject(block_id)
+        obj_ref = None
+        # find the reference object
+        for obj_id in rs.BlockObjects(rs.BlockInstanceName(copy_block_id)):
+            part_name = get_specific_part_name(obj_id)
+            if part_name.startswith("1421") and rs.IsPolysurface(obj_id):
+                if "TC" in part_name:
+                    obj_ref = obj_id
+                    break
+        # get the engraving object for reference.
+        if obj_ref:
+            engraving_id = get_engravings(obj_ref, rs.BlockObjects(rs.BlockInstanceName(copy_block_id)))
+            if engraving_id:
+                # transform plane
+                xform_plane = rg.Transform.PlaneToPlane(rs.TextObjectPlane(engraving_id), rs.WorldXYPlane())
+                rs.TransformObject(copy_block_id, xform_plane)
+                copy_engraving_id = rs.TransformObject(engraving_id, xform_plane, copy=True)
+                # make the XAxis point to the right and make the YAxis point up
+                while round(rs.TextObjectPlane(copy_engraving_id).XAxis[0], PRECISION) <= 0 and \
+                        round(rs.TextObjectPlane(copy_engraving_id).YAxis[1], PRECISION) <= 0:
+                    rs.RotateObjects(copy_block_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+
+                # we need to explode the block instance
+                ids_to_export = []
+                block_objs = rs.ExplodeBlockInstance(copy_block_id)
+                for block_obj in block_objs:
+                    if rs.IsText(block_obj):
+                        # need to explode all the text objects inside the block.
+                        curves = rs.ExplodeText(block_obj)
+                        ids_to_export.extend(curves)
+                    else:
+                        ids_to_export.append(block_obj)
+
+                filename = "{}_00.stp".format(get_specific_part_name(block_id))
+                full_path = os.path.join(STP_FOLDER, filename)
+                export_to_stp(full_path, ids_to_export)
+                rs.DeleteObjects(ids_to_export)
+                rs.DeleteObject(copy_engraving_id)
+            else:
+                print("Cannot find engraving for {}".format(get_specific_part_name(obj_ref)))
 
 
 def main():
