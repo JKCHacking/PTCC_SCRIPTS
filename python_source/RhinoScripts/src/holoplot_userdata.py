@@ -11,21 +11,25 @@ DIM_ROUND_PRECISION = 2
 W_ROUND_PRECISION = 4
 BB_POINTS = []
 HOLO_NUM = ""
-ERROR_FILE = "H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\userdata_err_H{holo_num}.txt"
+ERROR_FILE = ""
 
 
 def main():
     global HOLO_NUM
+    global ERROR_FILE
     HOLO_NUM = rs.GetString("Holoplot Number")
+    ERROR_FILE_PATH = rs.BrowseForFolder("Select folder to save error file")
+    ERROR_FILE = os.path.join(ERROR_FILE_PATH, "userdata_err_H{holo_num}.txt".format(holo_num=HOLO_NUM))
     all_obj_ids = rs.GetObjects("Select objects you want to add Userdata")
     # check all the parts before adding userdata.
     check_parts(all_obj_ids)
     # after checking it will create an error file
     if os.path.exists(ERROR_FILE.format(holo_num=HOLO_NUM)):
-        print("There's an error in the holoplot. Please check in the error file.")
+        rs.MessageBox("There's an error in the holoplot. Please check in the error file.")
     else:
         # add userdata
         add_userdata_objs(all_obj_ids)
+    rs.MessageBox("Userdata Done.")
 
 
 def check_parts(obj_ids):
@@ -85,11 +89,11 @@ def add_userdata_objs(obj_ids, parent_block=None):
 
 
 def log_error(message):
-    if os.path.exists(ERROR_FILE.format(holo_num=HOLO_NUM)):
+    if os.path.exists(ERROR_FILE):
         mode = "a"
     else:
         mode = "w"
-    with open(ERROR_FILE.format(holo_num=HOLO_NUM), mode=mode) as err_f:
+    with open(ERROR_FILE, mode=mode) as err_f:
         err_f.write("[{}]: {}\n".format(datetime.datetime.now().strftime("%m-%d-%Y %H:%M:%S"), message))
 
 
