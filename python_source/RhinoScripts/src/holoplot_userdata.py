@@ -18,7 +18,7 @@ def main():
     global HOLO_NUM
     global ERROR_FILE
     HOLO_NUM = rs.GetString("Holoplot Number")
-    ERROR_FILE_PATH = rs.BrowseForFolder("Select folder to save error file")
+    ERROR_FILE_PATH = rs.BrowseForFolder(message="Select folder to save error file")
     ERROR_FILE = os.path.join(ERROR_FILE_PATH, "userdata_err_H{holo_num}.txt".format(holo_num=HOLO_NUM))
     all_obj_ids = rs.GetObjects("Select objects you want to add Userdata")
     # check all the parts before adding userdata.
