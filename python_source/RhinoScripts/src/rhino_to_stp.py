@@ -86,11 +86,10 @@ def reset_rhino_view():
 
 
 def rhino_to_stp(obj_ids):
-    already_done = []
     for obj_id in obj_ids:
         part_name = get_specific_part_name(obj_id)
         print("Working with {}".format(part_name))
-        if part_name.startswith("1421") and part_name not in already_done:
+        if part_name.startswith("1421"):
             if rs.IsPolysurface(obj_id):
                 convert_part(obj_id, obj_ids)
             elif rs.IsBlockInstance(obj_id):
@@ -164,35 +163,37 @@ def convert_block(block_id):
                 obj_ref = obj_id
                 break
     # get the engraving object for reference.
-    engraving_id = get_engravings(obj_ref, rs.BlockObjects(rs.BlockInstanceName(copy_block_id)))
-    if engraving_id:
-        # transform plane
-        xform_plane = rg.Transform.PlaneToPlane(rs.TextObjectPlane(engraving_id), rs.WorldXYPlane())
-        rs.TransformObject(copy_block_id, xform_plane)
-        copy_engraving_id = rs.TransformObject(engraving_id, xform_plane, copy=True)
-        # make the XAxis point to the right and make the YAxis point up
-        while round(rs.TextObjectPlane(copy_engraving_id).XAxis[0], PRECISION) <= 0 and \
-                round(rs.TextObjectPlane(copy_engraving_id).YAxis[1], PRECISION) <= 0:
-            rs.RotateObjects(copy_block_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
+    if obj_ref:
+        engraving_id = get_engravings(obj_ref, rs.BlockObjects(rs.BlockInstanceName(copy_block_id)))
+        if engraving_id:
+            # transform plane
+            xform_plane = rg.Transform.PlaneToPlane(rs.TextObjectPlane(engraving_id), rs.WorldXYPlane())
+            rs.TransformObject(copy_block_id, xform_plane)
+            copy_engraving_id = rs.TransformObject(engraving_id, xform_plane, copy=True)
+            # make the XAxis point to the right and make the YAxis point up
+            while round(rs.TextObjectPlane(copy_engraving_id).XAxis[0], PRECISION) <= 0 and \
+                    round(rs.TextObjectPlane(copy_engraving_id).YAxis[1], PRECISION) <= 0:
+                rs.RotateObjects(copy_block_id, rs.WorldXYPlane().Origin, 90, rs.WorldXYPlane().Normal)
 
-        # we need to explode the block instance
-        ids_to_export = []
-        block_objs = rs.ExplodeBlockInstance(copy_block_id)
-        for block_obj in block_objs:
-            if rs.IsText(block_obj):
-                # need to explode all the text objects inside the block.
-                curves = rs.ExplodeText(block_obj)
-                ids_to_export.extend(curves)
-            else:
-                ids_to_export.append(block_obj)
+            # we need to explode the block instance
+            ids_to_export = []
+            block_objs = rs.ExplodeBlockInstance(copy_block_id)
+            for block_obj in block_objs:
+                if rs.IsText(block_obj):
+                    # need to explode all the text objects inside the block.
+                    curves = rs.ExplodeText(block_obj)
+                    ids_to_export.extend(curves)
+                else:
+                    ids_to_export.append(block_obj)
 
-        filename = "{}_00.stp".format(get_specific_part_name(block_id))
-        full_path = os.path.join(STP_FOLDER, filename)
-        export_to_stp(full_path, ids_to_export)
-        rs.DeleteObjects(ids_to_export)
-        rs.DeleteObject(copy_engraving_id)
-    else:
-        print("Cannot find engraving for {}".format(get_specific_part_name(obj_ref)))
+            filename = "{}_00.stp".format(get_specific_part_name(block_id))
+            full_path = os.path.join(STP_FOLDER, filename)
+            export_to_stp(full_path, ids_to_export)
+            rs.DeleteObjects(ids_to_export)
+            rs.DeleteObject(copy_engraving_id)
+        else:
+            print("Cannot find engraving for {}".format(get_specific_part_name(obj_ref)))
+        print("Cannot ")
 
 
 def main():
