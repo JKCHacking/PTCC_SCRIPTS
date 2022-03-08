@@ -156,7 +156,7 @@ def convert_part(obj_id, local_objs):
 def convert_block(block_id):
     filename = "{}_00.stp".format(get_specific_part_name(block_id))
     full_path = os.path.join(STP_FOLDER, filename)
-    if os.path.exists(full_path):
+    if not os.path.exists(full_path):
         copy_block_id = rs.CopyObject(block_id)
         obj_ref = None
         # find the reference object
