@@ -184,6 +184,9 @@ def convert_block(block_id):
                 block_objs = rs.ExplodeBlockInstance(copy_block_id)
                 for block_obj in block_objs:
                     if rs.IsText(block_obj):
+                        # check if text should be unmirrored
+                        if IS_TEXT_MIRROR:
+                            unmirror(block_obj)
                         # need to explode all the text objects inside the block.
                         curves = rs.ExplodeText(block_obj)
                         ids_to_export.extend(curves)
