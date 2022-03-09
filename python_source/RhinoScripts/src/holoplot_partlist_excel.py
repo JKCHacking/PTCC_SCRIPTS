@@ -2,6 +2,7 @@ import os
 import json
 import openpyxl
 from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askdirectory
 import tkinter
 
 
@@ -16,13 +17,14 @@ def write_json_ws(holo_data, ws):
 
 
 def main():
-    holo_num = input("Holoplot Number:")
     tkinter.Tk().withdraw()
-    filename = askopenfilename(initialdir="H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\".format(
-        holo_num=holo_num),
+    holo_num = input("Holoplot Number: ")
+    json_file = askopenfilename(title="Select JSON file.",
                                filetypes=[("JSON Files", ".json")])
-    if os.path.exists(filename):
-        with open(filename, "r") as jf:
+    save_path = askdirectory(title="Select folder to save excel.")
+
+    if os.path.exists(json_file):
+        with open(json_file, "r") as jf:
             holoplot_data = json.load(jf)
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -30,8 +32,7 @@ def main():
                         "unit", "length", "width", "height", "drawing no.", "E", "F", "A", "L"]
         ws.append(column_names)
         write_json_ws(holoplot_data, ws)
-        wb.save("H:\\Desktop\\projects\\holoplot\\HOLOPLOTS\\H{holo_num}\\H{holo_num} Partlist.xlsx".format(
-            holo_num=holo_num))
+        wb.save(os.path.join(save_path, "H{} Partlist.xlsx".format(holo_num)))
 
 
 if __name__ == "__main__":
