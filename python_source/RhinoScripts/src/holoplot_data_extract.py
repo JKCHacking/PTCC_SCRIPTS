@@ -56,7 +56,8 @@ def create_desc2(part_name):
         "BOT": "bottom",
         "TOP": "top",
         "TSP": "SP-truss",
-        "PA": "pre-assembly"
+        "PA": "pre-assembly",
+        "BSP": "SP-bracingpart"
     }
     part_name_ls = part_name.split("-")
     if part_name_ls[1].startswith("S"):
