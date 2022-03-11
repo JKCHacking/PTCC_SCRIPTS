@@ -136,17 +136,25 @@ def get_part_number(part_name):
 
 def init_part(obj_id, assembly=None):
     part_name = get_specific_part_name(obj_id)
+    template_de = rs.GetUserText(obj_id, "06_TEMPLATE_DE")
+    template_name_de = rs.GetUserText(obj_id, "07_TEMPLATE_NAME_DE")
+    desc2 = create_desc2(part_name)
+    quantity = get_part_quantity(obj_id, assembly)
+    length = float(rs.GetUserText(obj_id, "21_LENGTH"))
+    width = float(rs.GetUserText(obj_id, "22_WIDTH"))
+    height = float(rs.GetUserText(obj_id, "23_HEIGHT"))
+
     part = create_part(
         u_no=0,
         s_no=0,
-        i_no=rs.GetUserText(obj_id, "06_TEMPLATE_DE"),
-        desc=rs.GetUserText(obj_id, "07_TEMPLATE_NAME_DE"),
-        desc2=create_desc2(part_name),
-        quantity=get_part_quantity(obj_id, assembly),
+        i_no=template_de,
+        desc=template_name_de,
+        desc2=desc2,
+        quantity=quantity,
         unit="Stuck",
-        length=float(rs.GetUserText(obj_id, "21_LENGTH")),
-        width=float(rs.GetUserText(obj_id, "22_WIDTH")),
-        height=float(rs.GetUserText(obj_id, "23_HEIGHT")),
+        length=length,
+        width=width,
+        height=height,
         d_no=part_name,
         efal=[None, "X", "X", None],
         child_parts={}
