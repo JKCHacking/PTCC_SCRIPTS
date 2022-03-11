@@ -225,6 +225,7 @@ def extract_holoplot_data(obj_ids):
     holoplot_tree = {
         "1421-H{}".format(HOLO_NUM): holoplot_parts
     }
+
     return holoplot_tree
 
 
@@ -233,12 +234,35 @@ def create_holoplot_json(root_dict, obj_ids):
         part_name = get_specific_part_name(obj_id)
         print("Working with {}".format(part_name))
         if "1421" in part_name:
+            # pre-assembly
             if rs.IsBlockInstance(obj_id):
-                assembly = init_part(obj_id)
-                assembly_parts_ids = rs.BlockObjects(rs.BlockInstanceName(obj_id))
-                assembly = create_holoplot_json(assembly, assembly_parts_ids)
-                root_dict["child_parts"].update({part_name: assembly})
-            if rs.IsPolysurface(obj_id):
+                assembly1 = init_part(obj_id)
+                assembly_parts_ids1 = rs.BlockObjects(rs.BlockInstanceName(obj_id))
+                for assembly_parts_id1 in assembly_parts_ids1:
+                    part_name1 = get_specific_part_name(assembly_parts_id1)
+                    if "1421" in part_name1:
+                        # Truss
+                        if rs.IsBlockInstance(assembly_parts_id1):
+                            assembly2 = init_part(assembly_parts_id1, obj_id)
+                            assembly_parts_ids2 = rs.BlockObjects(rs.BlockInstanceName(assembly_parts_id1))
+                            for assembly_parts_id2 in assembly_parts_ids2:
+                                # truss parts
+                                part_name2 = get_specific_part_name(assembly_parts_id2)
+                                if "1421" in part_name2 and rs.IsPolysurface(assembly_parts_id2):
+                                    part2 = init_part(assembly_parts_id2, assembly_parts_id1)
+                                    raw_part2 = init_raw_part(assembly_parts_id2)
+                                    part2["child_parts"].update({"{}-Zuschnitt".format(part_name2): raw_part2})
+                                    assembly2["child_parts"].update({part_name2: part2})
+                            assembly1["child_parts"].update({part_name1: assembly2})
+                        # pre-assembly part
+                        elif rs.IsPolysurface(assembly_parts_id1):
+                            part1 = init_part(assembly_parts_id1, obj_id)
+                            raw_part1 = init_raw_part(assembly_parts_id1)
+                            part1["child_parts"].update({"{}-Zuschnitt".format(part_name1): raw_part1})
+                            assembly1["child_parts"].update({part_name1: part1})
+                root_dict["child_parts"].update({part_name: assembly1})
+            # outside part
+            elif rs.IsPolysurface(obj_id):
                 part = init_part(obj_id)
                 raw_part = init_raw_part(obj_id)
                 part["child_parts"].update({"{}-Zuschnitt".format(part_name): raw_part})
