@@ -110,7 +110,7 @@ def create_assembly(template, assembly_name, assembly_directory):
 
 def update_assembly_params(assembly_doc, params):
     for param_name, value in params.items():
-        assembly_doc.SendCommand("-PARAMETERS edit {} {}\n".format(param_name, value))
+        assembly_doc.SendCommand("-PARAMETERS\nedit\n{}\n{}\n".format(param_name, value))
         assembly_doc.SendCommand("REGEN\n")
 
 
@@ -211,21 +211,36 @@ def find_duplicate_part(part_name, assembly_params):
     return dup_part, count
 
 
-def update_assembly_part_table(assembly_doc, part_name):
+def update_assembly_part_table(assembly_doc, old_part_name, new_part_name):
     part_table = find_part_table(assembly_doc)
-    default_part_name = part_name.split("-")[0] + "-000"
     part_col = find_col_idx(part_table, "PART NUMBER")
-    part_row = find_row_idx(part_table, part_col, default_part_name)
+    part_row = find_row_idx(part_table, part_col, old_part_name)
     if part_row != -1:
         # update the cell
-        part_table.SetCellValue(part_row, part_col, os.path.splitext(part_name)[0])
+        part_table.SetCellValue(part_row, part_col, os.path.splitext(new_part_name)[0])
     else:
-        print("Cannot find part {} in the part table".format(default_part_name))
+        print("Cannot find part {} in the part table".format(old_part_name))
 
 
 def delete_parametric_dims(assm_doc, assembly_params):
     for param in assembly_params.keys():
-        assm_doc.SendCommand("-PARAMETERS Delete {}\n".format(param))
+        assm_doc.SendCommand("-PARAMETERS\nDelete\n{}\n".format(param))
+
+    for obj in assm_doc.ModelSpace:
+        assm_doc.SendCommand('DELCONSTRAINT\n(handent "{}")\n\n'.format(obj.Handle))
+
+
+def get_suff_num_letter(suffix_pname):
+    suff_num = 0
+    suff_letter = ""
+
+    res = re.split('(\\d+)', suffix_pname)
+    for c in res:
+        if c.isnumeric():
+            suff_num = int(c)
+        elif c.isalpha():
+            suff_letter = c
+    return suff_num, suff_letter
 
 
 def main():
@@ -251,13 +266,15 @@ def main():
                 assembly_directory = os.path.join(OUTPUT_PATH, assembly_name)
                 print("Generating Assembly:\n{}".format(assembly_name))
                 assembly_doc = create_assembly(assm_temp_path, assembly_name, assembly_directory)
+                # set to modelspace
+                assembly_doc.SetVariable("TILEMODE", 1)
                 parameters = {param_name: row[param_name] for param_name in parameter_names}
                 update_assembly_params(assembly_doc, parameters)
                 assembly_params = get_all_assm_params(assembly_doc)
                 # simplify_parameters(assembly_params)
                 print("\nGenerating Part:")
                 for part_name in part_names:
-                    dup_part, count = find_duplicate_part(part_name.split("-")[0], assembly_params)
+                    dup_part, count = find_duplicate_part(part_name, assembly_params)
                     if dup_part:
                         new_part_file_name = os.path.basename(dup_part)
                         try:
@@ -267,21 +284,25 @@ def main():
                             pass
                     else:
                         part_template = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
-                        new_part_file_name = "{}-{:03d}.dwg".format(part_name.split("-")[0], count + 1)
+                        prefix_pname, suffix_pname = part_name.split("-")
+                        suff_number, suff_letter = get_suff_num_letter(suffix_pname)
+                        new_part_file_name = "{}-{:03d}{}.dwg".format(prefix_pname,
+                                                                      suff_number + count + 1,
+                                                                      suff_letter)
                         try:
                             new_part = shutil.copyfile(part_template, os.path.join(assembly_directory,
                                                                                    new_part_file_name))
                             print(os.path.splitext(new_part_file_name)[0])
                         except FileNotFoundError:
                             new_part = ""
-                            print("Cannot find part {} in {}".format(part_name.split("-")[0],
+                            print("Cannot find part {} in {}".format(part_name,
                                                                      os.path.dirname(assm_temp_path)))
                         # update the new part
                         if new_part:
                             part_doc = b_app.Documents.Open(new_part)
                             update_part_params(part_doc, assembly_params)
                             part_doc.Close()
-                            update_assembly_part_table(assembly_doc, new_part_file_name)
+                            update_assembly_part_table(assembly_doc, part_name, new_part_file_name)
                 delete_parametric_dims(assembly_doc, assembly_params)
                 assembly_doc.Close()
                 print("")
