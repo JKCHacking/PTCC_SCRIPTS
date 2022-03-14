@@ -1,3 +1,4 @@
+import sys
 import csv
 import os
 import shutil
@@ -10,11 +11,12 @@ from comtypes import COMError
 from comtypes import automation
 from tkinter.filedialog import askopenfilename, askopenfilenames
 
-SRC_PATH = os.path.dirname(os.path.realpath(__file__))
-APP_PATH = os.path.dirname(SRC_PATH)
-PROJ_PATH = os.path.dirname(APP_PATH)
-OUTPUT_PATH = os.path.join(PROJ_PATH, "output")
-
+SRC_PATH = ""
+if getattr(sys, "frozen", False):
+    SRC_PATH = os.path.dirname(os.path.realpath(sys.executable))
+elif __file__:
+    SRC_PATH = os.path.dirname(os.path.realpath(__file__))
+OUTPUT_PATH = os.path.join(SRC_PATH, "output")
 FRACTIONAL = 5
 UNITS = {
     1: "\"",
