@@ -37,7 +37,7 @@ def get_brics_app():
 
 
 def get_acad_app():
-    a_cad = "Autocad.Application"
+    a_cad = "AutoCAD.Application"
     try:
         a_cad_app = client.GetActiveObject(a_cad, dynamic=True)
         a_cad_app.Visible = True
