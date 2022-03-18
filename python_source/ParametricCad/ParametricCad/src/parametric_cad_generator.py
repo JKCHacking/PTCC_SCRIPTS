@@ -18,13 +18,14 @@ elif __file__:
     SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 OUTPUT_PATH = os.path.join(SRC_PATH, "output")
 FRACTIONAL = 5
+PRECISION = 3
 UNITS = {
     1: "\"",
     4: "mm"
 }
 
 
-def get_cad_application():
+def get_brics_app():
     b_cad = "BricscadApp.AcadApplication"
     try:
         b_cad_app = client.GetActiveObject(b_cad, dynamic=True)
@@ -35,6 +36,25 @@ def get_cad_application():
     return b_cad_app
 
 
+def get_acad_app():
+    a_cad = "Autocad.Application"
+    try:
+        a_cad_app = client.GetActiveObject(a_cad, dynamic=True)
+        a_cad_app.Visible = True
+    except COMError:
+        a_cad_app = client.CreateObject(a_cad, dynamic=True)
+        a_cad_app.Visible = True
+    return a_cad_app
+
+
+def get_cad_app():
+    try:
+        cad_app = get_brics_app()
+    except COMError:
+        cad_app = get_acad_app()
+    return cad_app
+
+
 def get_entities(dwg_doc, object_names):
     entities = [obj for obj in dwg_doc.ModelSpace if obj.ObjectName in object_names]
     return entities
@@ -43,7 +63,7 @@ def get_entities(dwg_doc, object_names):
 def get_part_names(assm_temp_path):
     print("Getting parts...")
     parts = []
-    doc = get_cad_application().Documents.Open(assm_temp_path)
+    doc = get_cad_app().Documents.Open(assm_temp_path)
     part_table = find_part_table(doc)
     if part_table:
         if part_table.TitleSuppressed:
@@ -106,8 +126,8 @@ def create_assembly(template, assembly_name, assembly_directory):
         print("{} already exists.".format(assembly_directory))
     directory = os.path.join(OUTPUT_PATH, assembly_name)
     path = shutil.copyfile(template, os.path.join(directory, assembly_name + ".dwg"))
-    bcad = get_cad_application()
-    return bcad.Documents.Open(path)
+    cad_app = get_cad_app()
+    return cad_app.Documents.Open(path)
 
 
 def update_assembly_params(assembly_doc, params):
@@ -127,20 +147,11 @@ def update_part_params(part_doc, assembly_params):
                 val = assembly_params[param_name]
                 # detects fractional as format of numbers in the document.
                 if part_doc.GetVariable("DIMLUNIT") == FRACTIONAL:
-                    val = dec_to_frac(val)
+                    val = part_doc.Utility.RealToString(val, FRACTIONAL, PRECISION)
                 else:
                     val = str(val)
                 obj.TextOverride = val + UNITS[part_doc.GetVariable("INSUNITS")]
                 obj.Update()
-
-
-def dec_to_frac(num):
-    dec = round(num % 1, 3)
-    whole = int(num)
-    frac = str(whole)
-    if dec != 0:
-        frac = "{} {}".format(whole, fractions.Fraction(dec).limit_denominator())
-    return frac
 
 
 def get_all_assm_params(assembly_doc):
@@ -157,7 +168,7 @@ def get_all_assm_params(assembly_doc):
                 parameter_name = res_param.group(0).strip()
                 if parameter_name:
                     value = res_val.group(0).strip()
-                    value = round(float(value), 3)
+                    value = round(float(value), PRECISION)
                     params.update({parameter_name: value})
     os.remove(log_path)
     return params
@@ -172,13 +183,13 @@ def get_all_part_params(part_doc):
             obj.GetXData("PARAMETRIC", ctypes.byref(type_out), ctypes.byref(data_out))
             param = data_out[0][1]
             if param:
-                val = obj.TextOverride if obj.TextOverride else round(obj.Measurement, 3)
+                val = obj.TextOverride if obj.TextOverride else round(obj.Measurement, PRECISION)
                 if isinstance(val, str):
                     # remove the unit
                     val = val.replace(UNITS[part_doc.GetVariable("INSUNITS")], "")
                     if "/" in val:
                         whole, frac = val.split(" ")
-                        dec = round(float(fractions.Fraction(frac)), 3)
+                        dec = round(float(fractions.Fraction(frac)), PRECISION)
                         try:
                             whole = int(whole)
                         except ValueError:
@@ -193,14 +204,14 @@ def get_all_part_params(part_doc):
 
 
 def find_duplicate_part(part_name, assembly_params):
-    b_app = get_cad_application()
+    cad_app = get_cad_app()
     dup_part = None
     count = 0
     for root, dirs, files in os.walk(OUTPUT_PATH):
         for file in files:
             if file.startswith(part_name) and file.endswith(".dwg"):
                 part_file = os.path.join(root, file)
-                part_doc = b_app.Documents.Open(part_file)
+                part_doc = cad_app.Documents.Open(part_file)
                 part_params = get_all_part_params(part_doc)
                 checks = [True if param_name in assembly_params and value == assembly_params[param_name]
                           else False for param_name, value in part_params.items()]
@@ -246,7 +257,7 @@ def get_suff_num_letter(suffix_pname):
 
 
 def main():
-    b_app = get_cad_application()
+    cad_app = get_cad_app()
     tkinter.Tk().withdraw()
     assm_temp_path = askopenfilename(title="Select the Template Assembly DWG file", filetypes=[("DWG Files", ".dwg")])
     config_path = askopenfilename(title="Select the CSV config file", filetypes=[("CSV Files", ".csv")])
@@ -301,7 +312,7 @@ def main():
                                                                      os.path.dirname(assm_temp_path)))
                         # update the new part
                         if new_part:
-                            part_doc = b_app.Documents.Open(new_part)
+                            part_doc = cad_app.Documents.Open(new_part)
                             update_part_params(part_doc, assembly_params)
                             part_doc.Close()
                             update_assembly_part_table(assembly_doc, part_name, new_part_file_name)
