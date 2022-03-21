@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Command">
+		<Name>MetadataAddOn</Name>
+		<FullClassName>MetadataAddOn.Command</FullClassName>
+		<Text>MetadataAddOn</Text>
+		<Description>Adds Shared Parameter to family of elements</Description>
+		<VisibilityMode>AlwaysVisible</VisibilityMode>
+		<Assembly>H:\Desktop\PTCC_SCRIPTS\c_sharp\MetadataAddOn\bin\Debug\MetadataAddOn.dll</Assembly>
+		<AddInId>ca28ac01-3daf-4861-b5b1-af9a784393ae</AddInId>
+		<VendorId>PTCC</VendorId>
+		<VendorDescription>joshnee.cunanan@ptcc.design</VendorDescription>
+	</AddIn>
+</RevitAddIns>
