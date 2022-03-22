@@ -126,12 +126,11 @@ class ViewsExtractor:
             print("[ViewsExtractor] Adding PartsList Table and Balloon...")
             # add parts list table
             placement_point = self.inv_app.TransientGeometry.CreatePoint2d(0, 0)
-            drawing_view = drawing_sheet.DrawingViews.Item(1)
-            drawing_sheet.PartsLists.Add(drawing_view, placement_point, kStructuredAllLevels)
-            # TODO add balloons to every view
-            # balloon_helper = BalloonHelper(self.inv_app)
-            # for drawing_view in drawing_sheet.DrawingViews:
-            #     balloon_helper.add_balloon_to_view(drawing_view)
+            # add partlist based from Base View
+            drawing_sheet.PartsLists.Add(base_view, placement_point, kStructuredAllLevels)
+            # add balloons to base view
+            balloon_helper = BalloonHelper(self.inv_app)
+            balloon_helper.add_balloon_to_view(base_view)
         # save as dwg and close
         print("[ViewsExtractor] Saving to DWG and Closing...")
         file_name_output = "{}.dwg".format(os.path.splitext(os.path.basename(model_path))[0])

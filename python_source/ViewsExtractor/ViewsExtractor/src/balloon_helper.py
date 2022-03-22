@@ -19,25 +19,15 @@ class BalloonHelper:
         part_list = view.Parent.PartsLists.Item(1)
         # self.__initialise_view_bounding_box(view)
         for row in part_list.PartsListRows:
-            # if not row.Ballooned:
-            self.__create_row_item_balloon(row, view)
+            if not row.Ballooned:
+                self.__create_row_item_balloon(row, view)
         self.__arrange_balloons_on_view(view)
 
-    # def __initialise_view_bounding_box(self, view):
-    #     trans_geom = self.inv_app.TransientGeometry
-    #     top_left = trans_geom.CreatePoint2d(view.Left, view.Top)
-    #     top_right = trans_geom.CreatePoint2d(view.Left + view.Width, view.Top)
-    #     btm_left = trans_geom.CreatePoint2d(view.Left, view.Top - view.Height)
-    #     btm_right = trans_geom.CreatePoint2d(view.Left + view.Width, view.Top - view.Height)
-    #
-    #     self.top_line = trans_geom.CreateLineSegment2d(top_left, top_right)
-    #     self.btm_line = trans_geom.CreateLineSegment2d(btm_left, btm_right)
-    #     self.left_line = trans_geom.CreateLineSegment2d(top_left, btm_left)
-    #     self.right_line = trans_geom.CreateLineSegment2d(top_right, btm_right)
-
     def __create_row_item_balloon(self, row, view):
-        trans_geom = self.inv_app.TransientGeometry
-        attach_point = self.__get_balloon_attach_geom(row, view)
+        row_occurrences_enumerator = view.ReferencedDocumentDescriptor.ReferencedDocument.ComponentDefinition \
+            .Occurrences.AllReferencedOccurrences(row.ReferencedFiles.Item(1).DocumentDescriptor)
+        curves = self.__get_curves_from_occ(row_occurrences_enumerator, view)
+        attach_point = self.__get_attach_point(curves[0])
         if attach_point is not None:
             balloon_position = self.__get_balloon_position(attach_point.PointOnSheet, view)
             leader_points = self.inv_app.TransientObjects.CreateObjectCollection()
@@ -52,14 +42,14 @@ class BalloonHelper:
         btm_balloons = []
 
         for balloon in view.Parent.Balloons:
-            if balloon.ParentView is view:
-                if balloon.Position.X == view.Left - self.view_margin:
+            if balloon.ParentView == view:
+                if balloon.Position.X < view.Left:
                     left_balloons.append(balloon)
-                elif balloon.Position.X == view.Left + view.Width + self.view_margin:
+                elif balloon.Position.X > view.Left + view.Width:
                     right_balloons.append(balloon)
-                elif balloon.Position.Y == view.Top + self.view_margin:
+                elif balloon.Position.Y > view.Top:
                     top_balloons.append(balloon)
-                elif balloon.Position.Y == view.Top - view.Height - self.view_margin:
+                elif balloon.Position.Y < view.Top - view.Height:
                     btm_balloons.append(balloon)
         if len(left_balloons) > 1:
             self.__arrange_balloon_vertically(left_balloons)
@@ -71,10 +61,20 @@ class BalloonHelper:
             self.__arrange_balloon_horizontally(btm_balloons)
 
     def __arrange_balloon_vertically(self, balloons):
-        pass
+        vertical_offset = 0.9
+        sorted_balloons = sorted(balloons, key=lambda b: [b.Position.Y])
+        for i in range(1, len(sorted_balloons)):
+            new_pos = sorted_balloons[i].Position.Copy()
+            new_pos.Y = sorted_balloons[i - 1].Position.Y + vertical_offset
+            sorted_balloons[i].Position = new_pos
 
     def __arrange_balloon_horizontally(self, balloons):
-        pass
+        horizontal_offset = 1
+        sorted_balloons = sorted(balloons, key=lambda b: [b.Position.X])
+        for i in range(1, len(sorted_balloons)):
+            new_pos = sorted_balloons[i].Position.Copy()
+            new_pos.X = sorted_balloons[i - 1].Position.X + horizontal_offset
+            sorted_balloons[i].Position = new_pos
 
     def __get_balloon_position(self, attach_point, view):
         leader_point = attach_point
@@ -92,7 +92,7 @@ class BalloonHelper:
             translation_ratio = (leader_point.X - view.Center.X) / (attach_point.X - view.Center.X)
             leader_point.Y = view.Center.Y + (attach_point.Y - view.Center.Y) * translation_ratio
         elif quadrant == "Right":
-            leader_point.X = view.Left - self.view_margin
+            leader_point.X = view.Right + self.view_margin
             translation_ratio = (leader_point.X - view.Center.X) / (attach_point.X - view.Center.X)
             leader_point.Y = view.Center.Y + (attach_point.Y - view.Center.Y) * translation_ratio
         else:
@@ -114,39 +114,31 @@ class BalloonHelper:
             quadrant = "Bottom"
         return quadrant
 
-    def __get_balloon_attach_geom(self, row, view):
-        row_occurrences_enumerator = view.ReferencedDocumentDescriptor.ReferencedDocument.ComponentDefinition\
-            .Occurrences.AllReferencedOccurrences(row.ReferencedFiles.Item(1).DocumentDescriptor)
-        curves = self.__get_curves_from_occ(row_occurrences_enumerator, view)
-        # get the first segment
-        segment = curves[0].Segments.Item(1)
-        return self.__get_attach_point(segment)
-
-    def __get_attach_point(self, segment):
+    def __get_attach_point(self, curve):
         attach_point = None
-        if segment is not None:
-            drawing_sheet = segment.Parent.Parent.Parent
+        if curve:
+            drawing_sheet = curve.Parent.Parent
             # case when the segment is a line
-            attach_point = drawing_sheet.CreateGeometryIntent(segment.Parent, self.__get_segment_midpoint(segment))
+            attach_point = drawing_sheet.CreateGeometryIntent(curve, curve.MidPoint)
             # case when the segment is circular
-            # kCircleCurve2d = 5252, kEllipseFullCurve2d = 5254
-            if segment.GeometryType == 5252 or segment.GeometryType == 5254:
-                quadrant = self.__get_quadrant(segment.Geometry.Center, segment.Parent.Parent)
+            # kCircleCurve2d = 5124, kEllipseFullCurve2d = 5126
+            if curve.CurveType == 5124 or curve.CurveType == 5126:
+                quadrant = self.__get_quadrant(curve.CenterPoint, curve.Parent)
                 if quadrant == "Top":
                     k_circular_top_point_intent = 57863
-                    attach_point = drawing_sheet.CreateGeometryIntent(segment.Parent, k_circular_top_point_intent)
+                    attach_point = drawing_sheet.CreateGeometryIntent(curve, k_circular_top_point_intent)
                 elif quadrant == "Bottom":
                     k_circular_bottom_point_intent = 57864
-                    attach_point = drawing_sheet.CreateGeometryIntent(segment.Parent, k_circular_bottom_point_intent)
+                    attach_point = drawing_sheet.CreateGeometryIntent(curve, k_circular_bottom_point_intent)
                 elif quadrant == "Left":
                     k_circular_left_point_intent = 57861
-                    attach_point = drawing_sheet.CreateGeometryIntent(segment.Parent, k_circular_left_point_intent)
+                    attach_point = drawing_sheet.CreateGeometryIntent(curve, k_circular_left_point_intent)
                 elif quadrant == "Right":
                     k_circular_right_point_intent = 57862
-                    attach_point = drawing_sheet.CreateGeometryIntent(segment.Parent, k_circular_right_point_intent)
+                    attach_point = drawing_sheet.CreateGeometryIntent(curve, k_circular_right_point_intent)
                 else:
                     k_center_point_intent = 57860
-                    attach_point = drawing_sheet.CreateGeometryIntent(segment.Parent, k_center_point_intent)
+                    attach_point = drawing_sheet.CreateGeometryIntent(curve, k_center_point_intent)
         return attach_point
 
     def __get_curves_from_occ(self, occs_enum, view):
@@ -158,25 +150,25 @@ class BalloonHelper:
                         curves.append(curve)
         return curves
 
-    def __get_segment_midpoint(self, segment):
-        double_array_2 = ctypes.c_double * 2
-        double_array_1 = ctypes.c_double * 1
-        curve_eval = segment.Geometry.Evaluator
-        min_param = ctypes.c_double()
-        max_param = ctypes.c_double()
-        mid_param = ctypes.c_double()
-        curve_len = ctypes.c_double()
-        mid_param_arr = automation.VARIANT(array.array("d", [0]))
-        mid_point_coordinate = automation.VARIANT(array.array("d", [0, 0]))
-
-        curve_eval.GetParamExtents(ctypes.byref(min_param), ctypes.byref(max_param))
-        curve_eval.GetLengthAtParam(min_param, max_param, ctypes.byref(curve_len))
-        curve_eval.GetParamAtLength(min_param, curve_len.value / 2, ctypes.byref(mid_param))
-        # we need to use other variable to hold the mid param value since GetParamAtLength requires
-        # to be a non-array variable but GetPointAtParam requires an array variable.
-        # mid_param_arr[0] = mid_param.value
-        curve_eval.GetPointAtParam(ctypes.byref(mid_param_arr), ctypes.byref(mid_point_coordinate))
-        return self.inv_app.TransientGeometry.CreatePoint2d(mid_point_coordinate[0], mid_point_coordinate[1])
+    # def __get_segment_midpoint(self, segment):
+    #     double_array_2 = ctypes.c_double * 2
+    #     double_array_1 = ctypes.c_double * 1
+    #     curve_eval = segment.Geometry.Evaluator
+    #     min_param = ctypes.c_double()
+    #     max_param = ctypes.c_double()
+    #     curve_len = ctypes.c_double()
+    #     mid_param = ctypes.c_double()
+    #     mid_point_coordinate = ctypes.c_double()
+    #
+    #     curve_eval.GetParamExtents(ctypes.byref(min_param), ctypes.byref(max_param))
+    #     curve_eval.GetLengthAtParam(min_param, max_param, ctypes.byref(curve_len))
+    #     curve_eval.GetParamAtLength(min_param, curve_len.value / 2, ctypes.byref(mid_param))
+    #     # we need to use other variable to hold the mid param value since GetParamAtLength requires
+    #     # to be a non-array variable but GetPointAtParam requires an array variable.
+    #     # mid_param_arr[0] = mid_param.value
+    #     # mid_param_arr = automation.VARIANT([mid_param])
+    #     curve_eval.GetPointAtParam(mid_param, )
+    #     return self.inv_app.TransientGeometry.CreatePoint2d(mid_point_coordinate, mid_point_coordinate)
 
     # def __get_best_segment_from_occ(self, curves):
     #     best_rating = 0
@@ -224,3 +216,23 @@ class BalloonHelper:
     #     min_param = ref_min_param
     #     max_param = ref_max_param
     #     for i in range(split_precision):
+
+    # def __initialise_view_bounding_box(self, view):
+    #     trans_geom = self.inv_app.TransientGeometry
+    #     top_left = trans_geom.CreatePoint2d(view.Left, view.Top)
+    #     top_right = trans_geom.CreatePoint2d(view.Left + view.Width, view.Top)
+    #     btm_left = trans_geom.CreatePoint2d(view.Left, view.Top - view.Height)
+    #     btm_right = trans_geom.CreatePoint2d(view.Left + view.Width, view.Top - view.Height)
+    #
+    #     self.top_line = trans_geom.CreateLineSegment2d(top_left, top_right)
+    #     self.btm_line = trans_geom.CreateLineSegment2d(btm_left, btm_right)
+    #     self.left_line = trans_geom.CreateLineSegment2d(top_left, btm_left)
+    #     self.right_line = trans_geom.CreateLineSegment2d(top_right, btm_right)
+
+    # def __get_balloon_attach_geom(self, row, view):
+    #     row_occurrences_enumerator = view.ReferencedDocumentDescriptor.ReferencedDocument.ComponentDefinition\
+    #         .Occurrences.AllReferencedOccurrences(row.ReferencedFiles.Item(1).DocumentDescriptor)
+    #     curves = self.__get_curves_from_occ(row_occurrences_enumerator, view)
+    #     # get the first segment
+    #     segment = curves[0].Segments.Item(1)
+    #     return self.__get_attach_point(segment)
