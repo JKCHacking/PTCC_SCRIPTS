@@ -49,6 +49,7 @@ def main():
     solids = get_solids(doc)
     color_categories = get_color_cat(solids)
     for color_category in color_categories:
+        print("Saving solids from color index: {}".format(color_category))
         delete_except_cat(doc, color_category)
         doc.SaveAs(os.path.join(doc.Path, "{cat}.dwg".format(cat=color_category)))
         doc.Close()
