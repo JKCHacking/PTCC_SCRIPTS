@@ -45,7 +45,7 @@ def main():
     tkinter.Tk().withdraw()
     dwg_path = askopenfilename(title="Select the main DWG", filetypes=[("DWG Files", ".dwg")])
     cad = get_cad_application()
-    doc = cad.ActiveDocument
+    doc = cad.Documents.Open(dwg_path)
     solids = get_solids(doc)
     color_categories = get_color_cat(solids)
     for color_category in color_categories:
