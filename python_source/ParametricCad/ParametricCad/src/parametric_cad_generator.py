@@ -189,7 +189,11 @@ def get_all_part_params(part_doc):
                     # remove the unit
                     val = val.replace(UNITS[part_doc.GetVariable("INSUNITS")], "")
                     if "/" in val:
-                        whole, frac = val.split(" ")
+                        if " " in val:
+                            whole, frac = val.split(" ")
+                        else:
+                            frac = val
+                            whole = 0
                         dec = round(float(fractions.Fraction(frac)), PRECISION)
                         try:
                             whole = int(whole)
