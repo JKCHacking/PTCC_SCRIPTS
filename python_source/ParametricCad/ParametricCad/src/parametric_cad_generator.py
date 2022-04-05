@@ -17,6 +17,7 @@ if getattr(sys, "frozen", False):
 elif __file__:
     SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 OUTPUT_PATH = os.path.join(SRC_PATH, "output")
+INPUT_PATH = ""
 FRACTIONAL = 5
 PRECISION = 3
 UNITS = {
@@ -60,7 +61,7 @@ def get_entities(dwg_doc, object_names):
     return entities
 
 
-def get_part_names(assm_temp_path):
+def get_parts(assm_temp_path):
     print("Getting parts...")
     parts = []
     doc = get_cad_app().Documents.Open(assm_temp_path)
@@ -203,36 +204,40 @@ def get_all_part_params(part_doc):
     return params
 
 
-def find_duplicate_part(part_name, assembly_params):
+def is_part_exists(assembly_name, part, parts_params):
     cad_app = get_cad_app()
-    dup_part = None
-    count = 0
+    exists = False
+    duplicate_file = ""
     for root, dirs, files in os.walk(OUTPUT_PATH):
         for file in files:
-            if file.startswith(part_name) and file.endswith(".dwg"):
+            part_name, part_num_letter = part.split("-")
+            part_number, part_letter = get_suff_num_letter(part_num_letter)
+            pattern = "{}-\\d{{3}}{}".format(part_name, part_letter)
+            if not file.startswith(assembly_name) and re.match(pattern, os.path.splitext(file)[0]) and \
+                    file.endswith(".dwg"):
                 part_file = os.path.join(root, file)
                 part_doc = cad_app.Documents.Open(part_file)
                 part_params = get_all_part_params(part_doc)
-                checks = [True if param_name in assembly_params and value == assembly_params[param_name]
+                checks = [True if param_name in parts_params and value == parts_params[param_name]
                           else False for param_name, value in part_params.items()]
                 # this means that all part parameters are equal in assembly params.
                 # a part with those parameters already exists.
                 if all(checks):
-                    dup_part = part_file
+                    exists = True
+                    duplicate_file = os.path.join(root, file)
                 part_doc.Close(False)
-                count += 1
-    return dup_part, count
+    return exists, duplicate_file
 
 
-def update_assembly_part_table(assembly_doc, old_part_name, new_part_name):
+def update_assembly_part_table(assembly_doc, old_part, new_part):
     part_table = find_part_table(assembly_doc)
     part_col = find_col_idx(part_table, "PART NUMBER")
-    part_row = find_row_idx(part_table, part_col, old_part_name)
+    part_row = find_row_idx(part_table, part_col, old_part)
     if part_row != -1:
         # update the cell
-        part_table.SetCellValue(part_row, part_col, os.path.splitext(new_part_name)[0])
+        part_table.SetCellValue(part_row, part_col, os.path.splitext(new_part)[0])
     else:
-        print("Cannot find part {} in the part table".format(old_part_name))
+        print("Cannot find part {} in the part table".format(old_part))
 
 
 def delete_parametric_dims(assm_doc, assembly_params):
@@ -256,26 +261,44 @@ def get_suff_num_letter(suffix_pname):
     return suff_num, suff_letter
 
 
+def get_max_part_num(assembly_name, part_name, part_letter):
+    part_num_list = []
+    max_part_num = 0
+    for file in os.listdir(os.path.join(OUTPUT_PATH, assembly_name)):
+        if file.endswith(".dwg"):
+            pattern = "{}-\\d{{3}}{}".format(part_name, part_letter)
+            curr_part = os.path.splitext(file)[0]
+            curr_part_name, curr_part_num_letter = curr_part.split("-")
+            curr_part_num, curr_part_letter = get_suff_num_letter(curr_part_num_letter)
+            if re.match(pattern, curr_part):
+                part_num_list.append(curr_part_num)
+    if part_num_list:
+        max_part_num = max(part_num_list)
+    return max_part_num
+
+
 def main():
+    global INPUT_PATH
     cad_app = get_cad_app()
     tkinter.Tk().withdraw()
     assm_temp_path = askopenfilename(title="Select the Template Assembly DWG file", filetypes=[("DWG Files", ".dwg")])
     config_path = askopenfilename(title="Select the CSV config file", filetypes=[("CSV Files", ".csv")])
-    part_names = get_part_names(assm_temp_path)
+    parts = get_parts(assm_temp_path)
+    INPUT_PATH = os.path.dirname(assm_temp_path)
     print("Assembly File:\n{}\n".format(os.path.basename(assm_temp_path)))
     print("Config File:\n{}\n".format(os.path.basename(config_path)))
-    print("Parts:\n{}\n".format("\n".join(part_names)))
+    print("Parts:\n{}\n".format("\n".join(parts)))
 
-    if part_names:
+    if parts:
         with open(config_path, "r") as csvfile:
             reader = csv.DictReader(csvfile)
             headers = reader.fieldnames
-            part_name_col = headers[0]
+            assembly_col = headers[0]
             parameter_names = headers[1:]
             # note that each row is 1 assembly dwg file.
-            # and each row creates a subdirectory for assembly and parts of the assembly.
+            # and each row creates a subdirectory for sub-assembly and parts of the assembly.
             for row in reader:
-                assembly_name = row[part_name_col]
+                assembly_name = row[assembly_col]
                 assembly_directory = os.path.join(OUTPUT_PATH, assembly_name)
                 print("Generating Assembly:\n{}".format(assembly_name))
                 assembly_doc = create_assembly(assm_temp_path, assembly_name, assembly_directory)
@@ -284,38 +307,43 @@ def main():
                 parameters = {param_name: row[param_name] for param_name in parameter_names}
                 update_assembly_params(assembly_doc, parameters)
                 assembly_params = get_all_assm_params(assembly_doc)
-                # simplify_parameters(assembly_params)
                 print("\nGenerating Part:")
-                for part_name in part_names:
-                    dup_part, count = find_duplicate_part(part_name, assembly_params)
-                    if dup_part:
-                        new_part_file_name = os.path.basename(dup_part)
+                for part in parts:
+                    print(part)
+                    part_file = os.path.join(INPUT_PATH, "{}.dwg".format(part))
+                    temp_part_file = os.path.join(INPUT_PATH, "{}_temp.dwg".format(part))
+                    if os.path.exists(part_file):
+                        # create a temporary file first
+                        part_doc = cad_app.Documents.Open(part_file)
+                        update_part_params(part_doc, assembly_params)
+                        part_params = get_all_part_params(part_doc)
+                        part_doc.SaveAs(temp_part_file)
+                        part_doc.Close(False)
+                        exists, duplicate_file = is_part_exists(assembly_name, part, part_params)
+                        src = temp_part_file
+                        if exists:
+                            src = duplicate_file
+                            new_part = os.path.basename(src)
+                        else:
+                            part_name, part_num_letter = part.split("-")
+                            part_number, part_letter = get_suff_num_letter(part_num_letter)
+                            new_part_num = get_max_part_num(assembly_name, part_name, part_letter)
+                            # this means that it does not have any other relatives.
+                            if new_part_num == 0:
+                                new_part_num = part_number
+                            else:
+                                new_part_num = new_part_num + 1
+                            new_part = "{}-{:03d}{}.dwg".format(part_name, new_part_num, part_letter)
+                        dst = os.path.join(assembly_directory, new_part)
                         try:
-                            shutil.copyfile(dup_part, os.path.join(assembly_directory, new_part_file_name))
-                            print(os.path.splitext(new_part_file_name)[0])
+                            shutil.copyfile(src, dst)
                         except shutil.SameFileError:
                             pass
+                        update_assembly_part_table(assembly_doc, part, new_part)
                     else:
-                        part_template = os.path.join(os.path.dirname(assm_temp_path), part_name + ".dwg")
-                        prefix_pname, suffix_pname = part_name.split("-")
-                        suff_number, suff_letter = get_suff_num_letter(suffix_pname)
-                        new_part_file_name = "{}-{:03d}{}.dwg".format(prefix_pname,
-                                                                      suff_number + count + 1,
-                                                                      suff_letter)
-                        try:
-                            new_part = shutil.copyfile(part_template, os.path.join(assembly_directory,
-                                                                                   new_part_file_name))
-                            print(os.path.splitext(new_part_file_name)[0])
-                        except FileNotFoundError:
-                            new_part = ""
-                            print("Cannot find part {} in {}".format(part_name,
-                                                                     os.path.dirname(assm_temp_path)))
-                        # update the new part
-                        if new_part:
-                            part_doc = cad_app.Documents.Open(new_part)
-                            update_part_params(part_doc, assembly_params)
-                            part_doc.Close()
-                            update_assembly_part_table(assembly_doc, part_name, new_part_file_name)
+                        print("Cannot find part {} in {}".format(part, INPUT_PATH))
+                    if os.path.exists(temp_part_file):
+                        os.remove(temp_part_file)
                 delete_parametric_dims(assembly_doc, assembly_params)
                 assembly_doc.Close()
                 print("")
