@@ -265,17 +265,18 @@ def get_suff_num_letter(suffix_pname):
     return suff_num, suff_letter
 
 
-def get_max_part_num(assembly_name, part_name, part_letter):
+def get_max_part_num(part_name, part_letter):
     part_num_list = []
     max_part_num = 0
-    for file in os.listdir(os.path.join(OUTPUT_PATH, assembly_name)):
-        if file.endswith(".dwg"):
-            pattern = "{}-\\d{{3}}{}".format(part_name, part_letter)
-            curr_part = os.path.splitext(file)[0]
-            curr_part_name, curr_part_num_letter = curr_part.split("-")
-            curr_part_num, curr_part_letter = get_suff_num_letter(curr_part_num_letter)
-            if re.match(pattern, curr_part):
-                part_num_list.append(curr_part_num)
+    for root, dirs, files in os.walk(OUTPUT_PATH):
+        for file in files:
+            if file.endswith(".dwg"):
+                pattern = "{}-\\d{{3}}{}".format(part_name, part_letter)
+                curr_part = os.path.splitext(file)[0]
+                curr_part_name, curr_part_num_letter = curr_part.split("-")
+                curr_part_num, curr_part_letter = get_suff_num_letter(curr_part_num_letter)
+                if re.match(pattern, curr_part):
+                    part_num_list.append(curr_part_num)
     if part_num_list:
         max_part_num = max(part_num_list)
     return max_part_num
@@ -331,7 +332,7 @@ def main():
                         else:
                             part_name, part_num_letter = part.split("-")
                             part_number, part_letter = get_suff_num_letter(part_num_letter)
-                            new_part_num = get_max_part_num(assembly_name, part_name, part_letter)
+                            new_part_num = get_max_part_num(part_name, part_letter)
                             # this means that it does not have any other relatives.
                             if new_part_num == 0:
                                 new_part_num = part_number
