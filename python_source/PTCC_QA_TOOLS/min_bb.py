@@ -29,11 +29,12 @@ def get_min_3d_bb(doc, obj, step_ang):
     doc.SendCommand("ISOLATE\n")
     # create the 3 viewports of the object in the paperspace for planes XY, ZX, ZY
     # and then get each viewport reference along the way.
+    offset = 100
     layout_name = "MinBBScript"
     doc.SendCommand("VIEWBASE\n(handent \"{}\")\n\n{}\n".format(obj.Handle, layout_name))
     doc.SendCommand("0,0,0\n")
-    doc.SendCommand("100,0,0\n")
-    doc.SendCommand("0,100,0\n\n")
+    doc.SendCommand("{},0,0\n".format(offset))
+    doc.SendCommand("0,{},0\n\n".format(offset))
 
     # get the viewport references.
     vp_xy = None
@@ -41,9 +42,9 @@ def get_min_3d_bb(doc, obj, step_ang):
     vp_zx = None
     for ps_obj in doc.PaperSpace:
         if ps_obj.ObjectName.lower() == "acdbviewport":
-            if ps_obj.Center == (0, 5, 0):
+            if ps_obj.Center == (0, offset, 0):
                 vp_xy = ps_obj
-            elif ps_obj.Center == (5, 0, 0):
+            elif ps_obj.Center == (offset, 0, 0):
                 vp_zy = ps_obj
             elif ps_obj.Center == (0, 0, 0):
                 vp_zx = ps_obj
