@@ -32,8 +32,8 @@ def get_min_3d_bb(doc, obj, step_ang):
     layout_name = "MinBBScript"
     doc.SendCommand("VIEWBASE\n(handent \"{}\")\n\n{}\n".format(obj.Handle, layout_name))
     doc.SendCommand("0,0,0\n")
-    doc.SendCommand("5,0,0\n")
-    doc.SendCommand("0,5,0\n\n")
+    doc.SendCommand("100,0,0\n")
+    doc.SendCommand("0,100,0\n\n")
 
     # get the viewport references.
     vp_xy = None
