@@ -84,6 +84,7 @@ if __name__ == "__main__":
     if dwg_file_paths:
         for dwg_file_path in dwg_file_paths:
             doc = cad_app.Documents.Open(dwg_file_path)
+            print("Getting objects...")
             objs = get_objects(doc, "acdb3dsolid")
             excel_file_name = "{} Dimension Report.xlsx".format(os.path.splitext(doc.Name)[0].capitalize())
             dim_report.create_report(doc, objs, os.path.join(doc.Path, excel_file_name))
