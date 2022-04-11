@@ -1,3 +1,4 @@
+import os
 import openpyxl
 import math
 import tkinter
@@ -11,7 +12,7 @@ class DimensionReport:
     def get_dimensions(min_pt, max_pt):
         width = max_pt[0] - min_pt[0]
         length = max_pt[1] - min_pt[1]
-        height = max_pt[2] - max_pt[2]
+        height = max_pt[2] - min_pt[2]
         return length, width, height
 
     def create_report(self, doc, objs, out_file_name):
@@ -30,6 +31,7 @@ class DimensionReport:
         ws_obj_detail.cell(row=1, column=4, value="Height")
         ws_obj_detail.cell(row=1, column=5, value="Color")
         for i, obj in enumerate(objs):
+            print("\rCreating report... {}/{}".format(i + 1, len(objs)), end="", flush=True)
             min_pt, max_pt = get_3d_bb(doc, obj, math.radians(2))
             length, width, height = self.get_dimensions(min_pt, max_pt)
             handle = obj.Handle
@@ -51,13 +53,18 @@ class DimensionReport:
                 else:
                     groups.update({length: 1})
             else:
-                print("solid with 0 length: {}".format(obj.Handle))
+                print("\nsolid with 0 length: {}".format(obj.Handle))
 
         ws_obj_count.cell(row=1, column=1, value="Length")
         ws_obj_count.cell(row=1, column=2, value="Count")
-        for i, key, value in enumerate(groups.items()):
+        for i, items in enumerate(groups.items()):
+            key = items[0]
+            value = items[1]
             ws_obj_count.cell(row=i + 2, column=1, value=key)
             ws_obj_count.cell(row=i + 2, column=2, value=value)
+        # remove default sheet.
+        del wb["Sheet"]
+        # save workbook
         wb.save(out_file_name)
 
 
@@ -78,4 +85,5 @@ if __name__ == "__main__":
         for dwg_file_path in dwg_file_paths:
             doc = cad_app.Documents.Open(dwg_file_path)
             objs = get_objects(doc, "acdb3dsolid")
-            dim_report.create_report(doc, objs, "Dimension Report.xlsx")
+            excel_file_name = "{} Dimension Report.xlsx".format(os.path.splitext(doc.Name)[0].capitalize())
+            dim_report.create_report(doc, objs, os.path.join(doc.Path, excel_file_name))
