@@ -62,24 +62,26 @@ class DwgSorter:
         color_indexes = self.get_color_indexes(objs)
         for ci in color_indexes:
             objs_ci = self.get_objs_by_ci(objs, ci)
-            out_filename = ci
-            if self.grid_block:
-                objs_ci.extend([self.grid_block])
-            else:
-                print("Cannot find grid line")
-            self.export_objs_to_dwg(objs_ci, out_filename)
+            if objs_ci:
+                out_filename = ci
+                if self.grid_block:
+                    objs_ci.extend([self.grid_block])
+                else:
+                    print("Cannot find grid line")
+                self.export_objs_to_dwg(objs_ci, out_filename)
 
     def export_by_layer(self, objs):
         layers = self.get_layers()
         for layer in layers:
             layer_name = layer.Name
             objs_layer = self.get_objs_by_layer(objs, layer_name)
-            out_filename = layer_name
-            if self.grid_block:
-                objs_layer.extend([self.grid_block])
-            else:
-                print("Cannot find grid line")
-            self.export_objs_to_dwg(objs_layer, out_filename)
+            if objs_layer:
+                out_filename = layer_name
+                if self.grid_block:
+                    objs_layer.extend([self.grid_block])
+                else:
+                    print("Cannot find grid line")
+                self.export_objs_to_dwg(objs_layer, out_filename)
 
 
 def get_objects(doc, obj_name):
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     tkinter.Tk().withdraw()
     dwg_path = askopenfilename(title="Select the DWG", filetypes=[("DWG Files", ".dwg")])
     if dwg_path:
-        cad_app = client.GetActiveObject("BricscadApp.AcadApplication")
+        cad_app = client.GetActiveObject("BricscadApp.AcadApplication", dynamic=True)
         doc = cad_app.Documents.Open(dwg_path)
         print("Getting objects...")
         objs = get_objects(doc, "acdb3dsolid")
