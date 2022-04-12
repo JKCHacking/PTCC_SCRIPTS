@@ -6,7 +6,7 @@ from comtypes import client
 from comtypes import COMError
 
 
-def get_min_3d_bb(doc, obj, step_ang):
+def get_min_3d_bb(obj, step_ang):
     """
     Description
     ===========
@@ -16,7 +16,6 @@ def get_min_3d_bb(doc, obj, step_ang):
 
     Parameters
     ==========
-    doc: Bricscad document where the object is present.
     obj: the object to get the minimum bounding box.
     step_ang: the angle step to be used for the model when rotating along an axis.
 
@@ -24,58 +23,15 @@ def get_min_3d_bb(doc, obj, step_ang):
     ======
     min, max: minimum point and maximum of the minimum bounding box.
     """
-    # we should isolate the object first
-    doc.SendCommand("SELECT\n(handent \"{}\")\n\n".format(obj.Handle))
-    doc.SendCommand("ISOLATE\n")
-    # create the 3 viewports of the object in the paperspace for planes XY, ZX, ZY
-    # and then get each viewport reference along the way.
-    offset = 100
-    layout_name = "MinBBScript"
-    doc.SendCommand("VIEWBASE\n(handent \"{}\")\n\n{}\n".format(obj.Handle, layout_name))
-    doc.SendCommand("0,0,0\n")
-    doc.SendCommand("{},0,0\n".format(offset))
-    doc.SendCommand("0,{},0\n\n".format(offset))
-
-    # get the viewport references.
-    vp_xy = None
-    vp_zy = None
-    vp_zx = None
-    for ps_obj in doc.PaperSpace:
-        if ps_obj.ObjectName.lower() == "acdbviewport":
-            if ps_obj.Center == (0, offset, 0):
-                vp_xy = ps_obj
-            elif ps_obj.Center == (offset, 0, 0):
-                vp_zy = ps_obj
-            elif ps_obj.Center == (0, 0, 0):
-                vp_zx = ps_obj
-
-    # create z axis normal to XY plane
-    start_pt = array.array("d", list(obj.Centroid))
-    end_pt = array.array("d", [obj.Centroid[0], obj.Centroid[1], obj.Centroid[2] + 1])
-    # orient object according to minimum bounding of XY plane
-    reorient_obj(doc, obj, vp_xy, start_pt, end_pt, step_ang)
-
-    # create Y axis normal to ZX plane
-    end_pt = array.array("d", [obj.Centroid[0], obj.Centroid[1] + 1, obj.Centroid[2]])
-    # orient object according to minimum bounding of XY plane
-    reorient_obj(doc, obj, vp_zx, start_pt, end_pt, step_ang)
-
-    # create X axis normal to ZY plane
-    end_pt = array.array("d", [obj.Centroid[0] + 1, obj.Centroid[1], obj.Centroid[2]])
-    # orient object according to minimum bounding of XY plane
-    reorient_obj(doc, obj, vp_zy, start_pt, end_pt, step_ang)
-
-    # at this point, the model is already aligned in the principal axes
-    # get the actual bounding box of the object
+    planes = ["xy", "xz", "yz"]
+    for plane in planes:
+        reorient_obj(obj, step_ang, plane)
+    # from this point the object is already aligned in the world axis.
     min_pt, max_pt = obj.GetBoundingBox()
-    # show the other objects
-    doc.SendCommand("UNISOLATE\n")
-    # delete the created layout
-    doc.Layouts.Item(layout_name).Delete()
     return min_pt, max_pt
 
 
-def reorient_obj(doc, obj, viewport, start_pt, end_pt, step_ang):
+def reorient_obj(obj, step_ang, plane):
     """
     Description
     ===========
@@ -83,11 +39,7 @@ def reorient_obj(doc, obj, viewport, start_pt, end_pt, step_ang):
 
     Parameters
     ==========
-    doc: the document where the object resides.
     obj: the object to be re orient.
-    viewport: the viewport that holds the projection of the obj to a plane.
-    start_pt: the start point of the axis where to rotate.
-    end_pt: the end point of the axis where to rotate.
     step_ang: the increment angle of the object during rotation.
 
     Returns
@@ -96,30 +48,49 @@ def reorient_obj(doc, obj, viewport, start_pt, end_pt, step_ang):
     """
     start_angle = 0
     end_angle = math.pi / 2
+    min_area = math.inf
+    best_angle = 0
+    start_axis = array.array("d", obj.Centroid)
+    end_axis = []
+    index = [0] * 3
 
-    # initialize area and angle
-    min_area = viewport.Height * viewport.Width
-    best_ang = 0
+    if plane == "xy":
+        index = [1, 1, 0]
+        end_axis = array.array("d", [obj.Centroid[0], obj.Centroid[1], obj.Centroid[2] + 1])
+    elif plane == "xz":
+        index = [1, 0, 1]
+        end_axis = array.array("d", [obj.Centroid[0], obj.Centroid[1] + 1, obj.Centroid[2]])
+    elif plane == "yz":
+        index = [0, 1, 1]
+        end_axis = array.array("d", [obj.Centroid[0] + 1, obj.Centroid[1], obj.Centroid[2]])
 
-    # getting the minimum bounding box of the plane
+    min_pt, max_pt = obj.GetBoundingBox()
+    # projecting the points to the plane
+    project_points_to_plane(min_pt, max_pt, index)
     while start_angle <= end_angle:
-        # switch to modelspace
-        doc.SendCommand("TILEMODE\n1\n")
-        # rotate the object in axis
-        obj.Rotate3D(start_pt, end_pt, step_ang)
-        # switch to paperspace
-        doc.SendCommand("TILEMODE\n0\n")
-        # To get the minimized bounding box of the viewport we use the height and width to get the area
-        # of the viewport and record the area.
-        curr_area = viewport.Height * viewport.Width
-        start_angle += step_ang
-        # determining the minimum area
+        obj.Rotate3D(start_axis, end_axis, step_ang)
+        # compute the area
+        dims = [(max_pt[0] - min_pt[0]), (max_pt[1] - min_pt[1]), (max_pt[2] - min_pt[2])]
+        curr_area = 1
+        for dim in dims:
+            if dim > 0:
+                curr_area *= dim
         if curr_area < min_area:
             min_area = curr_area
-            best_ang = start_angle
-    doc.SendCommand("TILEMODE\n1\n")
-    # rotate the object according to the best angle
-    obj.Rotate3D(start_pt, end_pt, best_ang)
+            best_angle = start_angle
+        start_angle += step_ang
+        min_pt, max_pt = obj.GetBoundingBox()
+        # projecting the points to the plane
+        project_points_to_plane(min_pt, max_pt, index)
+    # rotate the object using the best angle
+    obj.Rotate3D(start_axis, end_axis, best_angle)
+
+
+def project_points_to_plane(pt1, pt2, plane_index):
+    # projecting the points to the plane
+    pt1 = [pt1[0] * plane_index[0], pt1[1] * plane_index[1], pt1[2] * plane_index[2]]
+    pt2 = [pt2[0] * plane_index[0], pt2[1] * plane_index[1], pt2[2] * plane_index[2]]
+    return pt1, pt2
 
 
 def get_volume_from_points(min_pt, max_pt):
@@ -162,7 +133,7 @@ def get_3d_bb(doc, obj, step_ang):
     a_min_pt, a_max_pt = obj.GetBoundingBox()
     # compute the minimum bounding box.
     doc.StartUndoMark()
-    na_min_pt, na_max_pt = get_min_3d_bb(doc, obj, step_ang)
+    na_min_pt, na_max_pt = get_min_3d_bb(obj, step_ang)
     doc.EndUndoMark()
     doc.SendCommand("_undo\n\n")
 
