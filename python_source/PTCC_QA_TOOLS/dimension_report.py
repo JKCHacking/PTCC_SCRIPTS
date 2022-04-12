@@ -88,3 +88,4 @@ if __name__ == "__main__":
             objs = get_objects(doc, "acdb3dsolid")
             excel_file_name = "{} Dimension Report.xlsx".format(os.path.splitext(doc.Name)[0].capitalize())
             dim_report.create_report(doc, objs, os.path.join(doc.Path, excel_file_name))
+            doc.Close(False)
