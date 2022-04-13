@@ -1,8 +1,3 @@
-
-def sort_areas():
-    pass
-
-
 def best_fit(areas, capacity):
     panels = [capacity] * len(areas)
     for area in areas:
