@@ -1,23 +1,27 @@
+import tkinter
+import csv
 import array
 from comtypes import client
+from tkinter.filedialog import askopenfilename
 
-BIN_GAP = 10
+MARGIN_RIGHT = 10
+MARGIN_TOP = 20
 
 
 class Obj:
-    def __init__(self, doc, position, width, length):
+    def __init__(self, doc, width, length, color):
         self.doc = doc
-        self.position = position
         self.width = width
         self.length = length
         self.obj = None
+        self.color = color
 
-    def create(self):
+    def display(self, position):
         model_space = self.doc.ModelSpace
-        ll = [self.position[0], self.position[1], self.position[2]]
-        lr = [self.position[0] + self.width, self.position[1], self.position[2]]
-        ur = [self.position[0] + self.width, self.position[1] + self.length, self.position[2]]
-        ul = [self.position[0], self.position[1] + self.length, self.position[2]]
+        ll = [position[0], position[1], position[2]]
+        lr = [position[0] + self.width, position[1], position[2]]
+        ur = [position[0] + self.width, position[1] + self.length, position[2]]
+        ul = [position[0], position[1] + self.length, position[2]]
         # create the vertices using the four corners of the box
         vertices = [ll[0], ll[1], ll[2],
                     lr[0], lr[1], lr[2],
@@ -25,20 +29,23 @@ class Obj:
                     ul[0], ul[1], ul[2],
                     ll[0], ll[1], ll[2]]
         self.obj = model_space.AddPolyline(array.array("d", vertices))
+        self.obj.TrueColor = self.color
 
 
 class Item(Obj):
-    def __init__(self, doc, position, width, length):
-        super().__init__(doc, position, width, length)
-        self.create()
+    def __init__(self, doc, width, length):
+        color = doc.Application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color.SetRGB(0, 255, 0)
+        super().__init__(doc, width, length, color)
 
 
 class Bin(Obj):
-    def __init__(self, doc, position, width, length):
-        super().__init__(doc, position, width, length)
-        self.levels = [[0, 0, 0]]
+    def __init__(self, doc, width, length):
+        color = doc.Application.GetInterfaceObject("BricscadDb.AcadAcCmColor")
+        color.SetRGB(255, 0, 0)
+        super().__init__(doc, width, length, color)
+        self.levels = []
         self.items = []
-        self.create()
 
     def is_fit(self, item):
         """
@@ -129,23 +136,26 @@ class Bin(Obj):
     def add_item(self, item):
         res = False
         ent = item.obj
+        old_ent_min, old_ent_max = ent.GetBoundingBox()
         for i, level in enumerate(self.levels):
-            ent.Move(array.array("d", item.position), array.array("d", level))
+            curr_ent_min, curr_ent_max = ent.GetBoundingBox()
+            ent.Move(array.array("d", list(curr_ent_min)), array.array("d", level))
             # we should also consider the level lines
             is_fit = self.is_fit(item)
             if is_fit:  # item fits in the given location.
                 # add the item to the bin's item list
                 self.items.append(item)
                 # should add new level and move the start position of the current level.
-                min_pt, max_pt = ent.GetBoundingBox()
-                self.levels.append([min_pt[0], max_pt[1], 0.0])
-                self.levels[i] = [max_pt[0], level[1], 0.0]
+                new_min_pt, new_max_pt = ent.GetBoundingBox()
+                self.levels.append([new_min_pt[0], new_max_pt[1], 0.0])
+                self.levels[i] = [new_max_pt[0], level[1], 0.0]
                 # sort the levels according to top-bottom left-right.
                 self.levels = sorted(self.levels, key=lambda k: [k[1], k[0]])
                 res = True
                 break
-            else:
-                ent.Move(array.array("d", level), array.array("d", item.position))
+        if not res:
+            new_ent_min, new_ent_max = ent.GetBoundingBox()
+            ent.Move(array.array("d", list(new_ent_min)), array.array("d", list(old_ent_min)))
         return res
 
 
@@ -155,7 +165,49 @@ def get_app():
 
 
 def main():
-    pass
+    cad = get_app()
+    doc = cad.ActiveDocument
+    tkinter.Tk().withdraw()
+    csv_file_name = askopenfilename(title="Select input CSV file", filetypes=[("CSV Files", ".csv")])
+    assemblies = []
+    parts = []
+    curr_assembly_pos = [0, 0, 0]
+    curr_part_pos = [0, 0, 0]
+    with open(csv_file_name, mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            length = int(row["length"])
+            width = int(row["width"])
+            if row["designation"] == "assembly":
+                assembly = Bin(doc, width, length)
+                assemblies.append(assembly)
+            else:  # part
+                count = int(row["count"])
+                for _ in range(count):
+                    part = Item(doc, width, length)
+                    parts.append(part)
+    # sort items according to length (Highest to lowest)
+    parts = sorted(parts, key=lambda l: [l.length], reverse=True)
+    # display the parts and the initial assembly
+    curr_part_pos[1] += assemblies[0].length + MARGIN_TOP
+    for p in parts:
+        p.display(curr_part_pos)
+        curr_part_pos[0] += p.width + MARGIN_RIGHT
+    assemblies[0].display(curr_assembly_pos)
+    assemblies[0].levels.append(list(assemblies[0].obj.GetBoundingBox()[0]))
+    curr_assembly_pos[0] += assemblies[0].width + MARGIN_RIGHT
+
+    for p in parts:
+        for i, assm in enumerate(assemblies):
+            res = assm.add_item(p)
+            if not res and i == len(assemblies) - 1:
+                new_assm = Bin(doc, assm.width, assm.length)
+                new_assm.display(curr_assembly_pos)
+                new_assm.levels.append(list(new_assm.obj.GetBoundingBox()[0]))
+                assemblies.append(new_assm)
+                curr_assembly_pos[0] += new_assm.width + MARGIN_RIGHT
+            elif res:
+                break
 
 
 if __name__ == "__main__":
