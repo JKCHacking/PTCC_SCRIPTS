@@ -17,6 +17,17 @@ class Obj:
         self.color = color
 
     def display(self, position):
+        """
+        Description
+        ===========
+        Function to display an object in the modelspace using a specified position.
+        Parameters
+        ==========
+        position:list - XYZ coordinate of the position of the object.
+        Return
+        ======
+        None
+        """
         model_space = self.doc.ModelSpace
         ll = [position[0], position[1], position[2]]
         lr = [position[0] + self.width, position[1], position[2]]
@@ -134,6 +145,17 @@ class Bin(Obj):
         return overlap
 
     def add_item(self, item):
+        """
+        Description
+        ===========
+        Function that adds a specified item into the bin.
+        Parameters
+        ==========
+        item: AcDbPolyline - item to be added into the bin.
+        Return
+        ======
+        res:bool - whether the item successfully was added or not.
+        """
         res = False
         ent = item.obj
         old_ent_min, old_ent_max = ent.GetBoundingBox()
