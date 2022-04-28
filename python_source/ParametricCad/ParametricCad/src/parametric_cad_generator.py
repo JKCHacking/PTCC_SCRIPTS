@@ -270,7 +270,7 @@ def get_max_part_num(part_name, part_letter):
     max_part_num = 0
     for root, dirs, files in os.walk(OUTPUT_PATH):
         for file in files:
-            if file.endswith(".dwg"):
+            if file.endswith(".dwg") and "-" in file:
                 pattern = "{}-\\d{{3}}{}".format(part_name, part_letter)
                 curr_part = os.path.splitext(file)[0]
                 curr_part_name, curr_part_num_letter = curr_part.split("-")
