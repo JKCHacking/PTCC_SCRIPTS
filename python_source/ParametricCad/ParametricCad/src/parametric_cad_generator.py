@@ -19,7 +19,7 @@ elif __file__:
 OUTPUT_PATH = os.path.join(SRC_PATH, "output")
 INPUT_PATH = ""
 FRACTIONAL = 5
-PRECISION = 3
+PRECISION = 5
 UNITS = {
     1: "\"",
     4: "mm"
