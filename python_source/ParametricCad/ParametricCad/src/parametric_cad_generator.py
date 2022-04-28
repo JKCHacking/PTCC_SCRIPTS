@@ -26,6 +26,14 @@ UNITS = {
 }
 
 
+def except_hook(type, value, traceback, oldhook=sys.excepthook):
+    oldhook(type, value, traceback)
+    input("Press enter to exit...")
+
+
+sys.excepthook = except_hook
+
+
 def get_brics_app():
     b_cad = "BricscadApp.AcadApplication"
     try:
