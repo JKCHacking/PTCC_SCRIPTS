@@ -148,7 +148,8 @@ class MeshGenerator:
         gmsh.model.geo.addPlaneSurface(loops)
         gmsh.model.geo.synchronize()
         gmsh.model.mesh.generate(2)
-        gmsh.write(os.path.splitext(os.path.basename(self.dxf_path))[0] + ".msh")
+        gmsh.write(os.path.join(os.path.dirname(self.dxf_path),
+                                os.path.splitext(os.path.basename(self.dxf_path))[0] + ".med"))
         if "-nopopup" not in sys.argv:
             gmsh.fltk.run()
         gmsh.finalize()
