@@ -65,7 +65,10 @@ def get_cad_app():
 
 
 def get_entities(dwg_doc, object_names):
-    entities = [obj for obj in dwg_doc.ModelSpace if obj.ObjectName in object_names]
+    try:
+        entities = [obj for obj in dwg_doc.ModelSpace if obj.ObjectName in object_names]
+    except COMError:
+        raise Exception("There are non-entities in the ModelSpace. Please remove them first.")
     return entities
 
 
