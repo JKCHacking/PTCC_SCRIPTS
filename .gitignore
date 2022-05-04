@@ -4,3 +4,4 @@
 /python_source/*/input/*
 /python_source/*/output/*
 /python_source/*/env/*
+dist/
