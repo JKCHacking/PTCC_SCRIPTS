@@ -1,7 +1,0 @@
-{
-    "launch": {
-    
-    },
-    "http.proxy": "https://proxy.ptcc.design:8080",
-    "http.proxyAuthorization": null
-}
