@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QGroupBox
 from PyQt5.QtWidgets import QWidget
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPalette, QColor
@@ -22,18 +23,21 @@ class GUI(QMainWindow):
         self.thickness_label = QLabel("Thickness:")
         self.e_modulus_label = QLabel("Elastic Modulus:")
         self.pressure_label = QLabel("Pressure:")
+        self.size_label = QLabel("Size:")
 
         self.width_edit = QLineEdit()
         self.height_edit = QLineEdit()
         self.thickness_edit = QLineEdit()
         self.e_modulus_edit = QLineEdit()
         self.pressure_edit = QLineEdit()
+        self.size_edit = QLineEdit()
 
         self.width_edit.setFixedHeight(22)
         self.height_edit.setFixedHeight(22)
         self.thickness_edit.setFixedHeight(22)
         self.e_modulus_edit.setFixedHeight(22)
         self.pressure_edit.setFixedHeight(22)
+        self.size_edit.setFixedHeight(22)
 
         # set double validator to each line edit
         validator = QDoubleValidator()
@@ -42,6 +46,7 @@ class GUI(QMainWindow):
         self.thickness_edit.setValidator(validator)
         self.e_modulus_edit.setValidator(validator)
         self.pressure_edit.setValidator(validator)
+        self.size_edit.setValidator(validator)
 
         self.run_button = QPushButton("RUN")
         button_css = """
@@ -67,17 +72,32 @@ class GUI(QMainWindow):
 
     def init_ui(self):
         self.setWindowTitle("PLATE FEA")
-        self.setFixedSize(250, 250)
+        # self.setFixedSize(250, 300)
 
-        input_layout = QFormLayout()
-        input_layout.setVerticalSpacing(15)
-        input_layout.addRow(self.width_label, self.width_edit)
-        input_layout.addRow(self.height_label, self.height_edit)
-        input_layout.addRow(self.thickness_label, self.thickness_edit)
-        input_layout.addRow(self.e_modulus_label, self.e_modulus_edit)
-        input_layout.addRow(self.pressure_label, self.pressure_edit)
+        dimension_form = QFormLayout()
+        dimension_form.setVerticalSpacing(15)
+        dimension_form.addRow(self.width_label, self.width_edit)
+        dimension_form.addRow(self.height_label, self.height_edit)
+        dimension_form.addRow(self.thickness_label, self.thickness_edit)
 
-        self.general_layout.addLayout(input_layout)
+        mesh_form = QFormLayout()
+        mesh_form.addRow(self.size_label, self.size_edit)
+
+        solver_form = QFormLayout()
+        solver_form.setVerticalSpacing(15)
+        solver_form.addRow(self.e_modulus_label, self.e_modulus_edit)
+        solver_form.addRow(self.pressure_label, self.pressure_edit)
+
+        dimension_group = QGroupBox("DIMENSION")
+        dimension_group.setLayout(dimension_form)
+        mesh_group = QGroupBox("MESH")
+        mesh_group.setLayout(mesh_form)
+        solver_group = QGroupBox("SOLVER")
+        solver_group.setLayout(solver_form)
+
+        self.general_layout.addWidget(dimension_group)
+        self.general_layout.addWidget(mesh_group)
+        self.general_layout.addWidget(solver_group)
         self.general_layout.addWidget(self.run_button, alignment=QtCore.Qt.AlignCenter)
 
     def display_message_box(self, message, level="info"):
@@ -106,10 +126,16 @@ class Controller:
         thick_plate = self.check_input(self.view.thickness_edit)
         e_modulus = self.check_input(self.view.e_modulus_edit)
         pressure = self.check_input(self.view.pressure_edit)
+        size = self.view.size_edit.text()
+        try:
+            size = float(size)
+        except ValueError:
+            size = 0
+            self.view.size_edit.setText("0")
 
         if width_plate and height_plate and thick_plate and e_modulus and pressure:
             # generate mesh
-            self.model.generate_mesh(width_plate, height_plate, thick_plate)
+            self.model.generate_mesh(width_plate, height_plate, thick_plate, size)
             # prepare comm file
             # prepare export file
             # run code aster
@@ -119,7 +145,7 @@ class Controller:
 
     def check_input(self, line_edit):
         try:
-            val = int(line_edit.text())
+            val = float(line_edit.text())
         except ValueError:
             val = 0
 
@@ -137,17 +163,18 @@ class Controller:
 
 
 class Model:
-    def generate_mesh(self, w, h, t):
-        lc = 1e-2
+    def generate_mesh(self, w, h, t, size):
+        gmsh.initialize(sys.argv)
+        gmsh.model.add("MESH_PLATE")
         # create the points of the plate
-        p1 = gmsh.model.geo.addPoint(0, 0, 0, lc)
-        p2 = gmsh.model.geo.addPoint(w, 0, 0, lc)
-        p3 = gmsh.model.geo.addPoint(w, h, 0, lc)
-        p4 = gmsh.model.geo.addPoint(0, h, 0, lc)
-        p5 = gmsh.model.geo.addPoint(0, 0, t, lc)
-        p6 = gmsh.model.geo.addPoint(w, 0, t, lc)
-        p7 = gmsh.model.geo.addPoint(w, h, t, lc)
-        p8 = gmsh.model.geo.addPoint(0, h, t, lc)
+        p1 = gmsh.model.geo.addPoint(0, 0, 0, size)
+        p2 = gmsh.model.geo.addPoint(w, 0, 0, size)
+        p3 = gmsh.model.geo.addPoint(w, h, 0, size)
+        p4 = gmsh.model.geo.addPoint(0, h, 0, size)
+        p5 = gmsh.model.geo.addPoint(0, 0, t, size)
+        p6 = gmsh.model.geo.addPoint(w, 0, t, size)
+        p7 = gmsh.model.geo.addPoint(w, h, t, size)
+        p8 = gmsh.model.geo.addPoint(0, h, t, size)
 
         # create the lines of the plate
         l1 = gmsh.model.geo.addLine(p1, p2)
@@ -181,7 +208,7 @@ class Model:
 
         # create surface loop
         plate_loop = gmsh.model.geo.addSurfaceLoop([s1, s2, s3, s4, s5, s6])
-        plate = gmsh.model.geo.addVolume([plate_loop])
+        gmsh.model.geo.addVolume([plate_loop])
 
         # create the groups
         gmsh.model.addPhysicalGroup(2, [s1], name="TOP_FACE")
