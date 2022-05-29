@@ -1,0 +1,49 @@
+Warning: This note is not updated. (28/08/2020)
+
+Problem Statement:
+* Extract tables in DWG file.
+* Put them in excel file
+
+Solutions:
+* Parse the table inside DWG file. (Difficult)
+    * get the boundary of the column name.
+
+* Convert DWG to PDF and use existing PDF Parser libraries (Easy)
+    ** use _exportpdf command in Bricscad to convert DWG to PDF.
+    ** use camelot to get the data from the Table inside the PDF.
+    ** parse the inside the output.
+
+ALGORITHM PSUEDO CODE:
+
+ask for a list of column names
+for each column_name
+    for entity in modelspace
+        if MTEXT/TEXT Entity TextString == column_name
+            if not MTEXT/TEXT Entity TextString already is already a key in dictionary
+
+            else
+
+            {MTEXT/TEXT Entity.position : []}
+            vpt1, vpt2 = get the vertical boundary points for that entity
+            for each entity in modelspace
+                if Entity is MTEXT or TEXT and vpt1 < entity.position < vpt2
+                    dict = {entity.TextString: entity.position}
+
+
+{"NO.": [{"1": (x,y)},{"2": (x,y)},{"3": (x,y)}]}
+
+I think parsing the table is very difficult!!!
+how will parse these lines to form a table and cells, with rows and columns.
+
+how to tell if its a box? -> a box is made up of 4 points.
+
+table - BIG BOX (algorithm to scan all boxes and determine who is the biggest of them all)
+    cell - small box within
+        row - y position of the cell within the table
+        column - x position of the cell within the table
+
+LIMITATIONS:
+1. This script can only perfectly extract data from a normal table (no merged cells, if yes, double check results).
+2. This script assumes that the table is wrapped with a closed polyline box. (if its a line box it will not be able to find it)
+3. This script only extracts data and does not include column names. (Column names are inserted statically)
+4. "Deleted" note BlockReference will not be detected, so rows with deleted note will still remain.
