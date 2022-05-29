@@ -1,7 +1,7 @@
 ezdxf==0.14.1
 matplotlib==3.3.1
 MeshPy @ file:///H:/Downloads/MeshPy-2018.2.1-cp37-cp37m-win_amd64.whl
-numpy==1.18.5
+numpy==1.21
 PyMuPDF==1.17.7
 sectionproperties (sectionproperties based on github source code)
 
