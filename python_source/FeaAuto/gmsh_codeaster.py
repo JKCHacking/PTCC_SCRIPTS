@@ -1,5 +1,7 @@
 import sys
+import os
 import gmsh
+import subprocess
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QLabel
@@ -13,6 +15,14 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QMessageBox
+
+
+AS_RUN = "C:/Users/joshnee.cunanan/Local Settings/code_aster/V2021/bin/as_run.bat"
+SRC_PATH = ""
+if getattr(sys, "frozen", False):
+    SRC_PATH = os.path.dirname(os.path.realpath(sys.executable))
+elif __file__:
+    SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class GUI(QMainWindow):
@@ -136,9 +146,9 @@ class Controller:
         if width_plate and height_plate and thick_plate and e_modulus and pressure:
             # generate mesh
             self.model.generate_mesh(width_plate, height_plate, thick_plate, size)
-            # prepare comm file
-            # prepare export file
             # run code aster
+            self.model.run_code_aster(e_modulus, pressure)
+            # display the output in the GMSH Display.
 
     def connect_signals(self):
         self.view.run_button.clicked.connect(self.run_simulation)
@@ -150,12 +160,12 @@ class Controller:
             val = 0
 
         if val <= 0:
-            color = QColor(250, 160, 160)
+            color = QColor(250, 160, 160)  # red
             palette = QPalette()
             palette.setColor(QPalette.Base, color)
             line_edit.setPalette(palette)
         else:
-            color = QColor(255, 255, 255)
+            color = QColor(255, 255, 255)  # white
             palette = QPalette()
             palette.setColor(QPalette.Base, color)
             line_edit.setPalette(palette)
@@ -208,7 +218,7 @@ class Model:
 
         # create surface loop
         plate_loop = gmsh.model.geo.addSurfaceLoop([s1, s2, s3, s4, s5, s6])
-        gmsh.model.geo.addVolume([plate_loop])
+        plate = gmsh.model.geo.addVolume([plate_loop])
 
         # create the groups
         gmsh.model.addPhysicalGroup(2, [s1], name="TOP_FACE")
@@ -217,15 +227,44 @@ class Model:
         gmsh.model.addPhysicalGroup(2, [s4], name="BACK_FACE")
         gmsh.model.addPhysicalGroup(2, [s5], name="LEFT_FACE")
         gmsh.model.addPhysicalGroup(2, [s6], name="RIGHT_FACE")
+        gmsh.model.addPhysicalGroup(3, [plate], name="PLATE_VOL")
 
         gmsh.model.geo.synchronize()
         gmsh.model.mesh.generate(3)
-        if "-nopopup" not in sys.argv:
-            gmsh.fltk.run()
+        gmsh.write("plate.unv")
+        # if "nopopup" not in sys.argv:
+        #     gmsh.fltk.run()
         gmsh.finalize()
 
-    def run_code_aster(self):
-        pass
+    def run_code_aster(self, e_mod, pres):
+        self.generate_comm(e_mod, pres)
+        self.generate_export()
+        # run the code_aster
+        # self.run_command([AS_RUN, "export.export"])
+
+    def generate_comm(self, e_mod, pres):
+        # generate the command file
+        with open("command.txt", mode="r") as comm_template:
+            contents = comm_template.read()
+        contents = contents.format(elastic_modulus=e_mod, pressure=pres)
+        with open("command.comm", mode="w") as comm_file:
+            comm_file.write(contents)
+
+    def generate_export(self):
+        # generate the export file
+        with open("export.txt", mode="r") as export_template:
+            contents = export_template.read()
+        contents = contents.format(work_dir=SRC_PATH)
+        with open("export.export", mode="w") as export_file:
+            export_file.write(contents)
+
+    def run_command(self, command):
+        test_file = "test.log"
+        with open(test_file, "wb") as f:
+            process = subprocess.Popen(command, stdout=subprocess.PIPE)
+            for c in iter(lambda: process.stdout.read(1), b""):
+                sys.stdout.buffer.write(c)
+                f.write(c)
 
     def display_result(self):
         pass

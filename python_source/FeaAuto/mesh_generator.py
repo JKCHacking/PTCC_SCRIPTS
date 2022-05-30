@@ -166,5 +166,11 @@ class MeshGenerator:
 
 if __name__ == "__main__":
     mg = MeshGenerator()
-    poly_groups = mg.get_polygons("H://Desktop//projects//code_aster//test.dxf")
+    poly_groups = mg.get_polygons("H://Desktop//projects//code_aster//test_3d.dxf")
+
+    # from comtypes import client
+    # bs_cad = client.GetActiveObject("BricscadApp.AcadApplication")
+    # doc = bs_cad.ActiveDocument
+    # for ent in poly_groups[13]:
+    #     doc.SendCommand("SELECT\n(handent \"{}\")\n".format(ent.handle))
     mg.create_mesh(poly_groups)
