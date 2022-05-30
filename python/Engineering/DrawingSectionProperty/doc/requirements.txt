@@ -1,0 +1,12 @@
+ezdxf==0.14.1
+matplotlib==3.3.1
+MeshPy @ file:///H:/Downloads/MeshPy-2018.2.1-cp37-cp37m-win_amd64.whl
+numpy==1.21
+PyMuPDF==1.17.7
+sectionproperties (sectionproperties based on github source code)
+
+NOTE: Please uninstall your sectionproperties in pip as this is still not updated
+based from the original source code in github. sectionproperties is already included in the
+project.
+
+to uninstall: path/to/pip.exe uninstall sectionproperties
