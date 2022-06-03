@@ -1,0 +1,80 @@
+DEBUT();
+
+gMult = 1.0
+
+Mesh=LIRE_MAILLAGE(UNITE=3,
+                    FORMAT='IDEAS',)
+
+Mesh=MODI_MAILLAGE(reuse=Mesh,
+                   MAILLAGE=Mesh,
+                   ORIE_PEAU_3D=_F(GROUP_MA='TOP_F'))
+
+Model=AFFE_MODELE(MAILLAGE=Mesh,
+                  AFFE=_F(TOUT='OUI',
+                          PHENOMENE='MECANIQUE',
+                          MODELISATION='3D'))
+
+Mat_Prop=DEFI_MATERIAU(ELAS=_F(E={elastic_modulus},
+                               NU=0.22,
+                               RHO=2.5e-09))
+
+Mater=AFFE_MATERIAU(MODELE=Model,
+                    AFFE=_F(GROUP_MA='PLATE_V',
+                            MATER=Mat_Prop))
+
+Load=AFFE_CHAR_MECA(MODELE=Model,
+                    PESANTEUR=_F(GRAVITE=float(gMult*9810.00),
+                                 DIRECTION=(0.0,-1.0,0.0,)),
+                    PRES_REP=_F(GROUP_MA='TOP_F',
+                                PRES={pressure}))
+
+# constraint all four sides
+impo = [_F(GROUP_MA=('FRONT_F', 'BACK_F', 'RIGHT_F', 'LEFT_F'),DX=0.0,DY=0.0,DZ=0.0,)]
+BC=AFFE_CHAR_MECA(MODELE=Model, DDL_IMPO=impo)
+
+Time=DEFI_LIST_REEL(DEBUT=0.0,
+                    INTERVALLE=_F(JUSQU_A=1.0,
+                                  NOMBRE=10))
+
+Step=DEFI_LIST_INST(DEFI_LIST=_F(LIST_INST=Time),
+                    METHODE='MANUEL',
+                    ECHEC=_F(SUBD_PAS=10,
+                             SUBD_NIVEAU=4))
+
+Ramp=DEFI_FONCTION(NOM_PARA='INST',
+                   VALE=(0.0,0.0,
+                         1.0,1.0),
+                   INTERPOL='LIN')
+
+SNL_RES=STAT_NON_LINE(MODELE=Model,
+                      CHAM_MATER=Mater,
+                      EXCIT=(_F(CHARGE=Load,
+                                FONC_MULT=Ramp),
+                             _F(CHARGE=BC)),
+                     COMPORTEMENT=_F(TOUT='OUI',
+                                     RELATION='ELAS',
+                                     DEFORMATION='GROT_GDEP'),
+                     INCREMENT=_F(LIST_INST=Step),
+                     NEWTON=_F(MATRICE='TANGENTE',
+                               REAC_ITER=1),
+                     CONVERGENCE=_F(RESI_GLOB_RELA=1e-05,
+                                    ITER_GLOB_MAXI=30),
+                     SOLVEUR=_F(METHODE='MUMPS'),
+                     ARCHIVAGE=_F(LIST_INST=Time))
+
+RES=CALC_CHAMP(MODELE=Model,
+               RESULTAT=SNL_RES,
+               CONTRAINTE='SIGM_ELGA',
+               FORCE=('FORC_NODA','REAC_NODA'))
+
+IMPR_RESU(FORMAT='GMSH',
+          UNITE=2,
+          RESU=(_F(RESULTAT=SNL_RES,
+                   NOM_CHAM='DEPL'),
+                _F(RESULTAT=RES,
+                   NOM_CHAM='SIGM_ELGA'),
+                _F(RESULTAT=RES,
+                   NOM_CHAM=('FORC_NODA','REAC_NODA'),
+                   GROUP_MA=('TOP_F'))))
+
+FIN();

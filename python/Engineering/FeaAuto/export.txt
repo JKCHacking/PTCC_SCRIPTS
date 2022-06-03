@@ -1,0 +1,18 @@
+P actions make_etude
+P memjob 524288
+P memory_limit 512.0
+P mode interactif
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+P ncpus 1
+P testlist verification sequential
+P time_limit 60000.0
+P tpsjob 1001
+P version stable
+A memjeveux 64.0
+A tpmax 60000.0
+
+F comm {work_dir}\command.comm D  1
+F libr {work_dir}\plate.unv D  3
+F libr {work_dir}\plate.msh R  2
+F mess {work_dir}\Mess.mess R  6

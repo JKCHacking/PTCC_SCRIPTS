@@ -149,6 +149,7 @@ class Controller:
             # run code aster
             self.model.run_code_aster(e_modulus, pressure)
             # display the output in the GMSH Display.
+            self.model.display_result()
 
     def connect_signals(self):
         self.view.run_button.clicked.connect(self.run_simulation)
@@ -221,26 +222,23 @@ class Model:
         plate = gmsh.model.geo.addVolume([plate_loop])
 
         # create the groups
-        gmsh.model.addPhysicalGroup(2, [s1], name="TOP_FACE")
-        gmsh.model.addPhysicalGroup(2, [s2], name="BOT_FACE")
-        gmsh.model.addPhysicalGroup(2, [s3], name="FRONT_FACE")
-        gmsh.model.addPhysicalGroup(2, [s4], name="BACK_FACE")
-        gmsh.model.addPhysicalGroup(2, [s5], name="LEFT_FACE")
-        gmsh.model.addPhysicalGroup(2, [s6], name="RIGHT_FACE")
-        gmsh.model.addPhysicalGroup(3, [plate], name="PLATE_VOL")
+        gmsh.model.addPhysicalGroup(2, [s1], name="BOT_F")
+        gmsh.model.addPhysicalGroup(2, [s2], name="TOP_F")
+        gmsh.model.addPhysicalGroup(2, [s3], name="FRONT_F")
+        gmsh.model.addPhysicalGroup(2, [s4], name="BACK_F")
+        gmsh.model.addPhysicalGroup(2, [s5], name="LEFT_F")
+        gmsh.model.addPhysicalGroup(2, [s6], name="RIGHT_F")
+        gmsh.model.addPhysicalGroup(3, [plate], name="PLATE_V")
 
         gmsh.model.geo.synchronize()
         gmsh.model.mesh.generate(3)
         gmsh.write("plate.unv")
-        # if "nopopup" not in sys.argv:
-        #     gmsh.fltk.run()
-        gmsh.finalize()
 
     def run_code_aster(self, e_mod, pres):
         self.generate_comm(e_mod, pres)
         self.generate_export()
         # run the code_aster
-        # self.run_command([AS_RUN, "export.export"])
+        self.run_command([AS_RUN, "export.export"])
 
     def generate_comm(self, e_mod, pres):
         # generate the command file
@@ -267,7 +265,10 @@ class Model:
                 f.write(c)
 
     def display_result(self):
-        pass
+        gmsh.open("plate.msh")
+        if "nopopup" not in sys.argv:
+            gmsh.fltk.run()
+        gmsh.finalize()
 
 
 class Application(QApplication):
