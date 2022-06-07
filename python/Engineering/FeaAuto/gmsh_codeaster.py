@@ -17,7 +17,7 @@ from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QMessageBox
 
 
-AS_RUN = "C:/Users/joshnee.cunanan/Local Settings/code_aster/V2021/bin/as_run.bat"
+AS_RUN = "C:/Users/{}/Local Settings/code_aster/V2021/bin/as_run.bat".format(os.getlogin())
 SRC_PATH = ""
 if getattr(sys, "frozen", False):
     SRC_PATH = os.path.dirname(os.path.realpath(sys.executable))
@@ -147,9 +147,12 @@ class Controller:
             # generate mesh
             self.model.generate_mesh(width_plate, height_plate, thick_plate, size)
             # run code aster
-            self.model.run_code_aster(e_modulus, pressure)
-            # display the output in the GMSH Display.
-            self.model.display_result()
+            res = self.model.run_code_aster(e_modulus, pressure)
+            if res == -1:
+                print("Errored has occured, Please check logs.")
+            else:
+                # display the output in the GMSH Display.
+                self.model.display_result()
 
     def connect_signals(self):
         self.view.run_button.clicked.connect(self.run_simulation)
@@ -258,11 +261,18 @@ class Model:
 
     def run_command(self, command):
         test_file = "test.log"
+        ret = 1
         with open(test_file, "wb") as f:
-            process = subprocess.Popen(command, stdout=subprocess.PIPE)
-            for c in iter(lambda: process.stdout.read(1), b""):
-                sys.stdout.buffer.write(c)
-                f.write(c)
+            try:
+                process = subprocess.Popen(command, stdout=subprocess.PIPE)
+                for c in iter(lambda: process.stdout.read(1), b""):
+                    sys.stdout.buffer.write(c)
+                    f.write(c)
+            except FileNotFoundError:
+                print("Cannot find Code_Aster v15 Windows Installation")
+                f.write(b"Cannot find Code_Aster v15 Windows Installation")
+                ret = -1
+        return ret
 
     def display_result(self):
         gmsh.open("plate.msh")
