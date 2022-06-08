@@ -25,6 +25,14 @@ elif __file__:
     SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
+def except_hook(type, value, traceback, oldhook=sys.excepthook):
+    oldhook(type, value, traceback)
+    input("Press enter to exit...")
+
+
+sys.excepthook = except_hook
+
+
 class GUI(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
