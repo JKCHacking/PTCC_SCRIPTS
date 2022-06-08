@@ -249,7 +249,8 @@ class Model:
         self.generate_comm(e_mod, pres)
         self.generate_export()
         # run the code_aster
-        self.run_command([AS_RUN, "export.export"])
+        res = self.run_command([AS_RUN, "export.export"])
+        return res
 
     def generate_comm(self, e_mod, pres):
         # generate the command file
