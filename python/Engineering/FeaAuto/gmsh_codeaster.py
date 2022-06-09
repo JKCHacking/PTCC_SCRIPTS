@@ -246,42 +246,60 @@ class Model:
         gmsh.write("plate.unv")
 
     def run_code_aster(self, e_mod, pres):
-        self.generate_comm(e_mod, pres)
-        self.generate_export()
-        # run the code_aster
-        res = self.run_command([AS_RUN, "export.export"])
+        res = -1
+        if self.generate_comm(e_mod, pres) == 1 and \
+                self.generate_export() == 1 and \
+                self.run_command([AS_RUN, "export.export"]) == 1:
+            res = 1
         return res
 
     def generate_comm(self, e_mod, pres):
         # generate the command file
-        with open("command.txt", mode="r") as comm_template:
-            contents = comm_template.read()
-        contents = contents.format(elastic_modulus=e_mod, pressure=pres)
-        with open("command.comm", mode="w") as comm_file:
-            comm_file.write(contents)
+        ret = 1
+        if os.path.exists("command.txt"):
+            with open("command.txt", mode="r") as comm_template:
+                contents = comm_template.read()
+            contents = contents.format(elastic_modulus=e_mod, pressure=pres)
+            with open("command.comm", mode="w") as comm_file:
+                comm_file.write(contents)
+        else:
+            print("Cannot find command.txt")
+            self.write_log(b"Cannot find command.txt")
+            ret = -1
+        return ret
 
     def generate_export(self):
         # generate the export file
-        with open("export.txt", mode="r") as export_template:
-            contents = export_template.read()
-        contents = contents.format(work_dir=SRC_PATH)
-        with open("export.export", mode="w") as export_file:
-            export_file.write(contents)
+        ret = 1
+        if os.path.exists("export.txt"):
+            with open("export.txt", mode="r") as export_template:
+                contents = export_template.read()
+            contents = contents.format(work_dir=SRC_PATH)
+            with open("export.export", mode="w") as export_file:
+                export_file.write(contents)
+        else:
+            print("Cannot find export.txt")
+            self.write_log(b"Cannot find export.txt")
+            ret = -1
+        return ret
 
     def run_command(self, command):
-        test_file = "test.log"
         ret = 1
-        with open(test_file, "wb") as f:
-            try:
-                process = subprocess.Popen(command, stdout=subprocess.PIPE)
-                for c in iter(lambda: process.stdout.read(1), b""):
-                    sys.stdout.buffer.write(c)
-                    f.write(c)
-            except FileNotFoundError:
-                print("Cannot find Code_Aster v15 Windows Installation")
-                f.write(b"Cannot find Code_Aster v15 Windows Installation")
-                ret = -1
+        try:
+            process = subprocess.Popen(command, stdout=subprocess.PIPE)
+            for c in iter(lambda: process.stdout.read(1), b""):
+                sys.stdout.buffer.write(c)
+                self.write_log(c)
+        except FileNotFoundError:
+            print("Cannot find Code_Aster v15 Windows Installation")
+            self.write_log(b"Cannot find Code_Aster v15 Windows Installation")
+            ret = -1
         return ret
+
+    def write_log(self, message):
+        test_file = "test.log"
+        with open(test_file, "ab") as f:
+            f.write(message)
 
     def display_result(self):
         gmsh.open("plate.msh")
