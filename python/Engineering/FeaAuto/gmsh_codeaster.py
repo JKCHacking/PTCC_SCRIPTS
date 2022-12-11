@@ -1,7 +1,11 @@
+from cmath import log
 import sys
 import os
+from unittest import result
 import gmsh
 import subprocess
+import datetime
+from paramiko.client import SSHClient
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QLabel
@@ -11,6 +15,8 @@ from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QGroupBox
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QCheckBox
+from PyQt5.QtWidgets import QDialog
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtGui import QDoubleValidator
@@ -18,12 +24,6 @@ from PyQt5.QtWidgets import QMessageBox
 
 
 AS_RUN = "C:/Users/{}/Local Settings/code_aster/V2021/bin/as_run.bat".format(os.getlogin())
-SRC_PATH = ""
-if getattr(sys, "frozen", False):
-    SRC_PATH = os.path.dirname(os.path.realpath(sys.executable))
-elif __file__:
-    SRC_PATH = os.path.dirname(os.path.realpath(__file__))
-
 
 def except_hook(type, value, traceback, oldhook=sys.excepthook):
     oldhook(type, value, traceback)
@@ -33,9 +33,53 @@ def except_hook(type, value, traceback, oldhook=sys.excepthook):
 sys.excepthook = except_hook
 
 
+class LoginDialog(QDialog):
+    def __init__(self, parent=None):
+        super(LoginDialog, self).__init__(parent)
+        self.hostname_label = QLabel("Host Name:")
+        self.username_label = QLabel("Username:")
+        self.password_label = QLabel("Password:")
+        self.hostname_edit = QLineEdit()
+        self.username_edit = QLineEdit()
+        self.password_edit = QLineEdit()
+        self.login_button = QPushButton("Login")
+
+        button_css = """
+                QPushButton{
+                    border-radius:5px;
+                    border:1px solid black;
+                    border-style: outset;
+                    background-color:#00FF00;
+                }
+                QPushButton:pressed {
+                    background-color:#757575;
+                }
+            """
+        self.login_button.setStyleSheet(button_css)
+        self.login_button.setFixedHeight(30)
+        self.login_button.setFixedWidth(75)
+
+        self.hostname_edit.setFixedHeight(22)
+        self.username_edit.setFixedHeight(22)
+        self.password_edit.setFixedHeight(22)
+        self.init_ui()
+
+    def init_ui(self):
+        login_form = QFormLayout()
+        login_form.addRow(self.hostname_label, self.hostname_edit)
+        login_form.addRow(self.username_label, self.username_edit)
+        login_form.addRow(self.password_label, self.password_edit)
+        
+        general_layout = QVBoxLayout()
+        general_layout.addLayout(login_form)
+        general_layout.addWidget(self.login_button, alignment=QtCore.Qt.AlignCenter)
+        self.setLayout(general_layout)
+        self.setWindowTitle("Remote Login")
+
+
 class GUI(QMainWindow):
     def __init__(self, parent=None):
-        QMainWindow.__init__(self, parent)
+        super(GUI, self).__init__(parent)
         self.width_label = QLabel("Width:")
         self.height_label = QLabel("Height:")
         self.thickness_label = QLabel("Thickness:")
@@ -50,12 +94,16 @@ class GUI(QMainWindow):
         self.pressure_edit = QLineEdit()
         self.size_edit = QLineEdit()
 
+        self.login_dialog = LoginDialog(self)
+
         self.width_edit.setFixedHeight(22)
         self.height_edit.setFixedHeight(22)
         self.thickness_edit.setFixedHeight(22)
         self.e_modulus_edit.setFixedHeight(22)
         self.pressure_edit.setFixedHeight(22)
         self.size_edit.setFixedHeight(22)
+
+        self.remote_checkbox = QCheckBox("Run on Remote")
 
         # set double validator to each line edit
         validator = QDoubleValidator()
@@ -105,6 +153,7 @@ class GUI(QMainWindow):
         solver_form.setVerticalSpacing(15)
         solver_form.addRow(self.e_modulus_label, self.e_modulus_edit)
         solver_form.addRow(self.pressure_label, self.pressure_edit)
+        solver_form.addRow(self.remote_checkbox)
 
         dimension_group = QGroupBox("DIMENSION")
         dimension_group.setLayout(dimension_form)
@@ -145,6 +194,7 @@ class Controller:
         e_modulus = self.check_input(self.view.e_modulus_edit)
         pressure = self.check_input(self.view.pressure_edit)
         size = self.view.size_edit.text()
+        is_remote = self.view.remote_checkbox.isChecked()
         try:
             size = float(size)
         except ValueError:
@@ -152,10 +202,25 @@ class Controller:
             self.view.size_edit.setText("0")
 
         if width_plate and height_plate and thick_plate and e_modulus and pressure:
+            src_path = ""
+            if getattr(sys, "frozen", False):
+                src_path = os.path.dirname(os.path.realpath(sys.executable))
+            elif __file__:
+                src_path = os.path.dirname(os.path.realpath(__file__))
+            self.model.set_workspace(os.path.join(src_path, self.create_folder_name()))
             # generate mesh
             self.model.generate_mesh(width_plate, height_plate, thick_plate, size)
+            # generate comm file
+            self.model.generate_comm(e_modulus, pressure)
+            # generate export file
+            self.model.generate_export()
             # run code aster
-            res = self.model.run_code_aster(e_modulus, pressure)
+            if is_remote:
+                self.display_login()
+                if self.model.ssh_client and self.model.ssh_client.get_transport().is_active():
+                    self.model.run_code_aster_remote(e_modulus, pressure, self.model.ssh_client)
+            else:
+                res = self.model.run_code_aster_local(e_modulus, pressure)
             if res == -1:
                 print("Errored has occured, Please check logs.")
             else:
@@ -182,9 +247,39 @@ class Controller:
             palette.setColor(QPalette.Base, color)
             line_edit.setPalette(palette)
         return val
+    
+    def login(self):
+        hostname = self.view.login_dialog.hostname_edit
+        username = self.view.login_dialog.username_edit
+        password = self.view.login_dialog.password_edit
+        ssh_client = SSHClient()
+        ssh_client.load_system_host_keys()
+        try:
+            ssh_client.connect(hostname=hostname, username=username, password=password)
+            self.model.set_ssh_client(ssh_client)
+        except Exception as e:
+            print("Error: ", str(e))
+
+    def display_login(self):
+        self.view.login_dialog.login_button.clicked.connect(self.login)
+        self.view.login_dialog.exec_()
+
+    def create_folder_name(self):
+        return datetime.datetime.now().strftime("%d%b%Y_%H%M RESULTS")
 
 
 class Model:
+    def __init__(self):
+        self.workspace = ""
+        self.ssh_client = None
+
+    def set_workspace(self, workspace):
+        self.workspace = workspace
+        os.makedirs(workspace)
+
+    def set_ssh_client(self, ssh_client):
+        self.ssh_client = ssh_client
+
     def generate_mesh(self, w, h, t, size):
         gmsh.initialize(sys.argv)
         gmsh.model.add("MESH_PLATE")
@@ -243,15 +338,21 @@ class Model:
 
         gmsh.model.geo.synchronize()
         gmsh.model.mesh.generate(3)
-        gmsh.write("plate.unv")
+        gmsh.write(os.path.join(self.workspace, "plate.unv"))
 
-    def run_code_aster(self, e_mod, pres):
+    def run_code_aster_local(self, e_mod, pres):
         res = -1
-        if self.generate_comm(e_mod, pres) == 1 and \
-                self.generate_export() == 1 and \
-                self.run_command([AS_RUN, "export.export"]) == 1:
+        if os.path.exists(os.path.join(self.workspace, "command.comm")) and \
+            os.path.exists(os.path.join(self.workspace, "export.export")) and \
+                self.run_command([AS_RUN, os.path.join(self.workspace, "export.export")]) == 1:
             res = 1
         return res
+    
+    def run_code_aster_remote(self, e_mod, pres, ssh_client):
+        if os.path.exists(os.path.join(self.workspace, "command.comm")) and \
+                os.path.exists(os.path.join(self.workspace, "export.export")):
+            # copy files in remote repository
+            pass
 
     def generate_comm(self, e_mod, pres):
         # generate the command file
@@ -260,7 +361,7 @@ class Model:
             with open("command.txt", mode="r") as comm_template:
                 contents = comm_template.read()
             contents = contents.format(elastic_modulus=e_mod, pressure=pres)
-            with open("command.comm", mode="w") as comm_file:
+            with open(os.path.join(self.workspace, "command.comm"), mode="w") as comm_file:
                 comm_file.write(contents)
         else:
             print("Cannot find command.txt")
@@ -274,8 +375,8 @@ class Model:
         if os.path.exists("export.txt"):
             with open("export.txt", mode="r") as export_template:
                 contents = export_template.read()
-            contents = contents.format(work_dir=SRC_PATH)
-            with open("export.export", mode="w") as export_file:
+            contents = contents.format(work_dir=self.workspace)
+            with open(os.path.join(self.workspace, "export.export"), mode="w") as export_file:
                 export_file.write(contents)
         else:
             print("Cannot find export.txt")
