@@ -22,8 +22,14 @@ from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QMessageBox
 
-
+COMMAND_FILE = "command.comm"
+EXPORT_FILE = "export.export"
+UNV_FILE = "plate.unv"
+MSH_FILE = "plate.msh"
+LOG_FILE = "output.log"
+MESS_FILE = "Mess.mess"
 AS_RUN = "C:/Users/{}/Local Settings/code_aster/V2021/bin/as_run.bat".format(os.getlogin())
+
 
 def except_hook(type, value, traceback, oldhook=sys.excepthook):
     oldhook(type, value, traceback)
@@ -42,6 +48,7 @@ class LoginDialog(QDialog):
         self.hostname_edit = QLineEdit()
         self.username_edit = QLineEdit()
         self.password_edit = QLineEdit()
+        self.password_edit.setEchoMode(QLineEdit.Password)
         self.login_button = QPushButton("Login")
 
         button_css = """
@@ -93,8 +100,6 @@ class GUI(QMainWindow):
         self.e_modulus_edit = QLineEdit()
         self.pressure_edit = QLineEdit()
         self.size_edit = QLineEdit()
-
-        self.login_dialog = LoginDialog(self)
 
         self.width_edit.setFixedHeight(22)
         self.height_edit.setFixedHeight(22)
@@ -185,6 +190,7 @@ class Controller:
     def __init__(self, model, view):
         self.model = model
         self.view = view
+        self.login_dialog = None
         self.connect_signals()
 
     def run_simulation(self):
@@ -207,25 +213,33 @@ class Controller:
                 src_path = os.path.dirname(os.path.realpath(sys.executable))
             elif __file__:
                 src_path = os.path.dirname(os.path.realpath(__file__))
-            self.model.set_workspace(os.path.join(src_path, self.create_folder_name()))
+            result_folder_name = self.create_folder_name()
+            self.model.set_local_workspace(os.path.join(src_path, result_folder_name))
+            os.makedirs(self.model.local_workspace)
+            self.model.set_remote_workspace(f"Shares/Engineers/CODE_ASTER_SIMULATIONS/{result_folder_name}")
             # generate mesh
             self.model.generate_mesh(width_plate, height_plate, thick_plate, size)
             # generate comm file
             self.model.generate_comm(e_modulus, pressure)
-            # generate export file
-            self.model.generate_export()
+
             # run code aster
             if is_remote:
-                self.display_login()
-                if self.model.ssh_client and self.model.ssh_client.get_transport().is_active():
-                    self.model.run_code_aster_remote(e_modulus, pressure, self.model.ssh_client)
+                # generate export file set for remote machine
+                # for some reason after copying export file to remote machine
+                # it appends a new directory causing to have double directory.
+                # better set this to empty.
+                self.model.generate_export("", sep="")
+                self.login_dialog = LoginDialog(self.view)
+                self.login_dialog.login_button.clicked.connect(self.login)
+                self.login_dialog.exec_()
             else:
-                res = self.model.run_code_aster_local(e_modulus, pressure)
-            if res == -1:
-                print("Errored has occured, Please check logs.")
-            else:
-                # display the output in the GMSH Display.
+                # generate export file set for local machine
+                self.model.generate_export(self.model.local_workspace, sep="\\")
+                res = self.model.run_code_aster_local()
+            if os.path.exists(os.path.join(self.model.local_workspace, MSH_FILE)):
                 self.model.display_result()
+            else:
+                print("Failed to create result.")
 
     def connect_signals(self):
         self.view.run_button.clicked.connect(self.run_simulation)
@@ -249,33 +263,34 @@ class Controller:
         return val
     
     def login(self):
-        hostname = self.view.login_dialog.hostname_edit
-        username = self.view.login_dialog.username_edit
-        password = self.view.login_dialog.password_edit
+        hostname = self.login_dialog.hostname_edit.text()
+        username = self.login_dialog.username_edit.text()
+        password = self.login_dialog.password_edit.text()
         ssh_client = SSHClient()
         ssh_client.load_system_host_keys()
         try:
             ssh_client.connect(hostname=hostname, username=username, password=password)
             self.model.set_ssh_client(ssh_client)
+            self.model.run_code_aster_remote()
+            self.login_dialog.close()
         except Exception as e:
             print("Error: ", str(e))
 
-    def display_login(self):
-        self.view.login_dialog.login_button.clicked.connect(self.login)
-        self.view.login_dialog.exec_()
-
     def create_folder_name(self):
-        return datetime.datetime.now().strftime("%d%b%Y_%H%M RESULTS")
+        return datetime.datetime.now().strftime("%d%b%Y_%H%M_RESULTS")
 
 
 class Model:
     def __init__(self):
-        self.workspace = ""
+        self.local_workspace = ""
+        self.remote_workspace = ""
         self.ssh_client = None
 
-    def set_workspace(self, workspace):
-        self.workspace = workspace
-        os.makedirs(workspace)
+    def set_local_workspace(self, local_workspace):
+        self.local_workspace = local_workspace
+
+    def set_remote_workspace(self, remote_workspace):
+        self.remote_workspace = remote_workspace
 
     def set_ssh_client(self, ssh_client):
         self.ssh_client = ssh_client
@@ -338,21 +353,60 @@ class Model:
 
         gmsh.model.geo.synchronize()
         gmsh.model.mesh.generate(3)
-        gmsh.write(os.path.join(self.workspace, "plate.unv"))
+        gmsh.write(os.path.join(self.local_workspace, UNV_FILE))
 
-    def run_code_aster_local(self, e_mod, pres):
+    def run_code_aster_local(self):
+        print("============ Running Simulation in Local Windows Machine ============")
         res = -1
-        if os.path.exists(os.path.join(self.workspace, "command.comm")) and \
-            os.path.exists(os.path.join(self.workspace, "export.export")) and \
-                self.run_command([AS_RUN, os.path.join(self.workspace, "export.export")]) == 1:
+        if os.path.exists(os.path.join(self.local_workspace, COMMAND_FILE)) and \
+            os.path.exists(os.path.join(self.local_workspace, EXPORT_FILE)) and \
+                os.path.exists(os.path.join(self.local_workspace, UNV_FILE)) and \
+                self.run_command([AS_RUN, os.path.join(self.local_workspace, EXPORT_FILE)]) == 1:
             res = 1
+        else:
+            print("There are Code_Aster files missing.")
         return res
     
-    def run_code_aster_remote(self, e_mod, pres, ssh_client):
-        if os.path.exists(os.path.join(self.workspace, "command.comm")) and \
-                os.path.exists(os.path.join(self.workspace, "export.export")):
-            # copy files in remote repository
-            pass
+    def run_code_aster_remote(self):
+        res = -1
+        if os.path.exists(os.path.join(self.local_workspace, COMMAND_FILE)) and \
+                os.path.exists(os.path.join(self.local_workspace, UNV_FILE)) and \
+                os.path.exists(os.path.join(self.local_workspace, EXPORT_FILE)):
+            if self.ssh_client and self.ssh_client.get_transport().is_active():
+                sftp_client = self.ssh_client.open_sftp()
+                print("============ Running Simulation in Remote Linux Machine ============")
+                # copy files in remote repository
+                print("Creating remote workspace")
+                sftp_client.mkdir(self.remote_workspace)
+                sftp_client.chdir(self.remote_workspace)
+                print(f"Current directory: {sftp_client.getcwd()}")
+                # copy command file
+                print("Copying command file")
+                sftp_client.put(os.path.join(self.local_workspace, COMMAND_FILE), COMMAND_FILE)
+                # copy export file
+                print("Copying export file")
+                sftp_client.put(os.path.join(self.local_workspace, EXPORT_FILE), EXPORT_FILE)
+                # copy msh file
+                print("Copying mesh file")
+                sftp_client.put(os.path.join(self.local_workspace, UNV_FILE), UNV_FILE)
+                # execute code_aster
+                command = f"as_run {self.remote_workspace}/{EXPORT_FILE}"
+                print(f"Executing: {command}")
+                std_in, std_out, std_err = self.ssh_client.exec_command(command)
+                for line in std_out.read().splitlines():
+                    print(line)
+                # return the result files in the local workspace
+                print(f"Copying result files to: {self.local_workspace}")
+                sftp_client.get(MSH_FILE, os.path.join(self.local_workspace, MSH_FILE))
+                sftp_client.get(MESS_FILE, os.path.join(self.local_workspace, MESS_FILE))
+                sftp_client.close()
+                self.ssh_client.close()
+                res = 1
+            else:
+                print("SSH Client is inactive")
+        else:
+            print("There are Code_Aster files missing")
+        return res
 
     def generate_comm(self, e_mod, pres):
         # generate the command file
@@ -361,26 +415,24 @@ class Model:
             with open("command.txt", mode="r") as comm_template:
                 contents = comm_template.read()
             contents = contents.format(elastic_modulus=e_mod, pressure=pres)
-            with open(os.path.join(self.workspace, "command.comm"), mode="w") as comm_file:
+            with open(os.path.join(self.local_workspace, COMMAND_FILE), mode="w") as comm_file:
                 comm_file.write(contents)
         else:
             print("Cannot find command.txt")
-            self.write_log(b"Cannot find command.txt")
             ret = -1
         return ret
 
-    def generate_export(self):
+    def generate_export(self, workspace, sep):
         # generate the export file
         ret = 1
         if os.path.exists("export.txt"):
             with open("export.txt", mode="r") as export_template:
                 contents = export_template.read()
-            contents = contents.format(work_dir=self.workspace)
-            with open(os.path.join(self.workspace, "export.export"), mode="w") as export_file:
+            contents = contents.format(work_dir=workspace, sep=sep)
+            with open(os.path.join(self.local_workspace, EXPORT_FILE), mode="w") as export_file:
                 export_file.write(contents)
         else:
             print("Cannot find export.txt")
-            self.write_log(b"Cannot find export.txt")
             ret = -1
         return ret
 
@@ -390,20 +442,22 @@ class Model:
             process = subprocess.Popen(command, stdout=subprocess.PIPE)
             for c in iter(lambda: process.stdout.read(1), b""):
                 sys.stdout.buffer.write(c)
-                self.write_log(c)
         except FileNotFoundError:
             print("Cannot find Code_Aster v15 Windows Installation")
-            self.write_log(b"Cannot find Code_Aster v15 Windows Installation")
             ret = -1
         return ret
 
-    def write_log(self, message):
-        test_file = "test.log"
-        with open(test_file, "ab") as f:
-            f.write(message)
+    # def write_log(self, message):
+    #     test_file = "test.log"
+    #     with open(test_file, "ab") as f:
+    #         f.write(message)
+    #
+    # def print_and_log(self, message, fp):
+    #     print(message)
+    #     fp.write(message)
 
     def display_result(self):
-        gmsh.open("plate.msh")
+        gmsh.open(os.path.join(self.local_workspace, MSH_FILE))
         if "nopopup" not in sys.argv:
             gmsh.fltk.run()
         gmsh.finalize()

@@ -12,7 +12,7 @@ P version stable
 A memjeveux 64.0
 A tpmax 60000.0
 
-F comm {work_dir}\command.comm D  1
-F libr {work_dir}\plate.unv D  3
-F libr {work_dir}\plate.msh R  2
-F mess {work_dir}\Mess.mess R  6
+F comm {work_dir}{sep}command.comm D  1
+F libr {work_dir}{sep}plate.unv D  3
+F libr {work_dir}{sep}plate.msh R  2
+F mess {work_dir}{sep}Mess.mess R  6
