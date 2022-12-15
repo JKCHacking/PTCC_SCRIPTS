@@ -216,7 +216,8 @@ class Controller:
                 src_path = os.path.dirname(os.path.realpath(__file__))
             result_folder_name = self.create_folder_name()
             self.model.set_local_workspace(os.path.join(src_path, result_folder_name))
-            os.makedirs(self.model.local_workspace)
+            if not os.path.exists(self.model.local_workspace):
+                os.makedirs(self.model.local_workspace)
             self.model.set_remote_workspace(f"Shares/Engineers/CODE_ASTER_SIMULATIONS/{result_folder_name}")
             # generate mesh
             self.model.generate_mesh(width_plate, height_plate, thick_plate, size)
@@ -244,7 +245,9 @@ class Controller:
                 self.model.run_code_aster_local()
 
             if os.path.exists(os.path.join(self.model.local_workspace, MSH_FILE)):
+                self.view.hide()
                 self.model.display_result()
+                self.view.show()
             else:
                 print("Failed to create result.")
 
