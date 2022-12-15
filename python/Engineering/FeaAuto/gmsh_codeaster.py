@@ -21,6 +21,7 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFileDialog
 
 COMMAND_FILE = "command.comm"
 EXPORT_FILE = "export.export"
@@ -235,11 +236,25 @@ class Controller:
             else:
                 # generate export file set for local machine
                 self.model.generate_export(self.model.local_workspace, sep="\\")
-                res = self.model.run_code_aster_local()
+                global AS_RUN
+                if not os.path.exists(AS_RUN):
+                    print("Cannot find as_run script file in the default location.")
+                    file_name = self.open_file()
+                    AS_RUN = file_name
+                self.model.run_code_aster_local()
+
             if os.path.exists(os.path.join(self.model.local_workspace, MSH_FILE)):
                 self.model.display_result()
             else:
                 print("Failed to create result.")
+
+    def open_file(self):
+        # open a dialog to find the as_run.bat file.
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self.view, "Select the as_run script file", "",
+                                                   "Batch File (*.bat)", options=options)
+        return file_name
 
     def connect_signals(self):
         self.view.run_button.clicked.connect(self.run_simulation)
@@ -357,15 +372,12 @@ class Model:
 
     def run_code_aster_local(self):
         print("============ Running Simulation in Local Windows Machine ============")
-        res = -1
         if os.path.exists(os.path.join(self.local_workspace, COMMAND_FILE)) and \
             os.path.exists(os.path.join(self.local_workspace, EXPORT_FILE)) and \
-                os.path.exists(os.path.join(self.local_workspace, UNV_FILE)) and \
-                self.run_command([AS_RUN, os.path.join(self.local_workspace, EXPORT_FILE)]) == 1:
-            res = 1
+                os.path.exists(os.path.join(self.local_workspace, UNV_FILE)):
+            self.run_command([AS_RUN, os.path.join(self.local_workspace, EXPORT_FILE)])
         else:
             print("There are Code_Aster files missing.")
-        return res
     
     def run_code_aster_remote(self):
         res = -1
