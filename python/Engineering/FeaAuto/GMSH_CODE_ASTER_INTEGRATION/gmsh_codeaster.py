@@ -5,6 +5,7 @@ from unittest import result
 import gmsh
 import subprocess
 import datetime
+import json
 from paramiko.client import SSHClient
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QLineEdit
@@ -29,7 +30,8 @@ UNV_FILE = "plate.unv"
 MSH_FILE = "plate.msh"
 LOG_FILE = "output.log"
 MESS_FILE = "Mess.mess"
-AS_RUN = "C:/Users/{}/Local Settings/code_aster/V2021/bin/as_run.bat".format(os.getlogin())
+CONFIG_FILE = "config.json"
+AS_RUN_FILE = "as_run.bat"
 
 
 def except_hook(type, value, traceback, oldhook=sys.excepthook):
@@ -237,11 +239,15 @@ class Controller:
             else:
                 # generate export file set for local machine
                 self.model.generate_export(self.model.local_workspace, sep="\\")
-                global AS_RUN
-                if not os.path.exists(AS_RUN):
-                    print("Cannot find as_run script file in the default location.")
+                if not os.path.exists(CONFIG_FILE):
+                    print("Config file not created.")
                     file_name = self.open_file()
-                    AS_RUN = file_name
+                    self.model.save_ca_path(file_name)
+                elif not os.path.exists(self.model.get_ca_path()) or \
+                        os.path.basename(self.model.get_ca_path()) != AS_RUN_FILE:
+                    print("invalid as_run path")
+                    file_name = self.open_file()
+                    self.model.save_ca_path(file_name)
                 self.model.run_code_aster_local()
 
             if os.path.exists(os.path.join(self.model.local_workspace, MSH_FILE)):
@@ -256,7 +262,7 @@ class Controller:
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getOpenFileName(self.view, "Select the as_run script file", "",
-                                                   "Batch File (*.bat)", options=options)
+                                                   "as_run Batch file (as_run.bat)", options=options)
         return file_name
 
     def connect_signals(self):
@@ -303,6 +309,18 @@ class Model:
         self.local_workspace = ""
         self.remote_workspace = ""
         self.ssh_client = None
+
+    def save_ca_path(self, ca_path):
+        data_dict = {
+            "AS_RUN": ca_path
+        }
+        with open(CONFIG_FILE, "w") as json_file:
+            json.dump(data_dict, json_file)
+
+    def get_ca_path(self):
+        with open(CONFIG_FILE) as config_file:
+            config_dict = json.load(config_file)
+        return config_dict["AS_RUN"]
 
     def set_local_workspace(self, local_workspace):
         self.local_workspace = local_workspace
@@ -378,7 +396,7 @@ class Model:
         if os.path.exists(os.path.join(self.local_workspace, COMMAND_FILE)) and \
             os.path.exists(os.path.join(self.local_workspace, EXPORT_FILE)) and \
                 os.path.exists(os.path.join(self.local_workspace, UNV_FILE)):
-            self.run_command([AS_RUN, os.path.join(self.local_workspace, EXPORT_FILE)])
+            self.run_command([self.get_ca_path(), os.path.join(self.local_workspace, EXPORT_FILE)])
         else:
             print("There are Code_Aster files missing.")
     
