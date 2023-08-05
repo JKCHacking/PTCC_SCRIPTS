@@ -29,7 +29,7 @@
   ; ask the user to click on the current block, 
   ; dont allow to click on other blocks
   (while T
-    (setq retsel (entsel "Choose the leader point around the block." ))
+    (setq retsel (entsel "Choose the leader point around the block.\n" ))
     (if (= retsel NIL)
       (princ "Please click around the block object!")
       (progn
