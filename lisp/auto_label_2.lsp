@@ -6,7 +6,7 @@
 
 (vl-load-com)
 
-(defun AutoLabel2 (/ ssBlocks)
+(defun C:AutoLabel2 (/ ssBlocks)
   (setq acadObj (vlax-get-acad-object))
   ;; (setq doc (vla-get-ActiveDocument acadObj))
   ;; (setq modelSpace (vla-get-ModelSpace doc))
@@ -36,20 +36,24 @@
         (princ "This object is not a block!")
         (princ)
       )
-    )
-    (setq blockName (cdr (assoc 2 (entget (car retsel)))))
-    (if (= blockEname (vla-get-name blockVla))
       (progn
-        (setq mousePos (cadr retsel))
-        (exit)
+        (setq blockName (cdr (assoc 2 (entget (car retsel)))))
+        (if (= blockEname (vla-get-name blockVla))
+          (progn
+            (setq mousePos (cadr retsel))
+            (exit)
+          )
+          (progn
+            (princ (strcat "Incorrect block! choose blockname: " (vla-get-name blockVla)))
+            (princ)
+          )
+        )
       )
-      (princ (strcat "Please select block: " (vla-get-name blockVla)))
-      (princ)
     )
   )
   ; add the Mleader using the current mouse position as the leader point.
   ; assume a landing point. let the user adjust later after generation.
-  (setq leaderPt (cadr retsel))
+  (setq leaderPt mousePos)
   (setq landingPt (polar leaderPt (dtr 45) 5))
   (addMLeader modelSpace leaderPt landingPt (vla-get-name blockVla))
   (princ)
@@ -61,6 +65,7 @@
 
   (setq views (list "top" "right" "front"))
   (foreach v views
+    (princ (strcat "Change view to " v " view."))
     (command "-view " v)
     (setq bb (getBBMulti ssBlocks)
           minPt (car bb)
