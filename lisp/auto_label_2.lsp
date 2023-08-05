@@ -41,7 +41,7 @@
           )
           (progn
             (setq blockName (cdr (assoc 2 (entget (car retsel)))))
-            (if (= blockEname (vla-get-name blockVla))
+            (if (= blockName (vla-get-name blockVla))
               (progn
                 (setq mousePos (cadr retsel))
                 (exit)
