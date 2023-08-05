@@ -29,23 +29,28 @@
   ; ask the user to click on the current block, 
   ; dont allow to click on other blocks
   (while T
-    (setq retsel (entsel "Select a point around the current block..." ))
-    ; check if the user selected is a block
-    (if (/= (cdr (assoc 0 (entget (car retsel)))) "INSERT")
+    (setq retsel (entsel "Choose the leader point around the block." ))
+    (if (= retsel NIL)
+      (princ "Please click around the block object!")
       (progn
-        (princ "This object is not a block!")
-        (princ)
-      )
-      (progn
-        (setq blockName (cdr (assoc 2 (entget (car retsel)))))
-        (if (= blockEname (vla-get-name blockVla))
+        ; check if the user selected is a block
+        (if (/= (cdr (assoc 0 (entget (car retsel)))) "INSERT")
           (progn
-            (setq mousePos (cadr retsel))
-            (exit)
+            (princ "This object is not a block!")
+            (princ)
           )
           (progn
-            (princ (strcat "Incorrect block! choose blockname: " (vla-get-name blockVla)))
-            (princ)
+            (setq blockName (cdr (assoc 2 (entget (car retsel)))))
+            (if (= blockEname (vla-get-name blockVla))
+              (progn
+                (setq mousePos (cadr retsel))
+                (exit)
+              )
+              (progn
+                (princ (strcat "Incorrect block! choose blockname: " (vla-get-name blockVla)))
+                (princ)
+              )
+            )
           )
         )
       )
@@ -98,6 +103,7 @@
     (setq i 0)
     (while (setq blockEname (ssname ssBlocks i))
       (setq blockVla (vlax-ename->vla-object blockEname))
+      (princ (strcat "Object to select: " (vla-get-name blockVla)))
       (attachMLeaderUser (vla-get-ModelSpace (vla-get-ActiveDocument acadObj)) blockVla)
     )
   )
