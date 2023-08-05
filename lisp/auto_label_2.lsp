@@ -28,7 +28,8 @@
   ; change the color of the current block to a gradiaent color
   ; ask the user to click on the current block, 
   ; dont allow to click on other blocks
-  (while T
+  (setq infiniteLoop T)
+  (while infiniteLoop
     (setq retsel (entsel "Choose the leader point around the block.\n" ))
     (if (= retsel NIL)
       (princ "Please click around the block object!")
@@ -44,7 +45,7 @@
             (if (= blockName (vla-get-name blockVla))
               (progn
                 (setq mousePos (cadr retsel))
-                (exit)
+                (setq infiniteLoop NIL)
               )
               (progn
                 (princ (strcat "Incorrect block! choose blockname: " (vla-get-name blockVla)))
@@ -100,7 +101,8 @@
        )
       )
     )
-    (vla-ZoomWindow acadObj lowerLeft upperRight)
+    (vla-ZoomWindow acadObj (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) lowerLeft) 
+                    (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) upperRight))
     (setq i 0)
     (while (setq blockEname (ssname ssBlocks i))
       (setq blockVla (vlax-ename->vla-object blockEname))
