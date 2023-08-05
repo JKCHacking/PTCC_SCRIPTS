@@ -71,7 +71,7 @@
   (setq views (list "top" "right" "front"))
   (foreach v views
     (princ (strcat "Change view to " v " view."))
-    (command "-view " v)
+    (command "-view" v)
     (setq bb (getBBMulti ssBlocks)
           minPt (car bb)
           maxPt (cadr bb)
