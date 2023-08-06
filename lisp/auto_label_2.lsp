@@ -8,8 +8,6 @@
 
 (defun C:AutoLabel2 (/ ssBlocks)
   (setq acadObj (vlax-get-acad-object))
-  ;; (setq doc (vla-get-ActiveDocument acadObj))
-  ;; (setq modelSpace (vla-get-ModelSpace doc))
 
   (setq ssBlocks (getBlocks))
   (if (/= ssBlocks NIL)
@@ -24,7 +22,7 @@
   (setq ssBlocks (ssget '((0 . "INSERT"))))
 )
 
-(defun attachMLeaderUser (modelSpace blockVla / mousePos retsel blockName )
+(defun attachMLeaderUser (modelSpace blockVla view / mousePos retsel blockName )
   ; change the color of the current block to a gradiaent color
   ; ask the user to click on the current block, 
   ; dont allow to click on other blocks
@@ -59,10 +57,12 @@
   )
   ; add the Mleader using the current mouse position as the leader point.
   ; assume a landing point. let the user adjust later after generation.
-  (setq leaderPt mousePos)
-  (setq landingPt (polar leaderPt (dtr 45) 5))
-  (addMLeader modelSpace leaderPt landingPt (vla-get-name blockVla))
+  (addMLeader modelSpace mousePos (vla-get-name blockVla) view)
   (princ)
+)
+
+(defun deg2rad (degrees / )
+  (/ (* pi degrees) 180)
 )
 
 (defun zoomView (acadObj ssBlocks / v bb minPt maxPt 
@@ -107,7 +107,8 @@
     (while (setq blockEname (ssname ssBlocks i))
       (setq blockVla (vlax-ename->vla-object blockEname))
       (princ (strcat "Object to select: " (vla-get-name blockVla)))
-      (attachMLeaderUser (vla-get-ModelSpace (vla-get-ActiveDocument acadObj)) blockVla)
+      (attachMLeaderUser (vla-get-ModelSpace (vla-get-ActiveDocument acadObj)) blockVla v)
+      (setq i (1+ i))
     )
   )
 )
@@ -150,13 +151,41 @@
   (setq bb (list (list min_x min_y min_z) (list max_x max_y max_z)))
 )
 
-(defun addMLeader (modelSpace leaderPt landingPt text / mleaderObj
+(defun addMLeader (modelSpace userPosition text view / mleaderObj
                                                         points
                                                         pointList)
-  (setq points (vlax-make-safearray vlax-vbDouble '(0 . 5)))
-  (setq pointList (append leaderPt landingPt))
-  (vlax-safearray-fill points pointList)
-  (setq mleaderObj (vla-AddMLeader modelSpace points 0))
+  
+  ;; (setq points (vlax-make-safearray vlax-vbDouble '(0 . 5)))
+  ;; (setq pointList (append leaderPt landingPt))
+  ;; (vlax-safearray-fill points pointList)
+  (setq point1 (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) (list 0 0 0))
+        point2 (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) (list 1 0 0))
+        point3 (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) (list 0 1 0))
+        pointList (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 5)) (list 0 0 0 10 10 0))
+        userPosition_sa (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) userPosition)
+  )
+  
+  (setq rotAngle (deg2rad 90))
+  
+  (setq mleaderObj (vla-AddMLeader modelSpace pointList 0))
   (vla-put-TextString mleaderObj text)
+  ; rotate the mleader
+  (cond
+    (
+      (equal view "top") 
+      ()
+    ) ; no need for rotate in top
+    (
+      (equal view "front")
+      (vla-rotate3d mleaderObj point1 point2 rotAngle)
+    )
+    (
+      (equal view "right")
+      (vla-rotate3d mleaderObj point1 point3 rotAngle)
+      (vla-rotate3d mleaderObj point1 point2 rotAngle)
+    )
+  )
+  ; move the mleader to the user position
+  (vla-move mleaderObj point1 userPosition_sa)
   (princ)
 )
