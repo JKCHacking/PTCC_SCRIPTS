@@ -68,11 +68,19 @@
 (defun zoomView (acadObj ssBlocks / v bb minPt maxPt 
                  min_x min_y min_z max_x max_y max_z
                  lowerLeft upperRight)
-
+  (command "-view" "top")
   (setq views (list "top" "right" "front"))
   (foreach v views
-    (princ (strcat "Change view to " v " view."))
-    (command "-view" v)
+    (if (/= v "top")
+      (progn
+        ; create a new copy of blocks.
+        (setq new_ssBlocks (copySS ssBlocks))
+        ; move the blocks
+        ; rotate the blocks
+      )
+    )
+    ;; (princ (strcat "Change view to " v " view."))
+    ;; (command "-view" v)
     (princ "\n")
     (setq bb (getBBMulti ssBlocks)
           minPt (car bb)
@@ -84,22 +92,25 @@
           max_y (cadr maxPt)
           max_z (caddr maxPt)
     )
-    (cond
-      ((equal v "top")
-       (setq lowerLeft (list min_x min_y 0)
-            upperRight (list max_x max_y 0)
-       )
-      )
-      ((equal v "right")
-       (setq lowerLeft (list 0 min_y min_z)
-            upperRight (list 0 max_y max_z)
-       )
-      )
-      ((equal v "front")
-       (setq lowerLeft (list min_x 0 min_z)
-            upperRight (list max_x 0 min_z)
-       )
-      )
+    ;; (cond
+    ;;   ((equal v "top")
+    ;;    (setq lowerLeft (list min_x min_y 0)
+    ;;         upperRight (list max_x max_y 0)
+    ;;    )
+    ;;   )
+    ;;   ((equal v "right")
+    ;;    (setq lowerLeft (list 0 min_y min_z)
+    ;;         upperRight (list 0 max_y max_z)
+    ;;    )
+    ;;   )
+    ;;   ((equal v "front")
+    ;;    (setq lowerLeft (list min_x 0 min_z)
+    ;;         upperRight (list max_x 0 min_z)
+    ;;    )
+    ;;   )
+    ;; )
+    (setq lowerLeft (list min_x min_y 0)
+          upperRight (list max_x max_y 0)
     )
     (vla-ZoomWindow acadObj (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) lowerLeft) 
                     (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 2)) upperRight))
@@ -111,6 +122,21 @@
       (setq i (1+ i))
     )
   )
+)
+
+(defun ss->sa (ss)
+  ; convert ss to list
+  (repeat (setq i (sslength ss))
+    (setq list_vla (cons (vlax-ename->vla-object (ssname ss (setq i (1- i)))) list_vla))
+    (setq sa_vla (vlax-make-safearray vlax-vbObject (cons 0 (1- (length list_vla)))))
+    (setq i -1)
+    (foreach o list_vla (vlax-safearray-put-element sa_vla (setq i (1+ i )) o))
+  )
+  sa_vla
+)
+
+(defun copySS ( ss view / )
+  (setq )
 )
 
 (defun getBBMulti (ssBlocks / i list_x list_y list_z 
