@@ -6,7 +6,7 @@
 
 (vl-load-com)
 
-(defun C:AutoLabel3 (/ acadObj viewPort )
+(defun C:AutoLabel3 (/ acadObj doc viewPort )
   (if (/= 0 (getvar 'tilemode))
     (progn
       (princ "Error: You must be in paper space to run this script.")
@@ -14,12 +14,13 @@
     )
   )
   (setq acadObj (vlax-get-acad-object))
+  (setq doc (vla-get-activedocument acadObj))
   (setq viewPort (getViewport))
   (princ (strcat "Handle: " (vla-get-handle viewPort)))
-  (vla-put-activepviewport (vla-get-activedocument acadObj) viewPort)
-  (command "mspace")
-  (getUserInput viewPort (vla-get-paperspace (vla-get-activedocument acadObj)))
-  (command "pspace")
+  (vla-put-MSpace doc :vlax-true)
+  (vla-put-activepviewport doc viewPort)
+  (getUserInput viewPort doc)
+  (vla-put-MSpace doc :vlax-false)
   (princ)
 )
 
@@ -34,7 +35,7 @@
   (setq viewPort (vlax-ename->vla-object (ssname ss 0)))
 )
 
-(defun getUserInput (viewPort paperSpace / mousePos retsel blockName leaderPt choice)
+(defun getUserInput (viewPort doc / mousePos retsel blockName leaderPt choice)
   ; ask the user to click on a block, 
   (setq infiniteLoop T)
   (while infiniteLoop
@@ -50,9 +51,9 @@
           )
           (progn
             (setq blockName (cdr (assoc 2 (entget (car retsel)))))
-            (setq mousePos (cadr retsel))
-            (setq leaderPt (list (car mousePos) (cadr mousePos) 0))
-            (addMLeader leaderPt blockName viewPort paperSpace)
+            (setq mousePos (getMousePos doc))
+            (princ (strcat "Mouse position: " (vl-princ-to-string mousePos) "\n"))
+            (addMLeader mousePos blockName viewPort (vla-get-paperspace doc))
           )
         )
       )
@@ -64,8 +65,14 @@
   )
 )
 
+(defun getMousePos ( doc / mousePos)
+  (vla-put-MSpace doc :vlax-false)
+  (setq mousePos (cadr (grread t)))
+  (vla-put-MSpace doc :vlax-true)
+  mousePos
+)
+
 (defun addMLeader (leaderPt blockName viewPort paperSpace / landingPt pointList mleaderObj)
-  (setq leaderPt (append (reverse (cdr (reverse (trans leaderPt 2 3)))) '(0)))
   (setq landingPt (calculateLandingPoint leaderPt viewPort))
   (setq pointList (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 5)) (append leaderPt landingPt)))  
   (setq mleaderObj (vla-AddMLeader paperSpace pointList 0))
