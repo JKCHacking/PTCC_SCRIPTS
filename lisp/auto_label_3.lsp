@@ -15,12 +15,23 @@
   )
   (setq acadObj (vlax-get-acad-object))
   (setq doc (vla-get-activedocument acadObj))
+
+  (setq mleaderStyleName (getstring "Input MLeader Style Name: "))
+  (if (not (checkMleaderStyleName mleaderStyleName))
+    (progn 
+      (princ "Mleader style name does not exists. Try again.")
+      (exit)
+    )
+  )
+
   (setq viewPort (getViewport))
   (princ (strcat "Handle: " (vla-get-handle viewPort)))
+  
   (vla-put-MSpace doc :vlax-true)
   (vla-put-activepviewport doc viewPort)
-  (getUserInput viewPort doc)
+  (getUserInput viewPort doc mleaderStyleName)
   (vla-put-MSpace doc :vlax-false)
+
   (princ)
 )
 
@@ -35,7 +46,7 @@
   (setq viewPort (vlax-ename->vla-object (ssname ss 0)))
 )
 
-(defun getUserInput (viewPort doc / mousePos retsel blockName leaderPt choice)
+(defun getUserInput (viewPort doc mleaderStyleName / mousePos retsel blockName leaderPt choice)
   ; ask the user to click on a block, 
   (setq infiniteLoop T)
   (while infiniteLoop
@@ -53,7 +64,7 @@
             (setq blockName (cdr (assoc 2 (entget (car retsel)))))
             (setq mousePos (getMousePos doc))
             (princ (strcat "Mouse position: " (vl-princ-to-string mousePos) "\n"))
-            (addMLeader mousePos blockName viewPort (vla-get-paperspace doc))
+            (addMLeader mousePos blockName mleaderStyleName viewPort (vla-get-paperspace doc))
           )
         )
       )
@@ -72,11 +83,13 @@
   mousePos
 )
 
-(defun addMLeader (leaderPt blockName viewPort paperSpace / landingPt pointList mleaderObj)
+(defun addMLeader (leaderPt blockName mleaderStyleName viewPort paperSpace / landingPt pointList mleaderObj)
   (setq landingPt (calculateLandingPoint leaderPt viewPort))
   (setq pointList (vlax-safearray-fill (vlax-make-safearray vlax-vbDouble '(0 . 5)) (append leaderPt landingPt)))  
   (setq mleaderObj (vla-AddMLeader paperSpace pointList 0))
   (vla-put-TextString mleaderObj blockName)
+  (vla-put-StyleName mleaderObj mleaderStyleName)
+  mleaderObj
 )
 
 (defun calculateLandingPoint (leaderPt viewPort / minPt maxPt 
@@ -139,4 +152,10 @@
 
 (defun rad2deg (radians) 
   (* 180.0 (/ radians pi))
+)
+
+(defun checkMleaderStyleName ( mleaderStyleName / dic )
+   (and (setq dic (dictsearch (namedobjdict) "acad_mleaderstyle"))
+        (dictsearch (cdr (assoc -1 dic)) mleaderStyleName)
+   )
 )
