@@ -131,11 +131,11 @@
     )
     (
       (and (> dir_angle 180) (<= dir_angle 270))
-      (setq final_angle (deg2rad 225))
+      (setq final_angle (deg2rad 135))
     )
     (
       (and (> dir_angle 270) (<= dir_angle 360))
-      (setq final_angle (deg2rad 315))
+      (setq final_angle (deg2rad 45))
     )
   )
   (princ (strcat "Final Angle: " (rtos final_angle) "\n"))
