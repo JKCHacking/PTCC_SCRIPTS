@@ -63,7 +63,7 @@
           (progn
             (setq blockName (cdr (assoc 2 (entget (car retsel)))))
             (setq mousePos (getMousePos doc))
-            (princ (strcat "Mouse position: " (vl-princ-to-string mousePos) "\n"))
+            ;; (princ (strcat "Mouse position: " (vl-princ-to-string mousePos) "\n"))
             (addMLeader mousePos blockName mleaderStyleName viewPort (vla-get-paperspace doc))
           )
         )
@@ -117,9 +117,9 @@
         refPoint (cdr (assoc minDist pairs))
         dir_angle (rad2deg (angle leaderPt refPoint))
   )
-  (princ (strcat "pairs: " (vl-princ-to-string pairs) "\n"))
-  (princ (strcat "Nearest Point: " (vl-princ-to-string refPoint) "\n"))
-  (princ (strcat "direction angle: " (rtos dir_angle) "\n"))
+  ;; (princ (strcat "pairs: " (vl-princ-to-string pairs) "\n"))
+  ;; (princ (strcat "Nearest Point: " (vl-princ-to-string refPoint) "\n"))
+  ;; (princ (strcat "direction angle: " (rtos dir_angle) "\n"))
   (cond
     (
       (and (>= dir_angle 0) (<= dir_angle 90))
@@ -138,11 +138,11 @@
       (setq final_angle (deg2rad 45))
     )
   )
-  (princ (strcat "Final Angle: " (rtos final_angle) "\n"))
-  (princ (strcat "Leader Point: " (vl-princ-to-string leaderPt) "\n"))
-  (princ (strcat "Distance: " (rtos dist) "\n"))
+  ;; (princ (strcat "Final Angle: " (rtos final_angle) "\n"))
+  ;; (princ (strcat "Leader Point: " (vl-princ-to-string leaderPt) "\n"))
+  ;; (princ (strcat "Distance: " (rtos dist) "\n"))
   (setq landingPt (polar leaderPt final_angle dist))
-  (princ (strcat "Landing Point: " (vl-princ-to-string landingPt) "\n"))
+  ;; (princ (strcat "Landing Point: " (vl-princ-to-string landingPt) "\n"))
   landingPt
 )
 
