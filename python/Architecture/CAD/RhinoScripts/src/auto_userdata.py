@@ -150,6 +150,7 @@ def iter_objects():
     block_names = rs.BlockNames(True)
     # get only the block names that starts with "D"
     interest_block_names = [block_name for block_name in block_names if block_name.startswith("D")]
+    # interest_block_names = rs.GetObjects("Select the objects to add metadata.")
 
     for blk_name in interest_block_names:
         print("BlockName: {}".format(blk_name))
@@ -169,6 +170,10 @@ def iter_objects():
         for block_object in block_objects:
             set_objectname(block_object, blk_name, representative_layer)
             set_userdata(block_object, blk_name, representative_layer)
+
+    # for obj in interest_block_names:
+    #     layer = rs.ObjectLayer(obj).split("::")[-1]
+    #     set_userdata(obj, rs.ObjectName(obj), layer)
 
 
 def set_userdata(obj_id, name, layer_name):

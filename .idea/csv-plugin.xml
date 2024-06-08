@@ -10,55 +10,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\python_source\LDAPDirectoryGenerator\input\testdata007.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\python_source\LDAPDirectoryGenerator\test\testdata\testdata001.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\python_source\LDAPDirectoryGenerator\test\testdata\testdata002.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\python_source\LDAPDirectoryGenerator\test\testdata\testdata004.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\python_source\LDAPDirectoryGenerator\test\testdata\testdata006.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\python_source\employee_identification_generator\input\input.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\python_source\employee_identification_generator\output\employee_list.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
       </map>
     </option>
   </component>
