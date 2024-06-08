@@ -175,7 +175,7 @@ def get_all_assm_params(assembly_doc):
     with open(log_path, "r") as log_file:
         for line in log_file.readlines():
             res_param = re.search(r'(?<=Parameter:).*(?=Expression:)', line)
-            res_val = re.search(r'(?<=Value:).*', line)
+            res_val = re.search(r'(?<=Value:)\s*\d+', line)
             if res_param and res_val:
                 parameter_name = res_param.group(0).strip()
                 if parameter_name:
